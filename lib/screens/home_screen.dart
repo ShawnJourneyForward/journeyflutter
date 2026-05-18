@@ -1216,7 +1216,7 @@ class _JourneyCard extends StatelessWidget {
                 return _MilestoneNodeWidget(node: node, achieved: achieved, isCurrent: current);
               }),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: milestones.map((node) {
@@ -1255,9 +1255,79 @@ class _JourneyCard extends StatelessWidget {
                 );
               }).toList(),
             ),
+            const SizedBox(height: 14),
+            _JourneyProgressBar(days: days, milestones: milestones),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _JourneyProgressBar extends StatelessWidget {
+  const _JourneyProgressBar({required this.days, required this.milestones});
+
+  final int days;
+  final List<_MilestoneNode> milestones;
+
+  @override
+  Widget build(BuildContext context) {
+    int idx = 0;
+    for (int i = milestones.length - 1; i >= 0; i--) {
+      if (days >= milestones[i].days) { idx = i; break; }
+    }
+
+    final bool isLast = idx == milestones.length - 1;
+    final double progress = isLast
+        ? 1.0
+        : ((days - milestones[idx].days) /
+               (milestones[idx + 1].days - milestones[idx].days))
+            .clamp(0.0, 1.0);
+    final int remaining = isLast ? 0 : milestones[idx + 1].days - days;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(children: [
+          Text(
+            milestones[idx].label,
+            style: AppTextStyles.caption.copyWith(
+                color: AppColors.forest, fontWeight: FontWeight.w600),
+          ),
+          const Spacer(),
+          if (!isLast)
+            Text(
+              milestones[idx + 1].label,
+              style: AppTextStyles.caption.copyWith(color: AppColors.stoneText),
+            ),
+        ]),
+        const SizedBox(height: 6),
+        TweenAnimationBuilder<double>(
+          key: ValueKey(idx),
+          tween: Tween(begin: 0.0, end: progress),
+          duration: const Duration(milliseconds: 1100),
+          curve: Curves.easeOutCubic,
+          builder: (_, value, __) => ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: LinearProgressIndicator(
+              value: value,
+              minHeight: 7,
+              backgroundColor: AppColors.softBorder,
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(AppColors.forest),
+            ),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          isLast
+              ? 'One year of sobriety — remarkable.'
+              : '$remaining ${remaining == 1 ? 'day' : 'days'} to ${milestones[idx + 1].label.toLowerCase()}',
+          style: AppTextStyles.caption
+              .copyWith(color: AppColors.mistGrey, fontSize: 10),
+          textAlign: TextAlign.right,
+        ),
+      ],
     );
   }
 }

@@ -5,7 +5,7 @@ Designed for Android using the **Stillwater Aesthetic System** — calm, warm, a
 
 **Current version:** 5.8.0+1 · APK: `build/app/outputs/flutter-apk/app-release.apk`
 
-> **Last session (2026-05-18):** Recovery banner rebuilt (4 labels → 14 milestones with progress bar + next-milestone teaser). Early warning card added (dismissible, shown for first 72 h). Unit test suite extended. Website CSS half-screen gaps fixed.
+> **Last session (2026-05-19):** Journey card milestones extended to 1 year (6 nodes, animated progress bar between milestones). Pledge + Gratitude cards unstacked to full-width. Notification fixes: MILESTONE_DAYS deduplicated, minimal cadence schedules 4 staggered shots, frequency selector added to Settings. Early warning card added. Unit test suite extended.
 
 ---
 
@@ -80,7 +80,7 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 
 | Route | Screen | Description |
 |---|---|---|
-| `/home` | `HomeScreen` | Sober clock, streak, check-in cards (pledge, gratitude), daily mission, money saved. Shows early warning card (first 72 h) and 14-milestone recovery banner with progress bar. |
+| `/home` | `HomeScreen` | Sober clock, streak, check-in cards (pledge, gratitude — full-width stacked), daily mission, money saved. Early warning card (first 72 h, dismissible). Journey card: 6-node milestone timeline (Day 0 → 1 year) with animated progress bar between nodes. |
 | `/progress` | `ProgressScreen` | Milestone cards, savings tracker, mood chart, plant growth visual |
 | `/emergency` | `EmergencyScreen` | Breathing exercises, meditation guides, CBT tools, grounding |
 | `/journal` | `JournalScreen` | Daily mood journal with affirmations and vision board |
