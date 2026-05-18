@@ -5,8 +5,7 @@ const navItems = [
   { href: '/', label: 'Home' },
   { href: '/privacy/', label: 'Privacy' },
   { href: '/about/', label: 'About' },
-  { href: '/support/', label: 'Support' },
-  { href: '#ios', label: 'iOS Waitlist', homeOnly: true }
+  { href: '/support/', label: 'Support' }
 ];
 
 function iconMarkup() {
@@ -24,9 +23,8 @@ function renderNav() {
   if (!node) return;
 
   const links = navItems
-    .filter((item) => !item.homeOnly || currentPath === '/')
     .map((item) => {
-      const active = item.href !== '#ios' && currentPath === item.href;
+      const active = currentPath === item.href;
       return `<a href="${item.href}"${active ? ' aria-current="page"' : ''}>${item.label}</a>`;
     })
     .join('');
@@ -86,15 +84,6 @@ function renderFooter() {
 }
 
 function bindConfiguredLinks() {
-  document.querySelectorAll('[data-android-link]').forEach((link) => {
-    link.setAttribute('href', siteConfig.androidDownloadUrl);
-  });
-  document.querySelectorAll('[data-ios-waitlist-link]').forEach((link) => {
-    link.setAttribute('href', siteConfig.iosWaitlistUrl);
-  });
-  document.querySelectorAll('[data-ios-support-link]').forEach((link) => {
-    link.setAttribute('href', siteConfig.iosSupportUrl);
-  });
   document.querySelectorAll('[data-support-email]').forEach((node) => {
     node.textContent = siteConfig.supportEmail;
     if (node instanceof HTMLAnchorElement) {
