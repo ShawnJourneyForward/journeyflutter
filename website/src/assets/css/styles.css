@@ -678,6 +678,33 @@ p {
   max-width: 760px;
 }
 
+.about-letter-section {
+  min-height: calc(100vh - 190px);
+}
+
+.about-letter {
+  max-width: 640px;
+}
+
+.about-letter h1 {
+  margin-bottom: 24px;
+}
+
+.letter-copy {
+  max-width: 600px;
+}
+
+.letter-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.signature {
+  margin-top: 28px;
+  color: var(--forest-dark);
+  font-family: var(--display);
+  font-size: 1.22rem;
+}
+
 .content-stack {
   display: grid;
   gap: 18px;
