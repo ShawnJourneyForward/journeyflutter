@@ -1,0 +1,14 @@
+{
+  "name": "Journey Forward",
+  "short_name": "Journey Forward",
+  "icons": [
+    {
+      "src": "/assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#2E5844",
+  "background_color": "#F5F2EE",
+  "display": "browser"
+}

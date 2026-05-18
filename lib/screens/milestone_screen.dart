@@ -1,0 +1,1012 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
+import '../providers/app_providers.dart';
+import '../theme/app_theme.dart';
+
+// ─── Milestone definitions ────────────────────────────────────────────────────
+
+class _Milestone {
+  const _Milestone({
+    required this.days,
+    required this.label,
+    required this.shortLabel,
+    required this.icon,
+    required this.benefit,
+    required this.emoji,
+  });
+  final int days;
+  final String label;
+  final String shortLabel;
+  final IconData icon;
+  final String benefit;
+  final String emoji;
+}
+
+List<_Milestone> _buildMilestones(AppLocalizations l10n) => [
+  _Milestone(
+    days: 1,
+    label: l10n.milestoneOneDay,
+    shortLabel: l10n.milestoneOneDayShort,
+    icon: Icons.eco_outlined,
+    emoji: '🌱',
+    benefit: l10n.milestoneOneDayBenefit,
+  ),
+  _Milestone(
+    days: 3,
+    label: l10n.milestoneThreeDays,
+    shortLabel: l10n.milestoneThreeDaysShort,
+    icon: Icons.spa_outlined,
+    emoji: '🌿',
+    benefit: l10n.milestoneThreeDaysBenefit,
+  ),
+  _Milestone(
+    days: 7,
+    label: l10n.milestoneOneWeek,
+    shortLabel: l10n.milestoneOneWeekShort,
+    icon: Icons.wb_sunny_outlined,
+    emoji: '☀️',
+    benefit: l10n.milestoneOneWeekBenefit,
+  ),
+  _Milestone(
+    days: 14,
+    label: l10n.milestoneTwoWeeks,
+    shortLabel: l10n.milestoneTwoWeeksShort,
+    icon: Icons.energy_savings_leaf_outlined,
+    emoji: '🍃',
+    benefit: l10n.milestoneTwoWeeksBenefit,
+  ),
+  _Milestone(
+    days: 30,
+    label: l10n.milestoneOneMonth,
+    shortLabel: l10n.milestoneOneMonthShort,
+    icon: Icons.terrain_outlined,
+    emoji: '🏔️',
+    benefit: l10n.milestoneOneMonthBenefit,
+  ),
+  _Milestone(
+    days: 60,
+    label: l10n.milestoneTwoMonths,
+    shortLabel: l10n.milestoneTwoMonthsShort,
+    icon: Icons.forest_outlined,
+    emoji: '🌲',
+    benefit: l10n.milestoneTwoMonthsBenefit,
+  ),
+  _Milestone(
+    days: 90,
+    label: l10n.milestoneThreeMonths,
+    shortLabel: l10n.milestoneThreeMonthsShort,
+    icon: Icons.park_outlined,
+    emoji: '🌳',
+    benefit: l10n.milestoneThreeMonthsBenefit,
+  ),
+  _Milestone(
+    days: 100,
+    label: '100 Days',
+    shortLabel: '100 Days',
+    icon: Icons.star_border_rounded,
+    emoji: '⭐',
+    benefit:
+        'One hundred days. Brain neuroplasticity is in full swing. The reward '
+        'system has largely recalibrated to find pleasure in life without alcohol. '
+        'Relationships, work, and your sense of self are transforming.',
+  ),
+  _Milestone(
+    days: 180,
+    label: l10n.milestoneSixMonths,
+    shortLabel: l10n.milestoneSixMonthsShort,
+    icon: Icons.diamond_outlined,
+    emoji: '💎',
+    benefit: l10n.milestoneSixMonthsBenefit,
+  ),
+  _Milestone(
+    days: 365,
+    label: l10n.milestoneOneYear,
+    shortLabel: l10n.milestoneOneYearShort,
+    icon: Icons.auto_awesome_outlined,
+    emoji: '✨',
+    benefit: l10n.milestoneOneYearBenefit,
+  ),
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+int _currentMilestoneIndex(int days, List<_Milestone> milestones) {
+  int idx = -1;
+  for (int i = 0; i < milestones.length; i++) {
+    if (days >= milestones[i].days) idx = i;
+  }
+  return idx;
+}
+
+double _progressToNext(int days, List<_Milestone> milestones) {
+  final current = _currentMilestoneIndex(days, milestones);
+  if (current >= milestones.length - 1) return 1.0;
+  final from = current < 0 ? 0 : milestones[current].days;
+  final to = milestones[current + 1].days;
+  return ((days - from) / (to - from)).clamp(0.0, 1.0);
+}
+
+// ─── Milestone Screen ─────────────────────────────────────────────────────────
+
+class MilestoneScreen extends ConsumerStatefulWidget {
+  const MilestoneScreen({super.key});
+
+  @override
+  ConsumerState<MilestoneScreen> createState() => _MilestoneScreenState();
+}
+
+class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
+    with SingleTickerProviderStateMixin {
+
+  late final AnimationController _progressCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  );
+  late final Animation<double> _progressAnim = CurvedAnimation(
+    parent: _progressCtrl,
+    curve: Curves.easeOutCubic,
+  );
+
+  final _cardKey = GlobalKey();
+  int _selectedIndex = 0;
+  bool _sharing = false;
+  List<_Milestone> _milestones = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _progressCtrl.forward();
+      // Default selection to the current milestone
+      final stats = ref.read(soberStatsProvider);
+      if (stats != null && mounted) {
+        final l10n = AppLocalizations.of(context);
+        final milestones = _buildMilestones(l10n);
+        final idx = _currentMilestoneIndex(stats.days, milestones);
+        if (idx >= 0) setState(() => _selectedIndex = idx);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _progressCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _share() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    HapticFeedback.mediumImpact();
+
+    try {
+      final boundary = _cardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) return;
+
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) return;
+
+      final bytes = byteData.buffer.asUint8List();
+      final file = File('${Directory.systemTemp.path}/journey_milestone.png');
+      await file.writeAsBytes(bytes);
+
+      final profile = ref.read(profileProvider).valueOrNull;
+      final name = profile?.username ?? 'Journey Forward';
+      final milestone = _milestones[_selectedIndex];
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: '${milestone.emoji} $name — ${milestone.label} sober. '
+            'One day at a time. #JourneyForward #Sobriety',
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not generate card. Try again.',
+                style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
+            backgroundColor: AppColors.stone700,
+            behavior: SnackBarBehavior.floating,
+            shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final milestones = _buildMilestones(l10n);
+    _milestones = milestones;
+    final stats = ref.watch(soberStatsProvider);
+    final profile = ref.watch(profileProvider).valueOrNull;
+
+    final days = stats?.days ?? 0;
+    final currentIdx = _currentMilestoneIndex(days, milestones);
+    final progress = _progressToNext(days, milestones);
+    final nextMilestone = currentIdx < milestones.length - 1
+        ? milestones[currentIdx + 1]
+        : null;
+    final selected = milestones[_selectedIndex];
+    final isAchieved = days >= selected.days;
+    final moneySaved = stats?.moneySaved ?? 0;
+
+    return Scaffold(
+      backgroundColor: AppColors.stone50,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+
+            // ── Back header ──────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 12, 20, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 18, color: AppColors.stone600),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    Text(l10n.milestoneScreenTitle,
+                        style: AppTextStyles.titleLarge
+                            .copyWith(color: AppColors.forest700)),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Hero card ────────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: _HeroCard(
+                  days: days,
+                  progress: progress,
+                  progressAnim: _progressAnim,
+                  currentIdx: currentIdx,
+                  nextMilestone: nextMilestone,
+                  username: profile?.username ?? '',
+                  milestones: milestones,
+                ),
+              ),
+            ),
+
+            // ── Achievement spotlight ─────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: _AchievementCard(
+                  milestone: selected,
+                  achieved: isAchieved,
+                  days: days,
+                ),
+              ),
+            ),
+
+            // ── Shareable card ───────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SHARE CARD', style: AppTextStyles.overline),
+                    const SizedBox(height: 10),
+                    RepaintBoundary(
+                      key: _cardKey,
+                      child: _ShareCard(
+                        milestone: selected,
+                        username: profile?.username ?? 'Journey Forward',
+                        days: days,
+                        achieved: isAchieved,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: isAchieved ? _share : null,
+                        icon: _sharing
+                            ? const SizedBox(
+                                width: 16, height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white))
+                            : const Icon(Icons.share_rounded, size: 18),
+                        label: Text(
+                          isAchieved ? 'Share this milestone' : 'Not yet achieved',
+                          style: AppTextStyles.labelLarge
+                              .copyWith(color: Colors.white),
+                        ),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: isAchieved
+                              ? AppColors.forest600
+                              : AppColors.stone200,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(50),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.lg),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── All milestones ───────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
+                child: Text('ALL MILESTONES', style: AppTextStyles.overline),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 0.82,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (ctx, i) {
+                    final m = milestones[i];
+                    final achieved = days >= m.days;
+                    final isCurrent = i == currentIdx;
+                    final isSelected = i == _selectedIndex;
+                    return GestureDetector(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        setState(() => _selectedIndex = i);
+                      },
+                      child: _MilestoneTile(
+                        milestone: m,
+                        achieved: achieved,
+                        isCurrent: isCurrent,
+                        isSelected: isSelected,
+                      ),
+                    );
+                  },
+                  childCount: milestones.length,
+                ),
+              ),
+            ),
+
+            // ── Stats row ───────────────────────────────────────────────────
+            if (profile != null && (profile.dailySpend > 0 || currentIdx >= 0))
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
+                  child: _StatsRow(
+                    days: days,
+                    moneySaved: moneySaved,
+                    currency: profile.currency,
+                    showMoney: profile.dailySpend > 0,
+                  ),
+                ),
+              )
+            else
+              const SliverToBoxAdapter(child: SizedBox(height: 36)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Hero card ────────────────────────────────────────────────────────────────
+
+class _HeroCard extends StatelessWidget {
+  const _HeroCard({
+    required this.days,
+    required this.progress,
+    required this.progressAnim,
+    required this.currentIdx,
+    required this.nextMilestone,
+    required this.username,
+    required this.milestones,
+  });
+
+  final int days;
+  final double progress;
+  final Animation<double> progressAnim;
+  final int currentIdx;
+  final _Milestone? nextMilestone;
+  final String username;
+  final List<_Milestone> milestones;
+
+  @override
+  Widget build(BuildContext context) {
+    final greeting = username.isNotEmpty ? 'Well done, ${username.split(' ').first}.' : 'Well done.';
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.forest800,
+        borderRadius: AppRadius.xxl,
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Stack(
+        children: [
+          // Botanical decoration
+          Positioned(
+            right: -10, top: -10,
+            child: Opacity(
+              opacity: 0.07,
+              child: SizedBox(
+                width: 160, height: 130,
+                child: CustomPaint(painter: _BotanicalPainter()),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(greeting,
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.forest200)),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('$days',
+                        style: AppTextStyles.heroNumber
+                            .copyWith(color: Colors.white)),
+                    const SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: Text(
+                        days == 1 ? 'day\nsober' : 'days\nsober',
+                        style: AppTextStyles.titleSmall
+                            .copyWith(color: AppColors.forest200, height: 1.3),
+                      ),
+                    ),
+                  ],
+                ),
+                if (currentIdx >= 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    milestones[currentIdx].emoji +
+                        '  ' + milestones[currentIdx].label,
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: AppColors.honey300),
+                  ),
+                ],
+                if (nextMilestone != null) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Next: ${nextMilestone!.label}',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.forest300)),
+                      AnimatedBuilder(
+                        animation: progressAnim,
+                        builder: (_, __) => Text(
+                          '${(progressAnim.value * progress * 100).toStringAsFixed(0)}%',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.forest300),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: AppRadius.pill,
+                    child: AnimatedBuilder(
+                      animation: progressAnim,
+                      builder: (_, __) => LinearProgressIndicator(
+                        value: progressAnim.value * progress,
+                        minHeight: 6,
+                        backgroundColor: AppColors.forest700,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                            AppColors.honey400),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  AnimatedBuilder(
+                    animation: progressAnim,
+                    builder: (_, __) => Text(
+                      '$days of ${nextMilestone!.days} days',
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.forest400),
+                    ),
+                  ),
+                ] else ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.honey500.withValues(alpha: 0.2),
+                      borderRadius: AppRadius.pill,
+                      border: Border.all(
+                          color: AppColors.honey400.withValues(alpha: 0.4)),
+                    ),
+                    child: Text('Every milestone reached ✨',
+                        style: AppTextStyles.labelSmall
+                            .copyWith(color: AppColors.honey300)),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Achievement card ─────────────────────────────────────────────────────────
+
+class _AchievementCard extends StatelessWidget {
+  const _AchievementCard({
+    required this.milestone,
+    required this.achieved,
+    required this.days,
+  });
+  final _Milestone milestone;
+  final bool achieved;
+  final int days;
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xxl,
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: achieved ? AppColors.forest50 : AppColors.stone50,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: achieved ? AppColors.forest200 : AppColors.stone100,
+                  ),
+                ),
+                child: Icon(
+                  milestone.icon,
+                  size: 26,
+                  color: achieved ? AppColors.forest600 : AppColors.stone300,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      milestone.label,
+                      style: AppTextStyles.titleMedium.copyWith(
+                        color: achieved
+                            ? AppColors.forest700
+                            : AppColors.stone400,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: achieved
+                            ? AppColors.forest50
+                            : AppColors.stone50,
+                        borderRadius: AppRadius.pill,
+                        border: Border.all(
+                          color: achieved
+                              ? AppColors.forest100
+                              : AppColors.stone100,
+                        ),
+                      ),
+                      child: Text(
+                        achieved ? 'Achieved ✓' : '${milestone.days} days to go',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: achieved
+                              ? AppColors.forest600
+                              : AppColors.stone400,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Container(height: 1, color: AppColors.stone100),
+          const SizedBox(height: 18),
+          Text(
+            achieved ? 'What happened in your body' : 'What will happen',
+            style: AppTextStyles.overline,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            milestone.benefit,
+            style: AppTextStyles.bodySerif.copyWith(
+              color: achieved ? AppColors.stoneText : AppColors.stone400,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Share card ───────────────────────────────────────────────────────────────
+
+class _ShareCard extends StatelessWidget {
+  const _ShareCard({
+    required this.milestone,
+    required this.username,
+    required this.days,
+    required this.achieved,
+  });
+  final _Milestone milestone;
+  final String username;
+  final int days;
+  final bool achieved;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      decoration: const BoxDecoration(
+        color: AppColors.forest800,
+        borderRadius: AppRadius.xxl,
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Stack(
+        children: [
+          // Botanical watermark top-right
+          Positioned(
+            right: -20, top: -20,
+            child: Opacity(
+              opacity: 0.10,
+              child: SizedBox(
+                width: 200, height: 150,
+                child: CustomPaint(painter: _BotanicalPainter()),
+              ),
+            ),
+          ),
+          // Honey accent bar — left edge
+          Positioned(
+            left: 0, top: 0, bottom: 0,
+            child: Container(width: 4, color: AppColors.honey400),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top: app name
+                Text(
+                  'JOURNEY FORWARD',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.forest300,
+                    letterSpacing: 2.0,
+                  ),
+                ),
+                const Spacer(),
+                // Middle: day count + milestone label
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      achieved ? '${milestone.days}' : '?',
+                      style: AppTextStyles.heroNumber.copyWith(
+                        color: Colors.white,
+                        fontSize: 64,
+                        height: 0.9,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            achieved
+                                ? (milestone.days == 1 ? 'day' : 'days')
+                                : 'days',
+                            style: AppTextStyles.titleSmall
+                                .copyWith(color: AppColors.forest200),
+                          ),
+                          Text(
+                            'sober',
+                            style: AppTextStyles.titleSmall
+                                .copyWith(color: AppColors.forest200),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${milestone.emoji}  ${milestone.label}',
+                  style: AppTextStyles.headlineSerif.copyWith(
+                    color: AppColors.honey300,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const Spacer(),
+                // Bottom: username
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      username.isNotEmpty ? username : 'One day at a time',
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.forest300),
+                    ),
+                    Text(
+                      'journeyforward.app',
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.forest400),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Lock overlay for unachieved milestones
+          if (!achieved)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.forest900.withValues(alpha: 0.55),
+                  borderRadius: AppRadius.xxl,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.lock_outline_rounded,
+                        color: AppColors.forest300, size: 28),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${milestone.days - days} more ${milestone.days - days == 1 ? 'day' : 'days'} to unlock',
+                      style: AppTextStyles.labelMedium
+                          .copyWith(color: AppColors.forest200),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Milestone tile ───────────────────────────────────────────────────────────
+
+class _MilestoneTile extends StatelessWidget {
+  const _MilestoneTile({
+    required this.milestone,
+    required this.achieved,
+    required this.isCurrent,
+    required this.isSelected,
+  });
+  final _Milestone milestone;
+  final bool achieved;
+  final bool isCurrent;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color bg;
+    final Color iconColor;
+    final Color textColor;
+    final Color borderColor;
+
+    if (isSelected && isCurrent) {
+      bg = AppColors.honey50;
+      iconColor = AppColors.honey600;
+      textColor = AppColors.forest700;
+      borderColor = AppColors.honey300;
+    } else if (isSelected) {
+      bg = achieved ? AppColors.forest50 : AppColors.stone50;
+      iconColor = achieved ? AppColors.forest600 : AppColors.stone400;
+      textColor = achieved ? AppColors.forest700 : AppColors.stone400;
+      borderColor = achieved ? AppColors.forest400 : AppColors.stone300;
+    } else if (isCurrent) {
+      bg = AppColors.honey50;
+      iconColor = AppColors.honey500;
+      textColor = AppColors.forest700;
+      borderColor = AppColors.honey200;
+    } else if (achieved) {
+      bg = AppColors.forest50;
+      iconColor = AppColors.forest600;
+      textColor = AppColors.forest700;
+      borderColor = AppColors.forest100;
+    } else {
+      bg = Colors.white;
+      iconColor = AppColors.stone200;
+      textColor = AppColors.stone300;
+      borderColor = AppColors.stone100;
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: AppRadius.lg,
+        border: Border.all(
+          color: borderColor,
+          width: isSelected ? 1.5 : 1.0,
+        ),
+        boxShadow: isSelected ? AppShadows.card : null,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(milestone.icon, size: 22, color: iconColor),
+              if (achieved)
+                Positioned(
+                  right: -6, top: -6,
+                  child: Container(
+                    width: 13, height: 13,
+                    decoration: const BoxDecoration(
+                      color: AppColors.forest600,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.check, size: 9, color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            milestone.shortLabel,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: textColor,
+              fontSize: 9,
+              height: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Stats row ────────────────────────────────────────────────────────────────
+
+class _StatsRow extends StatelessWidget {
+  const _StatsRow({
+    required this.days,
+    required this.moneySaved,
+    required this.currency,
+    required this.showMoney,
+  });
+  final int days;
+  final double moneySaved;
+  final String currency;
+  final bool showMoney;
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Text('$days',
+                    style: AppTextStyles.displaySmall.copyWith(fontSize: 28)),
+                const SizedBox(height: 2),
+                Text('total\ndays sober',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodySmall),
+              ],
+            ),
+          ),
+          if (showMoney) ...[
+            Container(width: 1, height: 40, color: AppColors.stone100),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    '$currency${NumberFormat('#,##0').format(moneySaved)}',
+                    style: AppTextStyles.moneyNumber.copyWith(fontSize: 26),
+                  ),
+                  const SizedBox(height: 2),
+                  Text('money\nreclaimed',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.bodySmall),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Botanical painter (shared decorative element) ────────────────────────────
+
+class _BotanicalPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..moveTo(size.width * .1, size.height)
+      ..cubicTo(size.width * .25, size.height * .75,
+          size.width * .38, size.height * .38,
+          size.width * .55, size.height * .05)
+      ..moveTo(size.width * .35, size.height * .55)
+      ..cubicTo(size.width * .48, size.height * .5,
+          size.width * .6, size.height * .35,
+          size.width * .72, size.height * .15)
+      ..moveTo(size.width * .44, size.height * .32)
+      ..cubicTo(size.width * .58, size.height * .28,
+          size.width * .74, size.height * .18,
+          size.width * .9, size.height * .02);
+    canvas.drawPath(path, paint);
+
+    final leaf = Paint()..color = Colors.white..style = PaintingStyle.fill;
+
+    void drawLeaf(Offset c, double rx, double ry, double angle) {
+      canvas.save();
+      canvas.translate(c.dx, c.dy);
+      canvas.rotate(angle);
+      final p = Path()
+        ..moveTo(0, -ry)
+        ..cubicTo(rx, -ry * .35, rx, ry * .35, 0, ry)
+        ..cubicTo(-rx, ry * .35, -rx, -ry * .35, 0, -ry);
+      canvas.drawPath(p, leaf);
+      canvas.restore();
+    }
+
+    drawLeaf(Offset(size.width * .25, size.height * .68), 11, 22, -.7);
+    drawLeaf(Offset(size.width * .42, size.height * .44), 13, 25, -.3);
+    drawLeaf(Offset(size.width * .58, size.height * .28), 14, 27, .2);
+    drawLeaf(Offset(size.width * .74, size.height * .16), 13, 25, .4);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter _) => false;
+}

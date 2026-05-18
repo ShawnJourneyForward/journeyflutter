@@ -1,0 +1,1545 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
+import '../models/user_profile.dart';
+import '../providers/app_providers.dart';
+import '../theme/app_theme.dart';
+
+// ─── Settings Screen ──────────────────────────────────────────────────────────
+
+class SettingsScreen extends ConsumerStatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+  final _auth = LocalAuthentication();
+
+  // ── Edit profile dialog ───────────────────────────────────────────────────
+
+  Future<void> _editUsername(UserProfile p) async {
+    final l10n = AppLocalizations.of(context);
+    final ctrl = TextEditingController(text: p.username);
+    final result = await _textDialog(
+      title: l10n.settingsYourName,
+      controller: ctrl,
+      hint: l10n.settingsNameHint,
+      keyboardType: TextInputType.name,
+      capitalization: TextCapitalization.words,
+    );
+    ctrl.dispose();
+    if (result == null || result.isEmpty) return;
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(username: result));
+  }
+
+  Future<void> _editSoberDate(UserProfile p) async {
+    final current = DateTime.tryParse(p.soberDate) ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: current,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: Theme.of(ctx).colorScheme.copyWith(
+            primary: AppColors.forest600,
+            onPrimary: Colors.white,
+            surface: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked == null) return;
+    await ref.read(profileProvider.notifier).patch(
+      (p) => p.copyWith(
+        soberDate: picked.toIso8601String(),
+        firedMilestoneDays: [],
+        firedSavingsTiers: [],
+      ),
+    );
+  }
+
+  Future<void> _editDailySpend(UserProfile p) async {
+    final ctrl = TextEditingController(
+      text: p.dailySpend > 0 ? p.dailySpend.toStringAsFixed(2) : '',
+    );
+    String currency = p.currency;
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => _SpendDialog(
+        controller: ctrl,
+        initialCurrency: currency,
+      ),
+    );
+    ctrl.dispose();
+    if (result == null) return;
+    final spend = double.tryParse(result['spend'] as String) ?? 0;
+    await ref.read(profileProvider.notifier).patch(
+      (p) => p.copyWith(
+        dailySpend: spend,
+        currency: result['currency'] as String,
+      ),
+    );
+  }
+
+  Future<void> _editSavingsGoal(UserProfile p) async {
+    final l10n = AppLocalizations.of(context);
+    final nameCtrl = TextEditingController(text: p.savingsGoalName ?? '');
+    final amtCtrl = TextEditingController(
+      text: p.savingsGoal != null ? p.savingsGoal!.toStringAsFixed(2) : '',
+    );
+
+    final result = await showDialog<Map<String, dynamic>?>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text(l10n.settingsSavingsGoalDialogTitle, style: AppTextStyles.titleMedium),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: _inputDecor(l10n.settingsGoalNameHint),
+              style: AppTextStyles.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: amtCtrl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: _inputDecor(l10n.settingsTargetAmountHint),
+              style: AppTextStyles.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+          ),
+          if (p.savingsGoal != null)
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, {'clear': true}),
+              child: Text('Clear', style: AppTextStyles.labelMedium.copyWith(color: AppColors.blush500)),
+            ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
+            onPressed: () => Navigator.pop(ctx, {
+              'name': nameCtrl.text.trim(),
+              'amount': amtCtrl.text.trim(),
+            }),
+            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    nameCtrl.dispose();
+    amtCtrl.dispose();
+
+    if (result == null) return;
+    if (result['clear'] == true) {
+      await ref.read(profileProvider.notifier).patch(
+        (p) => UserProfile(
+          username: p.username, soberDate: p.soberDate,
+          dailySpend: p.dailySpend, currency: p.currency,
+          timezone: p.timezone, pledgeStreak: p.pledgeStreak,
+          lastPledgeDate: p.lastPledgeDate, lastPledgeText: p.lastPledgeText,
+          emergencyContact: p.emergencyContact,
+          weeklyGoals: p.weeklyGoals, myReasons: p.myReasons,
+          lockMethod: p.lockMethod,
+          firedMilestoneDays: p.firedMilestoneDays,
+          firedSavingsTiers: p.firedSavingsTiers,
+        ),
+      );
+      return;
+    }
+    final amt = double.tryParse(result['amount'] as String);
+    await ref.read(profileProvider.notifier).patch(
+      (p) => p.copyWith(
+        savingsGoalName: (result['name'] as String).isEmpty ? null : result['name'] as String,
+        savingsGoal: amt,
+      ),
+    );
+  }
+
+  Future<void> _editEmergencyContact(UserProfile p) async {
+    final l10n = AppLocalizations.of(context);
+    final nameCtrl = TextEditingController(text: p.emergencyContact?.name ?? '');
+    final phoneCtrl = TextEditingController(text: p.emergencyContact?.phone ?? '');
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text(l10n.settingsEmergencyContactDialogTitle, style: AppTextStyles.titleMedium),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: _inputDecor(l10n.settingsContactNameHint),
+              style: AppTextStyles.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: phoneCtrl,
+              keyboardType: TextInputType.phone,
+              decoration: _inputDecor(l10n.settingsContactPhoneHint),
+              style: AppTextStyles.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (result != true) { nameCtrl.dispose(); phoneCtrl.dispose(); return; }
+
+    final name = nameCtrl.text.trim();
+    final phone = phoneCtrl.text.trim();
+    nameCtrl.dispose();
+    phoneCtrl.dispose();
+
+    await ref.read(profileProvider.notifier).patch(
+      (p) => p.copyWith(
+        emergencyContact: name.isEmpty && phone.isEmpty
+            ? null
+            : EmergencyContact(name: name, phone: phone),
+      ),
+    );
+  }
+
+  // ── Reason / goal editors ─────────────────────────────────────────────────
+
+  Future<void> _addReason(UserProfile p) async {
+    final ctrl = TextEditingController();
+    final result = await _textDialog(
+      title: 'Add a reason',
+      controller: ctrl,
+      hint: 'Why are you choosing sobriety?',
+      capitalization: TextCapitalization.sentences,
+    );
+    ctrl.dispose();
+    if (result == null || result.isEmpty) return;
+    final updated = [...p.myReasons, result];
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: updated));
+  }
+
+  Future<void> _removeReason(UserProfile p, String reason) async {
+    final updated = p.myReasons.where((r) => r != reason).toList();
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: updated));
+  }
+
+  Future<void> _addWeeklyGoal(UserProfile p) async {
+    final ctrl = TextEditingController();
+    final result = await _textDialog(
+      title: 'Add weekly goal',
+      controller: ctrl,
+      hint: 'e.g. Exercise 3 times this week',
+      capitalization: TextCapitalization.sentences,
+    );
+    ctrl.dispose();
+    if (result == null || result.isEmpty) return;
+    final updated = [...p.weeklyGoals, result];
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(weeklyGoals: updated));
+  }
+
+  Future<void> _removeWeeklyGoal(UserProfile p, String goal) async {
+    final updated = p.weeklyGoals.where((g) => g != goal).toList();
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(weeklyGoals: updated));
+  }
+
+  // ── Lock method ───────────────────────────────────────────────────────────
+
+  Future<void> _setLockNone(UserProfile p) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lockMethod', 'none');
+    await _storage.delete(key: 'pin_hash');
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'none'));
+    HapticFeedback.lightImpact();
+  }
+
+  Future<void> _setLockBiometric(UserProfile p) async {
+    try {
+      final canCheck = await _auth.canCheckBiometrics;
+      final supported = await _auth.isDeviceSupported();
+      if (!canCheck || !supported) {
+        if (mounted) {
+          _showSnack('Biometrics not available on this device');
+        }
+        return;
+      }
+      final authenticated = await _auth.authenticate(
+        localizedReason: 'Confirm to enable biometric lock',
+        options: const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
+      );
+      if (!authenticated) return;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('lockMethod', 'biometric');
+      await _storage.delete(key: 'pin_hash');
+      await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'biometric'));
+      HapticFeedback.lightImpact();
+    } on PlatformException {
+      if (mounted) _showSnack('Biometric authentication failed');
+    }
+  }
+
+  Future<void> _setLockPin(UserProfile p) async {
+    final pin = await _showPinSetup();
+    if (pin == null) return;
+    final hash = sha256.convert(utf8.encode(pin)).toString();
+    await _storage.write(key: 'pin_hash', value: hash);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lockMethod', 'pin');
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'pin'));
+    HapticFeedback.mediumImpact();
+  }
+
+  Future<String?> _showPinSetup() async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const _PinSetupDialog(),
+    );
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  Future<String?> _textDialog({
+    required String title,
+    required TextEditingController controller,
+    required String hint,
+    TextInputType keyboardType = TextInputType.text,
+    TextCapitalization capitalization = TextCapitalization.none,
+  }) {
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text(title, style: AppTextStyles.titleMedium),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: keyboardType,
+          textCapitalization: capitalization,
+          decoration: _inputDecor(hint),
+          style: AppTextStyles.bodyMedium,
+          onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _inputDecor(String hint) => InputDecoration(
+    hintText: hint,
+    hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+    filled: true,
+    fillColor: AppColors.stone50,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: AppRadius.lg,
+      borderSide: const BorderSide(color: AppColors.stone100),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: AppRadius.lg,
+      borderSide: const BorderSide(color: AppColors.stone100),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: AppRadius.lg,
+      borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+    ),
+  );
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg, style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
+      backgroundColor: AppColors.stone700,
+      behavior: SnackBarBehavior.floating,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+      margin: const EdgeInsets.all(16),
+    ));
+  }
+
+  // ─── Build ────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    final profileAsync = ref.watch(profileProvider);
+    final stats = ref.watch(soberDaysProvider);
+
+    return profileAsync.when(
+      loading: () => const Scaffold(
+        backgroundColor: AppColors.stone50,
+        body: Center(child: CircularProgressIndicator(color: AppColors.forest600)),
+      ),
+      error: (e, _) => Scaffold(
+        backgroundColor: AppColors.stone50,
+        body: Center(child: Text('Error: $e')),
+      ),
+      data: (profile) {
+        if (profile == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => context.go('/onboarding'));
+          return const SizedBox.shrink();
+        }
+        return _buildContent(profile, stats);
+      },
+    );
+  }
+
+  Widget _buildContent(UserProfile profile, SoberStats? stats) {
+    final l10n = AppLocalizations.of(context);
+    final soberDate = DateTime.tryParse(profile.soberDate);
+    final dateLabel = soberDate != null
+        ? DateFormat('d MMMM yyyy').format(soberDate)
+        : '—';
+    final moneySaved = stats?.moneySaved ?? 0;
+    final moneyLabel = profile.dailySpend > 0
+        ? '${profile.currency}${NumberFormat('#,##0.00').format(moneySaved)}'
+        : null;
+
+    return Scaffold(
+      backgroundColor: AppColors.stone50,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // ── Top bar ─────────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Row(
+                  children: [
+                    Text(l10n.settingsTitle, style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700)),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Profile header card ──────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _ProfileHeader(
+                  profile: profile,
+                  dateLabel: dateLabel,
+                  moneyLabel: moneyLabel,
+                  onEditName: () => _editUsername(profile),
+                  onEditDate: () => _editSoberDate(profile),
+                  onEditSpend: () => _editDailySpend(profile),
+                ),
+              ),
+            ),
+
+            // ── Recovery stats ───────────────────────────────────────────────
+            if (stats != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  child: _RecoveryStatsCard(stats: stats),
+                ),
+              ),
+
+            // ── Savings goal ─────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel(l10n.settingsSavingsGoalLabel),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: _SavingsGoalCard(
+                  profile: profile,
+                  stats: stats,
+                  onEdit: () => _editSavingsGoal(profile),
+                ),
+              ),
+            ),
+
+            // ── Emergency contact ────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel(l10n.settingsEmergencyContactLabel),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: _EmergencyContactCard(
+                  profile: profile,
+                  onEdit: () => _editEmergencyContact(profile),
+                ),
+              ),
+            ),
+
+            // ── My reasons ───────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel(l10n.settingsMyReasonsLabel),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: _ReasonsCard(
+                  reasons: profile.myReasons,
+                  onAdd: () => _addReason(profile),
+                  onRemove: (r) => _removeReason(profile, r),
+                ),
+              ),
+            ),
+
+            // ── Weekly goals ─────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel(l10n.settingsWeeklyGoalsLabel),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: _WeeklyGoalsCard(
+                  goals: profile.weeklyGoals,
+                  onAdd: () => _addWeeklyGoal(profile),
+                  onRemove: (g) => _removeWeeklyGoal(profile, g),
+                ),
+              ),
+            ),
+
+            // ── App security ─────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel('App security'),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: _SecurityCard(
+                  current: profile.lockMethod,
+                  onNone: () => _setLockNone(profile),
+                  onBiometric: () => _setLockBiometric(profile),
+                  onPin: () => _setLockPin(profile),
+                ),
+              ),
+            ),
+
+            // ── More ─────────────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel('More'),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                child: _MoreCard(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Profile header card ──────────────────────────────────────────────────────
+
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({
+    required this.profile,
+    required this.dateLabel,
+    required this.moneyLabel,
+    required this.onEditName,
+    required this.onEditDate,
+    required this.onEditSpend,
+  });
+
+  final UserProfile profile;
+  final String dateLabel;
+  final String? moneyLabel;
+  final VoidCallback onEditName;
+  final VoidCallback onEditDate;
+  final VoidCallback onEditSpend;
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = profile.username.trim().isNotEmpty
+        ? profile.username.trim().split(' ')
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
+        : '?';
+
+    return SolidCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          // Avatar + name row
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.forest700,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Row(
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: AppColors.forest500,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.forest400, width: 2),
+                  ),
+                  child: Center(
+                    child: Text(initials,
+                      style: AppTextStyles.titleLarge.copyWith(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(profile.username.isNotEmpty ? profile.username : 'Your name',
+                        style: AppTextStyles.titleLarge.copyWith(color: Colors.white)),
+                      const SizedBox(height: 2),
+                      Text('Sober since $dateLabel',
+                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest200)),
+                    ],
+                  ),
+                ),
+                if (moneyLabel != null) ...[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(moneyLabel!,
+                        style: AppTextStyles.titleMedium.copyWith(color: AppColors.honey300)),
+                      Text('saved',
+                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest200)),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          // Edit rows
+          _SettingsRow(
+            icon: Icons.person_outline_rounded,
+            label: 'Name',
+            value: profile.username.isNotEmpty ? profile.username : 'Not set',
+            onTap: onEditName,
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'Sober since',
+            value: dateLabel,
+            onTap: onEditDate,
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.savings_outlined,
+            label: AppLocalizations.of(context).settingsDailySpendLabel,
+            value: profile.dailySpend > 0
+                ? '${profile.currency}${profile.dailySpend.toStringAsFixed(2)} / day'
+                : 'Not set',
+            onTap: onEditSpend,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Recovery stats card ──────────────────────────────────────────────────────
+
+class _RecoveryStatsCard extends ConsumerWidget {
+  const _RecoveryStatsCard({required this.stats});
+  final SoberStats stats;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final slips = ref.watch(slipProvider).valueOrNull ?? [];
+    final current = stats.days;
+    final bestEver = slips.fold(current, (best, s) => s.streakDays > best ? s.streakDays : best);
+    final lifetime = slips.fold(current, (total, s) => total + s.streakDays);
+
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      child: Row(
+        children: [
+          _StatCol(value: '$current', label: 'Current\nstreak'),
+          _Vline(),
+          _StatCol(value: '$bestEver', label: 'Best\never'),
+          _Vline(),
+          _StatCol(value: '$lifetime', label: 'Lifetime\ndays'),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCol extends StatelessWidget {
+  const _StatCol({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(value, style: AppTextStyles.displaySmall.copyWith(fontSize: 26)),
+        const SizedBox(height: 2),
+        Text(label,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.bodySmall),
+      ],
+    ),
+  );
+}
+
+class _Vline extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 1, height: 40, color: AppColors.stone100,
+  );
+}
+
+
+// ─── Savings goal card ────────────────────────────────────────────────────────
+
+class _SavingsGoalCard extends StatelessWidget {
+  const _SavingsGoalCard({
+    required this.profile,
+    required this.stats,
+    required this.onEdit,
+  });
+  final UserProfile profile;
+  final SoberStats? stats;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasGoal = profile.savingsGoal != null && profile.savingsGoal! > 0;
+    final saved = stats?.moneySaved ?? 0;
+    final progress = hasGoal ? (saved / profile.savingsGoal!).clamp(0.0, 1.0) : 0.0;
+
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: hasGoal
+          ? Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              profile.savingsGoalName ?? 'Savings goal',
+                              style: AppTextStyles.titleSmall,
+                            ),
+                          ),
+                          Text(
+                            '${(progress * 100).toStringAsFixed(0)}%',
+                            style: AppTextStyles.labelMedium
+                                .copyWith(color: AppColors.forest600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ClipRRect(
+                        borderRadius: AppRadius.pill,
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 8,
+                          backgroundColor: AppColors.stone100,
+                          color: AppColors.forest600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${profile.currency}${NumberFormat('#,##0.00').format(saved)}'
+                        ' of ${profile.currency}${NumberFormat('#,##0.00').format(profile.savingsGoal!)}',
+                        style: AppTextStyles.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, color: AppColors.stone100),
+                _SettingsRow(
+                  icon: Icons.edit_outlined,
+                  label: 'Edit goal',
+                  onTap: onEdit,
+                ),
+              ],
+            )
+          : _SettingsRow(
+              icon: Icons.flag_outlined,
+              label: 'Set a savings goal',
+              value: 'Track what you\'re saving up for',
+              onTap: onEdit,
+            ),
+    );
+  }
+}
+
+// ─── Emergency contact card ───────────────────────────────────────────────────
+
+class _EmergencyContactCard extends StatelessWidget {
+  const _EmergencyContactCard({required this.profile, required this.onEdit});
+  final UserProfile profile;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final ec = profile.emergencyContact;
+
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: ec != null
+          ? Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: const BoxDecoration(
+                          color: AppColors.forest50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.person_outline_rounded,
+                          color: AppColors.forest600, size: 22),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(ec.name, style: AppTextStyles.titleSmall),
+                            Text(ec.phone, style: AppTextStyles.bodySmall),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 18,
+                          color: AppColors.stone400),
+                        onPressed: onEdit,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : _SettingsRow(
+              icon: Icons.contact_emergency_outlined,
+              label: 'Add emergency contact',
+              value: 'Someone to reach when you need support',
+              onTap: onEdit,
+            ),
+    );
+  }
+}
+
+// ─── My reasons card ──────────────────────────────────────────────────────────
+
+class _ReasonsCard extends StatelessWidget {
+  const _ReasonsCard({
+    required this.reasons,
+    required this.onAdd,
+    required this.onRemove,
+  });
+  final List<String> reasons;
+  final VoidCallback onAdd;
+  final void Function(String) onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (reasons.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                'Add the reasons you\'re choosing sobriety — they\'ll keep you grounded.',
+                style: AppTextStyles.bodySmall,
+              ),
+            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final r in reasons)
+                _ReasonChip(text: r, onRemove: () => onRemove(r)),
+              GestureDetector(
+                onTap: onAdd,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.forest50,
+                    borderRadius: AppRadius.pill,
+                    border: Border.all(color: AppColors.forest100),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.add, size: 14, color: AppColors.forest600),
+                      const SizedBox(width: 4),
+                      Text('Add reason',
+                        style: AppTextStyles.labelSmall.copyWith(color: AppColors.forest600)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReasonChip extends StatelessWidget {
+  const _ReasonChip({required this.text, required this.onRemove});
+  final String text;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    decoration: BoxDecoration(
+      color: AppColors.mintChip,
+      borderRadius: AppRadius.pill,
+      border: Border.all(color: AppColors.forest100),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(text,
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest700)),
+        ),
+        const SizedBox(width: 6),
+        GestureDetector(
+          onTap: onRemove,
+          child: const Icon(Icons.close, size: 14, color: AppColors.stone400),
+        ),
+      ],
+    ),
+  );
+}
+
+// ─── Weekly goals card ────────────────────────────────────────────────────────
+
+class _WeeklyGoalsCard extends StatelessWidget {
+  const _WeeklyGoalsCard({
+    required this.goals,
+    required this.onAdd,
+    required this.onRemove,
+  });
+  final List<String> goals;
+  final VoidCallback onAdd;
+  final void Function(String) onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (int i = 0; i < goals.length; i++) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline,
+                    size: 18, color: AppColors.forest600),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(goals[i], style: AppTextStyles.bodyMedium),
+                  ),
+                  GestureDetector(
+                    onTap: () => onRemove(goals[i]),
+                    child: const Icon(Icons.close, size: 16, color: AppColors.stone300),
+                  ),
+                ],
+              ),
+            ),
+            if (i < goals.length - 1)
+              const Divider(height: 1, color: AppColors.stone100, indent: 20, endIndent: 20),
+          ],
+          if (goals.isNotEmpty)
+            const Divider(height: 1, color: AppColors.stone100),
+          _SettingsRow(
+            icon: Icons.add_circle_outline,
+            iconColor: AppColors.forest600,
+            label: 'Add weekly goal',
+            onTap: onAdd,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Security card ────────────────────────────────────────────────────────────
+
+class _SecurityCard extends StatelessWidget {
+  const _SecurityCard({
+    required this.current,
+    required this.onNone,
+    required this.onBiometric,
+    required this.onPin,
+  });
+  final String current;
+  final VoidCallback onNone;
+  final VoidCallback onBiometric;
+  final VoidCallback onPin;
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _LockOption(
+            icon: Icons.lock_open_outlined,
+            label: 'No lock',
+            subtitle: 'App opens immediately',
+            selected: current == 'none',
+            onTap: onNone,
+            borderBottom: true,
+          ),
+          _LockOption(
+            icon: Icons.fingerprint_rounded,
+            label: 'Biometric',
+            subtitle: 'Fingerprint or face unlock',
+            selected: current == 'biometric',
+            onTap: onBiometric,
+            borderBottom: true,
+          ),
+          _LockOption(
+            icon: Icons.pin_outlined,
+            label: 'PIN',
+            subtitle: '4-digit numeric PIN',
+            selected: current == 'pin',
+            onTap: onPin,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LockOption extends StatelessWidget {
+  const _LockOption({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+    this.borderBottom = false,
+  });
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool borderBottom;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: borderBottom
+          ? BorderRadius.zero
+          : const BorderRadius.vertical(bottom: Radius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        decoration: borderBottom
+            ? const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AppColors.stone100)),
+              )
+            : null,
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.forest50 : AppColors.stone50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon,
+                size: 20,
+                color: selected ? AppColors.forest600 : AppColors.stone400),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: selected ? AppColors.forest700 : AppColors.stone800)),
+                  Text(subtitle, style: AppTextStyles.bodySmall),
+                ],
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: selected ? AppColors.forest600 : Colors.transparent,
+                border: Border.all(
+                  color: selected ? AppColors.forest600 : AppColors.stone200,
+                  width: 2,
+                ),
+              ),
+              child: selected
+                  ? const Icon(Icons.check, size: 13, color: Colors.white)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── More links card ──────────────────────────────────────────────────────────
+
+class _MoreCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _SettingsRow(
+            icon: Icons.bar_chart_outlined,
+            label: 'My history',
+            onTap: () => context.push('/history'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.history_rounded,
+            label: 'Slip log',
+            onTap: () => context.push('/slip-log'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.emoji_events_outlined,
+            label: 'Milestone cards',
+            onTap: () => context.push('/milestone'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.people_outline_rounded,
+            label: 'Recovery groups',
+            onTap: () => context.push('/groups'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.phone_in_talk_outlined,
+            iconColor: AppColors.blush500,
+            label: 'Crisis lines',
+            onTap: () => context.push('/crisis'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.backup_outlined,
+            label: l10n.settingsBackupLabel,
+            onTap: () => context.push('/backup'),
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.privacy_tip_outlined,
+            label: l10n.settingsPrivacyLabel,
+            onTap: () => context.push('/privacy'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Shared row widget ────────────────────────────────────────────────────────
+
+class _SettingsRow extends StatelessWidget {
+  const _SettingsRow({
+    required this.icon,
+    required this.label,
+    this.iconColor = AppColors.forest700,
+    this.value,
+    this.onTap,
+    this.borderBottom = false,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String? value;
+  final VoidCallback? onTap;
+  final bool borderBottom;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        decoration: borderBottom
+            ? const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AppColors.stone100)))
+            : null,
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.mintChip,
+                borderRadius: AppRadius.md,
+              ),
+              child: Icon(icon, size: 18, color: iconColor),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: AppTextStyles.titleSmall),
+                  if (value != null)
+                    Text(value!,
+                      style: AppTextStyles.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            if (onTap != null)
+              const Icon(Icons.chevron_right_rounded,
+                size: 20, color: AppColors.stone300),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Section label ────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    text.toUpperCase(),
+    style: AppTextStyles.overline,
+  );
+}
+
+// ─── Daily spend + currency dialog ───────────────────────────────────────────
+
+class _SpendDialog extends StatefulWidget {
+  const _SpendDialog({required this.controller, required this.initialCurrency});
+  final TextEditingController controller;
+  final String initialCurrency;
+
+  @override
+  State<_SpendDialog> createState() => _SpendDialogState();
+}
+
+class _SpendDialogState extends State<_SpendDialog> {
+  late String _currency;
+
+  static const _currencies = ['R', '\$', '€', '£', '¥', 'A\$', 'C\$'];
+
+  @override
+  void initState() {
+    super.initState();
+    _currency = widget.initialCurrency;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+      title: Text(AppLocalizations.of(context).settingsDailySpendLabel, style: AppTextStyles.titleMedium),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('How much did you spend per day?',
+            style: AppTextStyles.bodySmall),
+          const SizedBox(height: 12),
+          TextField(
+            controller: widget.controller,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              hintText: '0.00',
+              prefixText: '$_currency ',
+              hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+              filled: true,
+              fillColor: AppColors.stone50,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: AppRadius.lg,
+                borderSide: const BorderSide(color: AppColors.stone100),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: AppRadius.lg,
+                borderSide: const BorderSide(color: AppColors.stone100),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: AppRadius.lg,
+                borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+              ),
+            ),
+            style: AppTextStyles.bodyMedium,
+          ),
+          const SizedBox(height: 14),
+          Text('Currency', style: AppTextStyles.bodySmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _currencies.map((c) {
+              final sel = c == _currency;
+              return GestureDetector(
+                onTap: () => setState(() => _currency = c),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: sel ? AppColors.forest600 : AppColors.stone50,
+                    borderRadius: AppRadius.pill,
+                    border: Border.all(
+                      color: sel ? AppColors.forest600 : AppColors.stone100),
+                  ),
+                  child: Text(c,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: sel ? Colors.white : AppColors.stone600)),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel',
+            style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
+          onPressed: () => Navigator.pop(context, {
+            'spend': widget.controller.text.trim(),
+            'currency': _currency,
+          }),
+          child: Text('Save',
+            style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── PIN setup dialog ─────────────────────────────────────────────────────────
+
+class _PinSetupDialog extends StatefulWidget {
+  const _PinSetupDialog();
+
+  @override
+  State<_PinSetupDialog> createState() => _PinSetupDialogState();
+}
+
+class _PinSetupDialogState extends State<_PinSetupDialog> {
+  int _step = 0; // 0 = enter, 1 = confirm
+  String _first = '';
+  String _entered = '';
+  String? _error;
+
+  void _onDigit(String d) {
+    if (_entered.length >= 4) return;
+    HapticFeedback.selectionClick();
+    setState(() { _entered += d; _error = null; });
+    if (_entered.length == 4) _onComplete();
+  }
+
+  void _onDelete() {
+    if (_entered.isEmpty) return;
+    HapticFeedback.selectionClick();
+    setState(() => _entered = _entered.substring(0, _entered.length - 1));
+  }
+
+  void _onComplete() {
+    if (_step == 0) {
+      setState(() { _first = _entered; _entered = ''; _step = 1; });
+    } else {
+      if (_entered == _first) {
+        Navigator.pop(context, _entered);
+      } else {
+        HapticFeedback.heavyImpact();
+        setState(() { _entered = ''; _error = 'PINs don\'t match. Try again.'; _step = 0; _first = ''; });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+      title: Text(_step == 0 ? 'Set a PIN' : 'Confirm PIN',
+        style: AppTextStyles.titleMedium),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_step == 0 ? 'Enter a 4-digit PIN' : 'Enter your PIN again',
+            style: AppTextStyles.bodySmall),
+          const SizedBox(height: 20),
+          // Dot indicators
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(4, (i) => AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: i < _entered.length ? AppColors.forest600 : AppColors.stone100,
+              ),
+            )),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: 12),
+            Text(_error!,
+              style: AppTextStyles.bodySmall.copyWith(color: AppColors.blush500)),
+          ],
+          const SizedBox(height: 20),
+          // Numpad
+          for (final row in [['1','2','3'], ['4','5','6'], ['7','8','9'], ['','0','⌫']])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: row.map((d) => _PinKey(digit: d, onTap: d == '⌫'
+                    ? _onDelete
+                    : d.isEmpty ? null : () => _onDigit(d))).toList(),
+              ),
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel',
+            style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+        ),
+      ],
+    );
+  }
+}
+
+class _PinKey extends StatelessWidget {
+  const _PinKey({required this.digit, required this.onTap});
+  final String digit;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 64,
+        height: 48,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: onTap != null ? AppColors.stone50 : Colors.transparent,
+          borderRadius: AppRadius.md,
+          border: onTap != null
+              ? Border.all(color: AppColors.stone100)
+              : null,
+        ),
+        child: Center(
+          child: Text(digit,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: digit == '⌫' ? AppColors.blush400 : AppColors.stone800)),
+        ),
+      ),
+    );
+  }
+}

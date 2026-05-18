@@ -1,0 +1,103 @@
+name: journey_forward
+description: Journey Forward — sobriety support app · Stillwater Aesthetic System v5.8
+publish_to: 'none'
+version: 5.8.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── Fonts (served via Google Fonts CDN on first run, then cached) ────────────
+  google_fonts: ^6.2.1
+
+  # ── State management ─────────────────────────────────────────────────────────
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # ── Storage ──────────────────────────────────────────────────────────────────
+  shared_preferences: ^2.3.2      # main data store (mirrors @capacitor/preferences)
+  flutter_secure_storage: ^9.2.2  # PIN hash storage
+
+  # ── Navigation ───────────────────────────────────────────────────────────────
+  go_router: ^14.2.7
+
+  # ── Local notifications ───────────────────────────────────────────────────────
+  flutter_local_notifications: ^17.2.3
+  timezone: ^0.9.4
+
+  # ── Auth / lock ───────────────────────────────────────────────────────────────
+  local_auth: ^2.3.0              # biometric (mirrors @capgo/capacitor-native-biometric)
+
+  # ── TTS + STT ─────────────────────────────────────────────────────────────────
+  flutter_tts: ^4.0.2             # affirmations read-aloud, meditation guide
+  speech_to_text: ^7.0.0          # journal voice entry
+
+  # ── Ambient audio (rain · forest · ocean · fire) ──────────────────────────────
+  just_audio: ^0.9.40
+
+  # ── Sharing / export ──────────────────────────────────────────────────────────
+  share_plus: ^10.0.0             # milestone card share sheet + backup export
+
+  # ── Media ─────────────────────────────────────────────────────────────────────
+  image_picker: ^1.1.2            # vision board — camera + gallery
+  file_picker: ^8.1.2             # backup restore — .json file picker
+
+  # ── Charts (Insights screen) ──────────────────────────────────────────────────
+  fl_chart: ^0.69.0               # line, bar, pie charts
+
+  # ── Haptics ───────────────────────────────────────────────────────────────────
+  flutter_haptic_feedback: ^1.0.0
+
+  # ── PIN hashing ───────────────────────────────────────────────────────────────
+  crypto: ^3.0.5                  # SHA-256 PIN hash — never stored in plaintext
+
+  # ── Utilities ─────────────────────────────────────────────────────────────────
+  url_launcher: ^6.3.1            # crisis lines call buttons, recovery group links
+  intl: ^0.20.2                   # date formatting, en-ZA locale for ZAR amounts
+  uuid: ^4.5.1                    # generates entry IDs (journal, cravings, slips…)
+  json_annotation: ^4.9.0         # data model serialization
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.4.3
+  json_serializable: ^6.8.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/images/growth_stages/
+    - assets/icons/
+    - assets/lottie/        # optional: celebration animations
+
+  # ── Local fonts (add .ttf files to assets/fonts/ for production offline use)
+  # ── Until then, google_fonts package fetches and caches Fraunces + Inter.
+  # fonts:
+  #   - family: Fraunces
+  #     fonts:
+  #       - asset: assets/fonts/Fraunces-Regular.ttf
+  #         weight: 400
+  #       - asset: assets/fonts/Fraunces-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Fraunces-Bold.ttf
+  #         weight: 700
+  #   - family: Inter
+  #     fonts:
+  #       - asset: assets/fonts/Inter-Regular.ttf
+  #         weight: 400
+  #       - asset: assets/fonts/Inter-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Inter-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Inter-Bold.ttf
+  #         weight: 700

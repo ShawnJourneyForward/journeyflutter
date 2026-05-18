@@ -1,0 +1,555 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║          JOURNEY FORWARD — COMPLETE NAVIGATION ARCHITECTURE                  ║
+║                        v5.8 · Stillwater Aesthetic System                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ APP ENTRY FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ App Launch
+   │
+   ├─[no profile]──► ONBOARDING (multi-step wizard)
+   │                   Step 1  welcome    — intro screen
+   │                   Step 2  name       — username input
+   │                   Step 3  date       — sober date picker (datetime-local)
+   │                   Step 4  spend      — daily spend + currency selector
+   │                   Step 5  security   — lock method: None / Biometric / PIN
+   │                   Step 6  pin        — 4-digit PIN setup (if PIN chosen)
+   │                   Step 7  notifications — toggles (motivations, reminders,
+   │                           milestones) + morning/evening time pickers +
+   │                           frequency (auto/gentle/light/minimal)
+   │                   Step 8  finish     — completion screen
+   │                     └──► saves UserProfile → enters App
+   │
+   ├─[lockMethod ≠ 'none']──► LOCK SCREEN
+   │                            Biometric mode:
+   │                              Auto-triggers on mount
+   │                              Error states: lockout, no enrollment,
+   │                                no hardware, cancelled, unavailable
+   │                              Fallback to PIN if configured
+   │                            PIN mode:
+   │                              Masked numeric input (dots)
+   │                              4-8 digit verification
+   │                            [unlock] ──► App
+   │
+   └─[profile exists + unlocked]──► MAIN APP SHELL
+                                      SafetyModal (crisis check on launch)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ BOTTOM NAVIGATION BAR (persistent — 5 tabs)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌────────┬────────┬────────────┬─────────┬─────────┐
+  │  Home  │Progress│  Emergency │ Journal │ Profile │
+  └────────┴────────┴────────────┴─────────┴─────────┘
+   screen=   screen=   screen=     screen=   screen=
+   'home'   'progress' 'emergency' 'journal' 'settings'
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ HOME SCREEN  [screen='home']
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Header
+   ├─ Greeting + date display ("Hi, {username} 🌿")
+   └─ Avatar button (top-right) ──► ProfileModal [inline overlay]
+                                     Fields: username, sober date, daily spend,
+                                             currency, timezone
+                                     Save / Cancel buttons
+
+ SerenityCard  [memo — owns 1s timer]
+   ├─ Real-time sober counter: Days / Hours / Minutes / Seconds
+   ├─ Heartbeats + breaths calculations
+   ├─ Money saved sub-display (if dailySpend > 0)
+   └─ Savings goal progress bar + % (if savingsGoal set)
+
+ MoneyCard  [memo — owns 1s timer, shown if dailySpend > 0]
+   ├─ Money reclaimed (large, en-ZA locale for ZAR)
+   ├─ Savings goal progress bar
+   └─ Goal name + % complete
+
+ JourneyCard
+   ├─ Milestone progress nodes (visual timeline)
+   └─ Tap ──► milestone  [screen='milestone']
+
+ Daily Pledge + Daily Gratitude  [side-by-side, glassmorphism]
+   ├─ Daily Pledge:
+   │    Text input ("Today I choose clarity.")
+   │    Save button → saves to profile.lastPledgeText + pledgeStreak
+   │    Pledged state: shows streak count + last pledge text
+   └─ Daily Gratitude:
+        Text input ("I'm grateful for...")
+        Save button → saves to gratitude log
+        Logged state: shows today's entry
+
+ WeeklyGoalsCard
+   ├─ Shows current weekly goals with toggle checkboxes
+   └─ Edit button ──► weeklygoals sub-screen (via settings nav)
+
+ Daily Missions
+   └─ Rotating daily challenges from MISSION_POOL (gamified checklist)
+
+ Daily Check-In  [4-button grid]
+   ├─ Craving ──► CravingModal [inline overlay]
+   │               Intensity slider (1-10)
+   │               Duration picker
+   │               Trigger multi-select tags
+   │               Save → addCraving()
+   ├─ Thought ──► ThoughtModal [inline overlay]
+   │               Intensity slider (1-10)
+   │               Type/trigger tags
+   │               Notes field
+   │               Save → addThought()
+   ├─ Activity ──► ActivityModal [inline overlay]
+   │               Activity name input
+   │               Duration (minutes)
+   │               Distance + unit (km/miles)
+   │               Notes field
+   │               Save → addActivity()
+   └─ Sleep ──► SleepModal [inline overlay]
+                Duration (hours slider)
+                Quality picker (1-5 stars)
+                Save → addSleep()
+
+ Today's Reminder
+   └─ getDailyQuote() — read-only daily motivational quote
+
+ Quitting Timeline banner
+   └─ Tap ──► recovery  [screen='recovery']
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PROGRESS SCREEN  [screen='progress']
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Tab: Streak
+   ├─ Live sober counter (days : hours : minutes : seconds)
+   ├─ Next milestone label + progress bar + %
+   ├─ Last achieved milestone badge
+   ├─ 5-week heatmap summary (mini cells — Mon–Sun rows)
+   │    └─ Tap ──► heatmap  [screen='heatmap']
+   ├─ Recent activity log (cravings, thoughts, journal, sleep, activity)
+   │    Expandable entries with timestamp + detail
+   └─ 9-milestone achievement grid
+        (1d, 3d, 7d, 14d, 30d, 60d, 90d, 100d, 365d)
+        Achieved milestones show checkmark
+
+ Tab: Insights
+   ├─ 4-stat grid: Cravings (7d) / Thoughts (7d) / Avg Sleep / Active Days
+   ├─ Craving 7-day trend line chart
+   ├─ Thought frequency 7-day line chart
+   ├─ Sleep 7-day duration line chart
+   ├─ Exercise 7-day bar chart
+   ├─ Intensity distribution histogram (1-10 scale, colour-graded bars)
+   ├─ Peak craving hour analysis (time-of-day heatmap pattern)
+   └─ Mood trend by day-of-week
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ EMERGENCY KIT  [screen='emergency']  ← also reachable from navigate('breathing')
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Internal tab router — initialTab driven by subScreen state
+
+ Tab: home
+   ├─ Emergency contact CALL button (large, red — profile.emergencyContact)
+   ├─ Tool grid (each card navigates to internal tab):
+   │    Breathing      ──► tab: breathing
+   │    Meditation     ──► tab: meditation
+   │    CBT Guides     ──► tab: cbt
+   │    My Reasons     ──► tab: reasons
+   │    H.A.L.T.       ──► tab: halt
+   │    Urge Timer     ──► tab: urge_timer
+   │    Play the Tape  ──► tab: tape_forward
+   │    Mindfulness    ──► tab: mindfulness
+   │    Mindful Puzzle ──► screen: puzzle  [screen='puzzle']
+   └─ Motivational quote generator
+
+ Tab: breathing
+   ├─ 15 pattern selector (horizontal scroll):
+   │    Box · 4-7-8 · Calm · Power · Reset · Triangle · Anchor · Rescue
+   │    Ocean · Morning · Coherent · 6-2-8 · Square+ · Warrior · Night
+   ├─ Animated circular progress ring (inhale / hold / exhale phases)
+   ├─ Pattern description text
+   ├─ Start / Pause / Stop button
+   └─ Duration selector (1–10 minutes)
+
+ Tab: meditation
+   ├─ 5 guided meditations:
+   │    Urge Surfing · Body Scan · Gratitude Reset · Safe Place · Self-Compassion
+   ├─ TTS play / pause (text-to-speech via @capacitor-community/text-to-speech)
+   ├─ Ambient sound selector (rain / forest / ocean / fire — Web Audio API)
+   ├─ Play / pause / progress controls
+   └─ Step transcript (collapsible)
+
+ Tab: cbt  (Emergency Kit CBT — different from standalone CBTScreen)
+   ├─ 11 guide cards:
+   │    Challenge the Thought (6 steps) · Surf the Urge (5 steps)
+   │    Cost-Benefit Check · Trigger Action Plan · Relapse Prevention
+   │    Identity Shift · Release the Shame · Anatomy of a Craving
+   │    Alcohol Lies · Values Anchor · Emotional Audit · Grieving the Drink
+   ├─ Multi-step walkthrough modal (progress bar, text input per step)
+   └─ Completion summary screen
+
+ Tab: reasons
+   ├─ User's saved sobriety reasons (from useAppData.reasons)
+   └─ Full-text list display
+
+ Tab: halt
+   ├─ H.A.L.T. checklist: Hungry / Angry / Lonely / Tired
+   ├─ Toggle checkboxes per item
+   └─ Expandable tips/suggestions per state
+
+ Tab: urge_timer
+   ├─ 15-minute countdown timer (minutes:seconds display)
+   ├─ Progress bar
+   ├─ Pause / Resume / Reset controls
+   ├─ Motivational text during countdown
+   └─ Completion celebration + log to history
+
+ Tab: tape_forward
+   ├─ 3-column timeline: Now / If I Drink / If I Stay Sober
+   ├─ Consequence cards (expandable, editable)
+   ├─ Add / delete consequence
+   └─ Reflection text area
+
+ Tab: mindfulness
+   ├─ 6 grounding exercises:
+   │    5-4-3-2-1 · One Breath · Body Check · The Observer
+   │    Label It · Present Moment Anchor
+   ├─ Step-by-step guided walkthrough
+   └─ Optional exercise timer
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ JOURNAL SCREEN  [screen='journal']
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Tab: journal
+   ├─ Daily prompt display
+   ├─ 7-day activity indicator grid
+   ├─ New entry button ──► entry editor modal
+   │    Mood picker (1-5 stars)
+   │    Tags
+   │    Voice record button (speech-to-text)
+   │    Free text area
+   │    Save / Cancel
+   ├─ Search bar with clear
+   └─ Dated entry list (expandable / editable / deletable)
+
+ Tab: affirmations
+   ├─ Daily affirmation card (large, serif, centred)
+   ├─ 44 curated affirmations across 10 categories:
+   │    Sobriety · Strength · Self-worth · Healing · Hope
+   │    Calm · Pride · Letting Go · Connection · Resilience
+   ├─ Previous / Next navigation arrows
+   ├─ Read aloud button (TTS)
+   ├─ Favourite / heart toggle (saves to affirmationFavs)
+   ├─ Favourites filter chip
+   └─ Custom affirmation creation form
+
+ Tab: vision
+   ├─ Vision board switcher (dropdown — multi-board support)
+   ├─ Create new board modal
+   ├─ Per-board section tabs (multi-section, each with colour header)
+   ├─ Photo grid gallery view
+   ├─ Add photo button (camera / gallery)
+   ├─ Photo detail view on tap
+   └─ Caption editor per photo
+
+ Tab: zen  (Daily Zen)
+   ├─ Daily quote (Playfair, centred)
+   ├─ Greeting by time of day (morning / afternoon / evening)
+   ├─ 3 gratitude prompts:
+   │    A simple thing / A person / An accomplishment
+   ├─ Submit button → addGratitude()
+   └─ Previous gratitude entries (collapsible history)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ PROFILE / SETTINGS  [screen='settings']
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Header
+   ├─ Username + sober date + money saved
+   └─ Edit button ──► edit profile inline modal
+                       Username / Sober date / Daily spend / Currency
+                       Timezone / Lock method / Notification settings
+                       (morning + evening time, frequency toggle)
+
+ Recovery Stats section  [RecoverySection component]
+   ├─ 3-column stats: Current Streak / Best Ever / Lifetime Sober Days
+   ├─ Slip count note ("X slips logged. Each one is a teacher, not a verdict.")
+   ├─ "I had a slip" row ──► slip  [screen='slip']
+   └─ "Slip log" row ──► sliplog  [screen='sliplog']
+
+ Menu rows
+   ├─ My Motivation    ──► settings+subScreen='motivation'
+   │                        [MyMotivation screen]
+   ├─ Weekly Goals     ──► settings+subScreen='weeklygoals'
+   │                        [WeeklyGoals screen]
+   ├─ My History       ──► history   [screen='history']
+   ├─ Crisis Lines     ──► crisis    [screen='crisis']
+   ├─ Recovery Groups  ──► groups    [screen='groups']
+   ├─ Backup & Restore ──► backup    [screen='backup']
+   ├─ Milestone Cards  ──► milestone [screen='milestone']
+   └─ Privacy Policy   ──► privacy   [screen='privacy']
+
+ Savings goal progress bar + edit
+ Reset all data button (with confirmation modal)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ SUB-SCREENS (launched from Profile / Settings)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ MY MOTIVATION  [settings + subScreen='motivation']  ← back → settings
+   ├─ My Reasons list (why I'm sober) — add / remove / reorder
+   ├─ Pros of sobriety list — add / remove
+   └─ Cons of drinking list — add / remove
+
+ WEEKLY GOALS  [settings + subScreen='weeklygoals']  ← back → settings
+   ├─ Goal list with check toggles
+   └─ Add / remove goals (text input)
+
+ SLIP SCREEN  [screen='slip']  ← back → settings
+   6-step compassionate workflow:
+   Step 1  Intro       — gentle messaging: "A slip is a data point,
+                         not a defeat." + "your data and history all stay."
+   Step 2  When        — datetime picker + previous streak display
+   Step 3  Trigger     — 12 trigger tags (multi-select):
+                          Stress · Loneliness · Boredom · Anger · Exhaustion
+                          Social pressure · Celebration · Anxiety · Sadness
+                          Habit/autopilot · A specific person · A specific place
+                          + freetext field
+   Step 4  Feeling     — 10 feeling tags (single-select):
+                          Numb · Relieved · Guilty · Disappointed · Indifferent
+                          Sad · Angry with myself · Confused · Tired · Empty
+                          + custom input
+   Step 5  Reflection  — freetext ("message to your future self")
+   Step 6  Confirm     — summary review + Submit button
+                         [submit] → recordSlip() → resets soberDate,
+                                    saves Slip record, clears
+                                    firedMilestoneDays / firedSavingsTiers,
+                                    → setScreen('settings')
+
+ SLIP LOG  [screen='sliplog']  ← back → settings
+   ├─ Read-only history of all Slip records
+   ├─ Cards grouped by date
+   ├─ Expandable: trigger tags / feeling / reflection / previous streak length
+   ├─ Editable reflection note per entry
+   └─ Delete with confirmation
+
+ HISTORY  [screen='history']  ← back → settings
+   ├─ Filter tabs: All · Cravings · Thoughts · Exercise · Sleep · Journal · Gratitude
+   │               (each tab shows count badge)
+   ├─ 7-day summary stats row
+   ├─ Search bar
+   ├─ Entries grouped by date (month dividers)
+   ├─ Expandable entry detail per type:
+   │    Cravings   — intensity, trigger, duration, overcome status
+   │    Thoughts   — intensity label, full text
+   │    Exercise   — activity, duration, distance, notes
+   │    Sleep      — hours, quality (1-5 stars)
+   │    Journal    — truncated preview → full text on expand
+   │    Gratitude  — full text
+   └─ Delete per entry (confirmation modal)
+
+ CRISIS LINES  [screen='crisis']  ← back → settings
+   ├─ Emergency callout (911 / 999 / 000 / 112)
+   ├─ Withdrawal warning callout (detailed symptom list)
+   ├─ 7 regional sections (expandable):
+   │    International/US · UK/Ireland · South Africa · Australia
+   │    Canada · New Zealand · Europe
+   └─ 15+ crisis line cards per region:
+        Name · Number · Description · Hours
+        Call button (tel: link) · Copy number · Copy website
+
+ RECOVERY GROUPS  [screen='groups']  ← back → settings
+   ├─ Filter chips: All · Twelve-step · Secular · Buddhist
+   │                Christian · Harm reduction · Women-only
+   └─ 12 group cards (expandable):
+        AA · SMART · Recovery Dharma · Refuge Recovery · LifeRing
+        Women for Sobriety · SOS · HAMS · Moderation Management
+        Celebrate Recovery · In The Rooms · r/stopdrinking
+        Each card: name, approach tag, free tag, description,
+                   address/link (monospace + copy button)
+
+ BACKUP & RESTORE  [screen='backup']  ← back → settings
+   ├─ Privacy callout ("Your data never touches a server")
+   ├─ Export Backup button
+   │    Generates versioned JSON (profile, journal, cravings, thoughts,
+   │    activities, sleep, slips, gratitude, affirmations, vision boards)
+   │    → opens system share sheet → fallback download
+   └─ Restore from Backup button
+        File picker (.json) → confirmation modal → restores all data
+        → data.reload() → setScreen('home')
+
+ PRIVACY POLICY  [screen='privacy']  ← back → settings
+   └─ Long-form policy text (static)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ DEEP-LINK SCREENS (launched from Home cards or Emergency tool grid)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ MILESTONE SCREEN  [screen='milestone']  ← back → home
+   ├─ Trophy progress card
+   │    Dynamic label: "Congratulations! X Days!" OR "Next Milestone: X Days"
+   │    Progress bar + % to next milestone
+   ├─ Current milestone badge
+   │    Label (e.g. "90 Days Clean") + health benefit description
+   ├─ Total Days Sober (All Time) card  [shown if lifetimeSoberDays > soberDays]
+   │    Lifetime count from getRecoveryStats().lifetimeSoberDays
+   │    "across all streaks — progress is never erased"
+   ├─ Money Saved card
+   │    Currency + amount (en-ZA locale for ZAR)
+   │    "in X days (current streak)"
+   └─ All Milestones grid (4 columns × 10 milestones)
+        1d · 3d · 7d · 14d · 30d · 60d · 90d · 100d · 180d · 365d
+        Tap any → generateMilestoneCard() via Canvas API → preview
+        Achieved = checkmark, selected = honey highlight
+        Card preview + shareMilestoneCard() share button
+
+ RECOVERY TIMELINE  [screen='recovery']  ← back → home
+   ├─ Live sober timer (days / hours / minutes / seconds)
+   └─ 11 milestone accordion entries (6 hours → 2 years):
+        Each expands to: body changes, mind changes, experience prose, tip
+        "YOU ARE HERE" badge on current milestone
+        "Up Next" badge on next milestone
+        Colour-coded by milestone type
+
+ INSIGHTS SCREEN  [screen='insights']  ← back → home
+   ├─ Tab: Overview
+   │    4-stat grid + 4 line/bar charts (cravings, thoughts, sleep, exercise)
+   ├─ Tab: Cravings
+   │    3-stat row + 7d chart + intensity histogram + peak badge
+   ├─ Tab: Sleep
+   │    Sleep logger (today's hours + quality) + 7d chart + quality heatmap
+   └─ Tab: Triggers
+        Time-slot bars (morning/afternoon/evening/night)
+        Top triggers frequency list
+
+ PUZZLE SCREEN  [screen='puzzle']  ← back → home
+   ├─ 11 games:
+   │    1  Word Unscramble — clue + scrambled word + text input
+   │    2  Memory Match   — 4×4 emoji flip grid + move counter
+   │    3  Simon Sequence — 4-colour pattern + level progression
+   │    4  Sudoku         — 9×9 grid + number pad + hint/solve
+   │    5  Tic-Tac-Toe    — 3×3 grid + win/draw detection
+   │    6  Math Quiz      — arithmetic + input + score + timer
+   │    7  Color Match    — word/colour Stroop test + 30s timer
+   │    8  Reaction Time  — wait for green + ms measurement
+   │    9  Sliding Puzzle — 3×3 tile slider + move counter
+   │   10  Guess the Number — 1-100 + hot/cold hints + attempt count
+   │   11  100 Day Challenge — 100-cell toggle grid + progress bar
+   └─ Each game: Play again / reset / score display
+
+ CBT SCREEN  [screen='cbt']  ← back → home
+   └─ 11 standalone CBT guides (separate from EmergencyKit CBT tab):
+        Challenge the Thought (6 steps)
+        Surf the Urge (5 steps)
+        Identify Distortions (5 steps)
+        Behavioral Activation (4 steps)
+        Decatastrophizing (4 steps)
+        Fact vs Opinion (4 steps)
+        ABC Model (4 steps)
+        Cost-Benefit Analysis (5 steps)
+        5-4-3-2-1 Grounding (5 steps)
+        Problem Solving (5 steps)
+        Grieving the Drink
+        Each guide: step progress bar + text prompt + user input
+                    → completion screen
+
+ HEATMAP  [screen='heatmap']  ← back → home (from Progress)
+   ├─ Range filter chips: 30D · 90D · 1Y
+   ├─ 30D/90D view:
+   │    Week-aligned rows (Mon–Sun headers)
+   │    Week labels: This week / Last week / Xw ago
+   │    Weekly totals (right column)
+   │    Colour gradient: clear → dark-green → amber → orange → red
+   │    Sober date cell: gold ring · Today cell: white ring
+   ├─ 1Y view:
+   │    Month rows with label + day cells + month totals
+   ├─ Hover/tap tooltips (date, craving + thought breakdown)
+   ├─ Monthly summary bar charts
+   └─ Hardest day card (date + counts)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GLOBAL NAVIGATE() FUNCTION — routing map
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ navigate('cbt')          → screen='cbt',       subScreen=''
+ navigate('breathing')    → screen='emergency', subScreen='breathing'
+ navigate('meditation')   → screen='emergency', subScreen='meditation'
+ navigate('motivation')   → screen='settings',  subScreen='motivation'
+ navigate('weeklygoals')  → screen='settings',  subScreen='weeklygoals'
+ navigate('history')      → screen='history',   subScreen=''
+ navigate('crisis')       → screen='crisis',    subScreen=''
+ navigate('privacy')      → screen='privacy',   subScreen=''
+ navigate(<any Screen>)   → screen=<Screen>,    subScreen=''
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ DATA LAYER  (useAppData hook — single source of truth)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Storage keys → state               Write callbacks
+ ─────────────────────────────────────────────────────
+ 'profile'       → UserProfile      saveProfile()
+ 'journal'       → JournalEntry[]   saveJournal()
+ 'cravings'      → CravingLog[]     addCraving()
+ 'thoughts'      → ThoughtLog[]     addThought()
+ 'activities'    → ActivityLog[]    addActivity()
+ 'sleep'         → SleepLog[]       addSleep()
+ 'slips'         → Slip[]           recordSlip()
+ 'gratitude'     → GratitudeEntry[] addGratitude()
+ 'affirmations'  → AffirmFav[]      saveAffirmationFavs()
+ 'visionBoards'  → VisionBoard[]    saveVisionBoards()
+ 'reasons'       → string[]         (via motivation screen)
+ 'completedDays' → Set<string>      toggleDay()
+
+ Derived (no storage):
+   getRecoveryStats() → { currentStreak, bestStreak,
+                          lifetimeSoberDays, slipCount }
+   useRealtimeStats() → { days, hours, minutes, seconds,
+                          heartbeats, breaths, moneySaved }
+                        (1s setInterval — isolated to SerenityCard + MoneyCard)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ NOTIFICATIONS (utils/notifications.ts)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ IDs 1–4      → daily motivations + reminders (morning + evening)
+ IDs 500+     → milestone day notifications (one per milestone day value)
+               firedMilestoneDays prevents re-fire after streaks reset
+ IDs 600+     → savings tier notifications (50, 100, 250…)
+               firedSavingsTiers prevents re-fire
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ SUMMARY COUNTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ Bottom nav tabs         5
+ Named screens           17  (Screen type values)
+ SubScreen states         2  (motivation, weeklygoals)
+ Internal tab sets        4  (Emergency 9 tabs, Journal 4,
+                              Progress 2, Insights 4)
+ Inline modals            6  (Craving, Thought, Activity, Sleep,
+                              ProfileModal, SafetyModal)
+ Onboarding steps         8
+ Breathing patterns      15
+ Guided meditations       5
+ CBT guides (total)      22  (11 standalone + 12 in EmergencyKit)
+ Mindfulness exercises    6
+ Puzzle games            11
+ Recovery group cards    12
+ Crisis line regions      7
+ Milestone nodes         10
+ Recovery timeline pts   11
+ Curated affirmations    44
+ Storage keys            12
