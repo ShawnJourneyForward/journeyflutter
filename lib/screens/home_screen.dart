@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
@@ -195,8 +196,31 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _pledgeController    = TextEditingController();
   final _gratitudeController = TextEditingController();
-  bool _pledgeSaving    = false;
-  bool _gratitudeSaving = false;
+  bool _pledgeSaving        = false;
+  bool _gratitudeSaving     = false;
+  bool _earlyWarningDismissed = false;
+
+  static const _earlyWarningKey = 'early_warning_seen';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEarlyWarningState();
+  }
+
+  Future<void> _loadEarlyWarningState() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() =>
+          _earlyWarningDismissed = prefs.getBool(_earlyWarningKey) ?? false);
+    }
+  }
+
+  Future<void> _dismissEarlyWarning() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_earlyWarningKey, true);
+    if (mounted) setState(() => _earlyWarningDismissed = true);
+  }
 
   @override
   void dispose() {
@@ -300,6 +324,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         // ── Serenity Card (hero) ─────────────────────────────
                         RepaintBoundary(child: _SerenityCard(profile: profile)),
                         const SizedBox(height: 14),
+
+                        // ── Early warning card (first 72 h only) ─────────────
+                        if ((stats?.elapsed.inHours ?? 0) < 72 &&
+                            !_earlyWarningDismissed) ...[
+                          _EarlyWarningCard(onDismiss: _dismissEarlyWarning),
+                          const SizedBox(height: 14),
+                        ],
 
                         // ── Money + My Reason ────────────────────────────────
                         if (profile.dailySpend > 0) ...[
@@ -1049,6 +1080,99 @@ class _MyReasonCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Early Warning Card (shown first 72 h, dismissible) ──────────────────────
+
+class _EarlyWarningCard extends StatelessWidget {
+  const _EarlyWarningCard({required this.onDismiss});
+
+  final VoidCallback onDismiss;
+
+  static const _bullets = [
+    (Icons.wb_cloudy_outlined,      'Headaches and muscle tension'),
+    (Icons.bedtime_outlined,        'Disrupted sleep and vivid dreams'),
+    (Icons.sentiment_dissatisfied_outlined, 'Irritability, anxiety, or low mood'),
+    (Icons.timer_outlined,          'Cravings — they pass in 3–5 minutes'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return LuxuryCard(
+      backgroundColor: AppColors.honeySoft,
+      borderColor: AppColors.honey100,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.spa_outlined, size: 16, color: AppColors.honey),
+              const SizedBox(width: 6),
+              Text(
+                'WHAT TO EXPECT',
+                style: AppTextStyles.overline.copyWith(color: AppColors.honey600),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: onDismiss,
+                child: const Icon(Icons.close_rounded,
+                    size: 18, color: AppColors.honey600),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'The next 72 hours are the hardest part.',
+            style: AppTextStyles.titleSmall.copyWith(color: AppColors.stone800),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'What you\'re feeling is your body healing — not a sign something is wrong. These are all normal:',
+            style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.stone600, height: 1.45),
+          ),
+          const SizedBox(height: 12),
+          for (final (icon, label) in _bullets) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, size: 14, color: AppColors.honey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(label,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone700)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+          ],
+          const SizedBox(height: 4),
+          Text(
+            'If symptoms feel severe or unmanageable, please speak to a medical professional.',
+            style: AppTextStyles.caption.copyWith(
+                color: AppColors.stone500, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: onDismiss,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.honey,
+                foregroundColor: Colors.white,
+                textStyle: AppTextStyles.labelMedium,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Got it, I\'m ready'),
+            ),
+          ),
         ],
       ),
     );
