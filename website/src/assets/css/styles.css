@@ -220,7 +220,7 @@ p {
 }
 
 .hero-simple {
-  min-height: min(720px, calc(100vh - 84px));
+  min-height: 0;
 }
 
 .hero-copy {
@@ -679,7 +679,7 @@ p {
 }
 
 .about-letter-section {
-  min-height: calc(100vh - 190px);
+  min-height: 0;
 }
 
 .about-letter {
