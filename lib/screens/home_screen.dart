@@ -72,6 +72,100 @@ List<String> _dailyMissions(AppLocalizations l10n) {
   return indices.map((i) => pool[i]).toList();
 }
 
+// ─── Recovery progress helper ─────────────────────────────────────────────────
+
+class _RecoveryProgress {
+  const _RecoveryProgress({
+    required this.currentLabel,
+    required this.currentBody,
+    required this.progress,
+    this.nextLabel,
+    this.nextIn,
+  });
+
+  final String currentLabel;
+  final String currentBody;
+  final double progress; // 0.0–1.0 between current and next milestone
+  final String? nextLabel;
+  final String? nextIn;
+
+  static const _milestoneMinutes = [
+    20, 720, 1440, 2880, 4320, 10080, 20160,
+    43200, 129600, 259200, 525960, 1051920, 2629800, 5259600,
+  ];
+
+  static const _milestoneLabels = [
+    '20 Minutes', '12 Hours', '1 Day', '2 Days', '3 Days',
+    '1 Week', '2 Weeks', '1 Month', '3 Months', '6 Months',
+    '1 Year', '2 Years', '5 Years', '10 Years',
+  ];
+
+  static const _milestoneBodies = [
+    'Heart rate and blood pressure are already stabilising.',
+    'Blood glucose is normalising and liver processing has begun.',
+    'All alcohol has cleared your bloodstream.',
+    'Withdrawal peaks here — your nervous system is fighting to rebalance.',
+    'The acute phase is lifting. Brain chemistry is beginning to normalise.',
+    'Brain fog is clearing and sleep is starting to improve.',
+    'Energy is returning and concentration is sharpening.',
+    'Skin, sleep, and mood are measurably improving.',
+    'The brain\'s dopamine system has substantially normalised.',
+    'White matter in the brain has measurably recovered.',
+    'Lasting structural brain changes — you have rebuilt your mind.',
+    'Reward pathways have re-normalised. Old triggers are weakening.',
+    'Relapse risk is substantially reduced. New patterns are stable.',
+    'Full neurological restoration. Recovery is who you are.',
+  ];
+
+  static _RecoveryProgress compute(Duration elapsed) {
+    final mins = elapsed.inMinutes.clamp(0, 999999999);
+
+    if (mins < _milestoneMinutes.first) {
+      final frac = (mins / _milestoneMinutes.first).clamp(0.0, 1.0);
+      return _RecoveryProgress(
+        currentLabel: 'Just Starting',
+        currentBody: 'Your body begins healing the moment you stop.',
+        progress: frac,
+        nextLabel: _milestoneLabels.first,
+        nextIn: _formatRemaining(_milestoneMinutes.first - mins),
+      );
+    }
+
+    int idx = 0;
+    for (int i = _milestoneMinutes.length - 1; i >= 0; i--) {
+      if (mins >= _milestoneMinutes[i]) { idx = i; break; }
+    }
+
+    if (idx == _milestoneMinutes.length - 1) {
+      return _RecoveryProgress(
+        currentLabel: _milestoneLabels[idx],
+        currentBody: _milestoneBodies[idx],
+        progress: 1.0,
+      );
+    }
+
+    final from = _milestoneMinutes[idx];
+    final to   = _milestoneMinutes[idx + 1];
+    final frac = ((mins - from) / (to - from)).clamp(0.0, 1.0);
+
+    return _RecoveryProgress(
+      currentLabel: _milestoneLabels[idx],
+      currentBody:  _milestoneBodies[idx],
+      progress:     frac,
+      nextLabel:    _milestoneLabels[idx + 1],
+      nextIn:       _formatRemaining(to - mins),
+    );
+  }
+
+  static String _formatRemaining(int mins) {
+    if (mins <= 0) return 'now';
+    if (mins < 60) return 'in $mins min';
+    if (mins < 1440) return 'in ${(mins / 60).round()} hrs';
+    final days = (mins / 1440).round();
+    return 'in $days ${days == 1 ? "day" : "days"}';
+  }
+}
+
 // ─── Journey milestone nodes ───────────────────────────────────────────────────
 
 class _MilestoneNode {
@@ -186,6 +280,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           body: SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
+              cacheExtent: 500,
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
@@ -203,12 +298,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: 24),
 
                         // ── Serenity Card (hero) ─────────────────────────────
-                        _SerenityCard(profile: profile),
+                        RepaintBoundary(child: _SerenityCard(profile: profile)),
                         const SizedBox(height: 14),
 
                         // ── Money + My Reason ────────────────────────────────
                         if (profile.dailySpend > 0) ...[
-                          _MoneyCard(profile: profile),
+                          RepaintBoundary(child: _MoneyCard(profile: profile)),
                           const SizedBox(height: 14),
                         ],
 
@@ -220,31 +315,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: 14),
 
                         // ── Daily Pledge + Gratitude (side by side) ──────────
-                        IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: _PledgeCard(
-                                  pledgedToday: pledgedToday,
-                                  pledgeText: profile.lastPledgeText,
-                                  pledgeStreak: profile.pledgeStreak,
-                                  controller: _pledgeController,
-                                  saving: _pledgeSaving,
-                                  onSave: () => _savePledge(profile),
-                                ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _PledgeCard(
+                                pledgedToday: pledgedToday,
+                                pledgeText: profile.lastPledgeText,
+                                pledgeStreak: profile.pledgeStreak,
+                                controller: _pledgeController,
+                                saving: _pledgeSaving,
+                                onSave: () => _savePledge(profile),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _GratitudeCard(
-                                  todayEntry: todayGratitude,
-                                  controller: _gratitudeController,
-                                  saving: _gratitudeSaving,
-                                  onSave: _saveGratitude,
-                                ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: _GratitudeCard(
+                                todayEntry: todayGratitude,
+                                controller: _gratitudeController,
+                                saving: _gratitudeSaving,
+                                onSave: _saveGratitude,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 14),
                         _MyReasonCard(profile: profile),
@@ -256,9 +349,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             goals: profile.weeklyGoals,
                             toggles: goalToggles,
                             onToggle: (i) {
-                              final n = Set<int>.from(goalToggles);
-                              n.contains(i) ? n.remove(i) : n.add(i);
-                              ref.read(weeklyGoalTogglesProvider.notifier).state = n;
+                              ref.read(weeklyGoalTogglesProvider.notifier).toggle(i);
                               HapticFeedback.selectionClick();
                             },
                           ),
@@ -270,9 +361,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           missions: missions,
                           toggles: missionToggles,
                           onToggle: (i) {
-                            final n = Set<int>.from(missionToggles);
-                            n.contains(i) ? n.remove(i) : n.add(i);
-                            ref.read(missionTogglesProvider.notifier).state = n;
+                            ref.read(missionTogglesProvider.notifier).toggle(i);
                             HapticFeedback.selectionClick();
                           },
                         ),
@@ -293,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         // ── Recovery Timeline Banner ─────────────────────────
                         _RecoveryBanner(
-                          days: stats?.days ?? 0,
+                          elapsed: stats?.elapsed ?? Duration.zero,
                           onTap: () => context.push('/recovery'),
                         ),
                         const SizedBox(height: 32),
@@ -314,7 +403,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _CravingSheet(ref: ref),
+      builder: (_) => const _CravingSheet(),
     );
   }
 
@@ -323,7 +412,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _ThoughtSheet(ref: ref),
+      builder: (_) => const _ThoughtSheet(),
     );
   }
 
@@ -332,7 +421,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _ActivitySheet(ref: ref),
+      builder: (_) => const _ActivitySheet(),
     );
   }
 
@@ -341,7 +430,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SleepSheet(ref: ref),
+      builder: (_) => const _SleepSheet(),
     );
   }
 
@@ -435,6 +524,7 @@ class _SerenityCard extends ConsumerWidget {
 
     return LuxuryCard(
       padding: EdgeInsets.zero,
+      clip: true,
       child: SizedBox(
         height: 294,
         child: Stack(
@@ -500,9 +590,9 @@ class _SerenityCard extends ConsumerWidget {
               left: 22,
               top: 20,
               right: 22,
-              bottom: 20,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
@@ -547,7 +637,7 @@ class _SerenityCard extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: 168,
                     child: Column(
@@ -1497,49 +1587,93 @@ class _TodaysReminderCard extends StatelessWidget {
 // ─── Recovery Timeline Banner ─────────────────────────────────────────────────
 
 class _RecoveryBanner extends StatelessWidget {
-  const _RecoveryBanner({required this.days, required this.onTap});
-  final int days;
+  const _RecoveryBanner({required this.elapsed, required this.onTap});
+  final Duration elapsed;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final label = days < 1 ? 'See what\'s happening in your body'
-        : days < 3 ? 'Your body is already healing'
-        : days < 7 ? 'Your brain chemistry is shifting'
-        : days < 30 ? 'Your liver is repairing itself'
-        : 'Your risk of disease is dropping';
+    final rp = _RecoveryProgress.compute(elapsed);
 
     return GestureDetector(
       onTap: onTap,
       child: LuxuryCard(
-        padding: const EdgeInsets.all(18),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 4,
-              height: 42,
-              decoration: BoxDecoration(
-                color: AppColors.forest,
-                borderRadius: AppRadius.pill,
+            // ── Header ──────────────────────────────────────────────────
+            Row(
+              children: [
+                const IconChip(icon: Icons.timeline_rounded, size: 38),
+                const SizedBox(width: 12),
+                Text('QUITTING TIMELINE', style: AppTextStyles.overline),
+                const Spacer(),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.mistGrey, size: 20),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // ── Current milestone ────────────────────────────────────────
+            Text(
+              rp.currentLabel,
+              style: AppTextStyles.titleSmall.copyWith(
+                color: AppColors.forestDark,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(width: 12),
-            const IconChip(icon: Icons.timeline_rounded),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 4),
+            Text(
+              rp.currentBody,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.stoneText.withValues(alpha: 0.78),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // ── Progress bar ─────────────────────────────────────────────
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: rp.progress,
+                backgroundColor: AppColors.stone100,
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(AppColors.forest),
+                minHeight: 6,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // ── Next milestone or completion ─────────────────────────────
+            if (rp.nextLabel != null)
+              Row(
                 children: [
-                  Text('QUITTING TIMELINE', style: AppTextStyles.overline),
-                  const SizedBox(height: 2),
-                  Text(label,
-                      style: AppTextStyles.titleSmall
-                          .copyWith(color: AppColors.forestDark)),
+                  Text(
+                    'Next: ${rp.nextLabel}',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.forest,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    '· ${rp.nextIn}',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.mistGrey,
+                    ),
+                  ),
                 ],
+              )
+            else
+              Text(
+                'You have reached every milestone. Remarkable.',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.forest,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.mistGrey, size: 20),
           ],
         ),
       ),
@@ -1942,15 +2076,14 @@ const _severityOptions = [
 
 // ?? Craving sheet ???????????????????????????????????????????????????????????
 
-class _CravingSheet extends StatefulWidget {
-  const _CravingSheet({required this.ref});
-  final WidgetRef ref;
+class _CravingSheet extends ConsumerStatefulWidget {
+  const _CravingSheet();
 
   @override
-  State<_CravingSheet> createState() => _CravingSheetState();
+  ConsumerState<_CravingSheet> createState() => _CravingSheetState();
 }
 
-class _CravingSheetState extends State<_CravingSheet> {
+class _CravingSheetState extends ConsumerState<_CravingSheet> {
   double _intensity = 5;
   String _severity = 'Moderate';
   double _duration = 5;
@@ -1967,14 +2100,18 @@ class _CravingSheetState extends State<_CravingSheet> {
   Future<void> _save() async {
     setState(() => _saving = true);
     HapticFeedback.lightImpact();
-    await widget.ref.read(cravingProvider.notifier).add(
-          _intensity.round(),
-          severity: _severity,
-          triggers: _triggers.toList(),
-          durationMinutes: _duration.round(),
-          notes: _notesCtrl.text,
-        );
-    if (mounted) Navigator.of(context).pop();
+    try {
+      await ref.read(cravingProvider.notifier).add(
+            _intensity.round(),
+            severity: _severity,
+            triggers: _triggers.toList(),
+            durationMinutes: _duration.round(),
+            notes: _notesCtrl.text,
+          );
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -2083,15 +2220,14 @@ class _CravingSheetState extends State<_CravingSheet> {
 
 // ?? Thought sheet ????????????????????????????????????????????????????????????
 
-class _ThoughtSheet extends StatefulWidget {
-  const _ThoughtSheet({required this.ref});
-  final WidgetRef ref;
+class _ThoughtSheet extends ConsumerStatefulWidget {
+  const _ThoughtSheet();
 
   @override
-  State<_ThoughtSheet> createState() => _ThoughtSheetState();
+  ConsumerState<_ThoughtSheet> createState() => _ThoughtSheetState();
 }
 
-class _ThoughtSheetState extends State<_ThoughtSheet> {
+class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
   final _thoughtCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   String _type = 'neutral';
@@ -2099,6 +2235,7 @@ class _ThoughtSheetState extends State<_ThoughtSheet> {
   double _duration = 5;
   final Set<String> _triggers = {};
   bool _saving = false;
+  bool _textError = false;
 
   @override
   void dispose() {
@@ -2109,18 +2246,25 @@ class _ThoughtSheetState extends State<_ThoughtSheet> {
 
   Future<void> _save() async {
     final text = _thoughtCtrl.text.trim();
-    if (text.isEmpty) return;
-    setState(() => _saving = true);
+    if (text.isEmpty) {
+      setState(() => _textError = true);
+      return;
+    }
+    setState(() { _saving = true; _textError = false; });
     HapticFeedback.lightImpact();
-    await widget.ref.read(thoughtProvider.notifier).add(
-          text,
-          _type,
-          strength: _strength,
-          triggers: _triggers.toList(),
-          durationMinutes: _duration.round(),
-          notes: _notesCtrl.text,
-        );
-    if (mounted) Navigator.of(context).pop();
+    try {
+      await ref.read(thoughtProvider.notifier).add(
+            text,
+            _type,
+            strength: _strength,
+            triggers: _triggers.toList(),
+            durationMinutes: _duration.round(),
+            notes: _notesCtrl.text,
+          );
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -2142,10 +2286,12 @@ class _ThoughtSheetState extends State<_ThoughtSheet> {
               controller: _thoughtCtrl,
               maxLines: 3,
               style: AppTextStyles.bodyMedium,
+              onChanged: (_) { if (_textError) setState(() => _textError = false); },
               decoration: InputDecoration(
                 hintText: 'Write the thought in your own words.',
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone400),
+                errorText: _textError ? 'Please write the thought first.' : null,
               ),
             ),
             const SizedBox(height: 18),
@@ -2230,15 +2376,14 @@ class _ThoughtSheetState extends State<_ThoughtSheet> {
 
 // ?? Activity sheet ???????????????????????????????????????????????????????????
 
-class _ActivitySheet extends StatefulWidget {
-  const _ActivitySheet({required this.ref});
-  final WidgetRef ref;
+class _ActivitySheet extends ConsumerStatefulWidget {
+  const _ActivitySheet();
 
   @override
-  State<_ActivitySheet> createState() => _ActivitySheetState();
+  ConsumerState<_ActivitySheet> createState() => _ActivitySheetState();
 }
 
-class _ActivitySheetState extends State<_ActivitySheet> {
+class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   String _activity = 'walk';
   double _minutes = 30;
   String _effort = 'Gentle';
@@ -2262,14 +2407,18 @@ class _ActivitySheetState extends State<_ActivitySheet> {
   Future<void> _save() async {
     setState(() => _saving = true);
     HapticFeedback.lightImpact();
-    await widget.ref.read(activityProvider.notifier).add(
-          _activity,
-          _minutes.round(),
-          effort: _effort,
-          outcome: _outcome,
-          notes: _notesCtrl.text,
-        );
-    if (mounted) Navigator.of(context).pop();
+    try {
+      await ref.read(activityProvider.notifier).add(
+            _activity,
+            _minutes.round(),
+            effort: _effort,
+            outcome: _outcome,
+            notes: _notesCtrl.text,
+          );
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -2404,15 +2553,14 @@ class _ActivitySheetState extends State<_ActivitySheet> {
 
 // ?? Sleep sheet ??????????????????????????????????????????????????????????????
 
-class _SleepSheet extends StatefulWidget {
-  const _SleepSheet({required this.ref});
-  final WidgetRef ref;
+class _SleepSheet extends ConsumerStatefulWidget {
+  const _SleepSheet();
 
   @override
-  State<_SleepSheet> createState() => _SleepSheetState();
+  ConsumerState<_SleepSheet> createState() => _SleepSheetState();
 }
 
-class _SleepSheetState extends State<_SleepSheet> {
+class _SleepSheetState extends ConsumerState<_SleepSheet> {
   double _hours = 7;
   int _quality = 3;
   final Set<String> _factors = {};
@@ -2438,13 +2586,17 @@ class _SleepSheetState extends State<_SleepSheet> {
   Future<void> _save() async {
     setState(() => _saving = true);
     HapticFeedback.lightImpact();
-    await widget.ref.read(sleepProvider.notifier).add(
-          _hours,
-          _quality,
-          factors: _factors.toList(),
-          notes: _notesCtrl.text,
-        );
-    if (mounted) Navigator.of(context).pop();
+    try {
+      await ref.read(sleepProvider.notifier).add(
+            _hours,
+            _quality,
+            factors: _factors.toList(),
+            notes: _notesCtrl.text,
+          );
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
