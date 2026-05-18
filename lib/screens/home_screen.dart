@@ -177,11 +177,12 @@ class _MilestoneNode {
 }
 
 List<_MilestoneNode> _buildMilestones(AppLocalizations l10n) => [
-  _MilestoneNode(0,   l10n.homeMilestoneNode0Label, Icons.eco_outlined),
-  _MilestoneNode(1,   l10n.homeMilestoneNode1Label, Icons.wb_sunny_outlined),
-  _MilestoneNode(7,   l10n.homeMilestoneNode2Label, Icons.energy_savings_leaf_outlined),
-  _MilestoneNode(30,  l10n.homeMilestoneNode3Label, Icons.terrain_outlined),
-  _MilestoneNode(90,  l10n.homeMilestoneNode4Label, Icons.park_outlined),
+  _MilestoneNode(0,   l10n.homeMilestoneNode0Label,  Icons.eco_outlined),
+  _MilestoneNode(7,   l10n.homeMilestoneNode2Label,  Icons.energy_savings_leaf_outlined),
+  _MilestoneNode(30,  l10n.homeMilestoneNode3Label,  Icons.terrain_outlined),
+  _MilestoneNode(90,  l10n.homeMilestoneNode4Label,  Icons.park_outlined),
+  _MilestoneNode(180, 'Six months',                  Icons.local_florist_outlined),
+  _MilestoneNode(365, 'One year',                    Icons.star_outline_rounded),
 ];
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
@@ -345,30 +346,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // ── Daily Pledge + Gratitude (side by side) ──────────
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: _PledgeCard(
-                                pledgedToday: pledgedToday,
-                                pledgeText: profile.lastPledgeText,
-                                pledgeStreak: profile.pledgeStreak,
-                                controller: _pledgeController,
-                                saving: _pledgeSaving,
-                                onSave: () => _savePledge(profile),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _GratitudeCard(
-                                todayEntry: todayGratitude,
-                                controller: _gratitudeController,
-                                saving: _gratitudeSaving,
-                                onSave: _saveGratitude,
-                              ),
-                            ),
-                          ],
+                        // ── Daily Pledge ──────────────────────────────────────
+                        _PledgeCard(
+                          pledgedToday: pledgedToday,
+                          pledgeText: profile.lastPledgeText,
+                          pledgeStreak: profile.pledgeStreak,
+                          controller: _pledgeController,
+                          saving: _pledgeSaving,
+                          onSave: () => _savePledge(profile),
+                        ),
+                        const SizedBox(height: 14),
+
+                        // ── Daily Gratitude ───────────────────────────────────
+                        _GratitudeCard(
+                          todayEntry: todayGratitude,
+                          controller: _gratitudeController,
+                          saving: _gratitudeSaving,
+                          onSave: _saveGratitude,
                         ),
                         const SizedBox(height: 14),
                         _MyReasonCard(profile: profile),
@@ -1226,13 +1220,15 @@ class _JourneyCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: milestones.map((node) {
-                final timing = switch (node.days) {
-                  0 => days == 0 ? '0%' : 'done',
-                  1 => '3 days',
-                  7 => '7 days',
-                  30 => '30 days',
-                  _ => '90 days',
-                };
+                final achieved = days >= node.days;
+                final String timing;
+                if (achieved) {
+                  timing = node.days == 0 ? 'start' : 'done';
+                } else if (node.days < 365) {
+                  timing = 'Day ${node.days}';
+                } else {
+                  timing = node.days == 365 ? '1 year' : '${node.days ~/ 365} yr';
+                }
                 return Expanded(
                   child: Column(
                     children: [
@@ -1240,17 +1236,18 @@ class _JourneyCard extends StatelessWidget {
                         node.label,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: days >= node.days ? AppColors.forest : AppColors.stoneText,
-                          fontSize: 12,
+                          color: achieved ? AppColors.forest : AppColors.stoneText,
+                          fontSize: 11,
                           height: 1.25,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         timing,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.caption.copyWith(
-                          color: days >= node.days ? AppColors.leafGreen : AppColors.mistGrey,
+                          color: achieved ? AppColors.leafGreen : AppColors.mistGrey,
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -1275,8 +1272,8 @@ class _MilestoneNodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 52,
-      height: 52,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.card,
@@ -1288,13 +1285,13 @@ class _MilestoneNodeWidget extends StatelessWidget {
             ? const [
                 BoxShadow(
                   color: Color(0x263F7A5A),
-                  blurRadius: 18,
-                  offset: Offset(0, 8),
+                  blurRadius: 14,
+                  offset: Offset(0, 6),
                 ),
               ]
             : null,
       ),
-      child: Icon(node.icon, size: 22, color: achieved ? AppColors.forest : AppColors.mistGrey),
+      child: Icon(node.icon, size: 18, color: achieved ? AppColors.forest : AppColors.mistGrey),
     );
   }
 }
@@ -1331,7 +1328,9 @@ class _PledgeCard extends StatelessWidget {
       onSave: onSave,
       hintText: 'e.g., Today I choose clarity.',
       savedText: pledgedToday ? pledgeText : null,
-      supportingText: pledgedToday && pledgeStreak > 0 ? '$pledgeStreak calm days kept' : null,
+      supportingText: pledgedToday && pledgeStreak > 0
+          ? '$pledgeStreak calm ${pledgeStreak == 1 ? 'day' : 'days'} kept'
+          : null,
     );
   }
 }
