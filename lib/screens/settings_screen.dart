@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
@@ -164,7 +166,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           lastPledgeDate: p.lastPledgeDate, lastPledgeText: p.lastPledgeText,
           emergencyContact: p.emergencyContact,
           weeklyGoals: p.weeklyGoals, myReasons: p.myReasons,
-          lockMethod: p.lockMethod,
+          pros: p.pros, cons: p.cons, lockMethod: p.lockMethod,
           firedMilestoneDays: p.firedMilestoneDays,
           firedSavingsTiers: p.firedSavingsTiers,
         ),
@@ -240,23 +242,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   // ── Reason / goal editors ─────────────────────────────────────────────────
 
-  Future<void> _addReason(UserProfile p) async {
-    final ctrl = TextEditingController();
-    final result = await _textDialog(
-      title: 'Add a reason',
-      controller: ctrl,
-      hint: 'Why are you choosing sobriety?',
-      capitalization: TextCapitalization.sentences,
-    );
-    ctrl.dispose();
-    if (result == null || result.isEmpty) return;
-    final updated = [...p.myReasons, result];
+  Future<void> _addReason(UserProfile p, String text) async {
+    if (text.isEmpty) return;
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: [...p.myReasons, text]));
+  }
+
+  Future<void> _removeReasonAt(UserProfile p, int index) async {
+    final updated = [...p.myReasons]..removeAt(index);
     await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: updated));
   }
 
-  Future<void> _removeReason(UserProfile p, String reason) async {
-    final updated = p.myReasons.where((r) => r != reason).toList();
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: updated));
+  Future<void> _addPro(UserProfile p, String text) async {
+    if (text.isEmpty) return;
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(pros: [...p.pros, text]));
+  }
+
+  Future<void> _removeProAt(UserProfile p, int index) async {
+    final updated = [...p.pros]..removeAt(index);
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(pros: updated));
+  }
+
+  Future<void> _addCon(UserProfile p, String text) async {
+    if (text.isEmpty) return;
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(cons: [...p.cons, text]));
+  }
+
+  Future<void> _removeConAt(UserProfile p, int index) async {
+    final updated = [...p.cons]..removeAt(index);
+    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(cons: updated));
   }
 
   Future<void> _addWeeklyGoal(UserProfile p) async {
@@ -330,6 +343,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       barrierDismissible: false,
       builder: (ctx) => const _PinSetupDialog(),
     );
+  }
+
+  // ── Notification settings ─────────────────────────────────────────────────
+
+  Future<void> _editNotifications() async {
+    HapticFeedback.lightImpact();
+    final prefs = await SharedPreferences.getInstance();
+    TimeOfDay parseTime(String s) {
+      final parts = s.split(':');
+      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
+    final morning  = parseTime(prefs.getString('notif_morning') ?? '08:00');
+    final evening  = parseTime(prefs.getString('notif_evening') ?? '20:00');
+    final motiv    = prefs.getBool('notif_motivation') ?? true;
+    final remind   = prefs.getBool('notif_reminders')  ?? true;
+    final mileston = prefs.getBool('notif_milestones') ?? true;
+
+    if (!mounted) return;
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _NotificationsSheet(
+        morningTime: morning,
+        eveningTime: evening,
+        motivation: motiv,
+        reminders: remind,
+        milestones: mileston,
+      ),
+    );
+    if (result == null) return;
+
+    final fmt = (TimeOfDay t) =>
+        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+    await prefs.setString('notif_morning',    fmt(result['morning'] as TimeOfDay));
+    await prefs.setString('notif_evening',    fmt(result['evening'] as TimeOfDay));
+    await prefs.setBool('notif_motivation',   result['motivation'] as bool);
+    await prefs.setBool('notif_reminders',    result['reminders']  as bool);
+    await prefs.setBool('notif_milestones',   result['milestones'] as bool);
+    if (mounted) _showSnack('Notification settings saved');
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -442,18 +495,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       backgroundColor: AppColors.stone50,
       body: SafeArea(
         child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
+          cacheExtent: 500,
           slivers: [
             // ── Top bar ─────────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Row(
-                  children: [
-                    Text(l10n.settingsTitle, style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700)),
-                    const Spacer(),
-                  ],
-                ),
+                child: Text(l10n.settingsTitle,
+                    style: AppTextStyles.titleLarge
+                        .copyWith(color: AppColors.forest700)),
               ),
             ),
 
@@ -465,9 +516,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   profile: profile,
                   dateLabel: dateLabel,
                   moneyLabel: moneyLabel,
+                  pledgeStreak: profile.pledgeStreak,
                   onEditName: () => _editUsername(profile),
                   onEditDate: () => _editSoberDate(profile),
                   onEditSpend: () => _editDailySpend(profile),
+                  onEditNotifications: _editNotifications,
                 ),
               ),
             ),
@@ -476,7 +529,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             if (stats != null)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                   child: _RecoveryStatsCard(stats: stats),
                 ),
               ),
@@ -516,20 +569,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
 
-            // ── My reasons ───────────────────────────────────────────────────
+            // ── My motivation ─────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _SectionLabel(l10n.settingsMyReasonsLabel),
+                child: _SectionLabel('My Motivation'),
               ),
             ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                child: _ReasonsCard(
-                  reasons: profile.myReasons,
-                  onAdd: () => _addReason(profile),
-                  onRemove: (r) => _removeReason(profile, r),
+                child: _MotivationSection(
+                  icon: Icons.favorite_outline_rounded,
+                  title: 'My Reasons to Quit',
+                  placeholder: 'e.g. To be healthier',
+                  items: profile.myReasons,
+                  onAdd: (v) => _addReason(profile, v),
+                  onRemove: (i) => _removeReasonAt(profile, i),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: _MotivationSection(
+                  icon: Icons.thumb_up_alt_outlined,
+                  title: 'Pros of Sobriety',
+                  placeholder: 'e.g. More energy',
+                  items: profile.pros,
+                  onAdd: (v) => _addPro(profile, v),
+                  onRemove: (i) => _removeProAt(profile, i),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: _MotivationSection(
+                  icon: Icons.thumb_down_alt_outlined,
+                  title: "Cons I'm Leaving Behind",
+                  placeholder: 'e.g. Feeling anxious',
+                  items: profile.cons,
+                  onAdd: (v) => _addCon(profile, v),
+                  onRemove: (i) => _removeConAt(profile, i),
                 ),
               ),
             ),
@@ -571,16 +653,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
 
-            // ── More ─────────────────────────────────────────────────────────
+            // ── More (Records + Tools & App) ─────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _SectionLabel('More'),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                 child: _MoreCard(),
               ),
             ),
@@ -598,32 +674,33 @@ class _ProfileHeader extends StatelessWidget {
     required this.profile,
     required this.dateLabel,
     required this.moneyLabel,
+    required this.pledgeStreak,
     required this.onEditName,
     required this.onEditDate,
     required this.onEditSpend,
+    required this.onEditNotifications,
   });
 
   final UserProfile profile;
   final String dateLabel;
   final String? moneyLabel;
+  final int pledgeStreak;
   final VoidCallback onEditName;
   final VoidCallback onEditDate;
   final VoidCallback onEditSpend;
+  final VoidCallback onEditNotifications;
 
   @override
   Widget build(BuildContext context) {
     final initials = profile.username.trim().isNotEmpty
-        ? profile.username.trim().split(' ')
-            .take(2)
-            .map((w) => w[0].toUpperCase())
-            .join()
+        ? profile.username.trim().split(' ').take(2).map((w) => w[0].toUpperCase()).join()
         : '?';
 
     return SolidCard(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          // Avatar + name row
+          // ── Banner ────────────────────────────────────────────────────────
           Container(
             decoration: const BoxDecoration(
               color: AppColors.forest700,
@@ -631,55 +708,104 @@ class _ProfileHeader extends StatelessWidget {
             ),
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.forest500,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.forest400, width: 2),
-                  ),
-                  child: Center(
-                    child: Text(initials,
-                      style: AppTextStyles.titleLarge.copyWith(color: Colors.white)),
+                // Avatar
+                GestureDetector(
+                  onTap: onEditName,
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: AppColors.forest500,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.forest400, width: 2),
+                    ),
+                    child: Center(
+                      child: Text(initials,
+                          style: AppTextStyles.titleLarge
+                              .copyWith(color: Colors.white)),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 14),
+                // Name + sober date + pledge streak
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(profile.username.isNotEmpty ? profile.username : 'Your name',
-                        style: AppTextStyles.titleLarge.copyWith(color: Colors.white)),
+                      GestureDetector(
+                        onTap: onEditName,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                profile.username.isNotEmpty
+                                    ? profile.username
+                                    : 'Your name',
+                                style: AppTextStyles.titleLarge
+                                    .copyWith(color: Colors.white),
+                              ),
+                            ),
+                            const Icon(Icons.edit_outlined,
+                                size: 14, color: AppColors.forest300),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 2),
                       Text('Sober since $dateLabel',
-                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest200)),
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.forest200)),
+                      if (pledgeStreak > 0) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.honey500.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: AppColors.honey400.withValues(alpha: 0.4)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.local_fire_department_rounded,
+                                  size: 12, color: AppColors.honey300),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$pledgeStreak calm '
+                                '${pledgeStreak == 1 ? 'day' : 'days'} pledged',
+                                style: AppTextStyles.caption
+                                    .copyWith(color: AppColors.honey200),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
+                // Money saved
                 if (moneyLabel != null) ...[
+                  const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(moneyLabel!,
-                        style: AppTextStyles.titleMedium.copyWith(color: AppColors.honey300)),
+                          style: AppTextStyles.titleMedium
+                              .copyWith(color: AppColors.honey300)),
                       Text('saved',
-                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest200)),
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.forest200)),
                     ],
                   ),
                 ],
               ],
             ),
           ),
-          // Edit rows
-          _SettingsRow(
-            icon: Icons.person_outline_rounded,
-            label: 'Name',
-            value: profile.username.isNotEmpty ? profile.username : 'Not set',
-            onTap: onEditName,
-            borderBottom: true,
-          ),
+
+          // ── Edit rows (3, not 4 — Name is now in the banner) ─────────────
           _SettingsRow(
             icon: Icons.calendar_today_outlined,
             label: 'Sober since',
@@ -694,6 +820,13 @@ class _ProfileHeader extends StatelessWidget {
                 ? '${profile.currency}${profile.dailySpend.toStringAsFixed(2)} / day'
                 : 'Not set',
             onTap: onEditSpend,
+            borderBottom: true,
+          ),
+          _SettingsRow(
+            icon: Icons.notifications_outlined,
+            label: 'Notifications',
+            value: 'Check-in & reminder times',
+            onTap: onEditNotifications,
           ),
         ],
       ),
@@ -855,7 +988,7 @@ class _EmergencyContactCard extends StatelessWidget {
           ? Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                   child: Row(
                     children: [
                       Container(
@@ -866,7 +999,7 @@ class _EmergencyContactCard extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.person_outline_rounded,
-                          color: AppColors.forest600, size: 22),
+                            color: AppColors.forest600, size: 22),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -874,14 +1007,40 @@ class _EmergencyContactCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(ec.name, style: AppTextStyles.titleSmall),
-                            Text(ec.phone, style: AppTextStyles.bodySmall),
+                            Text(ec.phone,
+                                style: AppTextStyles.bodySmall
+                                    .copyWith(color: AppColors.stone500)),
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined, size: 18,
-                          color: AppColors.stone400),
-                        onPressed: onEdit,
+                      // Call button
+                      GestureDetector(
+                        onTap: () => _call(ec.phone),
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: AppColors.forest600,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.phone_rounded,
+                              size: 18, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Edit button
+                      GestureDetector(
+                        onTap: onEdit,
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            color: AppColors.stone100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.edit_outlined,
+                              size: 16, color: AppColors.stone500),
+                        ),
                       ),
                     ],
                   ),
@@ -896,98 +1055,242 @@ class _EmergencyContactCard extends StatelessWidget {
             ),
     );
   }
+
+  Future<void> _call(String phone) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  }
 }
 
-// ─── My reasons card ──────────────────────────────────────────────────────────
+// ─── Motivation section (Reasons / Pros / Cons) ───────────────────────────────
 
-class _ReasonsCard extends StatelessWidget {
-  const _ReasonsCard({
-    required this.reasons,
+class _MotivationSection extends StatefulWidget {
+  const _MotivationSection({
+    required this.icon,
+    required this.title,
+    required this.placeholder,
+    required this.items,
     required this.onAdd,
     required this.onRemove,
   });
-  final List<String> reasons;
-  final VoidCallback onAdd;
-  final void Function(String) onRemove;
+  final IconData icon;
+  final String title;
+  final String placeholder;
+  final List<String> items;
+  final void Function(String) onAdd;
+  final void Function(int) onRemove;
+
+  @override
+  State<_MotivationSection> createState() => _MotivationSectionState();
+}
+
+class _MotivationSectionState extends State<_MotivationSection> {
+  final _ctrl = TextEditingController();
+  late bool _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start expanded when empty (so the add field is discoverable),
+    // collapsed when the user already has items.
+    _expanded = widget.items.isEmpty;
+  }
+
+  @override
+  void didUpdateWidget(_MotivationSection old) {
+    super.didUpdateWidget(old);
+    // If items were just added from empty, keep expanded.
+    if (old.items.isEmpty && widget.items.isNotEmpty) _expanded = true;
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final text = _ctrl.text.trim();
+    if (text.isEmpty) return;
+    widget.onAdd(text);
+    _ctrl.clear();
+    HapticFeedback.lightImpact();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final count = widget.items.length;
+
     return SolidCard(
       borderRadius: AppRadius.xl,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (reasons.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                'Add the reasons you\'re choosing sobriety — they\'ll keep you grounded.',
-                style: AppTextStyles.bodySmall,
+          // ── Collapsible header ──────────────────────────────────────────
+          InkWell(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _expanded = !_expanded);
+            },
+            borderRadius: _expanded
+                ? const BorderRadius.vertical(top: Radius.circular(20))
+                : AppRadius.xl,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  Icon(widget.icon, size: 16, color: AppColors.forest600),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(widget.title,
+                        style: AppTextStyles.titleSmall
+                            .copyWith(color: AppColors.forest700)),
+                  ),
+                  if (count > 0 && !_expanded) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.forest50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text('$count',
+                          style: AppTextStyles.labelSmall.copyWith(
+                              color: AppColors.forest600,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 20, color: AppColors.stone400),
+                  ),
+                ],
               ),
             ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final r in reasons)
-                _ReasonChip(text: r, onRemove: () => onRemove(r)),
-              GestureDetector(
-                onTap: onAdd,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.forest50,
-                    borderRadius: AppRadius.pill,
-                    border: Border.all(color: AppColors.forest100),
+          ),
+
+          // ── Expandable body ─────────────────────────────────────────────
+          AnimatedCrossFade(
+            firstCurve: Curves.easeOutCubic,
+            secondCurve: Curves.easeInCubic,
+            sizeCurve: Curves.easeInOutCubic,
+            duration: const Duration(milliseconds: 260),
+            crossFadeState: _expanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            secondChild: const SizedBox.shrink(),
+            firstChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Divider(height: 1, color: AppColors.stone100),
+
+                // Empty state
+                if (widget.items.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: Text('No items added yet.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.stone400,
+                            fontStyle: FontStyle.italic)),
                   ),
+
+                // Item rows
+                for (int i = 0; i < widget.items.length; i++)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: i < widget.items.length - 1
+                        ? const BoxDecoration(
+                            border: Border(
+                                bottom:
+                                    BorderSide(color: AppColors.stone100)))
+                        : null,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            color: AppColors.forest600,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text('${i + 1}',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                )),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(widget.items[i],
+                              style: AppTextStyles.bodyMedium
+                                  .copyWith(color: AppColors.stone700)),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            widget.onRemove(i);
+                          },
+                          child: const Icon(Icons.close_rounded,
+                              size: 16, color: AppColors.stone300),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Add row
+                const Divider(height: 1, color: AppColors.stone100),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 12, 10),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.add, size: 14, color: AppColors.forest600),
-                      const SizedBox(width: 4),
-                      Text('Add reason',
-                        style: AppTextStyles.labelSmall.copyWith(color: AppColors.forest600)),
+                      Expanded(
+                        child: TextField(
+                          controller: _ctrl,
+                          style: AppTextStyles.bodyMedium,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            hintText: widget.placeholder,
+                            hintStyle: AppTextStyles.bodyMedium
+                                .copyWith(color: AppColors.stone300),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            isDense: true,
+                          ),
+                          onSubmitted: (_) => _submit(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: _submit,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: AppColors.forest600,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.add,
+                              size: 18, color: Colors.white),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
-}
-
-class _ReasonChip extends StatelessWidget {
-  const _ReasonChip({required this.text, required this.onRemove});
-  final String text;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      color: AppColors.mintChip,
-      borderRadius: AppRadius.pill,
-      border: Border.all(color: AppColors.forest100),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text(text,
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.forest700)),
-        ),
-        const SizedBox(width: 6),
-        GestureDetector(
-          onTap: onRemove,
-          child: const Icon(Icons.close, size: 14, color: AppColors.stone400),
-        ),
-      ],
-    ),
-  );
 }
 
 // ─── Weekly goals card ────────────────────────────────────────────────────────
@@ -1178,57 +1481,334 @@ class _MoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return SolidCard(
-      borderRadius: AppRadius.xl,
-      padding: EdgeInsets.zero,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Records group ──────────────────────────────────────────────────
+        const _SectionLabel('Records'),
+        const SizedBox(height: 8),
+        SolidCard(
+          borderRadius: AppRadius.xl,
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              _SettingsRow(
+                icon: Icons.bar_chart_outlined,
+                label: 'My history',
+                onTap: () => context.push('/history'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.grid_view_rounded,
+                label: 'Activity heatmap',
+                onTap: () => context.push('/heatmap'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.insights_outlined,
+                label: 'Mood & craving insights',
+                onTap: () => context.push('/insights'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.emoji_events_outlined,
+                label: 'Milestone cards',
+                onTap: () => context.push('/milestone'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        // ── Tools & App group ──────────────────────────────────────────────
+        const _SectionLabel('Tools & App'),
+        const SizedBox(height: 8),
+        SolidCard(
+          borderRadius: AppRadius.xl,
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              _SettingsRow(
+                icon: Icons.psychology_outlined,
+                label: 'CBT thought tools',
+                onTap: () => context.push('/cbt'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.people_outline_rounded,
+                label: 'Recovery groups',
+                onTap: () => context.push('/groups'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.phone_in_talk_outlined,
+                iconColor: AppColors.blush500,
+                label: 'Crisis lines',
+                onTap: () => context.push('/crisis'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.backup_outlined,
+                label: l10n.settingsBackupLabel,
+                onTap: () => context.push('/backup'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.privacy_tip_outlined,
+                label: l10n.settingsPrivacyLabel,
+                onTap: () => context.push('/privacy'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Notifications bottom sheet ──────────────────────────────────────────────
+
+class _NotificationsSheet extends StatefulWidget {
+  const _NotificationsSheet({
+    required this.morningTime,
+    required this.eveningTime,
+    required this.motivation,
+    required this.reminders,
+    required this.milestones,
+  });
+  final TimeOfDay morningTime;
+  final TimeOfDay eveningTime;
+  final bool motivation;
+  final bool reminders;
+  final bool milestones;
+
+  @override
+  State<_NotificationsSheet> createState() => _NotificationsSheetState();
+}
+
+class _NotificationsSheetState extends State<_NotificationsSheet> {
+  late TimeOfDay _morning;
+  late TimeOfDay _evening;
+  late bool _motivation;
+  late bool _reminders;
+  late bool _milestones;
+
+  @override
+  void initState() {
+    super.initState();
+    _morning    = widget.morningTime;
+    _evening    = widget.eveningTime;
+    _motivation = widget.motivation;
+    _reminders  = widget.reminders;
+    _milestones = widget.milestones;
+  }
+
+  Future<void> _pickTime(bool isMorning) async {
+    HapticFeedback.selectionClick();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: isMorning ? _morning : _evening,
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: Theme.of(ctx).colorScheme.copyWith(
+            primary: AppColors.forest600,
+            onPrimary: Colors.white,
+            surface: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked == null) return;
+    setState(() { if (isMorning) _morning = picked; else _evening = picked; });
+  }
+
+  String _fmt(TimeOfDay t) {
+    final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
+    final m = t.minute.toString().padLeft(2, '0');
+    final p = t.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$h:$m $p';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.stone50,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        20, 12, 20,
+        MediaQuery.of(context).viewInsets.bottom + 32,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _SettingsRow(
-            icon: Icons.bar_chart_outlined,
-            label: 'My history',
-            onTap: () => context.push('/history'),
-            borderBottom: true,
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.stone200, borderRadius: AppRadius.pill),
+            ),
           ),
-          _SettingsRow(
-            icon: Icons.history_rounded,
-            label: 'Slip log',
-            onTap: () => context.push('/slip-log'),
-            borderBottom: true,
+          const SizedBox(height: 20),
+          Text('Notifications', style: AppTextStyles.titleMedium),
+          const SizedBox(height: 2),
+          Text('Check-in and reminder schedule',
+              style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
+          const SizedBox(height: 20),
+
+          // Times
+          SolidCard(
+            borderRadius: AppRadius.xl,
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                _SheetTimeRow(
+                  icon: Icons.wb_sunny_outlined,
+                  label: 'Morning check-in',
+                  value: _fmt(_morning),
+                  onTap: () => _pickTime(true),
+                  borderBottom: true,
+                ),
+                _SheetTimeRow(
+                  icon: Icons.nights_stay_outlined,
+                  label: 'Evening reminder',
+                  value: _fmt(_evening),
+                  onTap: () => _pickTime(false),
+                ),
+              ],
+            ),
           ),
-          _SettingsRow(
-            icon: Icons.emoji_events_outlined,
-            label: 'Milestone cards',
-            onTap: () => context.push('/milestone'),
-            borderBottom: true,
+          const SizedBox(height: 14),
+
+          // Toggles
+          SolidCard(
+            borderRadius: AppRadius.xl,
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                _SheetToggleRow(
+                  label: 'Motivation messages',
+                  value: _motivation,
+                  onChanged: (v) => setState(() => _motivation = v),
+                  borderBottom: true,
+                ),
+                _SheetToggleRow(
+                  label: 'Daily reminders',
+                  value: _reminders,
+                  onChanged: (v) => setState(() => _reminders = v),
+                  borderBottom: true,
+                ),
+                _SheetToggleRow(
+                  label: 'Milestone alerts',
+                  value: _milestones,
+                  onChanged: (v) => setState(() => _milestones = v),
+                ),
+              ],
+            ),
           ),
-          _SettingsRow(
-            icon: Icons.people_outline_rounded,
-            label: 'Recovery groups',
-            onTap: () => context.push('/groups'),
-            borderBottom: true,
-          ),
-          _SettingsRow(
-            icon: Icons.phone_in_talk_outlined,
-            iconColor: AppColors.blush500,
-            label: 'Crisis lines',
-            onTap: () => context.push('/crisis'),
-            borderBottom: true,
-          ),
-          _SettingsRow(
-            icon: Icons.backup_outlined,
-            label: l10n.settingsBackupLabel,
-            onTap: () => context.push('/backup'),
-            borderBottom: true,
-          ),
-          _SettingsRow(
-            icon: Icons.privacy_tip_outlined,
-            label: l10n.settingsPrivacyLabel,
-            onTap: () => context.push('/privacy'),
+          const SizedBox(height: 24),
+
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.forest600,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+              ),
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                Navigator.pop(context, {
+                  'morning':    _morning,
+                  'evening':    _evening,
+                  'motivation': _motivation,
+                  'reminders':  _reminders,
+                  'milestones': _milestones,
+                });
+              },
+              child: Text('Save',
+                  style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+class _SheetTimeRow extends StatelessWidget {
+  const _SheetTimeRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onTap,
+    this.borderBottom = false,
+  });
+  final IconData icon;
+  final String label;
+  final String value;
+  final VoidCallback onTap;
+  final bool borderBottom;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      decoration: borderBottom
+          ? const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AppColors.stone100)))
+          : null,
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: AppColors.forest600),
+          const SizedBox(width: 14),
+          Expanded(child: Text(label, style: AppTextStyles.titleSmall)),
+          Text(value,
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.forest600)),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.stone300),
+        ],
+      ),
+    ),
+  );
+}
+
+class _SheetToggleRow extends StatelessWidget {
+  const _SheetToggleRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.borderBottom = false,
+  });
+  final String label;
+  final bool value;
+  final void Function(bool) onChanged;
+  final bool borderBottom;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    decoration: borderBottom
+        ? const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.stone100)))
+        : null,
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(label,
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone700)),
+        ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: AppColors.forest600,
+        ),
+      ],
+    ),
+  );
 }
 
 // ─── Shared row widget ────────────────────────────────────────────────────────
