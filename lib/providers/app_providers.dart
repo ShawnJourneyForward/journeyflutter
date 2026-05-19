@@ -24,7 +24,12 @@ class ProfileNotifier extends AsyncNotifier<UserProfile?> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return null;
-    return UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    try {
+      return UserProfile.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      await prefs.remove(_key);
+      return null;
+    }
   }
 
   Future<void> save(UserProfile profile) async {
@@ -39,29 +44,9 @@ class ProfileNotifier extends AsyncNotifier<UserProfile?> {
     await save(updater(current));
   }
 
-  Future<void> patchGoal({required double? amount, required String? name}) async {
-    final current = state.valueOrNull;
-    if (current == null) return;
-    // UserProfile.copyWith cannot clear nullable fields, so build explicitly.
-    await save(UserProfile(
-      username: current.username,
-      soberDate: current.soberDate,
-      dailySpend: current.dailySpend,
-      currency: current.currency,
-      timezone: current.timezone,
-      pledgeStreak: current.pledgeStreak,
-      lastPledgeDate: current.lastPledgeDate,
-      lastPledgeText: current.lastPledgeText,
-      emergencyContact: current.emergencyContact,
-      savingsGoal: amount,
-      savingsGoalName: name,
-      weeklyGoals: current.weeklyGoals,
-      myReasons: current.myReasons,
-      lockMethod: current.lockMethod,
-      firedMilestoneDays: current.firedMilestoneDays,
-      firedSavingsTiers: current.firedSavingsTiers,
-    ));
-  }
+  // copyWith uses the _absent sentinel so it can safely clear nullable fields.
+  Future<void> patchGoal({required double? amount, required String? name}) async =>
+      patch((p) => p.copyWith(savingsGoal: amount, savingsGoalName: name));
 }
 
 final profileProvider =
@@ -110,13 +95,18 @@ class GratitudeNotifier extends AsyncNotifier<String?> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return null;
-    final list = (jsonDecode(raw) as List<dynamic>);
-    final today = _today();
-    for (final entry in list.reversed) {
-      final m = entry as Map<String, dynamic>;
-      if ((m['date'] as String?) == today) return m['text'] as String?;
+    try {
+      final list = (jsonDecode(raw) as List<dynamic>);
+      final today = _today();
+      for (final entry in list.reversed) {
+        final m = entry as Map<String, dynamic>;
+        if ((m['date'] as String?) == today) return m['text'] as String?;
+      }
+      return null;
+    } catch (_) {
+      await prefs.remove(_key);
+      return null;
     }
-    return null;
   }
 
   Future<void> add(String text) async {
@@ -153,9 +143,9 @@ class GratitudeEntry {
   const GratitudeEntry({required this.id, required this.date, required this.text});
 
   factory GratitudeEntry.fromJson(Map<String, dynamic> j) => GratitudeEntry(
-    id:   j['id'] as String? ?? j['date'] as String,
-    date: j['date'] as String,
-    text: j['text'] as String,
+    id:   j['id'] as String? ?? j['date'] as String? ?? DateTime.now().millisecondsSinceEpoch.toString(),
+    date: j['date'] as String? ?? '',
+    text: j['text'] as String? ?? '',
   );
 }
 
@@ -173,15 +163,84 @@ final allGratitudeProvider = FutureProvider<List<GratitudeEntry>>((ref) async {
       .toList();
 });
 
-// ─── Weekly goal completion toggles (in-memory per session) ──────────────────
+// ─── Weekly goal completion toggles (persisted) ───────────────────────────────
+
+class WeeklyGoalTogglesNotifier extends Notifier<Set<int>> {
+  static const _key = 'weekly_goal_toggles';
+
+  @override
+  Set<int> build() {
+    _load();
+    return const {};
+  }
+
+  Future<void> _load() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    if (raw == null) return;
+    try {
+      final list = (jsonDecode(raw) as List<dynamic>).map((e) => e as int).toSet();
+      state = list;
+    } catch (_) {
+      await prefs.remove(_key);
+    }
+  }
+
+  Future<void> toggle(int index) async {
+    final n = Set<int>.from(state);
+    n.contains(index) ? n.remove(index) : n.add(index);
+    state = n;
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(_key, jsonEncode(n.toList()));
+  }
+}
 
 final weeklyGoalTogglesProvider =
-    StateProvider<Set<int>>((ref) => const {});
+    NotifierProvider<WeeklyGoalTogglesNotifier, Set<int>>(WeeklyGoalTogglesNotifier.new);
 
-// ─── Daily mission completion toggles (in-memory per session) ────────────────
+// ─── Daily mission completion toggles (persisted, resets each day) ────────────
+
+class MissionTogglesNotifier extends Notifier<Set<int>> {
+  static const _key = 'mission_toggles';
+
+  @override
+  Set<int> build() {
+    _load();
+    return const {};
+  }
+
+  Future<void> _load() async {
+    final prefs = await ref.read(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    if (raw == null) return;
+    try {
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      if (map['date'] != _today()) {
+        await prefs.remove(_key);
+        return;
+      }
+      state = (map['done'] as List<dynamic>).map((e) => e as int).toSet();
+    } catch (_) {
+      await prefs.remove(_key);
+    }
+  }
+
+  Future<void> toggle(int index) async {
+    final n = Set<int>.from(state);
+    n.contains(index) ? n.remove(index) : n.add(index);
+    state = n;
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(_key, jsonEncode({'date': _today(), 'done': n.toList()}));
+  }
+
+  String _today() {
+    final d = DateTime.now();
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+  }
+}
 
 final missionTogglesProvider =
-    StateProvider<Set<int>>((ref) => const {});
+    NotifierProvider<MissionTogglesNotifier, Set<int>>(MissionTogglesNotifier.new);
 
 // ─── Journal entries ──────────────────────────────────────────────────────────
 
@@ -221,11 +280,16 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => JournalEntry.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => JournalEntry.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(String text, String mood) async {
@@ -264,7 +328,12 @@ class AffirmationNotifier extends AsyncNotifier<List<String>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    return (jsonDecode(raw) as List<dynamic>).cast<String>();
+    try {
+      return (jsonDecode(raw) as List<dynamic>).cast<String>();
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(String text) async {
@@ -326,8 +395,13 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list.map((e) => VisionItem.fromJson(e as Map<String, dynamic>)).toList();
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list.map((e) => VisionItem.fromJson(e as Map<String, dynamic>)).toList();
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(VisionItem item) async {
@@ -392,17 +466,22 @@ class SlipNotifier extends AsyncNotifier<List<Slip>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => Slip.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => Slip.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> record({required UserProfile current, String? note}) async {
     final now = DateTime.now();
     final slip = Slip(
-      id:                DateTime.now().millisecondsSinceEpoch.toString(),
+      id:                now.millisecondsSinceEpoch.toString(),
       date:              now,
       streakDays:        SoberStats.compute(current, now).days,
       previousSoberDate: current.soberDate,
@@ -488,11 +567,16 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => CravingEntry.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => CravingEntry.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(
@@ -590,11 +674,16 @@ class ThoughtNotifier extends AsyncNotifier<List<ThoughtEntry>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => ThoughtEntry.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => ThoughtEntry.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(
@@ -681,11 +770,16 @@ class ActivityNotifier extends AsyncNotifier<List<ActivityEntry>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => ActivityEntry.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => ActivityEntry.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(
@@ -765,11 +859,16 @@ class SleepNotifier extends AsyncNotifier<List<SleepEntry>> {
     final prefs = await ref.watch(prefsProvider.future);
     final raw = prefs.getString(_key);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((e) => SleepEntry.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => SleepEntry.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    } catch (_) {
+      await prefs.remove(_key);
+      return [];
+    }
   }
 
   Future<void> add(

@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Milestone definitions ─────────────────────────────────────────────────
 
@@ -35,7 +36,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final profileAsync = ref.watch(profileProvider);
-    final stats = ref.watch(soberStatsProvider);
+    // soberDaysProvider only rebuilds at midnight — no need for per-second ticks here.
+    final stats = ref.watch(soberDaysProvider);
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -245,27 +247,42 @@ class _StreakTab extends ConsumerWidget {
         ),
         const SizedBox(height: 14),
 
-        // ── Mini heatmap (5-week) ─────────────────────────────────────────
-        SolidCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Activity Heatmap',
-                      style: AppTextStyles.titleMedium),
-                  GestureDetector(
-                    onTap: () => context.push('/heatmap'),
-                    child: Text('View full',
-                        style: AppTextStyles.labelSmall
-                            .copyWith(color: AppColors.forest600)),
+        // ── Heatmap entry point ──────────────────────────────────────────
+        GestureDetector(
+          onTap: () {
+            H.light();
+            context.push('/heatmap');
+          },
+          child: SolidCard(
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.forest50,
+                    borderRadius: AppRadius.md,
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _MiniHeatmap(soberDate: profile?.soberDate),
-            ],
+                  child: const Icon(Icons.grid_view_rounded,
+                      size: 20, color: AppColors.forest600),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Activity Heatmap',
+                          style: AppTextStyles.titleSmall),
+                      Text('See your logged activity over time',
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone400)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.stone300),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 14),
@@ -392,106 +409,6 @@ class _Colon extends StatelessWidget {
   );
 }
 
-// ─── Mini Heatmap (5-week) ─────────────────────────────────────────────────
-
-class _MiniHeatmap extends StatelessWidget {
-  const _MiniHeatmap({required this.soberDate});
-  final String? soberDate;
-
-  @override
-  Widget build(BuildContext context) {
-    final today = DateTime.now();
-    // Show 5 weeks ending today
-    final startOfWeek = today.subtract(
-        Duration(days: today.weekday - 1)); // Monday
-    final start = startOfWeek.subtract(const Duration(days: 28));
-    final sober = soberDate != null
-        ? DateTime.tryParse(soberDate!) ?? today
-        : today;
-
-    final days = ['M','T','W','T','F','S','S'];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Day labels
-        Row(
-          children: [
-            const SizedBox(width: 36),
-            ...days.map((d) => Expanded(
-              child: Text(d,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.caption
-                      .copyWith(color: AppColors.stone400)),
-            )),
-          ],
-        ),
-        const SizedBox(height: 4),
-        // 5 week rows
-        ...List.generate(5, (week) {
-          final weekLabel = week == 4
-              ? 'This'
-              : week == 3
-                  ? 'Last'
-                  : '${4 - week}w';
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 36,
-                  child: Text(weekLabel,
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.stone300)),
-                ),
-                ...List.generate(7, (dow) {
-                  final day = start.add(
-                      Duration(days: week * 7 + dow));
-                  final isSober = !day.isBefore(sober) &&
-                      !day.isAfter(today);
-                  final isToday = day.year == today.year &&
-                      day.month == today.month &&
-                      day.day == today.day;
-                  final isSoberStart = day.year == sober.year &&
-                      day.month == sober.month &&
-                      day.day == sober.day;
-                  final isFuture = day.isAfter(today);
-
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isFuture
-                                ? Colors.transparent
-                                : isSober
-                                    ? AppColors.forest600
-                                    : AppColors.stone100,
-                            borderRadius: AppRadius.sm,
-                            border: isToday
-                                ? Border.all(
-                                    color: Colors.white, width: 2)
-                                : isSoberStart
-                                    ? Border.all(
-                                        color: AppColors.honey500,
-                                        width: 2)
-                                    : null,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          );
-        }),
-      ],
-    );
-  }
-}
 
 // ─── Insights Tab ──────────────────────────────────────────────────────────
 

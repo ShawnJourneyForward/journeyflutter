@@ -7,7 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
 import 'l10n/app_localizations.dart';
+import 'providers/app_providers.dart';
 import 'theme/app_theme.dart';
+import 'utils/haptic_service.dart';
 // ─── Screen imports ───────────────────────────────────────────────────────────
 import 'screens/backup_screen.dart';
 import 'screens/crisis_screen.dart';
@@ -68,7 +70,7 @@ void main() async {
 
 // ─── Root app ─────────────────────────────────────────────────────────────────
 
-class JourneyForwardApp extends StatelessWidget {
+class JourneyForwardApp extends ConsumerWidget {
   const JourneyForwardApp({
     super.key,
     required this.hasProfile,
@@ -79,7 +81,11 @@ class JourneyForwardApp extends StatelessWidget {
   final String lockMethod;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Keep H in sync whenever the profile changes.
+    final profile = ref.watch(profileProvider).valueOrNull;
+    H.sync(profile?.hapticsEnabled ?? true);
+
     return MaterialApp.router(
       title: 'Journey Forward',
       theme: buildAppTheme(),

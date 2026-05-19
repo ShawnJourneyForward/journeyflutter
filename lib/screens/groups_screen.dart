@@ -6,6 +6,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Group data ───────────────────────────────────────────────────────────────
 
@@ -157,7 +158,7 @@ class GroupsScreen extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           size: 20, color: AppColors.stone700),
                       onPressed: () {
-                        HapticFeedback.lightImpact();
+                        H.light();
                         Navigator.of(context).pop();
                       },
                     ),
@@ -255,7 +256,7 @@ class _GroupCardState extends State<_GroupCard> {
           // Tap header to expand
           InkWell(
             onTap: () {
-              HapticFeedback.selectionClick();
+              H.selection();
               setState(() => _expanded = !_expanded);
             },
             borderRadius: _expanded

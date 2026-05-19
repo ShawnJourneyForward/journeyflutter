@@ -324,16 +324,17 @@ class AppLocalizationsAf extends AppLocalizations {
       'Your journey lives only on this device — private, secure, and completely yours.';
 
   @override
-  String get homeGoodMorning => 'Good morning';
-
-  @override
-  String get homeGoodAfternoon => 'Good afternoon';
-
-  @override
-  String get homeGoodEvening => 'Good evening';
-
-  @override
   String get homeFriendFallback => 'friend';
+
+  @override
+  String homeGreetingFirst(String name) {
+    return 'Hi $name,';
+  }
+
+  @override
+  String homeGreetingReturning(String name) {
+    return 'Welcome back, $name.';
+  }
 
   @override
   String get homeTagline => 'Every day forward is a win.';

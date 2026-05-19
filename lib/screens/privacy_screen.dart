@@ -5,6 +5,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Privacy Screen ───────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ class PrivacyScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
+          cacheExtent: 500,
           slivers: [
 
             // ── Header ──────────────────────────────────────────────────────
@@ -32,7 +34,7 @@ class PrivacyScreen extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           size: 20, color: AppColors.stone700),
                       onPressed: () {
-                        HapticFeedback.lightImpact();
+                        H.light();
                         Navigator.of(context).pop();
                       },
                     ),
@@ -78,7 +80,7 @@ class PrivacyScreen extends StatelessWidget {
               sliver: SliverList.separated(
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemCount: sections.length,
-                itemBuilder: (_, i) => _PrivacySection(section: sections[i]),
+                itemBuilder: (_, i) => RepaintBoundary(child: _PrivacySection(section: sections[i])),
               ),
             ),
           ],

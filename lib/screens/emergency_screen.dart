@@ -10,6 +10,7 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Breathing patterns ───────────────────────────────────────────────────
 
@@ -271,7 +272,7 @@ class _HomeTab extends ConsumerWidget {
             final (icon, label, color, tab) = tools[i];
             return GestureDetector(
               onTap: () {
-                HapticFeedback.lightImpact();
+                H.light();
                 if (tab != null) onNav(tab);
                 else context.push('/puzzle');
               },
@@ -303,126 +304,6 @@ class _HomeTab extends ConsumerWidget {
           },
         ),
 
-        // Quiet slip note — intentionally unobtrusive
-        const SizedBox(height: 28),
-        GestureDetector(
-          onTap: () => _showSlipNote(context, ref),
-          child: Center(
-            child: Text(
-              'Need a softer reset?',
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.stone300,
-                decoration: TextDecoration.underline,
-                decorationColor: AppColors.stone300,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─── Slip note helpers ────────────────────────────────────────────────────────
-
-Future<void> _showSlipNote(BuildContext context, WidgetRef ref) async {
-  final ctrl = TextEditingController();
-
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => _SlipNoteDialog(controller: ctrl),
-  );
-
-  final note = ctrl.text.trim();
-  ctrl.dispose();
-
-  if (confirmed != true) return;
-  final profile = ref.read(profileProvider).valueOrNull;
-  if (profile == null) return;
-
-  await ref.read(slipProvider.notifier).record(
-    current: profile,
-    note: note.isEmpty ? null : note,
-  );
-
-  if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        'Noted. Every day is a new beginning.',
-        style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
-      ),
-      backgroundColor: AppColors.stone700,
-      behavior: SnackBarBehavior.floating,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    ));
-  }
-}
-
-class _SlipNoteDialog extends StatelessWidget {
-  const _SlipNoteDialog({required this.controller});
-  final TextEditingController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-      title: Text('A note to yourself', style: AppTextStyles.titleMedium),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Slips are part of many journeys. '
-            'This is just information — not a verdict.',
-            style: AppTextStyles.bodySmall
-                .copyWith(color: AppColors.stone500, height: 1.5),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: controller,
-            maxLines: 3,
-            textCapitalization: TextCapitalization.sentences,
-            style: AppTextStyles.bodyMedium,
-            decoration: InputDecoration(
-              hintText: 'A thought for yourself, if you\'d like…',
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone300),
-              filled: true,
-              fillColor: AppColors.stone50,
-              contentPadding: const EdgeInsets.all(14),
-              border: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(
-                    color: AppColors.forest600, width: 1.5),
-              ),
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text('Not now',
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.stone400)),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: Text('Note it and continue',
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.forest600)),
-        ),
       ],
     );
   }
@@ -475,6 +356,7 @@ class _BreathingTabState extends State<_BreathingTab>
   int _phaseRemaining = 0;
 
   void _start() {
+    H.medium();
     final phases = _phases;
     _phaseIndex = 0;
     _phaseRemaining = phases[0].$2;
@@ -489,11 +371,16 @@ class _BreathingTabState extends State<_BreathingTab>
       _totalSeconds--;
       _phaseRemaining--;
 
-      if (_totalSeconds <= 0) { _stop(); return; }
+      if (_totalSeconds <= 0) {
+        H.medium();
+        _stop();
+        return;
+      }
 
       if (_phaseRemaining <= 0) {
         _phaseIndex = (_phaseIndex + 1) % phases.length;
         _phaseRemaining = phases[_phaseIndex].$2;
+        H.light();
         _animatePhase();
       }
 
@@ -538,8 +425,10 @@ class _BreathingTabState extends State<_BreathingTab>
             itemBuilder: (_, i) {
               final selected = i == _selectedIndex;
               return GestureDetector(
-                onTap: _running ? null : () =>
-                    setState(() => _selectedIndex = i),
+                onTap: _running ? null : () {
+                  H.selection();
+                  setState(() => _selectedIndex = i);
+                },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.only(right: 8),
@@ -652,7 +541,9 @@ class _BreathingTabState extends State<_BreathingTab>
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: _running ? _stop : _start,
+                  onPressed: _running
+                      ? () { H.light(); _stop(); }
+                      : _start,
                   style: FilledButton.styleFrom(
                     backgroundColor: _running
                         ? AppColors.honey500 : AppColors.forest600,
@@ -930,7 +821,7 @@ class _GuideList extends StatelessWidget {
     itemBuilder: (_, i) {
       final g = guides[i];
       return GestureDetector(
-        onTap: () { HapticFeedback.lightImpact(); onSelect(i); },
+        onTap: () { H.light(); onSelect(i); },
         child: SolidCard(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -1152,7 +1043,7 @@ class _HaltTabState extends State<_HaltTab> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
+                        H.selection();
                         setState(() =>
                             _expanded = expanded ? null : i);
                       },
@@ -1197,7 +1088,7 @@ class _HaltTabState extends State<_HaltTab> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    HapticFeedback.selectionClick();
+                                    H.selection();
                                     setState(() => checked
                                         ? _checked.remove(i)
                                         : _checked.add(i));
@@ -1260,7 +1151,7 @@ class _UrgeTimerTabState extends State<_UrgeTimerTab> {
           _timer?.cancel();
           _running = false;
           _done = true;
-          HapticFeedback.mediumImpact();
+          H.medium();
         }
       });
     });

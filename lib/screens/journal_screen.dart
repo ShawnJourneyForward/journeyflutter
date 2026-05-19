@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 import '../providers/app_providers.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
@@ -442,7 +443,7 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
               final selected = _mood == value;
               return GestureDetector(
                 onTap: () {
-                  HapticFeedback.selectionClick();
+                  H.selection();
                   setState(() => _mood = value);
                 },
                 child: AnimatedContainer(
@@ -519,7 +520,7 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
                 if (text.isEmpty) return;
                 widget.onSave(text, _mood);
                 Navigator.pop(context);
-                HapticFeedback.mediumImpact();
+                H.medium();
               },
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
@@ -747,7 +748,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                   if (t.isEmpty) return;
                   ref.read(affirmationProvider.notifier).add(t);
                   Navigator.pop(ctx);
-                  HapticFeedback.mediumImpact();
+                  H.medium();
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
@@ -818,7 +819,7 @@ class _AffirmCard extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
+                    H.selection();
                     onFavourite();
                   },
                   child: Icon(
@@ -961,7 +962,7 @@ class _VisionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: () {
-        HapticFeedback.mediumImpact();
+        H.medium();
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -1084,7 +1085,7 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
                 final selected = e == _emoji;
                 return GestureDetector(
                   onTap: () {
-                    HapticFeedback.selectionClick();
+                    H.selection();
                     setState(() => _emoji = e);
                   },
                   child: AnimatedContainer(
@@ -1142,7 +1143,7 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
                   emoji: _emoji,
                 ));
                 Navigator.pop(context);
-                HapticFeedback.mediumImpact();
+                H.medium();
               },
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
@@ -1408,7 +1409,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
         GestureDetector(
           onTap: () {
             if (_ctrl.text.trim().isEmpty) return;
-            HapticFeedback.selectionClick();
+            H.selection();
             setState(() => _saved = true);
           },
           child: Container(
@@ -1463,7 +1464,7 @@ class _ReflectionPromptsState extends State<_ReflectionPrompts> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () {
-            HapticFeedback.selectionClick();
+            H.selection();
             setState(
                 () => _current = (_current + 1) % _prompts.length);
           },
@@ -1598,7 +1599,7 @@ class _FAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.mediumImpact();
+        H.medium();
         onTap();
       },
       child: Container(

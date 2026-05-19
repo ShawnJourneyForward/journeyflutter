@@ -7,6 +7,7 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Heatmap Screen ───────────────────────────────────────────────────────────
 
@@ -40,11 +41,12 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final journals   = ref.watch(journalProvider).valueOrNull  ?? [];
-    final cravings   = ref.watch(cravingProvider).valueOrNull  ?? [];
-    final activities = ref.watch(activityProvider).valueOrNull ?? [];
-    final sleeps     = ref.watch(sleepProvider).valueOrNull    ?? [];
-    final thoughts   = ref.watch(thoughtProvider).valueOrNull  ?? [];
+    final journals   = ref.watch(journalProvider).valueOrNull      ?? [];
+    final cravings   = ref.watch(cravingProvider).valueOrNull      ?? [];
+    final activities = ref.watch(activityProvider).valueOrNull     ?? [];
+    final sleeps     = ref.watch(sleepProvider).valueOrNull        ?? [];
+    final thoughts   = ref.watch(thoughtProvider).valueOrNull      ?? [];
+    final gratitudes = ref.watch(allGratitudeProvider).valueOrNull ?? [];
 
     // Build a day-keyed map: 'YYYY-MM-DD' → total number of entries logged
     final Map<String, int> scores = {};
@@ -53,6 +55,11 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
     for (final e in activities) { _inc(scores, e.date); }
     for (final e in sleeps)     { _inc(scores, e.date); }
     for (final e in thoughts)   { _inc(scores, e.date); }
+    // Gratitude entries are a meaningful wellness signal — include in the score.
+    for (final e in gratitudes) {
+      final d = DateTime.tryParse(e.date);
+      if (d != null) _inc(scores, d);
+    }
 
     // Detail for the selected day
     final selKey = _selected == null ? null : _key(_selected!);
@@ -79,7 +86,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           size: 20, color: AppColors.stone700),
                       onPressed: () {
-                        HapticFeedback.lightImpact();
+                        H.light();
                         Navigator.of(context).pop();
                       },
                     ),
@@ -119,7 +126,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                   todayKey: _todayKey,
                   selectedKey: selKey,
                   onTap: (day) {
-                    HapticFeedback.selectionClick();
+                    H.selection();
                     setState(() {
                       _selected = (_selected != null && _key(_selected!) == _key(day))
                           ? null
@@ -204,10 +211,12 @@ class _HeatmapGrid extends StatelessWidget {
       // cells to fill exactly — no horizontal SingleChildScrollView needed.
       child: LayoutBuilder(builder: (context, constraints) {
         final numCols = weeks.length;
+        // Include a trailing gap for every column so the total exactly
+        // equals: dayLabelW + dayLabelGap + numCols*stride (no overflow).
         final cellSize = ((constraints.maxWidth -
                     _dayLabelW -
                     _dayLabelGap -
-                    _gap * (numCols - 1)) /
+                    _gap * numCols) /
                 numCols)
             .clamp(14.0, 28.0);
         final stride = cellSize + _gap;
@@ -426,6 +435,7 @@ class _CategoryKey extends StatelessWidget {
     final items = [
       (Icons.menu_book_outlined,      l10n.heatmapCategoryJournal,  AppColors.forest600),
       (Icons.bolt_outlined,           l10n.heatmapCategoryCraving,  AppColors.forest600),
+      (Icons.psychology_outlined,     'Thoughts',                    AppColors.forest600),
       (Icons.directions_run_outlined, l10n.heatmapCategoryActivity, AppColors.forest600),
       (Icons.bedtime_outlined,        l10n.heatmapCategorySleep,    AppColors.forest600),
     ];

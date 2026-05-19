@@ -644,29 +644,23 @@ abstract class AppLocalizations {
   /// **'Your journey lives only on this device — private, secure, and completely yours.'**
   String get onbFinishPrivacyNote;
 
-  /// No description provided for @homeGoodMorning.
-  ///
-  /// In en, this message translates to:
-  /// **'Good morning'**
-  String get homeGoodMorning;
-
-  /// No description provided for @homeGoodAfternoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Good afternoon'**
-  String get homeGoodAfternoon;
-
-  /// No description provided for @homeGoodEvening.
-  ///
-  /// In en, this message translates to:
-  /// **'Good evening'**
-  String get homeGoodEvening;
-
   /// No description provided for @homeFriendFallback.
   ///
   /// In en, this message translates to:
   /// **'friend'**
   String get homeFriendFallback;
+
+  /// No description provided for @homeGreetingFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi {name},'**
+  String homeGreetingFirst(String name);
+
+  /// No description provided for @homeGreetingReturning.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {name}.'**
+  String homeGreetingReturning(String name);
 
   /// No description provided for @homeTagline.
   ///

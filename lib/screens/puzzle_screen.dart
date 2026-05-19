@@ -8,6 +8,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Activity definitions ─────────────────────────────────────────────────────
 
@@ -203,7 +204,7 @@ class _HomeView extends StatelessWidget {
             final a = activities[i];
             return GestureDetector(
               onTap: () {
-                HapticFeedback.lightImpact();
+                H.light();
                 onSelect(a.id);
               },
               child: SolidCard(
@@ -260,7 +261,7 @@ class _CountdownViewState extends State<_CountdownView> {
   bool _done = false;
 
   void _tap() {
-    HapticFeedback.lightImpact();
+    H.light();
     if (_done) {
       setState(() { _value = 300; _done = false; });
       return;
@@ -376,7 +377,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
   final _controller = TextEditingController();
 
   void _shuffle() {
-    HapticFeedback.lightImpact();
+    H.light();
     setState(() {
       _index = _rng.nextInt(_gratitudePrompts.length);
       _controller.clear();
@@ -499,7 +500,7 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
 
   void _tap(int i) {
     if (_checking || _flipped[i] || _matched[i]) return;
-    HapticFeedback.selectionClick();
+    H.selection();
 
     setState(() => _flipped[i] = true);
 
@@ -547,7 +548,7 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
             const Spacer(),
             TextButton.icon(
               onPressed: () {
-                HapticFeedback.lightImpact();
+                H.light();
                 setState(_newGame);
               },
               icon: const Icon(Icons.refresh_rounded, size: 16),
@@ -689,7 +690,7 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
                   max: 5,
                   divisions: 4,
                   onChanged: (v) {
-                    HapticFeedback.selectionClick();
+                    H.selection();
                     setState(() => _ratings[i] = v);
                   },
                   activeColor: AppColors.forest600,
@@ -807,7 +808,7 @@ class _NowMomentViewState extends State<_NowMomentView> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    HapticFeedback.lightImpact();
+                    H.light();
                     if (isLast) {
                       widget.onBack();
                     } else {
@@ -858,7 +859,7 @@ class _ColorCalmViewState extends State<_ColorCalmView>
   ];
 
   void _onTap(TapDownDetails details) {
-    HapticFeedback.lightImpact();
+    H.light();
     final color = _colors[_tapCount % _colors.length];
     _tapCount++;
     final ctrl = AnimationController(

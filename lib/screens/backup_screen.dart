@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +10,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Keys exported in a backup ────────────────────────────────────────────────
 
@@ -143,13 +143,27 @@ class _BackupScreenState extends State<BackupScreen> {
       final data = parsed['data'] as Map<String, dynamic>;
       final prefs = await SharedPreferences.getInstance();
       for (final entry in data.entries) {
-        // Never restore lockMethod — the PIN hash is not in the backup file.
-        // Restoring it without the hash would silently break the lock screen.
+        // Never restore top-level lockMethod — the PIN hash lives in secure
+        // storage and is not included in the backup file.
         if (entry.key == 'lockMethod') continue;
         await prefs.setString(entry.key, entry.value as String);
       }
-      // Clear any pre-existing lock setting so the app starts unlocked.
+      // Clear the top-level routing key so the app starts unlocked.
       await prefs.remove('lockMethod');
+
+      // The profile blob itself contains an embedded lockMethod field.
+      // Reset it to 'none' so Settings never shows a stale lock state
+      // when there is no corresponding PIN hash or biometric binding.
+      final profileRaw = prefs.getString('profile');
+      if (profileRaw != null) {
+        try {
+          final profileMap = jsonDecode(profileRaw) as Map<String, dynamic>;
+          profileMap['lockMethod'] = 'none';
+          await prefs.setString('profile', jsonEncode(profileMap));
+        } catch (_) {
+          // Corrupt profile blob — ProfileNotifier handles it on next boot.
+        }
+      }
 
       if (mounted) {
         _showSnack(l10n.backupRestoredSuccess);
@@ -197,7 +211,7 @@ class _BackupScreenState extends State<BackupScreen> {
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 20, color: AppColors.stone700),
                     onPressed: () {
-                      HapticFeedback.lightImpact();
+                      H.light();
                       Navigator.of(context).pop();
                     },
                   ),

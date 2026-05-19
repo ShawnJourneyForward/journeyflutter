@@ -16,6 +16,7 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
@@ -135,12 +136,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
           ),
           if (p.savingsGoal != null)
             TextButton(
               onPressed: () => Navigator.pop(ctx, {'clear': true}),
-              child: Text('Clear', style: AppTextStyles.labelMedium.copyWith(color: AppColors.blush500)),
+              child: Text(l10n.commonClear, style: AppTextStyles.labelMedium.copyWith(color: AppColors.blush500)),
             ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
@@ -148,7 +149,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'name': nameCtrl.text.trim(),
               'amount': amtCtrl.text.trim(),
             }),
-            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -158,19 +159,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (result == null) return;
     if (result['clear'] == true) {
-      await ref.read(profileProvider.notifier).patch(
-        (p) => UserProfile(
-          username: p.username, soberDate: p.soberDate,
-          dailySpend: p.dailySpend, currency: p.currency,
-          timezone: p.timezone, pledgeStreak: p.pledgeStreak,
-          lastPledgeDate: p.lastPledgeDate, lastPledgeText: p.lastPledgeText,
-          emergencyContact: p.emergencyContact,
-          weeklyGoals: p.weeklyGoals, myReasons: p.myReasons,
-          pros: p.pros, cons: p.cons, lockMethod: p.lockMethod,
-          firedMilestoneDays: p.firedMilestoneDays,
-          firedSavingsTiers: p.firedSavingsTiers,
-        ),
-      );
+      await ref.read(profileProvider.notifier).patchGoal(amount: null, name: null);
       return;
     }
     final amt = double.tryParse(result['amount'] as String);
@@ -214,12 +203,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -298,7 +287,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await prefs.setString('lockMethod', 'none');
     await _storage.delete(key: 'pin_hash');
     await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'none'));
-    HapticFeedback.lightImpact();
+    H.light();
   }
 
   Future<void> _setLockBiometric(UserProfile p) async {
@@ -320,7 +309,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await prefs.setString('lockMethod', 'biometric');
       await _storage.delete(key: 'pin_hash');
       await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'biometric'));
-      HapticFeedback.lightImpact();
+      H.light();
     } on PlatformException {
       if (mounted) _showSnack('Biometric authentication failed');
     }
@@ -334,7 +323,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('lockMethod', 'pin');
     await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'pin'));
-    HapticFeedback.mediumImpact();
+    H.medium();
   }
 
   Future<String?> _showPinSetup() async {
@@ -348,7 +337,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   // ── Notification settings ─────────────────────────────────────────────────
 
   Future<void> _editNotifications() async {
-    HapticFeedback.lightImpact();
+    H.light();
     final prefs = await SharedPreferences.getInstance();
     TimeOfDay parseTime(String s) {
       final parts = s.split(':');
@@ -394,6 +383,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     TextInputType keyboardType = TextInputType.text,
     TextCapitalization capitalization = TextCapitalization.none,
   }) {
+    final l10n = AppLocalizations.of(context);
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -412,12 +402,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text('Save', style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -520,19 +510,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onEditName: () => _editUsername(profile),
                   onEditDate: () => _editSoberDate(profile),
                   onEditSpend: () => _editDailySpend(profile),
-                  onEditNotifications: _editNotifications,
                 ),
               ),
             ),
-
-            // ── Recovery stats ───────────────────────────────────────────────
-            if (stats != null)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                  child: _RecoveryStatsCard(stats: stats),
-                ),
-              ),
 
             // ── Savings goal ─────────────────────────────────────────────────
             SliverToBoxAdapter(
@@ -653,6 +633,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
 
+            // ── Notifications ────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: _SectionLabel('Notifications'),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: SolidCard(
+                  borderRadius: AppRadius.xl,
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      _SettingsRow(
+                        icon: Icons.notifications_outlined,
+                        label: 'Check-in & reminders',
+                        value: 'Morning & evening times',
+                        onTap: _editNotifications,
+                        borderBottom: true,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 14),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: AppColors.forest50,
+                                borderRadius: AppRadius.sm,
+                              ),
+                              child: const Icon(Icons.vibration_rounded,
+                                  size: 18, color: AppColors.forest700),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text('Haptic feedback',
+                                  style: AppTextStyles.bodyMedium),
+                            ),
+                            Switch(
+                              value: profile.hapticsEnabled,
+                              onChanged: (val) {
+                                H.sync(val);
+                                ref.read(profileProvider.notifier).patch(
+                                  (p) => p.copyWith(hapticsEnabled: val),
+                                );
+                              },
+                              activeColor: AppColors.forest600,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
             // ── More (Records + Tools & App) ─────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
@@ -678,7 +719,6 @@ class _ProfileHeader extends StatelessWidget {
     required this.onEditName,
     required this.onEditDate,
     required this.onEditSpend,
-    required this.onEditNotifications,
   });
 
   final UserProfile profile;
@@ -688,7 +728,6 @@ class _ProfileHeader extends StatelessWidget {
   final VoidCallback onEditName;
   final VoidCallback onEditDate;
   final VoidCallback onEditSpend;
-  final VoidCallback onEditNotifications;
 
   @override
   Widget build(BuildContext context) {
@@ -696,197 +735,142 @@ class _ProfileHeader extends StatelessWidget {
         ? profile.username.trim().split(' ').take(2).map((w) => w[0].toUpperCase()).join()
         : '?';
 
-    return SolidCard(
-      padding: EdgeInsets.zero,
-      child: Column(
+    // Full-bleed forest banner — rows removed, all four corners round.
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.forest700,
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: AppColors.forest600.withValues(alpha: 0.4)),
+        boxShadow: AppShadows.luxury,
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Banner ────────────────────────────────────────────────────────
-          Container(
-            decoration: const BoxDecoration(
-              color: AppColors.forest700,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          // ── Avatar ──────────────────────────────────────────────────────
+          GestureDetector(
+            onTap: onEditName,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppColors.forest500,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.forest400, width: 2),
+              ),
+              child: Center(
+                child: Text(initials,
+                    style: AppTextStyles.titleLarge
+                        .copyWith(color: Colors.white)),
+              ),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-            child: Row(
+          ),
+          const SizedBox(width: 14),
+          // ── Name · date · spend chip · pledge streak ─────────────────
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Avatar
                 GestureDetector(
                   onTap: onEditName,
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: AppColors.forest500,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.forest400, width: 2),
-                    ),
-                    child: Center(
-                      child: Text(initials,
-                          style: AppTextStyles.titleLarge
-                              .copyWith(color: Colors.white)),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                // Name + sober date + pledge streak
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      GestureDetector(
-                        onTap: onEditName,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                profile.username.isNotEmpty
-                                    ? profile.username
-                                    : 'Your name',
-                                style: AppTextStyles.titleLarge
-                                    .copyWith(color: Colors.white),
-                              ),
-                            ),
-                            const Icon(Icons.edit_outlined,
-                                size: 14, color: AppColors.forest300),
-                          ],
+                      Expanded(
+                        child: Text(
+                          profile.username.isNotEmpty
+                              ? profile.username
+                              : 'Your name',
+                          style: AppTextStyles.titleLarge
+                              .copyWith(color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text('Sober since $dateLabel',
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: AppColors.forest200)),
-                      if (pledgeStreak > 0) ...[
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: AppColors.honey500.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: AppColors.honey400.withValues(alpha: 0.4)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.local_fire_department_rounded,
-                                  size: 12, color: AppColors.honey300),
-                              const SizedBox(width: 4),
-                              Text(
-                                '$pledgeStreak calm '
-                                '${pledgeStreak == 1 ? 'day' : 'days'} pledged',
-                                style: AppTextStyles.caption
-                                    .copyWith(color: AppColors.honey200),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      const Icon(Icons.edit_outlined,
+                          size: 14, color: AppColors.forest300),
                     ],
                   ),
                 ),
-                // Money saved
-                if (moneyLabel != null) ...[
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(moneyLabel!,
-                          style: AppTextStyles.titleMedium
-                              .copyWith(color: AppColors.honey300)),
-                      Text('saved',
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: AppColors.forest200)),
-                    ],
+                const SizedBox(height: 4),
+                // Sober date — tappable to edit
+                GestureDetector(
+                  onTap: onEditDate,
+                  child: Text(
+                    'Sober since $dateLabel',
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.forest200),
+                  ),
+                ),
+                // Daily spend chip — tappable to edit
+                if (profile.dailySpend > 0) ...[
+                  const SizedBox(height: 5),
+                  GestureDetector(
+                    onTap: onEditSpend,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.forest600.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${profile.currency}${profile.dailySpend.toStringAsFixed(0)}/day · tap to edit',
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.forest100),
+                      ),
+                    ),
+                  ),
+                ],
+                // Pledge streak badge
+                if (pledgeStreak > 0) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.honey500.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: AppColors.honey400.withValues(alpha: 0.4)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.local_fire_department_rounded,
+                            size: 12, color: AppColors.honey300),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$pledgeStreak calm '
+                          '${pledgeStreak == 1 ? 'day' : 'days'} pledged',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.honey200),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ],
             ),
           ),
-
-          // ── Edit rows (3, not 4 — Name is now in the banner) ─────────────
-          _SettingsRow(
-            icon: Icons.calendar_today_outlined,
-            label: 'Sober since',
-            value: dateLabel,
-            onTap: onEditDate,
-            borderBottom: true,
-          ),
-          _SettingsRow(
-            icon: Icons.savings_outlined,
-            label: AppLocalizations.of(context).settingsDailySpendLabel,
-            value: profile.dailySpend > 0
-                ? '${profile.currency}${profile.dailySpend.toStringAsFixed(2)} / day'
-                : 'Not set',
-            onTap: onEditSpend,
-            borderBottom: true,
-          ),
-          _SettingsRow(
-            icon: Icons.notifications_outlined,
-            label: 'Notifications',
-            value: 'Check-in & reminder times',
-            onTap: onEditNotifications,
-          ),
+          // ── Money saved ──────────────────────────────────────────────
+          if (moneyLabel != null) ...[
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(moneyLabel!,
+                    style: AppTextStyles.titleMedium
+                        .copyWith(color: AppColors.honey300)),
+                Text('saved',
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.forest200)),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-// ─── Recovery stats card ──────────────────────────────────────────────────────
-
-class _RecoveryStatsCard extends ConsumerWidget {
-  const _RecoveryStatsCard({required this.stats});
-  final SoberStats stats;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final slips = ref.watch(slipProvider).valueOrNull ?? [];
-    final current = stats.days;
-    final bestEver = slips.fold(current, (best, s) => s.streakDays > best ? s.streakDays : best);
-    final lifetime = slips.fold(current, (total, s) => total + s.streakDays);
-
-    return SolidCard(
-      borderRadius: AppRadius.xl,
-      child: Row(
-        children: [
-          _StatCol(value: '$current', label: 'Current\nstreak'),
-          _Vline(),
-          _StatCol(value: '$bestEver', label: 'Best\never'),
-          _Vline(),
-          _StatCol(value: '$lifetime', label: 'Lifetime\ndays'),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCol extends StatelessWidget {
-  const _StatCol({required this.value, required this.label});
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: Column(
-      children: [
-        Text(value, style: AppTextStyles.displaySmall.copyWith(fontSize: 26)),
-        const SizedBox(height: 2),
-        Text(label,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.bodySmall),
-      ],
-    ),
-  );
-}
-
-class _Vline extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 1, height: 40, color: AppColors.stone100,
-  );
-}
 
 
 // ─── Savings goal card ────────────────────────────────────────────────────────
@@ -1114,7 +1098,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
     if (text.isEmpty) return;
     widget.onAdd(text);
     _ctrl.clear();
-    HapticFeedback.lightImpact();
+    H.light();
   }
 
   @override
@@ -1130,7 +1114,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
           // ── Collapsible header ──────────────────────────────────────────
           InkWell(
             onTap: () {
-              HapticFeedback.selectionClick();
+              H.selection();
               setState(() => _expanded = !_expanded);
             },
             borderRadius: _expanded
@@ -1235,7 +1219,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            HapticFeedback.selectionClick();
+                            H.selection();
                             widget.onRemove(i);
                           },
                           child: const Icon(Icons.close_rounded,
@@ -1603,7 +1587,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
   }
 
   Future<void> _pickTime(bool isMorning) async {
-    HapticFeedback.selectionClick();
+    H.selection();
     final picked = await showTimePicker(
       context: context,
       initialTime: isMorning ? _morning : _evening,
@@ -1719,7 +1703,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
                 shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
               onPressed: () {
-                HapticFeedback.mediumImpact();
+                H.medium();
                 Navigator.pop(context, {
                   'morning':    _morning,
                   'evening':    _evening,
@@ -1728,7 +1712,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
                   'milestones': _milestones,
                 });
               },
-              child: Text('Save',
+              child: Text(AppLocalizations.of(context).commonSave,
                   style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
             ),
           ),
@@ -1979,7 +1963,7 @@ class _SpendDialogState extends State<_SpendDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel',
+          child: Text(AppLocalizations.of(context).commonCancel,
             style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
         ),
         FilledButton(
@@ -1988,7 +1972,7 @@ class _SpendDialogState extends State<_SpendDialog> {
             'spend': widget.controller.text.trim(),
             'currency': _currency,
           }),
-          child: Text('Save',
+          child: Text(AppLocalizations.of(context).commonSave,
             style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
         ),
       ],
@@ -2013,14 +1997,14 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
 
   void _onDigit(String d) {
     if (_entered.length >= 4) return;
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() { _entered += d; _error = null; });
     if (_entered.length == 4) _onComplete();
   }
 
   void _onDelete() {
     if (_entered.isEmpty) return;
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() => _entered = _entered.substring(0, _entered.length - 1));
   }
 
@@ -2031,7 +2015,7 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
       if (_entered == _first) {
         Navigator.pop(context, _entered);
       } else {
-        HapticFeedback.heavyImpact();
+        H.heavy();
         setState(() { _entered = ''; _error = 'PINs don\'t match. Try again.'; _step = 0; _first = ''; });
       }
     }
@@ -2086,7 +2070,7 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel',
+          child: Text(AppLocalizations.of(context).commonCancel,
             style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
         ),
       ],

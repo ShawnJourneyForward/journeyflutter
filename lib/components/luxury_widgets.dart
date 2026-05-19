@@ -8,25 +8,30 @@ class LuxuryCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(20),
     this.backgroundColor = AppColors.card,
     this.borderColor = AppColors.softBorder,
+    this.clip = false,
   });
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final Color borderColor;
+  // Only enable when a child overflows the card bounds (e.g. full-bleed images).
+  final bool clip;
 
   @override
-  Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: AppRadius.luxury,
-          border: Border.all(color: borderColor),
-          boxShadow: AppShadows.luxury,
-        ),
-        child: ClipRRect(
-          borderRadius: AppRadius.luxury,
-          child: Padding(padding: padding, child: child),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final inner = Padding(padding: padding, child: child);
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: borderColor),
+        boxShadow: AppShadows.luxury,
+      ),
+      child: clip
+          ? ClipRRect(borderRadius: AppRadius.luxury, child: inner)
+          : inner,
+    );
+  }
 }
 
 class BotanicalBackground extends StatelessWidget {

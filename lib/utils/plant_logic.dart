@@ -2,13 +2,14 @@ import 'dart:math' as math;
 
 class PlantLogic {
   static String getPlantAsset(int daysSober) {
+    final safeDay = daysSober.clamp(0, 999999);
     int stage = 1;
 
     // ==========================================
     // PHASE 1: The First 14 Days (Stages 1 to 30)
     // Custom mapping to ensure intense early visual rewards
     // ==========================================
-    if (daysSober <= 14) {
+    if (safeDay <= 14) {
       const earlyStages = [
         1,  // Day 0: The Seed
         5,  // Day 1: Sprouting quickly (+4 stages)
@@ -26,18 +27,18 @@ class PlantLogic {
         28, // Day 13: (+1 stage)
         30  // Day 14 (2 Weeks): Big visual jump for the milestone
       ];
-      stage = earlyStages[daysSober];
+      stage = earlyStages[safeDay];
     }
     // ==========================================
     // PHASE 2: The Long Haul (Days 15 to 365)
     // ==========================================
-    else if (daysSober >= 365) {
+    else if (safeDay >= 365) {
       stage = 100; // Fully grown Heritage plant
     }
     else {
       // 70 images spread over 351 days using Quadratic Ease-Out so growth
       // feels fast early on and tapers as the user approaches a full year.
-      double progress = (daysSober - 14) / (365 - 14);
+      double progress = (safeDay - 14) / (365 - 14);
       double curve = 1.0 - math.pow(1.0 - progress, 2);
       stage = 30 + (curve * 70).round();
     }

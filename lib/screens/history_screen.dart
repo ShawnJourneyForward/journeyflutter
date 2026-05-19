@@ -6,10 +6,11 @@ import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Local entry model ────────────────────────────────────────────────────────
 
-enum _EntryType { journal, gratitude, slip, craving, thought, exercise, sleep }
+enum _EntryType { journal, gratitude, craving, thought, exercise, sleep, slip }
 
 class _HistoryEntry {
   final _EntryType type;
@@ -96,11 +97,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   List<_HistoryEntry> _buildEntries({
     required List<JournalEntry> journal,
     required List<GratitudeEntry> gratitude,
-    required List<Slip> slips,
     required List<CravingEntry> cravings,
     required List<ThoughtEntry> thoughts,
     required List<ActivityEntry> activities,
     required List<SleepEntry> sleepEntries,
+    required List<Slip> slips,
   }) {
     final entries = <_HistoryEntry>[];
 
@@ -130,22 +131,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         entries.add(_HistoryEntry(
           type: _EntryType.gratitude,
           date: date,
-          id: e.id,
-          data: e,
-        ));
-      }
-    }
-
-    if (_filter == 'all' || _filter == 'slips') {
-      for (final e in slips) {
-        final noteText = e.note ?? '';
-        if (_search.isNotEmpty &&
-            !noteText.toLowerCase().contains(_search.toLowerCase())) {
-          continue;
-        }
-        entries.add(_HistoryEntry(
-          type: _EntryType.slip,
-          date: e.date,
           id: e.id,
           data: e,
         ));
@@ -235,6 +220,21 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       }
     }
 
+    if (_filter == 'all' || _filter == 'slips') {
+      for (final e in slips) {
+        if (_search.isNotEmpty &&
+            !(e.note ?? '').toLowerCase().contains(_search.toLowerCase())) {
+          continue;
+        }
+        entries.add(_HistoryEntry(
+          type: _EntryType.slip,
+          date: e.date,
+          id: e.id,
+          data: e,
+        ));
+      }
+    }
+
     entries.sort((a, b) => b.date.compareTo(a.date));
     return entries;
   }
@@ -253,7 +253,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Delete confirmation ─────────────────────────────────────────────────────
 
   void _confirmDelete(BuildContext context, String id) {
-    HapticFeedback.mediumImpact();
+    H.medium();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -297,25 +297,25 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget _buildFilterChips({
     required int journalCount,
     required int gratitudeCount,
-    required int slipCount,
     required int cravingCount,
     required int thoughtCount,
     required int activityCount,
     required int sleepCount,
+    required int slipCount,
   }) {
     final l10n = AppLocalizations.of(context);
-    final total = journalCount + gratitudeCount + slipCount +
-        cravingCount + thoughtCount + activityCount + sleepCount;
+    final total = journalCount + gratitudeCount +
+        cravingCount + thoughtCount + activityCount + sleepCount + slipCount;
 
     final filters = [
       ('all', '${l10n.historyFilterAll} ($total)'),
       ('journal', '${l10n.historyFilterJournal} ($journalCount)'),
       ('gratitude', '${l10n.historyFilterGratitude} ($gratitudeCount)'),
-      ('slips', '${l10n.historyFilterSlips} ($slipCount)'),
       ('cravings', '${l10n.historyFilterCravings} ($cravingCount)'),
       ('thoughts', '${l10n.historyFilterThoughts} ($thoughtCount)'),
       ('exercise', '${l10n.historyFilterActivity} ($activityCount)'),
       ('sleep', '${l10n.historyFilterSleep} ($sleepCount)'),
+      if (slipCount > 0) ('slips', '${l10n.historyFilterSlips} ($slipCount)'),
     ];
 
     return SingleChildScrollView(
@@ -327,7 +327,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           final isSelected = _filter == f.$1;
           return GestureDetector(
             onTap: () {
-              HapticFeedback.selectionClick();
+              H.selection();
               setState(() => _filter = f.$1);
             },
             child: AnimatedContainer(
@@ -437,7 +437,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return GestureDetector(
       onTap: () {
-        HapticFeedback.selectionClick();
+        H.selection();
         setState(() {
           if (isExpanded) {
             _expanded.remove(entry.id);
@@ -622,94 +622,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(entry.text, style: AppTextStyles.bodyMedium),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ─── Slip card ───────────────────────────────────────────────────────────────
-
-  Widget _buildSlipCard(Slip slip) {
-    return SolidCard(
-      padding: const EdgeInsets.all(0),
-      borderRadius: AppRadius.xl,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Left accent bar
-            Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: AppColors.blush400,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      spacing: 6,
-                      children: [
-                        Icon(
-                          Icons.refresh_rounded,
-                          size: 13,
-                          color: AppColors.blush400,
-                        ),
-                        Text(
-                          'Slip',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: AppColors.blush500,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.blush50,
-                            borderRadius: AppRadius.pill,
-                          ),
-                          child: Text(
-                            'after ${slip.streakDays} ${slip.streakDays == 1 ? 'day' : 'days'}',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.blush500,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          DateFormat('h:mm a').format(slip.date),
-                          style: AppTextStyles.caption,
-                        ),
-                      ],
-                    ),
-                    if (slip.note != null && slip.note!.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(slip.note!, style: AppTextStyles.bodyMedium),
-                    ] else ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        'No note recorded.',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.stone300,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -1099,6 +1011,83 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
+  // ─── Slip card ───────────────────────────────────────────────────────────────
+
+  Widget _buildSlipCard(Slip e) {
+    final streakLabel = e.streakDays == 1
+        ? '1 day streak'
+        : '${e.streakDays} day streak';
+
+    return SolidCard(
+      padding: const EdgeInsets.all(0),
+      borderRadius: AppRadius.xl,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 4,
+              decoration: const BoxDecoration(
+                color: AppColors.honey400,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.refresh_rounded,
+                            size: 14, color: AppColors.stone400),
+                        const SizedBox(width: 6),
+                        Text(DateFormat('h:mm a').format(e.date),
+                            style: AppTextStyles.caption),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.honey50,
+                            borderRadius: AppRadius.pill,
+                          ),
+                          child: Text(
+                            'Reset',
+                            style: AppTextStyles.labelSmall
+                                .copyWith(color: AppColors.honey600),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Previous streak: $streakLabel',
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.stone600),
+                    ),
+                    if (e.note != null && e.note!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        e.note!,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ??? Empty state ???????????????????????????????????????????????????????????
 
   Widget _buildEmptyState() {
@@ -1169,20 +1158,21 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final journalAsync = ref.watch(journalProvider);
     final gratitudeAsync = ref.watch(allGratitudeProvider);
-    final slipsAsync = ref.watch(slipProvider);
     final cravingsAsync = ref.watch(cravingProvider);
     final thoughtsAsync = ref.watch(thoughtProvider);
     final activitiesAsync = ref.watch(activityProvider);
     final sleepAsync = ref.watch(sleepProvider);
-    final soberStats = ref.watch(soberStatsProvider);
+    final slipsAsync = ref.watch(slipProvider);
+    // soberDaysProvider only rebuilds at midnight — no need for per-second ticks here.
+    final soberStats = ref.watch(soberDaysProvider);
 
     final journal = journalAsync.valueOrNull ?? [];
     final gratitude = gratitudeAsync.valueOrNull ?? [];
-    final slips = slipsAsync.valueOrNull ?? [];
     final cravings = cravingsAsync.valueOrNull ?? [];
     final thoughts = thoughtsAsync.valueOrNull ?? [];
     final activities = activitiesAsync.valueOrNull ?? [];
     final sleepEntries = sleepAsync.valueOrNull ?? [];
+    final slips = slipsAsync.valueOrNull ?? [];
 
     // Weekly counts
     final journalThisWeek =
@@ -1197,11 +1187,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final entries = _buildEntries(
       journal: journal,
       gratitude: gratitude,
-      slips: slips,
       cravings: cravings,
       thoughts: thoughts,
       activities: activities,
       sleepEntries: sleepEntries,
+      slips: slips,
     );
 
     final grouped = _groupByDate(entries);
@@ -1223,7 +1213,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         size: 20),
                     color: AppColors.stone700,
                     onPressed: () {
-                      HapticFeedback.lightImpact();
+                      H.light();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -1330,11 +1320,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             _buildFilterChips(
               journalCount: journal.length,
               gratitudeCount: gratitude.length,
-              slipCount: slips.length,
               cravingCount: cravings.length,
               thoughtCount: thoughts.length,
               activityCount: activities.length,
               sleepCount: sleepEntries.length,
+              slipCount: slips.length,
             ),
 
             const SizedBox(height: 4),
@@ -1343,11 +1333,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             Expanded(
               child: (journalAsync.isLoading ||
                       gratitudeAsync.isLoading ||
-                      slipsAsync.isLoading ||
                       cravingsAsync.isLoading ||
                       thoughtsAsync.isLoading ||
                       activitiesAsync.isLoading ||
-                      sleepAsync.isLoading)
+                      sleepAsync.isLoading ||
+                      slipsAsync.isLoading)
                   ? const Center(
                       child: CircularProgressIndicator(
                         color: AppColors.forest600,
@@ -1383,9 +1373,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                     case _EntryType.gratitude:
                                       card = _buildGratitudeCard(
                                           entry.data as GratitudeEntry);
-                                    case _EntryType.slip:
-                                      card = _buildSlipCard(
-                                          entry.data as Slip);
                                     case _EntryType.craving:
                                       card = _buildCravingCard(
                                           entry.data as CravingEntry);
@@ -1398,6 +1385,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                     case _EntryType.sleep:
                                       card = _buildSleepCard(
                                           entry.data as SleepEntry);
+                                    case _EntryType.slip:
+                                      card = _buildSlipCard(
+                                          entry.data as Slip);
                                   }
                                   return Padding(
                                     padding:

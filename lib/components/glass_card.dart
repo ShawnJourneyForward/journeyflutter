@@ -109,12 +109,9 @@ class SolidCard extends StatelessWidget {
         border: Border.all(color: borderColor, width: 1.0),
         boxShadow: shadows,
       ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Padding(
-          padding: padding,
-          child: child,
-        ),
+      child: Padding(
+        padding: padding,
+        child: child,
       ),
     );
   }

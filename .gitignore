@@ -52,3 +52,8 @@ app.*.map.json
 # Website build artifacts
 website/node_modules/
 website/dist/
+
+# Local design / export documents (not part of source)
+*.docx
+*.pdf
+Plant Video/

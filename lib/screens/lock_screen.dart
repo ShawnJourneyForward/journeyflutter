@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/luxury_widgets.dart';
 
@@ -117,14 +118,14 @@ class _LockScreenState extends State<LockScreen>
 
   void _onDigit(String digit) {
     if (_entered.length >= 4) return;
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() { _entered += digit; _error = null; });
     if (_entered.length == 4) _verifyPin();
   }
 
   void _onDelete() {
     if (_entered.isEmpty) return;
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() => _entered = _entered.substring(0, _entered.length - 1));
   }
 
@@ -142,10 +143,10 @@ class _LockScreenState extends State<LockScreen>
 
     final entered = sha256.convert(utf8.encode(_entered)).toString();
     if (entered == stored) {
-      HapticFeedback.mediumImpact();
+      H.medium();
       _unlock();
     } else {
-      HapticFeedback.heavyImpact();
+      H.heavy();
       setState(() { _error = AppLocalizations.of(context).lockIncorrectPin; _entered = ''; });
       _shakeCtrl.forward(from: 0);
     }

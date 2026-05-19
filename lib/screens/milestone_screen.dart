@@ -12,6 +12,7 @@ import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Milestone definitions ────────────────────────────────────────────────────
 
@@ -187,7 +188,7 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
   Future<void> _share() async {
     if (_sharing) return;
     setState(() => _sharing = true);
-    HapticFeedback.mediumImpact();
+    H.medium();
 
     try {
       final boundary = _cardKey.currentContext?.findRenderObject()
@@ -375,7 +376,7 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
                     final isSelected = i == _selectedIndex;
                     return GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
+                        H.selection();
                         setState(() => _selectedIndex = i);
                       },
                       child: _MilestoneTile(

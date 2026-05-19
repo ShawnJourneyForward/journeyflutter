@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
@@ -35,7 +36,8 @@ List<String> _buildQuotes(AppLocalizations l10n) => [
 
 String _dailyQuote(AppLocalizations l10n) {
   final quotes = _buildQuotes(l10n);
-  final doy = DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
+  final now = DateTime.now();
+  final doy = now.difference(DateTime(now.year)).inDays;
   return quotes[doy % quotes.length];
 }
 
@@ -200,20 +202,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _pledgeSaving        = false;
   bool _gratitudeSaving     = false;
   bool _earlyWarningDismissed = false;
+  bool _isFirstLaunch = false;
 
   static const _earlyWarningKey = 'early_warning_seen';
+  static const _homeVisitedKey  = 'home_visited';
 
   @override
   void initState() {
     super.initState();
-    _loadEarlyWarningState();
+    _loadInitialState();
   }
 
-  Future<void> _loadEarlyWarningState() async {
+  Future<void> _loadInitialState() async {
     final prefs = await SharedPreferences.getInstance();
+    final earlyWarningDismissed = prefs.getBool(_earlyWarningKey) ?? false;
+    final homeVisited = prefs.getBool(_homeVisitedKey) ?? false;
+    if (!homeVisited) await prefs.setBool(_homeVisitedKey, true);
     if (mounted) {
-      setState(() =>
-          _earlyWarningDismissed = prefs.getBool(_earlyWarningKey) ?? false);
+      setState(() {
+        _earlyWarningDismissed = earlyWarningDismissed;
+        _isFirstLaunch = !homeVisited;
+      });
     }
   }
 
@@ -239,7 +248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final text = _pledgeController.text.trim();
     if (text.isEmpty) return;
     setState(() => _pledgeSaving = true);
-    HapticFeedback.lightImpact();
+    H.light();
     await ref.read(profileProvider.notifier).patch((p) => p.copyWith(
       lastPledgeText: text,
       lastPledgeDate: _today(),
@@ -255,7 +264,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final text = _gratitudeController.text.trim();
     if (text.isEmpty) return;
     setState(() => _gratitudeSaving = true);
-    HapticFeedback.lightImpact();
+    H.light();
     await ref.read(gratitudeProvider.notifier).add(text);
     _gratitudeController.clear();
     setState(() => _gratitudeSaving = false);
@@ -264,13 +273,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _yesterday() {
     final y = DateTime.now().subtract(const Duration(days: 1));
     return '${y.year}-${y.month.toString().padLeft(2,'0')}-${y.day.toString().padLeft(2,'0')}';
-  }
-
-  String _greeting(AppLocalizations l10n) {
-    final h = DateTime.now().hour;
-    if (h < 12) return l10n.homeGoodMorning;
-    if (h < 17) return l10n.homeGoodAfternoon;
-    return l10n.homeGoodEvening;
   }
 
   @override
@@ -316,8 +318,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         // ── Header ──────────────────────────────────────────
                         _HomeHeader(
-                          greeting: _greeting(l10n),
                           username: profile.username,
+                          isFirstLaunch: _isFirstLaunch,
+                          soberDays: stats?.days ?? 0,
                           onAvatarTap: () => _showProfileModal(context, profile),
                         ),
                         const SizedBox(height: 24),
@@ -375,7 +378,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             toggles: goalToggles,
                             onToggle: (i) {
                               ref.read(weeklyGoalTogglesProvider.notifier).toggle(i);
-                              HapticFeedback.selectionClick();
+                              H.selection();
                             },
                           ),
                           const SizedBox(height: 14),
@@ -387,7 +390,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           toggles: missionToggles,
                           onToggle: (i) {
                             ref.read(missionTogglesProvider.notifier).toggle(i);
-                            HapticFeedback.selectionClick();
+                            H.selection();
                           },
                         ),
                         const SizedBox(height: 14),
@@ -472,10 +475,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 // ─── Header ──────────────────────────────────────────────────────────────────
 
 class _HomeHeader extends StatelessWidget {
-  const _HomeHeader({required this.greeting, required this.username, required this.onAvatarTap});
+  const _HomeHeader({
+    required this.username,
+    required this.isFirstLaunch,
+    required this.soberDays,
+    required this.onAvatarTap,
+  });
 
-  final String greeting;
   final String username;
+  final bool isFirstLaunch;
+  final int soberDays;
   final VoidCallback onAvatarTap;
 
   @override
@@ -483,52 +492,58 @@ class _HomeHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final dateStr = DateFormat('EEEE, d MMMM').format(DateTime.now());
     final name = username.isEmpty ? l10n.homeFriendFallback : username;
+    final greetingText = isFirstLaunch
+        ? l10n.homeGreetingFirst(name)
+        : l10n.homeGreetingReturning(name);
 
-    return SizedBox(
-      height: 126,
-      child: Stack(
-        clipBehavior: Clip.none,
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Positioned(
-            right: -12,
-            top: -10,
-            child: BotanicalBackground(width: 180, height: 118),
+          // ── Plant icon ────────────────────────────────────────────────
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: Image.asset(
+              PlantLogic.getPlantAsset(soberDays),
+              fit: BoxFit.contain,
+              semanticLabel: 'Your recovery plant',
+            ),
           ),
-          Positioned.fill(
-            child: Row(
+          const SizedBox(width: 14),
+          // ── Text block ────────────────────────────────────────────────
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(dateStr, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.stoneText)),
-                      const SizedBox(height: 14),
-                      Text('Hi, $name \u{1F44B}', style: AppTextStyles.greetingSerif),
-                      const SizedBox(height: 8),
-                      Text(l10n.homeTagline, style: AppTextStyles.bodyLarge),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onAvatarTap,
-                  child: Container(
-                    width: 58,
-                    height: 58,
-                    decoration: BoxDecoration(
-                      color: AppColors.card,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.softBorder),
-                      boxShadow: AppShadows.luxury,
-                    ),
-                    child: const Icon(Icons.person_outline_rounded, color: AppColors.forest, size: 27),
-                  ),
-                ),
+                Text(dateStr,
+                    style: AppTextStyles.bodyLarge
+                        .copyWith(color: AppColors.stoneText)),
+                const SizedBox(height: 6),
+                Text(greetingText, style: AppTextStyles.greetingSerif),
+                const SizedBox(height: 6),
+                Text(l10n.homeTagline, style: AppTextStyles.bodyLarge),
               ],
             ),
           ),
+          const SizedBox(width: 12),
+          // ── Avatar ───────────────────────────────────────────────────
+          GestureDetector(
+            onTap: onAvatarTap,
+            child: Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.softBorder),
+                boxShadow: AppShadows.luxury,
+              ),
+              child: const Icon(Icons.person_outline_rounded,
+                  color: AppColors.forest, size: 27),
+            ),
+          ),
         ],
-      ),
     );
   }
 }
@@ -1572,39 +1587,44 @@ class _WeeklyGoalsCard extends StatelessWidget {
             final done = toggles.contains(e.key);
             return GestureDetector(
               onTap: () => onToggle(e.key),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 20, height: 20,
-                      decoration: BoxDecoration(
-                        color: done ? AppColors.forest600 : Colors.white,
-                        border: Border.all(
-                          color: done
-                              ? AppColors.forest600 : AppColors.stone200,
-                          width: 1.5,
+              behavior: HitTestBehavior.opaque,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 24, height: 24,
+                        decoration: BoxDecoration(
+                          color: done ? AppColors.forest600 : Colors.white,
+                          border: Border.all(
+                            color: done
+                                ? AppColors.forest600 : AppColors.stone200,
+                            width: 1.5,
+                          ),
+                          borderRadius: AppRadius.sm,
                         ),
-                        borderRadius: AppRadius.sm,
+                        child: done
+                            ? const Icon(Icons.check_rounded,
+                                size: 14, color: Colors.white)
+                            : null,
                       ),
-                      child: done
-                          ? const Icon(Icons.check_rounded,
-                              size: 13, color: Colors.white)
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(e.value,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                              color: done
-                                  ? AppColors.stone400
-                                  : AppColors.stone700,
-                              decoration: done
-                                  ? TextDecoration.lineThrough
-                                  : null)),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(e.value,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                                color: done
+                                    ? AppColors.stone400
+                                    : AppColors.stone700,
+                                decoration: done
+                                    ? TextDecoration.lineThrough
+                                    : null)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -1647,38 +1667,42 @@ class _DailyMissionsCard extends StatelessWidget {
             final isDone = toggles.contains(e.key);
             return GestureDetector(
               onTap: () => onToggle(e.key),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 20, height: 20,
-                      decoration: BoxDecoration(
-                        color: isDone
-                            ? AppColors.mintChip : Colors.white,
-                        border: Border.all(
+              behavior: HitTestBehavior.opaque,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 24, height: 24,
+                        decoration: BoxDecoration(
                           color: isDone
-                              ? AppColors.leafGreen : AppColors.softBorder,
-                          width: 1.5,
+                              ? AppColors.mintChip : Colors.white,
+                          border: Border.all(
+                            color: isDone
+                                ? AppColors.leafGreen : AppColors.softBorder,
+                            width: 1.5,
+                          ),
+                          shape: BoxShape.circle,
                         ),
-                        shape: BoxShape.circle,
+                        child: isDone
+                            ? const Icon(Icons.check_rounded,
+                                size: 14, color: AppColors.leafGreen)
+                            : null,
                       ),
-                      child: isDone
-                          ? const Icon(Icons.check_rounded,
-                              size: 12, color: AppColors.leafGreen)
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(e.value,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                              color: isDone
-                                  ? AppColors.stone400
-                                  : AppColors.stone700,
-                              decoration: null)),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(e.value,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                                color: isDone
+                                    ? AppColors.stone400
+                                    : AppColors.stone700)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -1721,7 +1745,7 @@ class _CheckInCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 3),
                   child: GestureDetector(
                     onTap: () {
-                      HapticFeedback.lightImpact();
+                      H.light();
                       action();
                     },
                     child: Container(
@@ -2292,7 +2316,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    HapticFeedback.lightImpact();
+    H.light();
     try {
       await ref.read(cravingProvider.notifier).add(
             _intensity.round(),
@@ -2326,7 +2350,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               options: _severityOptions,
               isSelected: (option) => _severity == option,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _severity = option);
               },
             ),
@@ -2348,7 +2372,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               max: 10,
               divisions: 9,
               onChanged: (v) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _intensity = v);
               },
               activeColor: AppColors.forest600,
@@ -2361,7 +2385,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               options: _commonTriggers,
               isSelected: _triggers.contains,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() {
                   if (_triggers.contains(option)) {
                     _triggers.remove(option);
@@ -2389,7 +2413,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               max: 60,
               divisions: 59,
               onChanged: (v) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _duration = v);
               },
               activeColor: AppColors.forest600,
@@ -2428,7 +2452,6 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
   double _duration = 5;
   final Set<String> _triggers = {};
   bool _saving = false;
-  bool _textError = false;
 
   @override
   void dispose() {
@@ -2439,12 +2462,8 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
 
   Future<void> _save() async {
     final text = _thoughtCtrl.text.trim();
-    if (text.isEmpty) {
-      setState(() => _textError = true);
-      return;
-    }
-    setState(() { _saving = true; _textError = false; });
-    HapticFeedback.lightImpact();
+    setState(() => _saving = true);
+    H.light();
     try {
       await ref.read(thoughtProvider.notifier).add(
             text,
@@ -2454,7 +2473,21 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
             durationMinutes: _duration.round(),
             notes: _notesCtrl.text,
           );
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Thought saved privately'),
+            backgroundColor: AppColors.forest700,
+            behavior: SnackBarBehavior.floating,
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadius.lg,
+            ),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        Navigator.of(context).pop();
+      }
     } catch (_) {
       if (mounted) setState(() => _saving = false);
     }
@@ -2479,12 +2512,10 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
               controller: _thoughtCtrl,
               maxLines: 3,
               style: AppTextStyles.bodyMedium,
-              onChanged: (_) { if (_textError) setState(() => _textError = false); },
               decoration: InputDecoration(
-                hintText: 'Write the thought in your own words.',
+                hintText: 'Write the thought in your own words (optional).',
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone400),
-                errorText: _textError ? 'Please write the thought first.' : null,
               ),
             ),
             const SizedBox(height: 18),
@@ -2494,7 +2525,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
               options: _severityOptions,
               isSelected: (option) => _strength == option,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _strength = option);
               },
             ),
@@ -2505,7 +2536,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
               options: _commonTriggers,
               isSelected: _triggers.contains,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() {
                   if (_triggers.contains(option)) {
                     _triggers.remove(option);
@@ -2533,7 +2564,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
               max: 60,
               divisions: 59,
               onChanged: (v) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _duration = v);
               },
               activeColor: AppColors.forest600,
@@ -2546,7 +2577,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
               options: const ['Negative', 'Neutral', 'Positive'],
               isSelected: (option) => _type == option.toLowerCase(),
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _type = option.toLowerCase());
               },
             ),
@@ -2599,7 +2630,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    HapticFeedback.lightImpact();
+    H.light();
     try {
       await ref.read(activityProvider.notifier).add(
             _activity,
@@ -2637,7 +2668,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                         padding: const EdgeInsets.only(right: 6),
                         child: GestureDetector(
                           onTap: () {
-                            HapticFeedback.selectionClick();
+                            H.selection();
                             setState(() => _activity = t.$1);
                           },
                           child: AnimatedContainer(
@@ -2688,7 +2719,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               options: const ['Gentle', 'Moderate', 'Strong'],
               isSelected: (option) => _effort == option,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _effort = option);
               },
             ),
@@ -2699,7 +2730,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               options: const ['Calmer', 'Clearer', 'Energized', 'Same'],
               isSelected: (option) => _outcome == option,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _outcome = option);
               },
             ),
@@ -2721,7 +2752,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               max: 120,
               divisions: 23,
               onChanged: (v) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _minutes = v);
               },
               activeColor: AppColors.forest600,
@@ -2778,7 +2809,7 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    HapticFeedback.lightImpact();
+    H.light();
     try {
       await ref.read(sleepProvider.notifier).add(
             _hours,
@@ -2822,7 +2853,7 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
               max: 12,
               divisions: 22,
               onChanged: (v) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _hours = v);
               },
               activeColor: AppColors.forest600,
@@ -2839,7 +2870,7 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
                     padding: const EdgeInsets.only(right: 6),
                     child: GestureDetector(
                       onTap: () {
-                        HapticFeedback.selectionClick();
+                        H.selection();
                         setState(() => _quality = i + 1);
                       },
                       child: AnimatedContainer(
@@ -2886,7 +2917,7 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
               options: _factorOptions,
               isSelected: _factors.contains,
               onTap: (option) {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() {
                   if (_factors.contains(option)) {
                     _factors.remove(option);

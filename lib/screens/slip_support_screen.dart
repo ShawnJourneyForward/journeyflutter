@@ -8,6 +8,7 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Slip Support Screen ──────────────────────────────────────────────────────
 // This screen is a calm companion for moments of craving or urge.
@@ -31,7 +32,7 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
 
   Future<void> _logCraving() async {
     setState(() => _loggingCraving = true);
-    HapticFeedback.mediumImpact();
+    H.medium();
     await ref.read(cravingProvider.notifier).add(_cravingIntensity);
     setState(() {
       _loggingCraving = false;
@@ -351,7 +352,7 @@ class _HaltCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.selectionClick();
+        H.selection();
         onTap();
       },
       child: AnimatedContainer(

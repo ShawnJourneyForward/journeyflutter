@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -8,6 +7,7 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Slip Log Screen ──────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ class SlipLogScreen extends ConsumerWidget {
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         size: 20, color: AppColors.stone700),
                     onPressed: () {
-                      HapticFeedback.lightImpact();
+                      H.light();
                       Navigator.of(context).pop();
                     },
                   ),

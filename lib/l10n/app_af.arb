@@ -237,14 +237,20 @@
   "@onbFinishBodyToday": {},
   "onbFinishPrivacyNote": "Your journey lives only on this device — private, secure, and completely yours.",
   "@onbFinishPrivacyNote": {},
-  "homeGoodMorning": "Good morning",
-  "@homeGoodMorning": {},
-  "homeGoodAfternoon": "Good afternoon",
-  "@homeGoodAfternoon": {},
-  "homeGoodEvening": "Good evening",
-  "@homeGoodEvening": {},
   "homeFriendFallback": "friend",
   "@homeFriendFallback": {},
+  "homeGreetingFirst": "Hi {name},",
+  "@homeGreetingFirst": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "homeGreetingReturning": "Welcome back, {name}.",
+  "@homeGreetingReturning": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "homeTagline": "Every day forward is a win.",
   "@homeTagline": {},
   "homeErrorPrefix": "Error: {message}",

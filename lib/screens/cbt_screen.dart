@@ -7,6 +7,7 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 
 // ─── CBT Thought Reframe Screen ───────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
 
   void _next() {
     if (!_canAdvance) return;
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() => _step++);
   }
 
@@ -59,7 +60,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
       Navigator.of(context).pop();
       return;
     }
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() => _step--);
   }
 
@@ -69,7 +70,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
     if (thought.isEmpty || reframe.isEmpty) return;
 
     setState(() => _saving = true);
-    HapticFeedback.mediumImpact();
+    H.medium();
 
     // Save original thought as negative, reframe as positive
     await ref.read(thoughtProvider.notifier).add(
@@ -260,7 +261,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: GestureDetector(
               onTap: () {
-                HapticFeedback.selectionClick();
+                H.selection();
                 setState(() => _selectedDistortion = d.label);
               },
               child: AnimatedContainer(

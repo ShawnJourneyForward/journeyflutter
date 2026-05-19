@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_profile.dart';
 import '../theme/app_theme.dart';
+import '../utils/haptic_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
@@ -104,7 +105,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _pin = '';
             _pinConfirm = '';
           });
-          HapticFeedback.heavyImpact();
+          H.heavy();
           return;
         }
       }
@@ -120,7 +121,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _onPinDigit(String digit) {
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() {
       if (_pinConfirming) {
         if (_pinConfirm.length < 4) _pinConfirm += digit;
@@ -131,7 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _onPinDelete() {
-    HapticFeedback.selectionClick();
+    H.selection();
     setState(() {
       if (_pinConfirming) {
         if (_pinConfirm.isNotEmpty)
@@ -146,7 +147,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // ── Save everything and enter the app ───────────────────────────────────────
   Future<void> _finish() async {
     setState(() => _saving = true);
-    HapticFeedback.mediumImpact();
+    H.medium();
 
     // Save PIN hash to secure storage (never stored in plaintext)
     if (_lockMethod == 'pin' && _pin.isNotEmpty) {
@@ -846,7 +847,7 @@ class _SecurityOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () { HapticFeedback.selectionClick(); onTap(); },
+      onTap: () { H.selection(); onTap(); },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 10),
@@ -1184,7 +1185,7 @@ class _NotifToggle extends StatelessWidget {
             ),
             Switch(
               value: value,
-              onChanged: (v) { HapticFeedback.selectionClick(); onChanged(v); },
+              onChanged: (v) { H.selection(); onChanged(v); },
               activeColor: AppColors.forest600,
               activeTrackColor: AppColors.forest100,
             ),
