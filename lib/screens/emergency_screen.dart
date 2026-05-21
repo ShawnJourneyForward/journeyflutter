@@ -9,6 +9,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
+import '../components/back_button.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 
@@ -22,22 +23,37 @@ class _BreathPattern {
 }
 
 List<_BreathPattern> _buildBreathPatterns(AppLocalizations l10n) => [
-  _BreathPattern(l10n.breathPatternBoxName,        4, 4, 4, 4, l10n.breathPatternBoxDesc),
-  _BreathPattern(l10n.breathPattern478Name,        4, 7, 8, 0, l10n.breathPattern478Desc),
-  _BreathPattern(l10n.breathPatternCalmName,       4, 2, 6, 0, l10n.breathPatternCalmDesc),
-  _BreathPattern(l10n.breathPatternPowerName,      6, 0, 2, 0, l10n.breathPatternPowerDesc),
-  _BreathPattern(l10n.breathPatternResetName,      3, 0, 6, 0, l10n.breathPatternResetDesc),
-  _BreathPattern(l10n.breathPatternTriangleName,   4, 4, 4, 0, l10n.breathPatternTriangleDesc),
-  _BreathPattern(l10n.breathPatternAnchorName,     5, 5, 5, 5, l10n.breathPatternAnchorDesc),
-  _BreathPattern(l10n.breathPatternRescueName,     2, 0, 4, 0, l10n.breathPatternRescueDesc),
-  _BreathPattern(l10n.breathPatternOceanName,      4, 0, 6, 2, l10n.breathPatternOceanDesc),
-  _BreathPattern(l10n.breathPatternMorningName,    4, 4, 6, 0, l10n.breathPatternMorningDesc),
-  _BreathPattern(l10n.breathPatternCoherentName,   5, 0, 5, 0, l10n.breathPatternCoherentDesc),
-  _BreathPattern(l10n.breathPattern628Name,        6, 2, 8, 0, l10n.breathPattern628Desc),
-  _BreathPattern(l10n.breathPatternSquarePlusName, 5, 5, 5, 5, l10n.breathPatternSquarePlusDesc),
-  _BreathPattern(l10n.breathPatternWarriorName,    6, 0, 6, 0, l10n.breathPatternWarriorDesc),
-  _BreathPattern(l10n.breathPatternNightName,      4, 7, 8, 0, l10n.breathPatternNightDesc),
-];
+      _BreathPattern(
+          l10n.breathPatternBoxName, 4, 4, 4, 4, l10n.breathPatternBoxDesc),
+      _BreathPattern(
+          l10n.breathPattern478Name, 4, 7, 8, 0, l10n.breathPattern478Desc),
+      _BreathPattern(
+          l10n.breathPatternCalmName, 4, 2, 6, 0, l10n.breathPatternCalmDesc),
+      _BreathPattern(
+          l10n.breathPatternPowerName, 6, 0, 2, 0, l10n.breathPatternPowerDesc),
+      _BreathPattern(
+          l10n.breathPatternResetName, 3, 0, 6, 0, l10n.breathPatternResetDesc),
+      _BreathPattern(l10n.breathPatternTriangleName, 4, 4, 4, 0,
+          l10n.breathPatternTriangleDesc),
+      _BreathPattern(l10n.breathPatternAnchorName, 5, 5, 5, 5,
+          l10n.breathPatternAnchorDesc),
+      _BreathPattern(l10n.breathPatternRescueName, 2, 0, 4, 0,
+          l10n.breathPatternRescueDesc),
+      _BreathPattern(
+          l10n.breathPatternOceanName, 4, 0, 6, 2, l10n.breathPatternOceanDesc),
+      _BreathPattern(l10n.breathPatternMorningName, 4, 4, 6, 0,
+          l10n.breathPatternMorningDesc),
+      _BreathPattern(l10n.breathPatternCoherentName, 5, 0, 5, 0,
+          l10n.breathPatternCoherentDesc),
+      _BreathPattern(
+          l10n.breathPattern628Name, 6, 2, 8, 0, l10n.breathPattern628Desc),
+      _BreathPattern(l10n.breathPatternSquarePlusName, 5, 5, 5, 5,
+          l10n.breathPatternSquarePlusDesc),
+      _BreathPattern(l10n.breathPatternWarriorName, 6, 0, 6, 0,
+          l10n.breathPatternWarriorDesc),
+      _BreathPattern(
+          l10n.breathPatternNightName, 4, 7, 8, 0, l10n.breathPatternNightDesc),
+    ];
 
 // ─── CBT guides ───────────────────────────────────────────────────────────
 
@@ -49,69 +65,100 @@ class _CbtGuide {
 }
 
 List<_CbtGuide> _buildCbtGuides(AppLocalizations l10n) => [
-  _CbtGuide(l10n.cbtGuide0Title, Icons.psychology_outlined, [
-    l10n.cbtGuide0Step0,
-    l10n.cbtGuide0Step1,
-    l10n.cbtGuide0Step2,
-    l10n.cbtGuide0Step3,
-    l10n.cbtGuide0Step4,
-    l10n.cbtGuide0Step5,
-  ]),
-  _CbtGuide(l10n.cbtGuide1Title, Icons.waves_outlined, [
-    l10n.cbtGuide1Step0,
-    l10n.cbtGuide1Step1,
-    l10n.cbtGuide1Step2,
-    l10n.cbtGuide1Step3,
-    l10n.cbtGuide1Step4,
-  ]),
-  _CbtGuide(l10n.cbtGuide2Title, Icons.balance_outlined, [
-    l10n.cbtGuide2Step0,
-    l10n.cbtGuide2Step1,
-    l10n.cbtGuide2Step2,
-    l10n.cbtGuide2Step3,
-    l10n.cbtGuide2Step4,
-  ]),
-  _CbtGuide(l10n.cbtGuide3Title, Icons.map_outlined, [
-    l10n.cbtGuide3Step0,
-    l10n.cbtGuide3Step1,
-    l10n.cbtGuide3Step2,
-    l10n.cbtGuide3Step3,
-    l10n.cbtGuide3Step4,
-  ]),
-  _CbtGuide(l10n.cbtGuide4Title, Icons.self_improvement_outlined, [
-    l10n.cbtGuide4Step0,
-    l10n.cbtGuide4Step1,
-    l10n.cbtGuide4Step2,
-    l10n.cbtGuide4Step3,
-    l10n.cbtGuide4Step4,
-  ]),
-];
+      _CbtGuide(l10n.cbtGuide0Title, Icons.psychology_outlined, [
+        l10n.cbtGuide0Step0,
+        l10n.cbtGuide0Step1,
+        l10n.cbtGuide0Step2,
+        l10n.cbtGuide0Step3,
+        l10n.cbtGuide0Step4,
+        l10n.cbtGuide0Step5,
+      ]),
+      _CbtGuide(l10n.cbtGuide1Title, Icons.waves_outlined, [
+        l10n.cbtGuide1Step0,
+        l10n.cbtGuide1Step1,
+        l10n.cbtGuide1Step2,
+        l10n.cbtGuide1Step3,
+        l10n.cbtGuide1Step4,
+      ]),
+      _CbtGuide(l10n.cbtGuide2Title, Icons.balance_outlined, [
+        l10n.cbtGuide2Step0,
+        l10n.cbtGuide2Step1,
+        l10n.cbtGuide2Step2,
+        l10n.cbtGuide2Step3,
+        l10n.cbtGuide2Step4,
+      ]),
+      _CbtGuide(l10n.cbtGuide3Title, Icons.map_outlined, [
+        l10n.cbtGuide3Step0,
+        l10n.cbtGuide3Step1,
+        l10n.cbtGuide3Step2,
+        l10n.cbtGuide3Step3,
+        l10n.cbtGuide3Step4,
+      ]),
+      _CbtGuide(l10n.cbtGuide4Title, Icons.self_improvement_outlined, [
+        l10n.cbtGuide4Step0,
+        l10n.cbtGuide4Step1,
+        l10n.cbtGuide4Step2,
+        l10n.cbtGuide4Step3,
+        l10n.cbtGuide4Step4,
+      ]),
+    ];
 
 // ─── HALT states ─────────────────────────────────────────────────────────
 
-List<(String, String, String, IconData)> _buildHaltItems(AppLocalizations l10n) => [
-  (l10n.haltH, l10n.haltHungry, l10n.haltHungryAdvice, Icons.restaurant_outlined),
-  (l10n.haltA, l10n.haltAngry,  l10n.haltAngryAdvice,  Icons.mood_bad_outlined),
-  (l10n.haltL, l10n.haltLonely, l10n.haltLonelyAdvice, Icons.people_outline_rounded),
-  (l10n.haltT, l10n.haltTired,  l10n.haltTiredAdvice,  Icons.bedtime_outlined),
-];
+List<(String, String, String, IconData)> _buildHaltItems(
+        AppLocalizations l10n) =>
+    [
+      (
+        l10n.haltH,
+        l10n.haltHungry,
+        l10n.haltHungryAdvice,
+        Icons.restaurant_outlined
+      ),
+      (
+        l10n.haltA,
+        l10n.haltAngry,
+        l10n.haltAngryAdvice,
+        Icons.mood_bad_outlined
+      ),
+      (
+        l10n.haltL,
+        l10n.haltLonely,
+        l10n.haltLonelyAdvice,
+        Icons.people_outline_rounded
+      ),
+      (
+        l10n.haltT,
+        l10n.haltTired,
+        l10n.haltTiredAdvice,
+        Icons.bedtime_outlined
+      ),
+    ];
 
 // ─── Mindfulness exercises ─────────────────────────────────────────────────
 
-List<(String, String, IconData)> _buildMindfulExercises(AppLocalizations l10n) => [
-  (l10n.mindful0Title, l10n.mindful0Desc, Icons.visibility_outlined),
-  (l10n.mindful1Title, l10n.mindful1Desc, Icons.air_outlined),
-  (l10n.mindful2Title, l10n.mindful2Desc, Icons.accessibility_new_outlined),
-  (l10n.mindful3Title, l10n.mindful3Desc, Icons.cloud_outlined),
-  (l10n.mindful4Title, l10n.mindful4Desc, Icons.label_outline_rounded),
-  (l10n.mindful5Title, l10n.mindful5Desc, Icons.anchor_outlined),
-];
+List<(String, String, IconData)> _buildMindfulExercises(
+        AppLocalizations l10n) =>
+    [
+      (l10n.mindful0Title, l10n.mindful0Desc, Icons.visibility_outlined),
+      (l10n.mindful1Title, l10n.mindful1Desc, Icons.air_outlined),
+      (l10n.mindful2Title, l10n.mindful2Desc, Icons.accessibility_new_outlined),
+      (l10n.mindful3Title, l10n.mindful3Desc, Icons.cloud_outlined),
+      (l10n.mindful4Title, l10n.mindful4Desc, Icons.label_outline_rounded),
+      (l10n.mindful5Title, l10n.mindful5Desc, Icons.anchor_outlined),
+    ];
 
 // ─── Emergency Screen ──────────────────────────────────────────────────────
 
 enum _Tab {
-  home, breathing, meditation, cbt, reasons, halt, urgeTimer,
-  playTape, mindfulness,
+  home,
+  breathing,
+  meditation,
+  cbt,
+  reasons,
+  halt,
+  urgeTimer,
+  playTape,
+  mindfulness,
 }
 
 class EmergencyScreen extends ConsumerStatefulWidget {
@@ -125,7 +172,7 @@ class _EmergencyScreenState extends ConsumerState<EmergencyScreen> {
   _Tab _tab = _Tab.home;
 
   void _go(_Tab t) => setState(() => _tab = t);
-  void _home()     => setState(() => _tab = _Tab.home);
+  void _home() => setState(() => _tab = _Tab.home);
 
   @override
   Widget build(BuildContext context) {
@@ -146,14 +193,14 @@ class _EmergencyScreenState extends ConsumerState<EmergencyScreen> {
               child: KeyedSubtree(
                 key: ValueKey(_tab),
                 child: switch (_tab) {
-                  _Tab.home        => _HomeTab(onNav: _go),
-                  _Tab.breathing   => _BreathingTab(onBack: _home),
-                  _Tab.meditation  => _MeditationTab(onBack: _home),
-                  _Tab.cbt         => _CbtTab(onBack: _home),
-                  _Tab.reasons     => _ReasonsTab(onBack: _home),
-                  _Tab.halt        => _HaltTab(onBack: _home),
-                  _Tab.urgeTimer   => _UrgeTimerTab(onBack: _home),
-                  _Tab.playTape    => _PlayTapeTab(onBack: _home),
+                  _Tab.home => _HomeTab(onNav: _go),
+                  _Tab.breathing => _BreathingTab(onBack: _home),
+                  _Tab.meditation => _MeditationTab(onBack: _home),
+                  _Tab.cbt => _CbtTab(onBack: _home),
+                  _Tab.reasons => _ReasonsTab(onBack: _home),
+                  _Tab.halt => _HaltTab(onBack: _home),
+                  _Tab.urgeTimer => _UrgeTimerTab(onBack: _home),
+                  _Tab.playTape => _PlayTapeTab(onBack: _home, onNav: _go),
                   _Tab.mindfulness => _MindfulnessTab(onBack: _home),
                 },
               ),
@@ -174,19 +221,16 @@ class _TabHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(4, 12, 20, 4),
-    child: Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              size: 18, color: AppColors.stone600),
-          onPressed: onBack,
+        padding: const EdgeInsets.fromLTRB(4, 12, 20, 4),
+        child: Row(
+          children: [
+            LuxuryBackButton(onPressed: onBack),
+            Text(title,
+                style: AppTextStyles.titleLarge
+                    .copyWith(color: AppColors.forest700)),
+          ],
         ),
-        Text(title, style: AppTextStyles.titleLarge
-            .copyWith(color: AppColors.forest700)),
-      ],
-    ),
-  );
+      );
 }
 
 // ─── Tab 0: Home ──────────────────────────────────────────────────────────
@@ -201,15 +245,35 @@ class _HomeTab extends ConsumerWidget {
     final ec = profile?.emergencyContact;
 
     final tools = [
-      (Icons.air_rounded,          'Breathing',   AppColors.forest400,  _Tab.breathing),
-      (Icons.self_improvement_rounded,'Meditation',AppColors.stone400,   _Tab.meditation),
-      (Icons.psychology_rounded,   'CBT Guides',  AppColors.forest600,  _Tab.cbt),
-      (Icons.favorite_rounded,     'My Reasons',  AppColors.forest600,  _Tab.reasons),
-      (Icons.favorite_border_rounded,'H.A.L.T.',    AppColors.honey500,   _Tab.halt),
-      (Icons.timer_outlined,       'Urge Timer',  AppColors.forest400,  _Tab.urgeTimer),
-      (Icons.play_circle_outline,  'Play the Tape',AppColors.stone500,  _Tab.playTape),
-      (Icons.spa_outlined,         'Mindfulness', AppColors.forest400,  _Tab.mindfulness),
-      (Icons.extension_outlined,   'Puzzle',      AppColors.stone400,   null),
+      (Icons.air_rounded, 'Breathing', AppColors.forest400, _Tab.breathing),
+      (
+        Icons.self_improvement_rounded,
+        'Meditation',
+        AppColors.stone400,
+        _Tab.meditation
+      ),
+      (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt),
+      (Icons.favorite_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons),
+      (
+        Icons.favorite_border_rounded,
+        'H.A.L.T.',
+        AppColors.honey500,
+        _Tab.halt
+      ),
+      (Icons.timer_outlined, 'Urge Timer', AppColors.forest400, _Tab.urgeTimer),
+      (
+        Icons.play_circle_outline,
+        'Play the Tape',
+        AppColors.stone500,
+        _Tab.playTape
+      ),
+      (
+        Icons.spa_outlined,
+        'Mindfulness',
+        AppColors.forest400,
+        _Tab.mindfulness
+      ),
+      (Icons.extension_outlined, 'Puzzle', AppColors.stone400, null),
     ];
 
     return ListView(
@@ -273,8 +337,10 @@ class _HomeTab extends ConsumerWidget {
             return GestureDetector(
               onTap: () {
                 H.light();
-                if (tab != null) onNav(tab);
-                else context.push('/puzzle');
+                if (tab != null)
+                  onNav(tab);
+                else
+                  context.push('/puzzle');
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -287,7 +353,8 @@ class _HomeTab extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 42, height: 42,
+                      width: 42,
+                      height: 42,
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.12),
                         shape: BoxShape.circle,
@@ -295,7 +362,8 @@ class _HomeTab extends ConsumerWidget {
                       child: Icon(icon, size: 22, color: color),
                     ),
                     const SizedBox(height: 6),
-                    Text(label, style: AppTextStyles.caption,
+                    Text(label,
+                        style: AppTextStyles.caption,
                         textAlign: TextAlign.center),
                   ],
                 ),
@@ -303,13 +371,14 @@ class _HomeTab extends ConsumerWidget {
             );
           },
         ),
-
       ],
     );
   }
 }
 
 // ─── Tab 1: Breathing ─────────────────────────────────────────────────────
+
+enum _BreathView { select, session, library }
 
 class _BreathingTab extends StatefulWidget {
   const _BreathingTab({required this.onBack});
@@ -321,18 +390,27 @@ class _BreathingTab extends StatefulWidget {
 
 class _BreathingTabState extends State<_BreathingTab>
     with TickerProviderStateMixin {
-
-  int _selectedIndex = 0;
-  bool _running = false;
-  String _phase = 'Inhale';
-  int _phaseSeconds = 0;
-  int _totalSeconds = 0;
-  int _durationMinutes = 5;
-  Timer? _timer;
   late List<_BreathPattern> _patterns;
 
+  // View routing
+  _BreathView _view = _BreathView.select;
+
+  // Pattern selection — default to Rescue (index 7)
+  int _selectedIndex = 7;
+
+  // Session state
+  bool _paused = false;
+  int _phaseIndex = 0;
+  int _phaseRemaining = 0;
+  int _totalSeconds = 0;
+  static const _sessionDuration = 5 * 60; // 5 minutes
+
+  Timer? _timer;
+
   late final AnimationController _circleCtrl = AnimationController(
-      vsync: this, duration: const Duration(seconds: 1));
+    vsync: this,
+    duration: const Duration(seconds: 4),
+  );
 
   @override
   void didChangeDependencies() {
@@ -352,214 +430,842 @@ class _BreathingTabState extends State<_BreathingTab>
     ];
   }
 
-  int _phaseIndex = 0;
-  int _phaseRemaining = 0;
+  // ── Session control ──────────────────────────────────────────────────────
 
-  void _start() {
-    H.medium();
+  /// Distinct haptic pattern per phase so the user can feel the rhythm
+  /// without looking. Inhale = strong (heavy impact), Exhale = release
+  /// (medium impact), Hold = soft tap (light impact). Respects the global
+  /// haptics toggle automatically via [H].
+  void _phaseHaptic(String phaseName) {
+    switch (phaseName) {
+      case 'Inhale':
+        H.heavy();
+        break;
+      case 'Exhale':
+        H.medium();
+        break;
+      case 'Hold':
+        H.light();
+        break;
+    }
+  }
+
+  void _startSession() {
     final phases = _phases;
     _phaseIndex = 0;
     _phaseRemaining = phases[0].$2;
-    _totalSeconds = _durationMinutes * 60;
-    _phase = phases[0].$1;
-
-    setState(() { _running = true; _phaseSeconds = _phaseRemaining; });
+    _totalSeconds = _sessionDuration;
+    _paused = false;
+    setState(() => _view = _BreathView.session);
+    // Fire the haptic for the FIRST phase (always Inhale) so the session
+    // starts with the same pulse the user will feel on every transition.
+    _phaseHaptic(phases[0].$1);
     _animatePhase();
+    _scheduleTimer();
+  }
 
+  void _scheduleTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
+      if (!mounted || _paused) return;
       _totalSeconds--;
       _phaseRemaining--;
 
       if (_totalSeconds <= 0) {
-        H.medium();
-        _stop();
+        H.heavy();
+        _endSession();
         return;
       }
 
       if (_phaseRemaining <= 0) {
+        final phases = _phases;
         _phaseIndex = (_phaseIndex + 1) % phases.length;
         _phaseRemaining = phases[_phaseIndex].$2;
-        H.light();
+        _phaseHaptic(phases[_phaseIndex].$1);
         _animatePhase();
       }
 
-      setState(() {
-        _phase = phases[_phaseIndex].$1;
-        _phaseSeconds = _phaseRemaining;
-      });
+      setState(() {});
     });
   }
 
   void _animatePhase() {
     final phase = _phases[_phaseIndex];
-    _circleCtrl.duration = Duration(seconds: phase.$2);
+    final dur = Duration(seconds: phase.$2);
+    // Inhale → expand outward over the phase duration.
+    // Exhale → contract inward over the phase duration.
+    // Hold → freeze at the current expansion (hold1 freezes expanded,
+    //        hold2 freezes contracted) so the visual matches the breath.
     if (phase.$1 == 'Inhale') {
-      _circleCtrl.forward(from: 0);
+      _circleCtrl.animateTo(1.0, duration: dur, curve: Curves.easeInOut);
     } else if (phase.$1 == 'Exhale') {
-      _circleCtrl.reverse(from: 1);
+      _circleCtrl.animateTo(0.0, duration: dur, curve: Curves.easeInOut);
+    } else {
+      _circleCtrl.stop();
     }
   }
 
-  void _stop() {
+  void _pauseSession() {
+    H.light();
     _timer?.cancel();
     _circleCtrl.stop();
-    setState(() { _running = false; _phase = 'Inhale'; _phaseSeconds = 0; });
+    setState(() => _paused = true);
+  }
+
+  void _resumeSession() {
+    H.light();
+    setState(() => _paused = false);
+    _animatePhase();
+    _scheduleTimer();
+  }
+
+  void _endSession() {
+    _timer?.cancel();
+    _circleCtrl.stop();
+    _circleCtrl.value = 0;
+    setState(() {
+      _paused = false;
+      _view = _BreathView.select;
+      _phaseIndex = 0;
+      _phaseRemaining = 0;
+    });
   }
 
   @override
-  void dispose() { _timer?.cancel(); _circleCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _timer?.cancel();
+    _circleCtrl.dispose();
+    super.dispose();
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => switch (_view) {
+        _BreathView.select => _buildSelectScreen(),
+        _BreathView.session => _buildSessionScreen(),
+        _BreathView.library => _buildLibraryScreen(),
+      };
+
+  // ── SELECT SCREEN ────────────────────────────────────────────────────────
+
+  Widget _buildSelectScreen() {
+    // Featured indices in _buildBreathPatterns order:
+    // 0=Box, 7=Rescue, 8=Ocean, 10=Coherent, 14=Night
+    const rescueIdx = 7;
+    const featuredGrid = [0, 14, 10, 8]; // Box, Night, Coherent, Ocean
+
+    return Stack(
       children: [
-        _TabHeader(title: 'Breathing', onBack: widget.onBack),
-        // Pattern selector
-        SizedBox(
-          height: 40,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _patterns.length,
-            itemBuilder: (_, i) {
-              final selected = i == _selectedIndex;
-              return GestureDetector(
-                onTap: _running ? null : () {
-                  H.selection();
-                  setState(() => _selectedIndex = i);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? AppColors.forest600 : Colors.white,
-                    borderRadius: AppRadius.pill,
-                    border: Border.all(
-                      color: selected
-                          ? AppColors.forest600 : AppColors.stone100,
-                    ),
-                  ),
-                  child: Text(_patterns[i].name,
-                      style: AppTextStyles.labelLarge.copyWith(
-                          color: selected
-                              ? Colors.white : AppColors.stone600,
-                          fontSize: 12)),
-                ),
-              );
-            },
+        const Positioned(
+          top: -6,
+          right: -18,
+          child: IgnorePointer(
+            child: BotanicalBackground(width: 160, height: 130),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(_pattern.description,
-            style: AppTextStyles.bodySmall,
-            textAlign: TextAlign.center),
-
-        // Breathing circle
-        Expanded(
-          child: Center(
-            child: AnimatedBuilder(
-              animation: _circleCtrl,
-              builder: (_, __) {
-                final scale = 0.6 + _circleCtrl.value * 0.4;
-                return Stack(
-                  alignment: Alignment.center,
+        ListView(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+          children: [
+            Transform.translate(
+              offset: const Offset(-16, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: LuxuryBackButton(onPressed: widget.onBack),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text('CALM TOOLKIT', style: AppTextStyles.overline),
+            const SizedBox(height: 4),
+            Text('Choose your breath.',
+                style: AppTextStyles.greetingSerif
+                    .copyWith(fontSize: 32, color: AppColors.forestDark)),
+            const SizedBox(height: 4),
+            Text('A gentle rhythm for this moment.',
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone500)),
+            const SizedBox(height: 20),
+            // Recommended card
+            _RecommendedCard(
+              pattern: _patterns[rescueIdx],
+              onBegin: () {
+                setState(() => _selectedIndex = rescueIdx);
+                _startSession();
+              },
+            ),
+            const SizedBox(height: 24),
+            Text('Breathing Library',
+                style: AppTextStyles.displaySmall.copyWith(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.forestDark)),
+            const SizedBox(height: 12),
+            // 2×2 grid
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.0,
+              children: featuredGrid
+                  .map((idx) => _LibraryCard(
+                        pattern: _patterns[idx],
+                        onTap: () {
+                          setState(() => _selectedIndex = idx);
+                          _startSession();
+                        },
+                      ))
+                  .toList(),
+            ),
+            // More link
+            GestureDetector(
+              onTap: () {
+                H.light();
+                setState(() => _view = _BreathView.library);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 220 * scale, height: 220 * scale,
+                    Text('More breathing patterns',
+                        style: AppTextStyles.bodyMedium
+                            .copyWith(color: AppColors.forest600)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.chevron_right_rounded,
+                        size: 18, color: AppColors.forest600),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── SESSION SCREEN ───────────────────────────────────────────────────────
+
+  Widget _buildSessionScreen() {
+    final phases = _phases;
+    final currentName = phases[_phaseIndex].$1;
+    final mm = _totalSeconds ~/ 60;
+    final ss = (_totalSeconds % 60).toString().padLeft(2, '0');
+    final progress =
+        ((_sessionDuration - _totalSeconds) / _sessionDuration).clamp(0.0, 1.0);
+
+    return Stack(
+      children: [
+        const Positioned(
+          top: -6,
+          right: -18,
+          child: IgnorePointer(
+            child: BotanicalBackground(width: 160, height: 130),
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 24, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Transform.translate(
+                    offset: const Offset(-16, 0),
+                    child: LuxuryBackButton(onPressed: _endSession),
+                  ),
+                  const SizedBox(height: 4),
+                  Text('CALM TOOLKIT', style: AppTextStyles.overline),
+                  const SizedBox(height: 4),
+                  Text('Breathe with me.',
+                      style: AppTextStyles.greetingSerif
+                          .copyWith(fontSize: 32, color: AppColors.forestDark)),
+                  const SizedBox(height: 2),
+                  Text('Nothing to solve right now.',
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.stone500)),
+                ],
+              ),
+            ),
+            // Breathing ring
+            Expanded(
+              child: Center(
+                child: AnimatedBuilder(
+                  animation: _circleCtrl,
+                  builder: (_, __) {
+                    final t = _circleCtrl.value;
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Outer halo
+                        Container(
+                          width: 240 + 60 * t,
+                          height: 240 + 60 * t,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.forest400
+                                .withOpacity(0.04 + 0.04 * t),
+                          ),
+                        ),
+                        // Mid ring
+                        Container(
+                          width: 196 + 46 * t,
+                          height: 196 + 46 * t,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.forest400
+                                .withOpacity(0.07 + 0.06 * t),
+                          ),
+                        ),
+                        // Inner ring with border
+                        Container(
+                          width: 158 + 34 * t,
+                          height: 158 + 34 * t,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.forest200
+                                .withOpacity(0.18 + 0.14 * t),
+                            border: Border.all(
+                              color: AppColors.forest300
+                                  .withOpacity(0.25 + 0.18 * t),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        // Core — cream circle with phase info
+                        Container(
+                          width: 126,
+                          height: 126,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.cream,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(currentName,
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                      color: AppColors.forest700,
+                                      fontWeight: FontWeight.w500)),
+                              Text('$_phaseRemaining',
+                                  style: AppTextStyles.heroNumber.copyWith(
+                                      fontSize: 40,
+                                      color: AppColors.forestDark,
+                                      height: 1.0)),
+                              Text(_pattern.name,
+                                  style: AppTextStyles.caption
+                                      .copyWith(color: AppColors.stone500)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+            // Phase pills
+            Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: phases.asMap().entries.expand((e) {
+                  final active = e.key == _phaseIndex;
+                  final name = e.value.$1;
+                  return [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.forest600.withOpacity(0.08),
+                        color:
+                            active ? AppColors.forest100 : Colors.transparent,
+                        borderRadius: AppRadius.pill,
                       ),
-                    ),
-                    Container(
-                      width: 160 * scale, height: 160 * scale,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.forest600.withOpacity(0.15),
-                      ),
-                    ),
-                    Container(
-                      width: 110, height: 110,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.forest600,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(_running ? _phase : 'Ready',
-                              style: AppTextStyles.titleSmall
-                                  .copyWith(color: Colors.white)),
-                          if (_running)
-                            Text('$_phaseSeconds',
-                                style: AppTextStyles.displaySmall
-                                    .copyWith(color: Colors.white,
-                                        fontSize: 26)),
+                          if (active)
+                            Container(
+                              width: 6,
+                              height: 6,
+                              margin: const EdgeInsets.only(right: 5),
+                              decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.forest600),
+                            ),
+                          Text(name,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: active
+                                    ? AppColors.forest700
+                                    : AppColors.stone400,
+                                fontWeight:
+                                    active ? FontWeight.w600 : FontWeight.w400,
+                              )),
                         ],
                       ),
                     ),
-                  ],
-                );
-              },
+                    if (e.key < phases.length - 1)
+                      Text(' • ',
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone300)),
+                  ];
+                }).toList(),
+              ),
             ),
-          ),
-        ),
-
-        // Duration + controls
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
-          child: Column(
-            children: [
-              if (!_running) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            // Session card
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: AppRadius.luxury,
+                  border: Border.all(color: AppColors.softBorder),
+                  boxShadow: AppShadows.luxury,
+                ),
+                child: Column(
                   children: [
-                    const Text('Duration: '),
-                    DropdownButton<int>(
-                      value: _durationMinutes,
-                      items: [1,2,3,5,10].map((m) =>
-                          DropdownMenuItem(value: m,
-                              child: Text('$m min'))).toList(),
-                      onChanged: (v) =>
-                          setState(() => _durationMinutes = v ?? 5),
-                      underline: const SizedBox.shrink(),
+                    Row(
+                      children: [
+                        const Icon(Icons.eco_outlined,
+                            size: 18, color: AppColors.forest300),
+                        const Spacer(),
+                        Column(
+                          children: [
+                            Text('$mm:$ss',
+                                style: AppTextStyles.displaySmall.copyWith(
+                                    fontSize: 28, color: AppColors.forestDark)),
+                            Text('remaining', style: AppTextStyles.caption),
+                          ],
+                        ),
+                        const Spacer(),
+                        const SizedBox(width: 18),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: AppRadius.pill,
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: AppColors.forest100,
+                        valueColor:
+                            const AlwaysStoppedAnimation(AppColors.forest500),
+                        minHeight: 5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: _paused ? _resumeSession : _pauseSession,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.forest700,
+                              minimumSize: const Size.fromHeight(48),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: AppRadius.xl),
+                            ),
+                            child: Text(_paused ? 'Resume' : 'Pause'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: _endSession,
+                            style: OutlinedButton.styleFrom(
+                              side:
+                                  const BorderSide(color: AppColors.forest300),
+                              minimumSize: const Size.fromHeight(48),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: AppRadius.xl),
+                            ),
+                            child: const Text('End session',
+                                style: TextStyle(color: AppColors.forest700)),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-              ] else ...[
-                Text(
-                  '${_totalSeconds ~/ 60}:${(_totalSeconds % 60).toString().padLeft(2,'0')} remaining',
-                  style: AppTextStyles.bodySmall,
-                ),
-                const SizedBox(height: 10),
-              ],
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: _running
-                      ? () { H.light(); _stop(); }
-                      : _start,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: _running
-                        ? AppColors.honey500 : AppColors.forest600,
-                    minimumSize: const Size.fromHeight(50),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: AppRadius.xl),
-                  ),
-                  child: Text(_running ? 'Stop' : 'Start'),
+              ),
+            ),
+            // Safety footer
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Center(
+                child: Text(
+                  'If you feel dizzy, return to normal breathing.',
+                  style:
+                      AppTextStyles.caption.copyWith(color: AppColors.stone400),
                 ),
               ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── LIBRARY SCREEN ───────────────────────────────────────────────────────
+
+  Widget _buildLibraryScreen() {
+    const featured = {0, 7, 8, 10, 14};
+    final extra = _patterns
+        .asMap()
+        .entries
+        .where((e) => !featured.contains(e.key))
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Transform.translate(
+                offset: const Offset(-16, 0),
+                child: LuxuryBackButton(
+                    onPressed: () =>
+                        setState(() => _view = _BreathView.select)),
+              ),
+              const SizedBox(height: 4),
+              Text('CALM TOOLKIT', style: AppTextStyles.overline),
+              const SizedBox(height: 4),
+              Text('All breathing patterns.',
+                  style: AppTextStyles.greetingSerif
+                      .copyWith(fontSize: 30, color: AppColors.forestDark)),
+              const SizedBox(height: 4),
+              Text('Find the rhythm that fits this moment.',
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.stone500)),
+              const SizedBox(height: 16),
             ],
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+            itemCount: extra.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (_, i) {
+              final idx = extra[i].key;
+              final p = extra[i].value;
+              return _PatternListTile(
+                pattern: p,
+                onTap: () {
+                  setState(() => _selectedIndex = idx);
+                  _startSession();
+                },
+              );
+            },
           ),
         ),
       ],
     );
   }
+}
+
+// ─── Recommended Card ─────────────────────────────────────────────────────
+
+class _RecommendedCard extends StatelessWidget {
+  const _RecommendedCard({required this.pattern, required this.onBegin});
+  final _BreathPattern pattern;
+  final VoidCallback onBegin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: AppColors.softBorder),
+        boxShadow: AppShadows.luxury,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: const BoxDecoration(
+                    color: AppColors.forest50, shape: BoxShape.circle),
+                child: const Icon(Icons.air_rounded,
+                    size: 26, color: AppColors.forest600),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('RECOMMENDED NOW',
+                        style: AppTextStyles.overline.copyWith(
+                            color: AppColors.honey500, letterSpacing: 1.1)),
+                    const SizedBox(height: 2),
+                    Text(pattern.name,
+                        style: AppTextStyles.displaySmall.copyWith(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.forestDark)),
+                    const SizedBox(height: 2),
+                    Text(pattern.description,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(color: AppColors.stone100, height: 1),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _RhythmChip(label: 'In', value: pattern.inhale),
+              if (pattern.hold1 > 0) ...[
+                const SizedBox(width: 8),
+                _RhythmChip(label: 'Hold', value: pattern.hold1),
+              ],
+              if (pattern.exhale > 0) ...[
+                const SizedBox(width: 8),
+                _RhythmChip(label: 'Out', value: pattern.exhale),
+              ],
+              if (pattern.hold2 > 0) ...[
+                const SizedBox(width: 8),
+                _RhythmChip(label: 'Hold', value: pattern.hold2),
+              ],
+              const Spacer(),
+              SizedBox(
+                height: 44,
+                child: FilledButton(
+                  onPressed: onBegin,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.forest700,
+                    padding: const EdgeInsets.symmetric(horizontal: 28),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: AppRadius.xl),
+                  ),
+                  child: const Text('Begin',
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RhythmChip extends StatelessWidget {
+  const _RhythmChip({required this.label, required this.value});
+  final String label;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.stone50,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.stone100),
+        ),
+        child: Text('$label  $value',
+            style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.forest700,
+                fontWeight: FontWeight.w600,
+                fontSize: 12)),
+      );
+}
+
+// ─── Library Grid Card ────────────────────────────────────────────────────
+
+class _LibraryCard extends StatelessWidget {
+  const _LibraryCard({required this.pattern, required this.onTap});
+  final _BreathPattern pattern;
+  final VoidCallback onTap;
+
+  static const _icons = <String, IconData>{
+    'Box': Icons.crop_square_rounded,
+    'Night': Icons.bedtime_outlined,
+    'Coherent': Icons.monitor_heart_outlined,
+    'Ocean': Icons.waves_rounded,
+    'Rescue': Icons.air_rounded,
+    'Calm': Icons.air_outlined,
+    'Power': Icons.bolt_rounded,
+    'Reset': Icons.refresh_rounded,
+    'Triangle': Icons.change_history_rounded,
+    'Anchor': Icons.anchor_outlined,
+    'Morning': Icons.wb_sunny_outlined,
+    'Warrior': Icons.fitness_center_outlined,
+    '4-7-8': Icons.nights_stay_outlined,
+    '6-2-8': Icons.self_improvement_outlined,
+    'Square+': Icons.dashboard_outlined,
+  };
+
+  String _rhythmLabel() {
+    final p = pattern;
+    final parts = <String>['${p.inhale}'];
+    if (p.hold1 > 0) parts.add('${p.hold1}');
+    if (p.exhale > 0) parts.add('${p.exhale}');
+    if (p.hold2 > 0) parts.add('${p.hold2}');
+    return parts.join(' · ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = _icons[pattern.name] ?? Icons.air_outlined;
+    return GestureDetector(
+      onTap: () {
+        H.selection();
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: AppRadius.luxury,
+          border: Border.all(color: AppColors.softBorder),
+          boxShadow: AppShadows.luxury,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: const BoxDecoration(
+                      color: AppColors.forest50, shape: BoxShape.circle),
+                  child: Icon(icon, size: 24, color: AppColors.forest600),
+                ),
+                const SizedBox(height: 10),
+                Text(pattern.name,
+                    style: AppTextStyles.displaySmall.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.forestDark)),
+                const SizedBox(height: 4),
+                Text(pattern.description,
+                    style: AppTextStyles.caption,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+            // Fixed-width, single-line pill so the Box pattern (4·4·4·4 — four
+            // numbers) doesn't wrap to two lines on narrow phones, which would
+            // make its chip taller than the others and visually misalign the
+            // 2×2 grid. FittedBox shrinks the text on very narrow phones
+            // rather than allowing a wrap.
+            Container(
+              height: 24,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppColors.stone50,
+                borderRadius: AppRadius.pill,
+                border: Border.all(color: AppColors.stone100),
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  _rhythmLabel(),
+                  maxLines: 1,
+                  softWrap: false,
+                  style: AppTextStyles.caption.copyWith(
+                      color: AppColors.forest600,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Library List Tile ────────────────────────────────────────────────────
+
+class _PatternListTile extends StatelessWidget {
+  const _PatternListTile({required this.pattern, required this.onTap});
+  final _BreathPattern pattern;
+  final VoidCallback onTap;
+
+  String _rhythmLabel() {
+    final p = pattern;
+    final parts = <String>['${p.inhale}'];
+    if (p.hold1 > 0) parts.add('${p.hold1}');
+    if (p.exhale > 0) parts.add('${p.exhale}');
+    if (p.hold2 > 0) parts.add('${p.hold2}');
+    return parts.join(' · ');
+  }
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () {
+          H.selection();
+          onTap();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: AppRadius.lg,
+            border: Border.all(color: AppColors.softBorder),
+            boxShadow: AppShadows.card,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(pattern.name,
+                        style: AppTextStyles.titleMedium
+                            .copyWith(color: AppColors.forestDark)),
+                    const SizedBox(height: 2),
+                    Text(pattern.description,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500)),
+                  ],
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.stone50,
+                  borderRadius: AppRadius.pill,
+                  border: Border.all(color: AppColors.stone100),
+                ),
+                child: Text(_rhythmLabel(),
+                    style: AppTextStyles.caption.copyWith(
+                        color: AppColors.forest600,
+                        fontWeight: FontWeight.w600)),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: AppColors.stone400),
+            ],
+          ),
+        ),
+      );
 }
 
 // ─── Tab 2: Meditation ────────────────────────────────────────────────────
@@ -647,7 +1353,8 @@ class _MeditationTabState extends State<_MeditationTab> {
                 final selected = i == _selected;
                 return GestureDetector(
                   onTap: () => setState(() {
-                    _selected = i; _step = 0;
+                    _selected = i;
+                    _step = 0;
                   }),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -657,8 +1364,8 @@ class _MeditationTabState extends State<_MeditationTab> {
                       color: selected ? AppColors.forest50 : Colors.white,
                       borderRadius: AppRadius.lg,
                       border: Border.all(
-                        color: selected
-                            ? AppColors.forest600 : AppColors.stone100,
+                        color:
+                            selected ? AppColors.forest600 : AppColors.stone100,
                         width: selected ? 1.5 : 1,
                       ),
                     ),
@@ -673,8 +1380,7 @@ class _MeditationTabState extends State<_MeditationTab> {
                                       color: selected
                                           ? AppColors.forest700
                                           : AppColors.stone800)),
-                              Text(g.duration,
-                                  style: AppTextStyles.bodySmall),
+                              Text(g.duration, style: AppTextStyles.bodySmall),
                             ],
                           ),
                         ),
@@ -683,7 +1389,8 @@ class _MeditationTabState extends State<_MeditationTab> {
                               ? Icons.radio_button_checked_rounded
                               : Icons.radio_button_off_rounded,
                           color: selected
-                              ? AppColors.forest600 : AppColors.stone300,
+                              ? AppColors.forest600
+                              : AppColors.stone300,
                           size: 20,
                         ),
                       ],
@@ -702,8 +1409,7 @@ class _MeditationTabState extends State<_MeditationTab> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(_guide.title,
-                            style: AppTextStyles.titleMedium),
+                        Text(_guide.title, style: AppTextStyles.titleMedium),
                         Text('${_step + 1} / ${_guide.steps.length}',
                             style: AppTextStyles.caption),
                       ],
@@ -715,23 +1421,22 @@ class _MeditationTabState extends State<_MeditationTab> {
                         value: (_step + 1) / _guide.steps.length,
                         minHeight: 4,
                         backgroundColor: AppColors.stone100,
-                        valueColor: const AlwaysStoppedAnimation(
-                            AppColors.forest600),
+                        valueColor:
+                            const AlwaysStoppedAnimation(AppColors.forest600),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(_guide.steps[_step],
-                        style: AppTextStyles.bodySerif
-                            .copyWith(color: AppColors.forest700,
-                                fontStyle: FontStyle.italic)),
+                        style: AppTextStyles.bodySerif.copyWith(
+                            color: AppColors.forest700,
+                            fontStyle: FontStyle.italic)),
                     const SizedBox(height: 20),
                     Row(
                       children: [
                         if (_step > 0)
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () =>
-                                  setState(() => _step--),
+                              onPressed: () => setState(() => _step--),
                               child: const Text('Back'),
                             ),
                           ),
@@ -744,7 +1449,8 @@ class _MeditationTabState extends State<_MeditationTab> {
                             style: FilledButton.styleFrom(
                                 backgroundColor: AppColors.forest600),
                             child: Text(_step < _guide.steps.length - 1
-                                ? 'Next' : 'Complete ✓'),
+                                ? 'Next'
+                                : 'Complete ✓'),
                           ),
                         ),
                       ],
@@ -776,7 +1482,10 @@ class _CbtTabState extends State<_CbtTab> {
   final _inputCtrl = TextEditingController();
 
   @override
-  void dispose() { _inputCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _inputCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -787,17 +1496,27 @@ class _CbtTabState extends State<_CbtTab> {
         _TabHeader(title: l10n.emergencyCBTTitle, onBack: widget.onBack),
         Expanded(
           child: _active == null
-              ? _GuideList(onSelect: (i) =>
-                  setState(() { _active = i; _step = 0; _inputCtrl.clear(); }))
+              ? _GuideList(
+                  onSelect: (i) => setState(() {
+                        _active = i;
+                        _step = 0;
+                        _inputCtrl.clear();
+                      }))
               : _GuideWalkthrough(
                   guide: cbtGuides[_active!],
                   step: _step,
                   ctrl: _inputCtrl,
                   onNext: _step < cbtGuides[_active!].steps.length - 1
-                      ? () => setState(() { _step++; _inputCtrl.clear(); })
+                      ? () => setState(() {
+                            _step++;
+                            _inputCtrl.clear();
+                          })
                       : null,
                   onBack: _step > 0
-                      ? () => setState(() { _step--; _inputCtrl.clear(); })
+                      ? () => setState(() {
+                            _step--;
+                            _inputCtrl.clear();
+                          })
                       : null,
                   onClose: () => setState(() => _active = null),
                 ),
@@ -815,50 +1534,59 @@ class _GuideList extends StatelessWidget {
   Widget build(BuildContext context) {
     final guides = _buildCbtGuides(AppLocalizations.of(context));
     return ListView.separated(
-    padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-    itemCount: guides.length,
-    separatorBuilder: (_, __) => const SizedBox(height: 8),
-    itemBuilder: (_, i) {
-      final g = guides[i];
-      return GestureDetector(
-        onTap: () { H.light(); onSelect(i); },
-        child: SolidCard(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 40, height: 40,
-                decoration: const BoxDecoration(
-                  color: AppColors.forest50, shape: BoxShape.circle,
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+      itemCount: guides.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (_, i) {
+        final g = guides[i];
+        return GestureDetector(
+          onTap: () {
+            H.light();
+            onSelect(i);
+          },
+          child: SolidCard(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.forest50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(g.icon, size: 20, color: AppColors.forest600),
                 ),
-                child: Icon(g.icon, size: 20, color: AppColors.forest600),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(g.title, style: AppTextStyles.titleSmall),
-                    Text('${g.steps.length} steps',
-                        style: AppTextStyles.bodySmall),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(g.title, style: AppTextStyles.titleSmall),
+                      Text('${g.steps.length} steps',
+                          style: AppTextStyles.bodySmall),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.chevron_right_rounded,
-                  color: AppColors.stone300),
-            ],
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.stone300),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
   }
 }
 
 class _GuideWalkthrough extends StatelessWidget {
   const _GuideWalkthrough({
-    required this.guide, required this.step, required this.ctrl,
-    required this.onNext, required this.onBack, required this.onClose,
+    required this.guide,
+    required this.step,
+    required this.ctrl,
+    required this.onNext,
+    required this.onBack,
+    required this.onClose,
   });
   final _CbtGuide guide;
   final int step;
@@ -873,10 +1601,9 @@ class _GuideWalkthrough extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(guide.title,
-                style: AppTextStyles.titleMedium)),
-            TextButton(onPressed: onClose,
-                child: const Text('✕ Close')),
+            Expanded(
+                child: Text(guide.title, style: AppTextStyles.titleMedium)),
+            TextButton(onPressed: onClose, child: const Text('✕ Close')),
           ],
         ),
         ClipRRect(
@@ -894,8 +1621,8 @@ class _GuideWalkthrough extends StatelessWidget {
         const SizedBox(height: 16),
         ForestCard(
           child: Text(guide.steps[step],
-              style: AppTextStyles.bodySerif
-                  .copyWith(color: AppColors.forest700)),
+              style:
+                  AppTextStyles.bodySerif.copyWith(color: AppColors.forest700)),
         ),
         const SizedBox(height: 14),
         TextField(
@@ -903,11 +1630,10 @@ class _GuideWalkthrough extends StatelessWidget {
           maxLines: 4,
           decoration: InputDecoration(
             hintText: 'Your thoughts…',
-            hintStyle: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone400),
+            hintStyle:
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
           ),
-          style: AppTextStyles.bodyMedium
-              .copyWith(color: AppColors.stone800),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
         ),
         const SizedBox(height: 14),
         Row(
@@ -915,8 +1641,7 @@ class _GuideWalkthrough extends StatelessWidget {
             if (onBack != null) ...[
               Expanded(
                 child: OutlinedButton(
-                    onPressed: onBack,
-                    child: const Text('Back')),
+                    onPressed: onBack, child: const Text('Back')),
               ),
               const SizedBox(width: 10),
             ],
@@ -949,12 +1674,19 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
   final _ctrl = TextEditingController();
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final profile = ref.watch(profileProvider).valueOrNull;
-    final reasons = profile?.weeklyGoals ?? []; // reuse weeklyGoals as reasons for now
+    // myReasons is the canonical field; fall back to weeklyGoals for users who
+    // saved reasons before the field was renamed.
+    final reasons = (profile?.myReasons.isNotEmpty == true)
+        ? profile!.myReasons
+        : (profile?.weeklyGoals ?? []);
 
     return Column(
       children: [
@@ -964,9 +1696,8 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
               Text('Why I\'m doing this.',
-                  style: AppTextStyles.bodySerif
-                      .copyWith(color: AppColors.forest600,
-                          fontStyle: FontStyle.italic)),
+                  style: AppTextStyles.bodySerif.copyWith(
+                      color: AppColors.forest600, fontStyle: FontStyle.italic)),
               const SizedBox(height: 16),
               if (reasons.isEmpty)
                 ForestCard(
@@ -978,25 +1709,48 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
                   ),
                 )
               else
-                ...reasons.map((r) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppColors.forest50,
-                    borderRadius: AppRadius.lg,
-                    border: Border.all(color: AppColors.forest100),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.favorite_rounded,
-                          size: 16, color: AppColors.forest600),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(r,
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.forest700))),
-                    ],
-                  ),
-                )),
+                ...reasons.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final r = entry.value;
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.forest50,
+                      borderRadius: AppRadius.lg,
+                      border: Border.all(color: AppColors.forest100),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 22,
+                          height: 22,
+                          decoration: const BoxDecoration(
+                            color: AppColors.forest600,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${i + 1}',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            r,
+                            style: AppTextStyles.bodyMedium
+                                .copyWith(color: AppColors.forest700),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
             ],
           ),
         ),
@@ -1044,20 +1798,19 @@ class _HaltTabState extends State<_HaltTab> {
                     GestureDetector(
                       onTap: () {
                         H.selection();
-                        setState(() =>
-                            _expanded = expanded ? null : i);
+                        setState(() => _expanded = expanded ? null : i);
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: checked
-                              ? AppColors.honey50 : Colors.white,
+                          color: checked ? AppColors.honey50 : Colors.white,
                           borderRadius: AppRadius.lg,
                           border: Border.all(
                             color: checked
-                                ? AppColors.honey500 : AppColors.stone100,
+                                ? AppColors.honey500
+                                : AppColors.stone100,
                           ),
                         ),
                         child: Column(
@@ -1065,7 +1818,8 @@ class _HaltTabState extends State<_HaltTab> {
                             Row(
                               children: [
                                 Container(
-                                  width: 36, height: 36,
+                                  width: 36,
+                                  height: 36,
                                   decoration: BoxDecoration(
                                     color: checked
                                         ? AppColors.honey500
@@ -1076,9 +1830,9 @@ class _HaltTabState extends State<_HaltTab> {
                                     child: Text(letter,
                                         style: AppTextStyles.titleLarge
                                             .copyWith(
-                                            color: checked
-                                                ? Colors.white
-                                                : AppColors.stone600)),
+                                                color: checked
+                                                    ? Colors.white
+                                                    : AppColors.stone600)),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -1107,8 +1861,9 @@ class _HaltTabState extends State<_HaltTab> {
                             ),
                             if (expanded) ...[
                               const SizedBox(height: 10),
-                              Text(tip, style: AppTextStyles.bodySmall
-                                  .copyWith(color: AppColors.stone600)),
+                              Text(tip,
+                                  style: AppTextStyles.bodySmall
+                                      .copyWith(color: AppColors.stone600)),
                             ],
                           ],
                         ),
@@ -1155,24 +1910,36 @@ class _UrgeTimerTabState extends State<_UrgeTimerTab> {
         }
       });
     });
-    setState(() { _running = true; _done = false; });
+    setState(() {
+      _running = true;
+      _done = false;
+    });
   }
 
-  void _pause() { _timer?.cancel(); setState(() => _running = false); }
+  void _pause() {
+    _timer?.cancel();
+    setState(() => _running = false);
+  }
+
   void _reset() {
     _timer?.cancel();
     setState(() {
-      _running = false; _done = false; _remaining = _totalSeconds;
+      _running = false;
+      _done = false;
+      _remaining = _totalSeconds;
     });
   }
 
   @override
-  void dispose() { _timer?.cancel(); super.dispose(); }
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   String get _timeStr {
     final m = _remaining ~/ 60;
     final s = _remaining % 60;
-    return '${m.toString().padLeft(2,'0')}:${s.toString().padLeft(2,'0')}';
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   double get _progress => 1 - (_remaining / _totalSeconds);
@@ -1192,32 +1959,31 @@ class _UrgeTimerTabState extends State<_UrgeTimerTab> {
                   _done
                       ? 'You did it! 🎉'
                       : 'Cravings peak and pass.\nThis one will too.',
-                  style: AppTextStyles.bodySerif
-                      .copyWith(color: AppColors.forest700,
-                          fontStyle: FontStyle.italic),
+                  style: AppTextStyles.bodySerif.copyWith(
+                      color: AppColors.forest700, fontStyle: FontStyle.italic),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
                 // Circular progress
                 SizedBox(
-                  width: 200, height: 200,
+                  width: 200,
+                  height: 200,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       SizedBox(
-                        width: 200, height: 200,
+                        width: 200,
+                        height: 200,
                         child: CircularProgressIndicator(
                           value: _progress,
                           strokeWidth: 10,
                           backgroundColor: AppColors.stone100,
                           valueColor: AlwaysStoppedAnimation(
-                              _done ? AppColors.honey500
-                                  : AppColors.forest600),
+                              _done ? AppColors.honey500 : AppColors.forest600),
                         ),
                       ),
                       Text(_done ? '✓' : _timeStr,
-                          style: AppTextStyles.displayMedium
-                              .copyWith(
+                          style: AppTextStyles.displayMedium.copyWith(
                               color: _done
                                   ? AppColors.honey500
                                   : AppColors.forest700)),
@@ -1265,8 +2031,9 @@ class _UrgeTimerTabState extends State<_UrgeTimerTab> {
 // ─── Tab 7: Play the Tape ─────────────────────────────────────────────────
 
 class _PlayTapeTab extends StatelessWidget {
-  const _PlayTapeTab({required this.onBack});
+  const _PlayTapeTab({required this.onBack, required this.onNav});
   final VoidCallback onBack;
+  final void Function(_Tab) onNav;
 
   @override
   Widget build(BuildContext context) {
@@ -1274,52 +2041,165 @@ class _PlayTapeTab extends StatelessWidget {
       children: [
         _TabHeader(title: 'Play the Tape', onBack: onBack),
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-            child: Column(
-              children: [
-                Text(
-                  'Before you act, play the full tape forward.',
-                  style: AppTextStyles.bodySerif
-                      .copyWith(color: AppColors.forest600,
-                          fontStyle: FontStyle.italic),
-                  textAlign: TextAlign.center,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+            children: [
+              // ── Hero heading
+              Text(
+                'Pause for a moment.\nLook at what happens next.',
+                style: AppTextStyles.greetingSerif
+                    .copyWith(color: AppColors.forest800, fontSize: 26),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'An urge can feel urgent, but it is temporary. Before you act, '
+                'walk yourself through the next few moments, tonight, and tomorrow morning.',
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600),
+              ),
+              const SizedBox(height: 20),
+
+              // ── "If I drink now" card
+              _TapeCard(
+                title: 'If I drink now',
+                titleColor: AppColors.honey500,
+                bgColor: AppColors.honey50,
+                borderColor: AppColors.honey200,
+                arrowUp: false,
+                rows: const [
+                  _TapeRow(
+                    icon: Icons.access_time_rounded,
+                    label: 'Right now',
+                    bullets: [
+                      'Relief may feel immediate',
+                      'The craving softens for a little while',
+                    ],
+                  ),
+                  _TapeRow(
+                    icon: Icons.nightlight_round,
+                    label: 'Later tonight',
+                    bullets: [
+                      'The difficult feelings often return',
+                      'Sleep may be disrupted',
+                      'My momentum is interrupted',
+                    ],
+                  ),
+                  _TapeRow(
+                    icon: Icons.wb_twilight_rounded,
+                    label: 'Tomorrow',
+                    bullets: [
+                      'I may wake with regret',
+                      'The next day asks more of me',
+                      'Starting again feels harder',
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // ── "If I stay sober" card
+              _TapeCard(
+                title: 'If I stay sober',
+                titleColor: AppColors.forest700,
+                bgColor: AppColors.forest50,
+                borderColor: AppColors.forest200,
+                arrowUp: true,
+                rows: const [
+                  _TapeRow(
+                    icon: Icons.access_time_rounded,
+                    label: 'Right now',
+                    bullets: [
+                      'The craving rises, then passes',
+                      'I give myself space instead of reacting',
+                    ],
+                  ),
+                  _TapeRow(
+                    icon: Icons.nightlight_round,
+                    label: 'Later tonight',
+                    bullets: [
+                      'I protect my peace',
+                      'I go to bed with clarity',
+                      'I strengthen self-trust',
+                    ],
+                  ),
+                  _TapeRow(
+                    icon: Icons.wb_twilight_rounded,
+                    label: 'Tomorrow',
+                    bullets: [
+                      'I wake up clear-headed',
+                      'My momentum grows',
+                      'I feel proud of myself',
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // ── "What would help right now?" card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: AppRadius.luxury,
+                  border: Border.all(color: AppColors.softBorder),
+                  boxShadow: AppShadows.luxury,
                 ),
-                const SizedBox(height: 20),
-                Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _TapeColumn(
-                      label: 'If I drink',
-                      color: AppColors.honey500,
-                      icon: Icons.arrow_downward_rounded,
-                      items: const [
-                        'Relief lasts 20–60 minutes',
-                        'The difficult feelings return',
-                        'Sleep is disrupted',
-                        'Tomorrow is harder',
-                        'I interrupt my momentum',
-                        'The next day asks more of me',
+                    Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: AppColors.forest100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.spa_outlined,
+                              size: 16, color: AppColors.forest700),
+                        ),
+                        const SizedBox(width: 10),
+                        Text('What would help right now?',
+                            style: AppTextStyles.titleSmall
+                                .copyWith(color: AppColors.forest700)),
                       ],
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(child: _TapeColumn(
-                      label: 'If I stay sober',
-                      color: AppColors.forest600,
-                      icon: Icons.arrow_upward_rounded,
-                      items: const [
-                        'The craving passes in 20 min',
-                        'I wake up clear-headed',
-                        'My momentum grows',
-                        'I build self-trust',
-                        'Tomorrow is better',
-                        'I am proud of myself',
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        _ActionButton(
+                          icon: Icons.air_rounded,
+                          label: 'Breathe with me',
+                          onTap: () => onNav(_Tab.breathing),
+                        ),
+                        const SizedBox(width: 10),
+                        _ActionButton(
+                          icon: Icons.menu_book_rounded,
+                          label: 'Open my journal',
+                          onTap: () => context.push('/journal'),
+                        ),
                       ],
-                    )),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _ActionButton(
+                          icon: Icons.favorite_rounded,
+                          label: 'Read my reason',
+                          onTap: () => onNav(_Tab.reasons),
+                        ),
+                        const SizedBox(width: 10),
+                        _ActionButton(
+                          icon: Icons.timer_outlined,
+                          label: 'Set a 20-minute timer',
+                          onTap: () => onNav(_Tab.urgeTimer),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -1327,46 +2207,189 @@ class _PlayTapeTab extends StatelessWidget {
   }
 }
 
-class _TapeColumn extends StatelessWidget {
-  const _TapeColumn({
-    required this.label, required this.color,
-    required this.icon, required this.items,
+// ─── _TapeRow data class ──────────────────────────────────────────────────
+
+class _TapeRow {
+  const _TapeRow({
+    required this.icon,
+    required this.label,
+    required this.bullets,
   });
-  final String label;
-  final Color color;
   final IconData icon;
-  final List<String> items;
+  final String label;
+  final List<String> bullets;
+}
+
+// ─── _TapeCard ────────────────────────────────────────────────────────────
+
+class _TapeCard extends StatelessWidget {
+  const _TapeCard({
+    required this.title,
+    required this.titleColor,
+    required this.bgColor,
+    required this.borderColor,
+    required this.arrowUp,
+    required this.rows,
+  });
+  final String title;
+  final Color titleColor, bgColor, borderColor;
+  final bool arrowUp;
+  final List<_TapeRow> rows;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.06),
-        borderRadius: AppRadius.xl,
-        border: Border.all(color: color.withOpacity(0.2)),
+        color: bgColor,
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 16, color: color),
-              const SizedBox(width: 6),
-              Text(label, style: AppTextStyles.titleSmall
-                  .copyWith(color: color)),
-            ],
+          // ── Card header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: titleColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    arrowUp
+                        ? Icons.arrow_upward_rounded
+                        : Icons.arrow_downward_rounded,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  title,
+                  style: AppTextStyles.titleSmall.copyWith(
+                      color: titleColor,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          ...items.map((t) => Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text('• $t', style: AppTextStyles.bodySmall
-                .copyWith(color: AppColors.stone700, height: 1.5)),
-          )),
+
+          // ── Timeline rows
+          ...rows.asMap().entries.map((e) {
+            final row = e.value;
+            final isLast = e.key == rows.length - 1;
+            return Column(
+              children: [
+                const Divider(height: 1, thickness: 1, color: Color(0x1A000000)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Icon circle
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Icon(row.icon, size: 16, color: titleColor),
+                      ),
+                      const SizedBox(width: 12),
+                      // Label + bullets
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(row.label,
+                                style: AppTextStyles.labelLarge
+                                    .copyWith(color: AppColors.stone800)),
+                            const SizedBox(height: 4),
+                            ...row.bullets.map((b) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 3),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('• ',
+                                          style: AppTextStyles.bodySmall
+                                              .copyWith(
+                                                  color: AppColors.stone500)),
+                                      Expanded(
+                                        child: Text(b,
+                                            style: AppTextStyles.bodySmall
+                                                .copyWith(
+                                                    color: AppColors.stone600,
+                                                    height: 1.4)),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isLast) const SizedBox(height: 2),
+              ],
+            );
+          }),
         ],
       ),
     );
   }
+}
+
+// ─── _ActionButton ────────────────────────────────────────────────────────
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+        child: GestureDetector(
+          onTap: () {
+            H.light();
+            onTap();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.stone50,
+              borderRadius: AppRadius.lg,
+              border: Border.all(color: AppColors.softBorder),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 16, color: AppColors.forest600),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(label,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone700),
+                      textAlign: TextAlign.center),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 // ─── Tab 8: Mindfulness ───────────────────────────────────────────────────
@@ -1388,7 +2411,8 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
     final mindfulExercises = _buildMindfulExercises(l10n);
     return Column(
       children: [
-        _TabHeader(title: l10n.emergencyMindfulnessTitle, onBack: widget.onBack),
+        _TabHeader(
+            title: l10n.emergencyMindfulnessTitle, onBack: widget.onBack),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -1412,21 +2436,21 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                       child: Row(
                         children: [
                           Container(
-                            width: 40, height: 40,
+                            width: 40,
+                            height: 40,
                             decoration: const BoxDecoration(
                               color: AppColors.forest50,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(icon, size: 20,
-                                color: AppColors.forest600),
+                            child: Icon(icon,
+                                size: 20, color: AppColors.forest600),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(name,
-                                    style: AppTextStyles.titleSmall),
+                                Text(name, style: AppTextStyles.titleSmall),
                                 Text(desc,
                                     style: AppTextStyles.bodySmall,
                                     maxLines: 2,
@@ -1445,8 +2469,9 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                 Row(
                   children: [
                     TextButton.icon(
-                      onPressed: () =>
-                          setState(() { _active = null; }),
+                      onPressed: () => setState(() {
+                        _active = null;
+                      }),
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           size: 14),
                       label: const Text('Back'),
@@ -1458,9 +2483,10 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                 ForestCard(
                   child: Text(
                     mindfulExercises[_active!].$2,
-                    style: AppTextStyles.bodySerif
-                        .copyWith(color: AppColors.forest700,
-                            fontStyle: FontStyle.italic, height: 1.8),
+                    style: AppTextStyles.bodySerif.copyWith(
+                        color: AppColors.forest700,
+                        fontStyle: FontStyle.italic,
+                        height: 1.8),
                   ),
                 ),
               ],

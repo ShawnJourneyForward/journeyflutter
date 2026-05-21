@@ -1,4 +1,6 @@
 export const siteConfig = {
-  supportEmail: 'support@journeyforward.app',
-  privacyEmail: 'privacy@journeyforward.app'
+  contactEmail: 'shawn@journeyforward.app',
+  supportEmail: 'shawn@journeyforward.app',
+  privacyEmail: 'shawn@journeyforward.app'
 };
+

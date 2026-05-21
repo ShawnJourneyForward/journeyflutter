@@ -433,14 +433,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeWeeklyGoals => 'Weekly Goals';
 
   @override
-  String get homeDailyMissions => 'DAILY MISSIONS';
+  String get homeDailyMissions => 'TODAY\'S GENTLE STEPS';
 
   @override
-  String get homeMissionsSubtitle => 'Gentle steps for today.';
+  String get homeMissionsSubtitle => 'Small acts of care for today.';
 
   @override
   String homeMissionsProgress(int done, int total) {
-    return '$done / $total';
+    return '$done of $total complete';
   }
 
   @override
@@ -750,114 +750,356 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get homeQuote1 =>
-      'You don\'t have to feel ready. You just have to begin.';
+      'You do not have to feel ready. You only have to begin.';
 
   @override
-  String get homeQuote2 =>
-      'The pain you feel today is building the strength you\'ll need tomorrow.';
+  String get homeQuote2 => 'Healing is allowed to be quiet.';
 
   @override
-  String get homeQuote3 =>
-      'Sobriety is not a punishment — it\'s a gift you keep giving yourself.';
+  String get homeQuote3 => 'One calm choice can change the shape of a day.';
 
   @override
-  String get homeQuote4 => 'One day at a time. One breath at a time.';
+  String get homeQuote4 => 'You are not starting over. You are starting wiser.';
 
   @override
-  String get homeQuote5 => 'You are not starting over. You are starting wiser.';
+  String get homeQuote5 => 'Recovery is not linear, but it is still real.';
 
   @override
   String get homeQuote6 =>
-      'Recovery is not linear — but it is always worth it.';
+      'Even a difficult sober day is proof that you are choosing yourself.';
 
   @override
-  String get homeQuote7 =>
-      'Your worst day sober is better than your best day drunk.';
+  String get homeQuote7 => 'The version of you that kept going is still here.';
 
   @override
-  String get homeQuote8 =>
-      'The version of you that never gave up is who you\'re becoming.';
+  String get homeQuote8 => 'Strength can look like softness.';
 
   @override
-  String get homeQuote9 => 'Strength is choosing discomfort over destruction.';
+  String get homeQuote9 => 'Clarity is built one honest moment at a time.';
 
   @override
   String get homeQuote10 =>
-      'Clarity is a superpower. You\'re building it every single day.';
+      'You have survived hard days before. Today can be held gently too.';
 
   @override
   String get homeQuote11 =>
-      'You\'ve survived every hard day so far. Today is no different.';
+      'Cravings are temporary. Your progress is still here.';
 
   @override
-  String get homeQuote12 => 'The cravings lie. Your progress is real.';
+  String get homeQuote12 =>
+      'Each morning is another chance to care for yourself.';
 
   @override
   String get homeQuote13 =>
-      'Each morning you wake up sober is a victory worth celebrating.';
+      'Progress does not need to be perfect to be meaningful.';
 
   @override
-  String get homeQuote14 => 'Progress, not perfection.';
+  String get homeQuote14 => 'You are becoming someone you can trust.';
 
   @override
-  String get homeMission0 => 'Drink 8 glasses of water today';
+  String get homeQuote15 => 'Small choices become a safer life.';
 
   @override
-  String get homeMission1 => 'Take a 10-minute walk outside';
+  String get homeQuote16 => 'Peace is not rushed. It is practised.';
 
   @override
-  String get homeMission2 => 'Write 3 things you\'re grateful for';
+  String get homeQuote17 => 'You are allowed to outgrow what once numbed you.';
 
   @override
-  String get homeMission3 => 'Call or text someone you care about';
+  String get homeQuote18 => 'The urge will pass. Your dignity can remain.';
 
   @override
-  String get homeMission4 => 'Do 5 minutes of deep breathing';
+  String get homeQuote19 => 'Recovery is a return to yourself.';
 
   @override
-  String get homeMission5 => 'Read for 15 minutes';
+  String get homeQuote20 =>
+      'You are not behind. You are healing at human speed.';
 
   @override
-  String get homeMission6 => 'Eat a nourishing meal without distractions';
+  String get homeQuote21 => 'A softer life is still a strong life.';
 
   @override
-  String get homeMission7 => 'Get to bed before 10 pm';
+  String get homeQuote22 =>
+      'Your future self is being protected by today\'s choices.';
 
   @override
-  String get homeMission8 => 'Do one kind thing for yourself today';
+  String get homeQuote23 =>
+      'You can pause. You can breathe. You can choose again.';
 
   @override
-  String get homeMission9 => 'Spend 10 minutes in silence or meditation';
+  String get homeQuote24 => 'Every honest day is part of the way forward.';
 
   @override
-  String get homeMission10 => 'Write in your journal tonight';
+  String get homeQuote25 => 'You do not need to punish yourself to change.';
 
   @override
-  String get homeMission11 => 'Avoid all social media for 2 hours';
+  String get homeQuote26 => 'The quiet work counts.';
 
   @override
-  String get homeMission12 => 'Stretch or do light yoga for 10 minutes';
+  String get homeQuote27 => 'Your nervous system is learning safety again.';
 
   @override
-  String get homeMission13 => 'Listen to music that lifts your mood';
+  String get homeQuote28 => 'You are worthy of care before you feel strong.';
 
   @override
-  String get homeMission14 => 'Tidy one area of your space';
+  String get homeQuote29 => 'Let today be simple. Let today be enough.';
 
   @override
-  String get homeMission15 => 'Spend time in nature, even briefly';
+  String get homeQuote30 =>
+      'One breath can become one minute. One minute can become one day.';
 
   @override
-  String get homeMission16 => 'Practise saying \"I am enough\" three times';
+  String get homeQuote31 =>
+      'You are not your craving. You are the one witnessing it.';
 
   @override
-  String get homeMission17 => 'Cook something healthy from scratch';
+  String get homeQuote32 =>
+      'You can build a life that no longer asks you to escape it.';
 
   @override
-  String get homeMission18 => 'Reach out to your support network';
+  String get homeQuote33 => 'There is strength in staying.';
 
   @override
-  String get homeMission19 => 'Celebrate your sober streak — you\'ve earned it';
+  String get homeQuote34 => 'Healing begins where shame loses its voice.';
+
+  @override
+  String get homeQuote35 => 'You are allowed to need support.';
+
+  @override
+  String get homeQuote36 =>
+      'The path forward can be gentle and still be powerful.';
+
+  @override
+  String get homeQuote37 => 'Your progress is not erased by a hard moment.';
+
+  @override
+  String get homeQuote38 =>
+      'Choose the next right thing, not the perfect thing.';
+
+  @override
+  String get homeQuote39 => 'Sobriety is not a punishment. It is protection.';
+
+  @override
+  String get homeQuote40 => 'You are learning how to come home to yourself.';
+
+  @override
+  String get homeQuote41 => 'The life you want is built in ordinary moments.';
+
+  @override
+  String get homeQuote42 => 'You can be proud without being finished.';
+
+  @override
+  String get homeQuote43 =>
+      'Nothing about healing needs to be loud to be real.';
+
+  @override
+  String get homeQuote44 => 'Your peace is worth protecting.';
+
+  @override
+  String get homeQuote45 => 'A craving is a wave, not a command.';
+
+  @override
+  String get homeQuote46 =>
+      'You are building evidence that you can trust yourself.';
+
+  @override
+  String get homeQuote47 =>
+      'Today does not need to be conquered. It only needs to be lived.';
+
+  @override
+  String get homeQuote48 => 'There is still time to become someone new.';
+
+  @override
+  String get homeQuote49 => 'Keep going gently. That still counts.';
+
+  @override
+  String get homeMission0 => 'Drink a full glass of water slowly.';
+
+  @override
+  String get homeMission1 => 'Take a 10-minute walk outside.';
+
+  @override
+  String get homeMission2 => 'Write down three things you are grateful for.';
+
+  @override
+  String get homeMission3 => 'Send a kind message to someone you trust.';
+
+  @override
+  String get homeMission4 => 'Do five minutes of slow breathing.';
+
+  @override
+  String get homeMission5 => 'Read a few pages of something calming.';
+
+  @override
+  String get homeMission6 => 'Eat one nourishing meal without distractions.';
+
+  @override
+  String get homeMission7 => 'Prepare for an earlier, softer night.';
+
+  @override
+  String get homeMission8 => 'Do one kind thing for yourself today.';
+
+  @override
+  String get homeMission9 => 'Sit in silence for three minutes.';
+
+  @override
+  String get homeMission10 => 'Write one honest sentence in your journal.';
+
+  @override
+  String get homeMission11 => 'Put your phone away for one quiet hour.';
+
+  @override
+  String get homeMission12 => 'Stretch your shoulders, neck, and back.';
+
+  @override
+  String get homeMission13 => 'Listen to music that steadies you.';
+
+  @override
+  String get homeMission14 => 'Tidy one small area of your space.';
+
+  @override
+  String get homeMission15 => 'Step outside and notice the sky.';
+
+  @override
+  String get homeMission16 => 'Say \"I am allowed to heal\" three times.';
+
+  @override
+  String get homeMission17 => 'Make yourself something warm to drink.';
+
+  @override
+  String get homeMission18 => 'Reach out to your support network.';
+
+  @override
+  String get homeMission19 => 'Honour the progress you have made today.';
+
+  @override
+  String get homeMission20 =>
+      'Take five slow breaths before your next decision.';
+
+  @override
+  String get homeMission21 => 'Write down one trigger you noticed today.';
+
+  @override
+  String get homeMission22 => 'Write down one thing that helped you today.';
+
+  @override
+  String get homeMission23 => 'Place one comforting item near your bed.';
+
+  @override
+  String get homeMission24 => 'Wash your face slowly and mindfully.';
+
+  @override
+  String get homeMission25 => 'Spend 10 minutes away from screens.';
+
+  @override
+  String get homeMission26 => 'Prepare tomorrow\'s first small task.';
+
+  @override
+  String get homeMission27 => 'Let one room feel a little lighter.';
+
+  @override
+  String get homeMission28 => 'Notice one thing your body needs.';
+
+  @override
+  String get homeMission29 => 'Choose a meal that supports your energy.';
+
+  @override
+  String get homeMission30 => 'Read one recovery note or affirmation.';
+
+  @override
+  String get homeMission31 =>
+      'Save one emergency support number somewhere visible.';
+
+  @override
+  String get homeMission32 => 'Write a short note to your future self.';
+
+  @override
+  String get homeMission33 => 'Take a gentle shower or bath.';
+
+  @override
+  String get homeMission34 => 'Breathe through a craving without judging it.';
+
+  @override
+  String get homeMission35 => 'Name the emotion underneath the urge.';
+
+  @override
+  String get homeMission36 => 'Do one thing slowly on purpose.';
+
+  @override
+  String get homeMission37 => 'Put clean water beside your bed.';
+
+  @override
+  String get homeMission38 => 'Open a window and take three deep breaths.';
+
+  @override
+  String get homeMission39 => 'Write down one reason you are continuing.';
+
+  @override
+  String get homeMission40 => 'Spend five minutes in natural light.';
+
+  @override
+  String get homeMission41 => 'Make your bed with care.';
+
+  @override
+  String get homeMission42 => 'Delete or mute one digital trigger.';
+
+  @override
+  String get homeMission43 => 'Choose rest before exhaustion.';
+
+  @override
+  String get homeMission44 =>
+      'Write one sentence that begins: \"Today I protected…\"';
+
+  @override
+  String get homeMission45 => 'Notice one moment of peace, however small.';
+
+  @override
+  String get homeMission46 => 'Thank yourself for staying present.';
+
+  @override
+  String get homeMission47 => 'Do a 10-minute reset of your space.';
+
+  @override
+  String get homeMission48 =>
+      'Choose one boundary that supports your recovery.';
+
+  @override
+  String get homeMission49 => 'Let yourself pause before reacting.';
+
+  @override
+  String get homeMission50 =>
+      'Write down one thing you are learning about yourself.';
+
+  @override
+  String get homeMission51 => 'Prepare a simple comfort plan for tonight.';
+
+  @override
+  String get homeMission52 =>
+      'Place your hand on your chest and breathe slowly.';
+
+  @override
+  String get homeMission53 =>
+      'Drink tea, water, or something calming without rushing.';
+
+  @override
+  String get homeMission54 =>
+      'Spend a few minutes with a plant, pet, or quiet object.';
+
+  @override
+  String get homeMission55 =>
+      'Write down one thing you do not need to carry today.';
+
+  @override
+  String get homeMission56 => 'Take a short walk without headphones.';
+
+  @override
+  String get homeMission57 => 'Do one practical task you have been avoiding.';
+
+  @override
+  String get homeMission58 => 'End the day by naming one quiet victory.';
+
+  @override
+  String get homeMission59 => 'Remind yourself: progress can be gentle.';
 
   @override
   String get journalTitle => 'My Journal';
@@ -1267,10 +1509,11 @@ class AppLocalizationsPt extends AppLocalizations {
       'One year. Research suggests the risk of coronary heart disease drops to roughly half that of a continuing drinker. Your liver has largely repaired itself. This is a profound milestone — one that changes the statistical trajectory of your life.';
 
   @override
-  String get recoveryTitle => 'Quitting Timeline';
+  String get recoveryTitle => 'The Healing Timeline';
 
   @override
-  String get recoverySubtitle => 'What\'s happening inside your body';
+  String get recoverySubtitle =>
+      'How your mind and body are restoring themselves';
 
   @override
   String get recoveryHeroLabel => 'YOUR BODY TODAY';
@@ -1292,186 +1535,147 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get recoveryM1Label => '20 Minutes';
+  String get recoveryM1Label => '12 Hours';
 
   @override
-  String get recoveryM1Title => 'Heart rate begins to ease';
+  String get recoveryM1Title => 'The Reset Begins';
 
   @override
   String get recoveryM1Body =>
-      'For many people, heart rate and blood pressure start to fall within the first twenty minutes. Blood circulation begins to improve and the cardiovascular system starts to work under less strain.';
+      'Your body begins adjusting to the absence of alcohol. Hydration, sleep pressure, blood sugar, and stress hormones may feel unsettled as your system begins to rebalance.';
 
   @override
-  String get recoveryM1System => 'Heart & Circulation';
+  String get recoveryM1System => 'Total Body';
 
   @override
-  String get recoveryM2Label => '12 Hours';
+  String get recoveryM2Label => '24 Hours';
 
   @override
-  String get recoveryM2Title => 'Oxygen levels restoring';
+  String get recoveryM2Title => 'Restoring Rhythm';
 
   @override
   String get recoveryM2Body =>
-      'Carbon monoxide from alcohol typically clears the blood within twelve hours. For many people, oxygen levels normalise and nutrients begin moving more efficiently through the body.';
+      'For many people, heart rate, blood pressure, hydration, and sleep patterns begin to shift as the body adjusts. This can feel calming for some and uncomfortable for others.';
 
   @override
-  String get recoveryM2System => 'Blood & Oxygen';
+  String get recoveryM2System => 'Cardiovascular System';
 
   @override
-  String get recoveryM3Label => '24 Hours';
+  String get recoveryM3Label => '48 Hours';
 
   @override
-  String get recoveryM3Title => 'Heart attack risk dropping';
+  String get recoveryM3Title => 'The Pivot Point';
 
   @override
   String get recoveryM3Body =>
-      'Blood pressure and pulse are generally stabilising by now. Research suggests the risk of a cardiac event begins to decrease within this first day for most people.';
+      'For people who were drinking heavily, this can be one of the highest-risk windows for withdrawal symptoms. Your nervous system may feel overstimulated as it works to rebalance.';
 
   @override
-  String get recoveryM3System => 'Heart';
+  String get recoveryM3System => 'Central Nervous System';
 
   @override
-  String get recoveryM4Label => '48 Hours';
+  String get recoveryM4Label => '3 Days';
 
   @override
-  String get recoveryM4Title => 'Senses awakening';
+  String get recoveryM4Title => 'Clearing the System';
 
   @override
   String get recoveryM4Body =>
-      'Nerve endings affected by alcohol begin to recover. Many people notice their sense of smell and taste returning — food and the world around them becoming more vivid again.';
+      'For many people, the most intense early physical adjustment begins to ease around this point, though recovery is individual and some symptoms can continue.';
 
   @override
-  String get recoveryM4System => 'Nervous System';
+  String get recoveryM4System => 'Total Body';
 
   @override
-  String get recoveryM5Label => '3 Days';
+  String get recoveryM5Label => '1 Week';
 
   @override
-  String get recoveryM5Title => 'Getting through the hardest part';
+  String get recoveryM5Title => 'Deepening Rest';
 
   @override
   String get recoveryM5Body =>
-      'Lung function is often measurably improving by now. Withdrawal symptoms typically peak around days two to three — reaching this point is a significant achievement. If symptoms feel severe, please reach out to a healthcare professional.';
+      'Restorative sleep often begins to return. Hydration, appetite, and daily energy may start to feel more stable, although sleep and mood can still fluctuate.';
 
   @override
-  String get recoveryM5System => 'Lungs';
+  String get recoveryM5System => 'Brain & Sleep Cycles';
 
   @override
-  String get recoveryM6Label => '1 Week';
+  String get recoveryM6Label => '2 Weeks';
 
   @override
-  String get recoveryM6Title => 'Sleep beginning to heal';
+  String get recoveryM6Title => 'Finding Balance';
 
   @override
   String get recoveryM6Body =>
-      'Sleep quality tends to improve as brain chemistry adjusts. Many people notice vivid dreams this week — this is REM rebound, a normal sign of neurological recovery.';
+      'Physical stamina may begin to return as sleep, appetite, hydration, and daily rhythm become more stable.';
 
   @override
-  String get recoveryM6System => 'Brain & Sleep';
+  String get recoveryM6System => 'Energy & Digestion';
 
   @override
-  String get recoveryM7Label => '2 Weeks';
+  String get recoveryM7Label => '1 Month';
 
   @override
-  String get recoveryM7Title => 'Circulation improving';
+  String get recoveryM7Title => 'Meaningful Relief';
 
   @override
   String get recoveryM7Body =>
-      'Blood flow is generally improving and physical stamina often returns. Many people notice more energy, clearer skin, and better digestion around this point.';
+      'Your liver and vital organs may be experiencing meaningful relief from the strain of alcohol. Many people notice steadier energy, clearer thinking, and improved sleep around this stage.';
 
   @override
-  String get recoveryM7System => 'Circulatory System';
+  String get recoveryM7System => 'Liver & Vital Organs';
 
   @override
-  String get recoveryM8Label => '1 Month';
+  String get recoveryM8Label => '3 Months';
 
   @override
-  String get recoveryM8Title => 'Liver healing accelerates';
+  String get recoveryM8Title => 'Restoring Joy';
 
   @override
   String get recoveryM8Body =>
-      'Research shows fat deposits in the liver typically reduce significantly within the first month. The risk of liver disease is dropping. Sleep often deepens and skin clarity improves for many people.';
+      'Your body may feel more resilient as sleep, nourishment, movement, and reduced alcohol strain begin working together.';
 
   @override
-  String get recoveryM8System => 'Liver';
+  String get recoveryM8System => 'Neurochemistry';
 
   @override
-  String get recoveryM9Label => '3 Months';
+  String get recoveryM9Label => '6 Months';
 
   @override
-  String get recoveryM9Title => 'Brain chemistry recovering';
+  String get recoveryM9Title => 'True Resilience';
 
   @override
   String get recoveryM9Body =>
-      'Dopamine pathways are gradually normalising. Many people report improvements in focus, memory, and emotional regulation around this time. Recovery varies — be patient with yourself.';
+      'Many people notice a steadier baseline by this stage. Stress may feel more manageable, sleep may feel more reliable.';
 
   @override
-  String get recoveryM9System => 'Brain';
+  String get recoveryM9System => 'Nervous System';
 
   @override
-  String get recoveryM10Label => '6 Months';
+  String get recoveryM10Label => '1 Year';
 
   @override
-  String get recoveryM10Title => 'Immune system strengthening';
+  String get recoveryM10Title => 'A New Baseline';
 
   @override
   String get recoveryM10Body =>
-      'The immune system is generally more resilient by now. Many people find they get sick less often, recover faster, and experience more consistent energy levels.';
+      'For many people, the long-term strain on the heart, liver, sleep, mood, and daily energy is meaningfully reduced after a year without alcohol.';
 
   @override
-  String get recoveryM10System => 'Immune System';
+  String get recoveryM10System => 'Whole Body';
 
   @override
-  String get recoveryM11Label => '1 Year';
+  String get recoveryM11Label => '2 Years & Beyond';
 
   @override
-  String get recoveryM11Title => 'Heart disease risk significantly lower';
+  String get recoveryM11Title => 'Lasting Vitality';
 
   @override
   String get recoveryM11Body =>
-      'Research suggests the risk of coronary heart disease can fall to around half that of a continuing drinker after one year. The liver has typically restored itself substantially. This is a profound and life-changing milestone.';
+      'The benefits of reduced alcohol strain can continue to deepen over time, supporting your body, mind, relationships, and daily sense of stability.';
 
   @override
-  String get recoveryM11System => 'Heart & Liver';
-
-  @override
-  String get recoveryM12Label => '2 Years';
-
-  @override
-  String get recoveryM12Title => 'Cancer risks dropping';
-
-  @override
-  String get recoveryM12Body =>
-      'The risk of several alcohol-related cancers — including oral, throat, and liver cancers — is measurably lower for most people at this point.';
-
-  @override
-  String get recoveryM12System => 'Cancer Risk';
-
-  @override
-  String get recoveryM13Label => '5 Years';
-
-  @override
-  String get recoveryM13Title => 'Stroke risk approaching baseline';
-
-  @override
-  String get recoveryM13Body =>
-      'For many people, stroke risk approaches that of someone who has never had a drinking problem. Most key body systems have had substantial time to recover.';
-
-  @override
-  String get recoveryM13System => 'Brain & Vascular';
-
-  @override
-  String get recoveryM14Label => '10 Years';
-
-  @override
-  String get recoveryM14Title => 'Cancer risk dramatically reduced';
-
-  @override
-  String get recoveryM14Body =>
-      'Your risk of mouth, throat, oesophageal, and liver cancers has dropped to roughly half that of drinkers. You have given yourself an extraordinary and lasting gift.';
-
-  @override
-  String get recoveryM14System => 'Whole Body';
+  String get recoveryM11System => 'Whole Body Renewal';
 
   @override
   String get emergencyHomeTitle => 'Calm Toolkit';
@@ -2547,7 +2751,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get privacyNoInternetBody =>
-      'Journey Forward works fully offline. The app does not make any network requests during normal operation. The only internet use is loading fonts from Google Fonts on your first launch — after that, they are cached locally.';
+      'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app makes no network requests of any kind — no internet connection is needed or used.';
 
   @override
   String get privacyNoAnalytics => 'No analytics or tracking';

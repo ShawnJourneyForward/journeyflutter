@@ -111,13 +111,15 @@ class IconChip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
+        decoration:
+            BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
         child: Icon(icon, color: color, size: size * 0.46),
       );
 }
 
 class SectionHeader extends StatelessWidget {
-  const SectionHeader({super.key, required this.title, this.subtitle, this.trailing});
+  const SectionHeader(
+      {super.key, required this.title, this.subtitle, this.trailing});
   final String title;
   final String? subtitle;
   final Widget? trailing;
@@ -146,7 +148,8 @@ class SectionHeader extends StatelessWidget {
 class SoftDivider extends StatelessWidget {
   const SoftDivider({super.key});
   @override
-  Widget build(BuildContext context) => Divider(color: AppColors.softBorder, height: 1);
+  Widget build(BuildContext context) =>
+      Divider(color: AppColors.softBorder, height: 1);
 }
 
 class SoftInput extends StatelessWidget {

@@ -3,14 +3,17 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../components/back_button.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
+import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
-import '../utils/haptic_service.dart';
+import '../utils/encrypted_store.dart';
 
 // ─── Keys exported in a backup ────────────────────────────────────────────────
 
@@ -32,14 +35,14 @@ const _exportKeys = [
 
 // ─── Backup Screen ────────────────────────────────────────────────────────────
 
-class BackupScreen extends StatefulWidget {
+class BackupScreen extends ConsumerStatefulWidget {
   const BackupScreen({super.key});
 
   @override
-  State<BackupScreen> createState() => _BackupScreenState();
+  ConsumerState<BackupScreen> createState() => _BackupScreenState();
 }
 
-class _BackupScreenState extends State<BackupScreen> {
+class _BackupScreenState extends ConsumerState<BackupScreen> {
   bool _exporting = false;
   bool _importing = false;
 
@@ -50,7 +53,14 @@ class _BackupScreenState extends State<BackupScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final data = <String, String>{};
+
+      // Profile lives in encrypted storage, not plain SharedPreferences.
+      final profileJson = await EncryptedStore.read('profile');
+      if (profileJson != null) data['profile'] = profileJson;
+
+      // All other export keys live in plain SharedPreferences.
       for (final key in _exportKeys) {
+        if (key == 'profile') continue; // already handled above
         final val = prefs.getString(key);
         if (val != null) data[key] = val;
       }
@@ -72,7 +82,8 @@ class _BackupScreenState extends State<BackupScreen> {
       );
     } catch (e) {
       if (mounted) {
-        _showSnack(AppLocalizations.of(context).backupExportFailed, error: true);
+        _showSnack(AppLocalizations.of(context).backupExportFailed,
+            error: true);
       }
     } finally {
       if (mounted) setState(() => _exporting = false);
@@ -90,7 +101,8 @@ class _BackupScreenState extends State<BackupScreen> {
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-          title: Text(dialogL10n.backupConfirmTitle, style: AppTextStyles.titleMedium),
+          title: Text(dialogL10n.backupConfirmTitle,
+              style: AppTextStyles.titleMedium),
           content: Text(
             dialogL10n.backupConfirmMessage,
             style: AppTextStyles.bodyMedium,
@@ -107,8 +119,8 @@ class _BackupScreenState extends State<BackupScreen> {
                   FilledButton.styleFrom(backgroundColor: AppColors.forest600),
               onPressed: () => Navigator.pop(ctx, true),
               child: Text(dialogL10n.commonRestore,
-                  style: AppTextStyles.labelMedium
-                      .copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelMedium.copyWith(color: Colors.white)),
             ),
           ],
         );
@@ -142,28 +154,47 @@ class _BackupScreenState extends State<BackupScreen> {
 
       final data = parsed['data'] as Map<String, dynamic>;
       final prefs = await SharedPreferences.getInstance();
+
+      // Restore non-profile keys to plain SharedPreferences.
       for (final entry in data.entries) {
-        // Never restore top-level lockMethod — the PIN hash lives in secure
-        // storage and is not included in the backup file.
-        if (entry.key == 'lockMethod') continue;
+        if (entry.key == 'lockMethod') continue; // never restore lock state
+        if (entry.key == 'profile') continue;    // handled separately below
         await prefs.setString(entry.key, entry.value as String);
       }
-      // Clear the top-level routing key so the app starts unlocked.
-      await prefs.remove('lockMethod');
 
-      // The profile blob itself contains an embedded lockMethod field.
-      // Reset it to 'none' so Settings never shows a stale lock state
-      // when there is no corresponding PIN hash or biometric binding.
-      final profileRaw = prefs.getString('profile');
+      // Profile lives in encrypted storage — restore it there, not in prefs.
+      final profileRaw = data['profile'] as String?;
       if (profileRaw != null) {
+        // Reset lockMethod inside the blob: the PIN hash is not backed up,
+        // so restoring a locked profile would leave the user locked out.
+        String safeProfile = profileRaw;
         try {
-          final profileMap = jsonDecode(profileRaw) as Map<String, dynamic>;
+          final profileMap =
+              jsonDecode(profileRaw) as Map<String, dynamic>;
           profileMap['lockMethod'] = 'none';
-          await prefs.setString('profile', jsonEncode(profileMap));
+          safeProfile = jsonEncode(profileMap);
         } catch (_) {
-          // Corrupt profile blob — ProfileNotifier handles it on next boot.
+          // Corrupt blob — write as-is; ProfileNotifier handles it on load.
+        }
+        try {
+          await EncryptedStore.write('profile', safeProfile);
+          // Update the router sentinel so the app routes to /home on restart.
+          await prefs.setString('has_profile', '1');
+        } catch (e) {
+          if (mounted) {
+            _showSnack(l10n.backupRestoreFailed, error: true);
+          }
+          return;
         }
       }
+
+      // Ensure no legacy plaintext profile or stale lockMethod in prefs.
+      await prefs.remove('profile');
+      await prefs.remove('lockMethod');
+
+      // Invalidate the profile provider so the UI reloads from encrypted
+      // storage immediately without requiring an app restart.
+      ref.invalidate(profileProvider);
 
       if (mounted) {
         _showSnack(l10n.backupRestoredSuccess);
@@ -201,20 +232,12 @@ class _BackupScreenState extends State<BackupScreen> {
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 48),
           children: [
-
             // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(-12, 12, 0, 0),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        size: 20, color: AppColors.stone700),
-                    onPressed: () {
-                      H.light();
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  const LuxuryBackButton(),
                   const SizedBox(width: 4),
                   Text(l10n.backupTitle,
                       style: AppTextStyles.titleLarge
@@ -265,13 +288,13 @@ class _BackupScreenState extends State<BackupScreen> {
                       style: AppTextStyles.titleSmall),
                   const SizedBox(height: 14),
                   for (final item in [
-                    (Icons.person_outline_rounded,   l10n.backupItemProfile),
-                    (Icons.menu_book_outlined,        l10n.backupItemJournal),
-                    (Icons.favorite_border_rounded,   l10n.backupItemGratitude),
-                    (Icons.timeline_rounded,          l10n.backupItemSlipLog),
-                    (Icons.lock_outline_rounded,      l10n.backupItemSecurity),
-                    (Icons.star_outline_rounded,      l10n.backupItemVisionBoard),
-                    (Icons.format_quote_rounded,      l10n.backupItemAffirmations),
+                    (Icons.person_outline_rounded, l10n.backupItemProfile),
+                    (Icons.menu_book_outlined, l10n.backupItemJournal),
+                    (Icons.favorite_border_rounded, l10n.backupItemGratitude),
+                    (Icons.timeline_rounded, l10n.backupItemSlipLog),
+                    (Icons.lock_outline_rounded, l10n.backupItemSecurity),
+                    (Icons.star_outline_rounded, l10n.backupItemVisionBoard),
+                    (Icons.format_quote_rounded, l10n.backupItemAffirmations),
                   ])
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -340,50 +363,51 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SolidCard(
-    borderRadius: AppRadius.xl,
-    padding: const EdgeInsets.all(18),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: chipColor,
-              borderRadius: AppRadius.md,
+        borderRadius: AppRadius.xl,
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: chipColor,
+                  borderRadius: AppRadius.md,
+                ),
+                child: Icon(icon, color: iconColor, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Text(title, style: AppTextStyles.titleSmall),
+            ]),
+            const SizedBox(height: 12),
+            Text(body,
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone600, height: 1.5)),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: loading ? null : onTap,
+                style: FilledButton.styleFrom(
+                  backgroundColor: buttonColor,
+                  minimumSize: const Size.fromHeight(48),
+                  shape:
+                      const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                ),
+                child: loading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : Text(buttonLabel,
+                        style: AppTextStyles.labelLarge
+                            .copyWith(color: Colors.white)),
+              ),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Text(title, style: AppTextStyles.titleSmall),
-        ]),
-        const SizedBox(height: 12),
-        Text(body,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone600, height: 1.5)),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: loading ? null : onTap,
-            style: FilledButton.styleFrom(
-              backgroundColor: buttonColor,
-              minimumSize: const Size.fromHeight(48),
-              shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
-            ),
-            child: loading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2))
-                : Text(buttonLabel,
-                    style: AppTextStyles.labelLarge
-                        .copyWith(color: Colors.white)),
-          ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }

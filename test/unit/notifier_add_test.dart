@@ -13,7 +13,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(journalProvider.future);
-      await container.read(journalProvider.notifier).add('Feeling good today', 'great');
+      await container
+          .read(journalProvider.notifier)
+          .add('Feeling good today', 'great');
 
       final entries = await container.read(journalProvider.future);
       expect(entries, hasLength(1));
@@ -71,7 +73,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(gratitudeProvider.future);
-      await container.read(gratitudeProvider.notifier).add('Grateful for today');
+      await container
+          .read(gratitudeProvider.notifier)
+          .add('Grateful for today');
 
       final text = await container.read(gratitudeProvider.future);
       expect(text, 'Grateful for today');
@@ -144,8 +148,12 @@ void main() {
 
       await container.read(visionBoardProvider.future);
       await container.read(visionBoardProvider.notifier).add(
-        const VisionItem(id: 'v1', title: 'Travel', description: 'See the world', emoji: '✈️'),
-      );
+            const VisionItem(
+                id: 'v1',
+                title: 'Travel',
+                description: 'See the world',
+                emoji: '✈️'),
+          );
 
       final items = await container.read(visionBoardProvider.future);
       expect(items, hasLength(1));
@@ -159,8 +167,9 @@ void main() {
 
       await container.read(visionBoardProvider.future);
       await container.read(visionBoardProvider.notifier).add(
-        const VisionItem(id: 'v1', title: 'Travel', description: '', emoji: '✈️'),
-      );
+            const VisionItem(
+                id: 'v1', title: 'Travel', description: '', emoji: '✈️'),
+          );
       await container.read(visionBoardProvider.notifier).remove('v1');
 
       expect(await container.read(visionBoardProvider.future), isEmpty);
@@ -177,12 +186,12 @@ void main() {
 
       await container.read(cravingProvider.future);
       await container.read(cravingProvider.notifier).add(
-        7,
-        severity: 'Strong',
-        triggers: ['Stress', 'Boredom'],
-        durationMinutes: 10,
-        notes: 'Passed a bar',
-      );
+            7,
+            severity: 'Strong',
+            triggers: ['Stress', 'Boredom'],
+            durationMinutes: 10,
+            notes: 'Passed a bar',
+          );
 
       final entries = await container.read(cravingProvider.future);
       expect(entries, hasLength(1));
@@ -211,7 +220,8 @@ void main() {
       await container.read(cravingProvider.future);
       await container.read(cravingProvider.notifier).add(5, notes: '  note  ');
 
-      expect((await container.read(cravingProvider.future)).first.notes, 'note');
+      expect(
+          (await container.read(cravingProvider.future)).first.notes, 'note');
     });
 
     test('add() treats whitespace-only notes as null', () async {
@@ -222,7 +232,8 @@ void main() {
       await container.read(cravingProvider.future);
       await container.read(cravingProvider.notifier).add(5, notes: '   ');
 
-      expect((await container.read(cravingProvider.future)).first.notes, isNull);
+      expect(
+          (await container.read(cravingProvider.future)).first.notes, isNull);
     });
 
     test('add() persists across container restart', () async {
@@ -250,12 +261,12 @@ void main() {
 
       await container.read(thoughtProvider.future);
       await container.read(thoughtProvider.notifier).add(
-        'I noticed a craving',
-        'negative',
-        strength: 'Moderate',
-        triggers: ['Stress'],
-        durationMinutes: 5,
-      );
+            'I noticed a craving',
+            'negative',
+            strength: 'Moderate',
+            triggers: ['Stress'],
+            durationMinutes: 5,
+          );
 
       final entries = await container.read(thoughtProvider.future);
       expect(entries, hasLength(1));
@@ -270,7 +281,9 @@ void main() {
       addTearDown(c1.dispose);
 
       await c1.read(thoughtProvider.future);
-      await c1.read(thoughtProvider.notifier).add('Persisted thought', 'neutral');
+      await c1
+          .read(thoughtProvider.notifier)
+          .add('Persisted thought', 'neutral');
 
       final c2 = ProviderContainer();
       addTearDown(c2.dispose);
@@ -284,9 +297,12 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(thoughtProvider.future);
-      await container.read(thoughtProvider.notifier).add('Text', 'neutral', notes: '   ');
+      await container
+          .read(thoughtProvider.notifier)
+          .add('Text', 'neutral', notes: '   ');
 
-      expect((await container.read(thoughtProvider.future)).first.notes, isNull);
+      expect(
+          (await container.read(thoughtProvider.future)).first.notes, isNull);
     });
   });
 
@@ -300,12 +316,12 @@ void main() {
 
       await container.read(activityProvider.future);
       await container.read(activityProvider.notifier).add(
-        'walk',
-        30,
-        effort: 'Gentle',
-        outcome: 'Calmer',
-        notes: 'Park loop',
-      );
+            'walk',
+            30,
+            effort: 'Gentle',
+            outcome: 'Calmer',
+            notes: 'Park loop',
+          );
 
       final entries = await container.read(activityProvider.future);
       expect(entries, hasLength(1));
@@ -340,11 +356,11 @@ void main() {
 
       await container.read(sleepProvider.future);
       await container.read(sleepProvider.notifier).add(
-        7.5,
-        4,
-        factors: ['Stress'],
-        notes: 'Woke once',
-      );
+            7.5,
+            4,
+            factors: ['Stress'],
+            notes: 'Woke once',
+          );
 
       final entries = await container.read(sleepProvider.future);
       expect(entries, hasLength(1));

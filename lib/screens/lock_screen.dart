@@ -10,7 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
+import '../utils/secure_window.dart';
 import '../components/luxury_widgets.dart';
 
 class LockScreen extends StatefulWidget {
@@ -22,7 +24,6 @@ class LockScreen extends StatefulWidget {
 
 class _LockScreenState extends State<LockScreen>
     with SingleTickerProviderStateMixin {
-
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
@@ -36,18 +37,21 @@ class _LockScreenState extends State<LockScreen>
   String? _error;
 
   late final AnimationController _shakeCtrl = AnimationController(
-    vsync: this, duration: const Duration(milliseconds: 400));
+      vsync: this, duration: const Duration(milliseconds: 400));
   late final Animation<double> _shakeAnim = Tween<double>(begin: 0, end: 1)
       .animate(CurvedAnimation(parent: _shakeCtrl, curve: Curves.elasticOut));
 
   @override
   void initState() {
     super.initState();
+    // Block screenshots/recents-thumbnail of the PIN pad.
+    SecureWindow.enable();
     _init();
   }
 
   @override
   void dispose() {
+    SecureWindow.disable();
     _shakeCtrl.dispose();
     super.dispose();
   }
@@ -56,6 +60,24 @@ class _LockScreenState extends State<LockScreen>
     final prefs = await SharedPreferences.getInstance();
     final method = prefs.getString('lockMethod') ?? 'none';
 
+    // ── Integrity check: if PIN is the configured lock but neither the new
+    // (v2 salted) nor the legacy hash is present in secure storage, the lock
+    // is corrupted. Clear the orphaned lockMethod so the user is treated as
+    // having no lock — the next session reflects 'none' and they can re-set
+    // a PIN from Settings. This is what closes the "type any 4 digits to
+    // bypass" hole that existed before.
+    if (method == 'pin') {
+      final hasV2 = (await _storage.read(key: PinHash.storageKey)) != null;
+      final hasLegacy = (await _storage.read(key: PinHash.legacyKey)) != null;
+      if (!hasV2 && !hasLegacy) {
+        await prefs.remove('lockMethod');
+        if (!mounted) return;
+        _unlock();
+        return;
+      }
+    }
+
+    if (!mounted) return;
     setState(() {
       _lockMethod = method;
       _loading = false;
@@ -99,11 +121,11 @@ class _LockScreenState extends State<LockScreen>
     } on PlatformException catch (e) {
       if (!mounted) return;
       final msg = switch (e.code) {
-        'NotEnrolled'          => l10n.lockNotEnrolled,
-        'LockedOut'            => l10n.lockTooManyAttempts,
+        'NotEnrolled' => l10n.lockNotEnrolled,
+        'LockedOut' => l10n.lockTooManyAttempts,
         'PermanentlyLockedOut' => l10n.lockPermanentlyLockedOut,
-        'NotAvailable'         => l10n.lockBiometricsUnavailable,
-        _                      => l10n.lockAuthFailed,
+        'NotAvailable' => l10n.lockBiometricsUnavailable,
+        _ => l10n.lockAuthFailed,
       };
       setState(() => _error = msg);
       _fallbackToPin();
@@ -119,7 +141,10 @@ class _LockScreenState extends State<LockScreen>
   void _onDigit(String digit) {
     if (_entered.length >= 4) return;
     H.selection();
-    setState(() { _entered += digit; _error = null; });
+    setState(() {
+      _entered += digit;
+      _error = null;
+    });
     if (_entered.length == 4) _verifyPin();
   }
 
@@ -130,26 +155,46 @@ class _LockScreenState extends State<LockScreen>
   }
 
   Future<void> _verifyPin() async {
-    final stored = await _storage.read(key: 'pin_hash');
-    if (stored == null) {
-      // No hash exists — lock is broken (e.g. after a backup restore or
-      // secure-storage wipe). Clear the orphaned lockMethod and let the
-      // user in, but do NOT silently unlock on any PIN entry.
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('lockMethod');
-      _unlock();
+    final v2 = await _storage.read(key: PinHash.storageKey);
+    final legacy = await _storage.read(key: PinHash.legacyKey);
+    if (!mounted) return;
+
+    // No hash at all — refuse to unlock. The startup integrity check handles
+    // the normal "lock-broken" case before the PIN pad is shown. Reaching
+    // this branch means something cleared secure storage mid-session; the
+    // safe response is "incorrect PIN" rather than silent unlock.
+    if (v2 == null && legacy == null) {
+      _wrongPin();
       return;
     }
 
-    final entered = sha256.convert(utf8.encode(_entered)).toString();
-    if (entered == stored) {
+    bool ok = false;
+    if (v2 != null) {
+      ok = PinHash.verify(_entered, v2);
+    } else {
+      // Legacy unsalted SHA-256 — verify, then transparently migrate to v2.
+      final entered = sha256.convert(utf8.encode(_entered)).toString();
+      ok = entered == legacy;
+      if (ok) {
+        await PinHash.writeNew(_storage, _entered);
+      }
+    }
+
+    if (ok) {
       H.medium();
       _unlock();
     } else {
-      H.heavy();
-      setState(() { _error = AppLocalizations.of(context).lockIncorrectPin; _entered = ''; });
-      _shakeCtrl.forward(from: 0);
+      _wrongPin();
     }
+  }
+
+  void _wrongPin() {
+    H.heavy();
+    setState(() {
+      _error = AppLocalizations.of(context).lockIncorrectPin;
+      _entered = '';
+    });
+    _shakeCtrl.forward(from: 0);
   }
 
   @override
@@ -200,7 +245,9 @@ class _LockScreenState extends State<LockScreen>
 
 class _BiometricView extends StatelessWidget {
   const _BiometricView({
-    required this.error, required this.onRetry, required this.onFallback,
+    required this.error,
+    required this.onRetry,
+    required this.onFallback,
   });
   final String? error;
   final VoidCallback onRetry;
@@ -223,15 +270,16 @@ class _BiometricView extends StatelessWidget {
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 8),
           Text(l10n.lockAuthenticateSubtitle,
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone500)),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone500)),
           const SizedBox(height: 40),
 
           // Fingerprint icon
           GestureDetector(
             onTap: onRetry,
             child: Container(
-              width: 80, height: 80,
+              width: 80,
+              height: 80,
               decoration: const BoxDecoration(
                 color: AppColors.mintChip,
                 shape: BoxShape.circle,
@@ -243,8 +291,8 @@ class _BiometricView extends StatelessWidget {
           const SizedBox(height: 16),
 
           Text(l10n.lockTapToAuthenticate,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone400)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone400)),
 
           if (error != null) ...[
             const SizedBox(height: 20),
@@ -279,8 +327,12 @@ class _BiometricView extends StatelessWidget {
 
 class _PinView extends StatelessWidget {
   const _PinView({
-    required this.entered, required this.error, required this.shakeAnim,
-    required this.onDigit, required this.onDelete, required this.onBiometric,
+    required this.entered,
+    required this.error,
+    required this.shakeAnim,
+    required this.onDigit,
+    required this.onDelete,
+    required this.onBiometric,
   });
   final String entered;
   final String? error;
@@ -305,8 +357,8 @@ class _PinView extends StatelessWidget {
                 .copyWith(color: AppColors.forest700)),
         const SizedBox(height: 6),
         Text(l10n.lockEnterYourPin,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone500)),
+            style:
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.stone500)),
         const SizedBox(height: 32),
 
         // PIN dots with shake animation
@@ -327,16 +379,21 @@ class _PinView extends StatelessWidget {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
-                width: 14, height: 14,
+                width: 14,
+                height: 14,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: hasError
                       ? AppColors.honey500
-                      : filled ? AppColors.forest600 : Colors.white,
+                      : filled
+                          ? AppColors.forest600
+                          : Colors.white,
                   border: Border.all(
                     color: hasError
                         ? AppColors.honey500
-                        : filled ? AppColors.forest600 : AppColors.stone300,
+                        : filled
+                            ? AppColors.forest600
+                            : AppColors.stone300,
                     width: 2,
                   ),
                 ),
@@ -367,10 +424,10 @@ class _PinView extends StatelessWidget {
           child: Column(
             children: [
               for (final row in [
-                ['1','2','3'],
-                ['4','5','6'],
-                ['7','8','9'],
-                ['bio','0','⌫'],
+                ['1', '2', '3'],
+                ['4', '5', '6'],
+                ['7', '8', '9'],
+                ['bio', '0', '⌫'],
               ])
                 Padding(
                   padding: const EdgeInsets.only(bottom: 14),
@@ -392,9 +449,8 @@ class _PinView extends StatelessWidget {
                           style: d == '⌫'
                               ? AppTextStyles.titleLarge
                                   .copyWith(color: AppColors.stone500)
-                              : AppTextStyles.displaySmall
-                                  .copyWith(fontSize: 26,
-                                      color: AppColors.stone800),
+                              : AppTextStyles.displaySmall.copyWith(
+                                  fontSize: 26, color: AppColors.stone800),
                         ),
                         onTap: d == '⌫' ? onDelete : () => onDigit(d),
                       );
@@ -417,7 +473,8 @@ class _PadButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 80, height: 62,
+      width: 80,
+      height: 62,
       child: Material(
         color: AppColors.card,
         borderRadius: AppRadius.xl,

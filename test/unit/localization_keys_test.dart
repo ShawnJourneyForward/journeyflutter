@@ -66,12 +66,10 @@ void main() {
       }
     });
 
-    test(
-      'non-English locale files are not exact English clones',
-      skip: 'TODO: real translations not yet written — '
-          'app ships English-only for now. '
-          'Remove skip when translations are added.',
-      () {
+    test('non-English locale files are not exact English clones',
+        skip: 'TODO: real translations not yet written — '
+            'app ships English-only for now. '
+            'Remove skip when translations are added.', () {
       final english = _readArb(englishFile);
       final englishValues = Map<String, dynamic>.fromEntries(
         english.entries.where((entry) => !entry.key.startsWith('@')),

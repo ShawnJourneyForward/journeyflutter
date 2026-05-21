@@ -7,9 +7,11 @@ int _stageFromAsset(String asset) {
 }
 
 void main() {
+  // Plant images on disk are stage_11.webp .. stage_100.webp; the growth
+  // curve starts at stage 11 ("seed just planted") and saturates at 100.
   group('PlantLogic', () {
     test('day 0 returns the initial stage', () {
-      expect(PlantLogic.getPlantAsset(0), endsWith('stage_1.webp'));
+      expect(PlantLogic.getPlantAsset(0), endsWith('stage_11.webp'));
       expect(PlantLogic.getStageLabel(0), 'The Seed');
     });
 
@@ -17,14 +19,14 @@ void main() {
       final day1 = _stageFromAsset(PlantLogic.getPlantAsset(1));
       final day7 = _stageFromAsset(PlantLogic.getPlantAsset(7));
 
-      expect(day1, inInclusiveRange(1, 30));
-      expect(day7, inInclusiveRange(day1, 30));
+      expect(day1, inInclusiveRange(11, 33));
+      expect(day7, inInclusiveRange(day1, 33));
     });
 
     test('mid-range days return a middle stage', () {
       final stage = _stageFromAsset(PlantLogic.getPlantAsset(90));
 
-      expect(stage, inInclusiveRange(31, 99));
+      expect(stage, inInclusiveRange(35, 99));
       expect(PlantLogic.getStageLabel(90), 'In Full Bloom');
     });
 
@@ -34,14 +36,14 @@ void main() {
       expect(PlantLogic.getStageLabel(5000), 'Heritage Plant');
     });
 
-    test('negative days are handled safely', () {
-      expect(PlantLogic.getPlantAsset(-1), endsWith('stage_1.webp'));
+    test('negative days clamp to the initial stage', () {
+      expect(PlantLogic.getPlantAsset(-1), endsWith('stage_11.webp'));
     });
 
     test('returned stage index always stays in range', () {
       for (final day in [0, 1, 14, 15, 30, 60, 90, 180, 364, 365, 5000]) {
         final stage = _stageFromAsset(PlantLogic.getPlantAsset(day));
-        expect(stage, inInclusiveRange(1, 100), reason: 'day $day');
+        expect(stage, inInclusiveRange(11, 100), reason: 'day $day');
       }
     });
 
@@ -55,10 +57,10 @@ void main() {
     });
 
     test('intermediate day stage falls in expected range', () {
-      // Phase 2 days should yield stages between 30 and 100
+      // Phase 2 days (>30) sit between stages 35 and 100.
       for (final day in [45, 100, 200, 300]) {
         final stage = _stageFromAsset(PlantLogic.getPlantAsset(day));
-        expect(stage, inInclusiveRange(30, 100), reason: 'day $day');
+        expect(stage, inInclusiveRange(35, 100), reason: 'day $day');
       }
     });
   });

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Auto-backup rules (Android 6–11).
+
+  This app's policy: NO sensitive user data is ever backed up to Google Drive.
+  android:allowBackup="false" already prevents auto-backup wholesale; this
+  file is kept as belt-and-braces in case allowBackup is ever re-enabled.
+
+  Sober date, journal entries, slips, cravings, thoughts, emergency contact,
+  PIN hash — all stay on-device only. Users who want a backup can use the
+  manual export in Settings (Backup > Export), which produces a file they
+  share through their own chosen channel.
+-->
+<full-backup-content>
+    <!-- Exclude everything by default. -->
+    <exclude domain="root" />
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="external" />
+</full-backup-content>

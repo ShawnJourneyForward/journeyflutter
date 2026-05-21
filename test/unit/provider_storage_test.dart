@@ -4,7 +4,17 @@ import 'package:journey_forward/models/user_profile.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/test_harness.dart';
+
 void main() {
+  // Profile reads/writes go through EncryptedStore → flutter_secure_storage.
+  // Install the in-memory channel mock so the plugin's MethodChannel resolves.
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    installSecureStorageMock();
+  });
+  setUp(resetSecureStorageMock);
+
   group('provider storage smoke tests', () {
     test('empty storage loads without crashing', () async {
       SharedPreferences.setMockInitialValues({});

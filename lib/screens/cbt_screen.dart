@@ -6,6 +6,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
+import '../components/back_button.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 
@@ -21,14 +22,19 @@ class CbtScreen extends ConsumerStatefulWidget {
 class _CbtScreenState extends ConsumerState<CbtScreen> {
   int _step = 0;
 
-  final _thoughtCtrl   = TextEditingController();
-  final _evidenceForCtrl   = TextEditingController();
+  final _thoughtCtrl = TextEditingController();
+  final _evidenceForCtrl = TextEditingController();
   final _evidenceAgainstCtrl = TextEditingController();
-  final _reframeCtrl   = TextEditingController();
+  final _reframeCtrl = TextEditingController();
 
   String? _selectedDistortion;
   bool _saving = false;
-  bool _saved  = false;
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -82,7 +88,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
 
     setState(() {
       _saving = false;
-      _saved  = true;
+      _saved = true;
     });
   }
 
@@ -115,17 +121,13 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
             ),
             Column(
               children: [
-
                 // ── Header ─────────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 14, 24, 0),
                   child: Row(
                     children: [
-                      IconButton(
-                        onPressed: _back,
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            size: 20, color: AppColors.forest700),
-                      ),
+                      LuxuryBackButton(
+                          color: AppColors.forest700, onPressed: _back),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(l10n.cbtScreenTitle,
@@ -152,8 +154,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                         value: (_step + 1) / 4,
                         minHeight: 4,
                         backgroundColor: AppColors.stone100,
-                        valueColor: const AlwaysStoppedAnimation(
-                            AppColors.forest600),
+                        valueColor:
+                            const AlwaysStoppedAnimation(AppColors.forest600),
                       ),
                     ),
                   ),
@@ -200,8 +202,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
               hintText: l10n.cbtStep0HintText,
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone400),
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
               filled: true,
               fillColor: AppColors.stone50,
               border: OutlineInputBorder(
@@ -214,8 +216,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(
-                    color: AppColors.forest600, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             onChanged: (_) => setState(() {}),
@@ -240,14 +242,30 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
   Widget _buildStep1() {
     final l10n = AppLocalizations.of(context);
     final distortions = [
-      _Distortion(label: l10n.cbtDistortionAllOrNothing,      example: l10n.cbtDistortionAllOrNothingExample),
-      _Distortion(label: l10n.cbtDistortionCatastrophising,   example: l10n.cbtDistortionCatastrophisingExample),
-      _Distortion(label: l10n.cbtDistortionMindReading,       example: l10n.cbtDistortionMindReadingExample),
-      _Distortion(label: l10n.cbtDistortionEmotionalReasoning,example: l10n.cbtDistortionEmotionalReasoningExample),
-      _Distortion(label: l10n.cbtDistortionShouldStatements,  example: l10n.cbtDistortionShouldStatementsExample),
-      _Distortion(label: l10n.cbtDistortionPersonalisation,   example: l10n.cbtDistortionPersonalisationExample),
-      _Distortion(label: l10n.cbtDistortionOvergeneralisation,example: l10n.cbtDistortionOvergeneralisationExample),
-      _Distortion(label: l10n.cbtDistortionNoneOfAbove,       example: l10n.cbtDistortionNoneOfAboveExample),
+      _Distortion(
+          label: l10n.cbtDistortionAllOrNothing,
+          example: l10n.cbtDistortionAllOrNothingExample),
+      _Distortion(
+          label: l10n.cbtDistortionCatastrophising,
+          example: l10n.cbtDistortionCatastrophisingExample),
+      _Distortion(
+          label: l10n.cbtDistortionMindReading,
+          example: l10n.cbtDistortionMindReadingExample),
+      _Distortion(
+          label: l10n.cbtDistortionEmotionalReasoning,
+          example: l10n.cbtDistortionEmotionalReasoningExample),
+      _Distortion(
+          label: l10n.cbtDistortionShouldStatements,
+          example: l10n.cbtDistortionShouldStatementsExample),
+      _Distortion(
+          label: l10n.cbtDistortionPersonalisation,
+          example: l10n.cbtDistortionPersonalisationExample),
+      _Distortion(
+          label: l10n.cbtDistortionOvergeneralisation,
+          example: l10n.cbtDistortionOvergeneralisationExample),
+      _Distortion(
+          label: l10n.cbtDistortionNoneOfAbove,
+          example: l10n.cbtDistortionNoneOfAboveExample),
     ];
     return _StepShell(
       title: l10n.cbtStep1Title,
@@ -271,9 +289,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                   color: selected ? AppColors.mintChip : AppColors.card,
                   borderRadius: AppRadius.xl,
                   border: Border.all(
-                    color: selected
-                        ? AppColors.forest400
-                        : AppColors.stone100,
+                    color: selected ? AppColors.forest400 : AppColors.stone100,
                     width: selected ? 1.5 : 1,
                   ),
                 ),
@@ -374,8 +390,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
               hintText: l10n.cbtReframeHintText,
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone400),
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
               filled: true,
               fillColor: AppColors.stone50,
               border: OutlineInputBorder(
@@ -388,8 +404,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(
-                    color: AppColors.forest600, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             onChanged: (_) => setState(() {}),
@@ -463,8 +479,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),
                   side: const BorderSide(color: AppColors.stone200),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape:
+                      const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(l10n.cbtStartOverButton,
                     style: AppTextStyles.labelLarge
@@ -478,8 +494,8 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
                   minimumSize: const Size.fromHeight(48),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape:
+                      const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: _saving
                     ? const SizedBox(
@@ -527,12 +543,11 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
                 minimumSize: const Size(200, 48),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: AppRadius.lg),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
               child: Text(l10n.cbtReframeAnotherButton,
-                  style: AppTextStyles.labelLarge
-                      .copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelLarge.copyWith(color: Colors.white)),
             ),
           ],
         ),
@@ -580,12 +595,11 @@ class _StepShell extends StatelessWidget {
             backgroundColor: AppColors.forest600,
             disabledBackgroundColor: AppColors.stone100,
             minimumSize: const Size.fromHeight(52),
-            shape: const RoundedRectangleBorder(
-                borderRadius: AppRadius.lg),
+            shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
           ),
           child: Text(label,
-              style: AppTextStyles.labelLarge
-                  .copyWith(color: canNext ? Colors.white : AppColors.stone400)),
+              style: AppTextStyles.labelLarge.copyWith(
+                  color: canNext ? Colors.white : AppColors.stone400)),
         ),
       ],
     );
@@ -618,7 +632,8 @@ class _EvidenceField extends StatelessWidget {
             Container(
                 width: 10,
                 height: 10,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                decoration:
+                    BoxDecoration(color: color, shape: BoxShape.circle)),
             const SizedBox(width: 8),
             Text(label, style: AppTextStyles.titleSmall),
           ],

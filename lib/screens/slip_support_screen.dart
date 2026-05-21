@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../components/back_button.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
@@ -30,10 +31,21 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
   bool _loggingCraving = false;
   bool _cravingLogged = false;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _logCraving() async {
     setState(() => _loggingCraving = true);
     H.medium();
     await ref.read(cravingProvider.notifier).add(_cravingIntensity);
+    if (!mounted) return;
     setState(() {
       _loggingCraving = false;
       _cravingLogged = true;
@@ -44,11 +56,11 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final distractions = [
-      (Icons.water_drop_outlined,     l10n.slipSupportDistraction0),
+      (Icons.water_drop_outlined, l10n.slipSupportDistraction0),
       (Icons.directions_walk_rounded, l10n.slipSupportDistraction1),
-      (Icons.phone_outlined,          l10n.slipSupportDistraction2),
-      (Icons.music_note_outlined,     l10n.slipSupportDistraction3),
-      (Icons.edit_outlined,           l10n.slipSupportDistraction4),
+      (Icons.phone_outlined, l10n.slipSupportDistraction2),
+      (Icons.music_note_outlined, l10n.slipSupportDistraction3),
+      (Icons.edit_outlined, l10n.slipSupportDistraction4),
     ];
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -64,17 +76,12 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
             ),
             Column(
               children: [
-
                 // ── Header ─────────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 14, 24, 0),
                   child: Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            size: 20, color: AppColors.forest700),
-                      ),
+                      const LuxuryBackButton(color: AppColors.forest700),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(l10n.slipSupportTitle,
@@ -88,7 +95,6 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
                     children: [
-
                       // ── Compassionate opener ────────────────────────────
                       LuxuryCard(
                         backgroundColor: AppColors.forest800,
@@ -101,8 +107,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                             const SizedBox(height: 12),
                             Text(
                               l10n.slipSupportTemporary,
-                              style: AppTextStyles.headlineSerif.copyWith(
-                                color: Colors.white, fontSize: 20),
+                              style: AppTextStyles.headlineSerif
+                                  .copyWith(color: Colors.white, fontSize: 20),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -116,7 +122,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                       const SizedBox(height: 20),
 
                       // ── HALT check ──────────────────────────────────────
-                      Text(l10n.slipSupportHaltHeader, style: AppTextStyles.overline),
+                      Text(l10n.slipSupportHaltHeader,
+                          style: AppTextStyles.overline),
                       const SizedBox(height: 10),
                       Text(
                         l10n.slipSupportHaltQuestion,
@@ -177,7 +184,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                       const SizedBox(height: 20),
 
                       // ── Urge surfing ────────────────────────────────────
-                      Text(l10n.slipSupportRideItOutHeader, style: AppTextStyles.overline),
+                      Text(l10n.slipSupportRideItOutHeader,
+                          style: AppTextStyles.overline),
                       const SizedBox(height: 10),
                       SolidCard(
                         child: Column(
@@ -199,7 +207,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                       const SizedBox(height: 20),
 
                       // ── Distraction toolkit ─────────────────────────────
-                      Text(l10n.slipSupportRightNowHeader, style: AppTextStyles.overline),
+                      Text(l10n.slipSupportRightNowHeader,
+                          style: AppTextStyles.overline),
                       const SizedBox(height: 10),
                       SolidCard(
                         child: Column(
@@ -209,16 +218,15 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                                 style: AppTextStyles.titleSmall),
                             const SizedBox(height: 14),
                             for (final item in distractions)
-                              _DistractionRow(
-                                  icon: item.$1,
-                                  text: item.$2),
+                              _DistractionRow(icon: item.$1, text: item.$2),
                           ],
                         ),
                       ),
                       const SizedBox(height: 20),
 
                       // ── Log craving ─────────────────────────────────────
-                      Text(l10n.slipSupportLogHeader, style: AppTextStyles.overline),
+                      Text(l10n.slipSupportLogHeader,
+                          style: AppTextStyles.overline),
                       const SizedBox(height: 10),
                       SolidCard(
                         child: _cravingLogged
@@ -244,9 +252,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                                           min: 1,
                                           max: 10,
                                           divisions: 9,
-                                          onChanged: (v) => setState(
-                                              () => _cravingIntensity =
-                                                  v.round()),
+                                          onChanged: (v) => setState(() =>
+                                              _cravingIntensity = v.round()),
                                         ),
                                       ),
                                       Text(l10n.slipSupportIntensityIntense,
@@ -255,22 +262,21 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                                   ),
                                   Center(
                                     child: Text(
-                                      l10n.slipSupportCravingIntensityFormat(_cravingIntensity),
-                                      style: AppTextStyles.titleMedium.copyWith(
-                                          color: AppColors.forest700),
+                                      l10n.slipSupportCravingIntensityFormat(
+                                          _cravingIntensity),
+                                      style: AppTextStyles.titleMedium
+                                          .copyWith(color: AppColors.forest700),
                                     ),
                                   ),
                                   const SizedBox(height: 14),
                                   SizedBox(
                                     width: double.infinity,
                                     child: FilledButton(
-                                      onPressed: _loggingCraving
-                                          ? null
-                                          : _logCraving,
+                                      onPressed:
+                                          _loggingCraving ? null : _logCraving,
                                       style: FilledButton.styleFrom(
                                         backgroundColor: AppColors.forest600,
-                                        minimumSize:
-                                            const Size.fromHeight(48),
+                                        minimumSize: const Size.fromHeight(48),
                                         shape: const RoundedRectangleBorder(
                                             borderRadius: AppRadius.lg),
                                       ),
@@ -281,7 +287,8 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                                               child: CircularProgressIndicator(
                                                   color: Colors.white,
                                                   strokeWidth: 2))
-                                          : Text(l10n.slipSupportLogCravingButton,
+                                          : Text(
+                                              l10n.slipSupportLogCravingButton,
                                               style: AppTextStyles.labelLarge
                                                   .copyWith(
                                                       color: Colors.white)),
@@ -370,16 +377,12 @@ class _HaltCard extends StatelessWidget {
           children: [
             Icon(icon,
                 size: 18,
-                color: selected
-                    ? AppColors.forest600
-                    : AppColors.stone400),
+                color: selected ? AppColors.forest600 : AppColors.stone400),
             const SizedBox(width: 10),
             Text(
               label,
               style: AppTextStyles.titleSmall.copyWith(
-                color: selected
-                    ? AppColors.forest700
-                    : AppColors.stone600,
+                color: selected ? AppColors.forest700 : AppColors.stone600,
               ),
             ),
           ],
@@ -400,9 +403,15 @@ class _HaltAdvice extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final advice = {
       'hungry': (l10n.slipSupportHaltAdviceHungry, Icons.restaurant_outlined),
-      'angry':  (l10n.slipSupportHaltAdviceAngry,  Icons.directions_walk_outlined),
-      'lonely': (l10n.slipSupportHaltAdviceLonely, Icons.chat_bubble_outline_rounded),
-      'tired':  (l10n.slipSupportHaltAdviceTired,  Icons.bedtime_outlined),
+      'angry': (
+        l10n.slipSupportHaltAdviceAngry,
+        Icons.directions_walk_outlined
+      ),
+      'lonely': (
+        l10n.slipSupportHaltAdviceLonely,
+        Icons.chat_bubble_outline_rounded
+      ),
+      'tired': (l10n.slipSupportHaltAdviceTired, Icons.bedtime_outlined),
     };
     return Column(
       children: selected.map((key) {
@@ -447,8 +456,7 @@ class _BreathingPrompt extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.air_outlined,
-              size: 20, color: AppColors.forest600),
+          const Icon(Icons.air_outlined, size: 20, color: AppColors.forest600),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -520,14 +528,13 @@ class _CravingLoggedConfirmation extends StatelessWidget {
             color: AppColors.forest600, size: 36),
         const SizedBox(height: 10),
         Text(l10n.slipSupportCravingLoggedTitle,
-            style: AppTextStyles.titleSmall
-                .copyWith(color: AppColors.forest700)),
+            style:
+                AppTextStyles.titleSmall.copyWith(color: AppColors.forest700)),
         const SizedBox(height: 6),
         Text(
           l10n.slipSupportCravingLoggedMessage,
           textAlign: TextAlign.center,
-          style: AppTextStyles.bodyMedium
-              .copyWith(color: AppColors.stone600),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600),
         ),
       ],
     );

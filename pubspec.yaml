@@ -12,9 +12,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # ── Fonts (served via Google Fonts CDN on first run, then cached) ────────────
-  google_fonts: ^6.2.1
-
   # ── State management ─────────────────────────────────────────────────────────
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
@@ -69,6 +66,23 @@ dev_dependencies:
   build_runner: ^2.4.13
   riverpod_generator: ^2.4.3
   json_serializable: ^6.8.0
+  flutter_launcher_icons: ^0.13.1
+
+# ─── Adaptive launcher icon generation ────────────────────────────────────────
+# Drop a 1024×1024 PNG at `assets/icons/launcher_foreground.png` (the green
+# leaf/plant glyph on a TRANSPARENT background — the system applies the
+# background colour and the round/squircle mask). Then run:
+#   flutter pub run flutter_launcher_icons
+# This regenerates mipmap-anydpi-v26 (adaptive) + legacy PNGs for older APIs.
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: false
+  image_path: "assets/icons/launcher_foreground.png"
+  min_sdk_android: 24
+  adaptive_icon_background: "#3E745A"   # AppColors.forest600
+  adaptive_icon_foreground: "assets/icons/launcher_foreground.png"
+  adaptive_icon_monochrome: "assets/icons/launcher_foreground.png"
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
@@ -80,24 +94,13 @@ flutter:
     - assets/icons/
     - assets/lottie/        # optional: celebration animations
 
-  # ── Local fonts (add .ttf files to assets/fonts/ for production offline use)
-  # ── Until then, google_fonts package fetches and caches Fraunces + Inter.
-  # fonts:
-  #   - family: Fraunces
-  #     fonts:
-  #       - asset: assets/fonts/Fraunces-Regular.ttf
-  #         weight: 400
-  #       - asset: assets/fonts/Fraunces-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/Fraunces-Bold.ttf
-  #         weight: 700
-  #   - family: Inter
-  #     fonts:
-  #       - asset: assets/fonts/Inter-Regular.ttf
-  #         weight: 400
-  #       - asset: assets/fonts/Inter-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/Inter-SemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/Inter-Bold.ttf
-  #         weight: 700
+  # ── Bundled fonts (offline, no network round-trip) ──────────────────────────
+  # Both files are variable fonts (SIL Open Font License). Flutter handles all
+  # weights from a single .ttf — no need to bundle separate Regular/Bold files.
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Variable.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf

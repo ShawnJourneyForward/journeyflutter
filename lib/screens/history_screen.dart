@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../components/back_button.dart';
 import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/secure_window.dart';
 
 // ─── Local entry model ────────────────────────────────────────────────────────
 
@@ -63,7 +65,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   final FocusNode _searchFocus = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    SecureWindow.enable();
+  }
+
+  @override
   void dispose() {
+    SecureWindow.disable();
     _searchController.dispose();
     _searchFocus.dispose();
     super.dispose();
@@ -304,8 +313,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     required int slipCount,
   }) {
     final l10n = AppLocalizations.of(context);
-    final total = journalCount + gratitudeCount +
-        cravingCount + thoughtCount + activityCount + sleepCount + slipCount;
+    final total = journalCount +
+        gratitudeCount +
+        cravingCount +
+        thoughtCount +
+        activityCount +
+        sleepCount +
+        slipCount;
 
     final filters = [
       ('all', '${l10n.historyFilterAll} ($total)'),
@@ -335,13 +349,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               curve: Curves.easeOut,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color:
-                    isSelected ? AppColors.forest600 : AppColors.stone50,
+                color: isSelected ? AppColors.forest600 : AppColors.stone50,
                 borderRadius: AppRadius.pill,
                 border: Border.all(
-                  color: isSelected
-                      ? AppColors.forest600
-                      : AppColors.stone100,
+                  color: isSelected ? AppColors.forest600 : AppColors.stone100,
                   width: 1,
                 ),
               ),
@@ -427,12 +438,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final isExpanded = _expanded.contains(entry.id);
     final moodColor = _moodColor(entry.mood);
     final localizedMoodLabel = switch (entry.mood) {
-      'great'  => l10n.historyMoodGreat,
-      'good'   => l10n.historyMoodGood,
-      'okay'   => l10n.historyMoodOkay,
-      'hard'   => l10n.historyMoodHard,
+      'great' => l10n.historyMoodGreat,
+      'good' => l10n.historyMoodGood,
+      'okay' => l10n.historyMoodOkay,
+      'hard' => l10n.historyMoodHard,
       'crisis' => l10n.historyMoodCrisis,
-      _        => entry.mood,
+      _ => entry.mood,
     };
 
     return GestureDetector(
@@ -679,7 +690,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             : AppColors.forest700;
     final triggerLabels = e.triggers.isNotEmpty
         ? e.triggers
-        : (e.trigger?.trim().isNotEmpty == true ? [e.trigger!] : const <String>[]);
+        : (e.trigger?.trim().isNotEmpty == true
+            ? [e.trigger!]
+            : const <String>[]);
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -844,10 +857,21 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget _buildActivityCard(ActivityEntry e) {
     final (icon, label) = switch (e.activity) {
       'walk' => (Icons.directions_walk_rounded, 'Walk'),
+      'run' => (Icons.directions_run_rounded, 'Run'),
+      'cycle' => (Icons.directions_bike_rounded, 'Cycle'),
+      'swim' => (Icons.pool_rounded, 'Swim'),
+      'weights' => (Icons.fitness_center_rounded, 'Weights'),
+      // legacy value kept for existing records
       'exercise' => (Icons.fitness_center_rounded, 'Exercise'),
       'yoga' => (Icons.self_improvement_outlined, 'Yoga'),
       _ => (Icons.directions_run_rounded, 'Activity'),
     };
+
+    // Sub-label: distance + time for distance activities; just time otherwise.
+    final distKm = e.distance;
+    final subLabel = distKm != null
+        ? '${distKm.toStringAsFixed(2)} km · ${e.minutes} min'
+        : '${e.minutes} min';
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -890,8 +914,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(label, style: AppTextStyles.titleSmall),
-                              Text('${e.minutes} minutes',
-                                  style: AppTextStyles.bodySmall),
+                              Text(subLabel, style: AppTextStyles.bodySmall),
                             ],
                           ),
                         ),
@@ -1014,9 +1037,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Slip card ───────────────────────────────────────────────────────────────
 
   Widget _buildSlipCard(Slip e) {
-    final streakLabel = e.streakDays == 1
-        ? '1 day streak'
-        : '${e.streakDays} day streak';
+    final streakLabel =
+        e.streakDays == 1 ? '1 day streak' : '${e.streakDays} day streak';
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -1095,11 +1117,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       'cravings' => (Icons.local_fire_department_rounded, 'cravings'),
       'thoughts' => (Icons.lightbulb_outline_rounded, 'thoughts'),
       'exercise' => (Icons.directions_walk_rounded, 'exercise'),
-      'sleep'    => (Icons.bedtime_outlined, 'sleep'),
-      'journal'  => (Icons.edit_note_rounded, 'journal entries'),
-      'gratitude'=> (Icons.favorite_outline_rounded, 'gratitude notes'),
-      'slips'    => (Icons.timeline_rounded, 'slips'),
-      _          => (Icons.history_rounded, 'entries'),
+      'sleep' => (Icons.bedtime_outlined, 'sleep'),
+      'journal' => (Icons.edit_note_rounded, 'journal entries'),
+      'gratitude' => (Icons.favorite_outline_rounded, 'gratitude notes'),
+      'slips' => (Icons.timeline_rounded, 'slips'),
+      _ => (Icons.history_rounded, 'entries'),
     };
 
     if (_filter != 'all') {
@@ -1112,7 +1134,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             const SizedBox(height: 16),
             Text(
               'No ${noun[0].toUpperCase()}${noun.substring(1)} yet',
-              style: AppTextStyles.titleMedium.copyWith(color: AppColors.stone500),
+              style:
+                  AppTextStyles.titleMedium.copyWith(color: AppColors.stone500),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
@@ -1175,14 +1198,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final slips = slipsAsync.valueOrNull ?? [];
 
     // Weekly counts
-    final journalThisWeek =
-        journal.where((e) => _isThisWeek(e.date)).length;
-    final gratitudeThisWeek = gratitude
-        .where((e) {
-          final d = DateTime.tryParse(e.date);
-          return d != null && _isThisWeek(d);
-        })
-        .length;
+    final journalThisWeek = journal.where((e) => _isThisWeek(e.date)).length;
+    final gratitudeThisWeek = gratitude.where((e) {
+      final d = DateTime.tryParse(e.date);
+      return d != null && _isThisWeek(d);
+    }).length;
 
     final entries = _buildEntries(
       journal: journal,
@@ -1195,8 +1215,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
 
     final grouped = _groupByDate(entries);
-    final sortedDates = grouped.keys.toList()
-      ..sort((a, b) => b.compareTo(a));
+    final sortedDates = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     return Scaffold(
       backgroundColor: AppColors.cream,
@@ -1208,15 +1227,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        size: 20),
-                    color: AppColors.stone700,
-                    onPressed: () {
-                      H.light();
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  const LuxuryBackButton(),
                   const SizedBox(width: 4),
                   Text('My History', style: AppTextStyles.titleLarge),
                 ],
@@ -1244,9 +1255,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   ),
                   _buildStatChip(
                     icon: Icons.local_florist_rounded,
-                    value: soberStats != null
-                        ? '${soberStats.days}d'
-                        : '--',
+                    value: soberStats != null ? '${soberStats.days}d' : '--',
                     label: 'Current streak',
                   ),
                 ],
@@ -1295,13 +1304,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide:
-                        const BorderSide(color: AppColors.stone100),
+                    borderSide: const BorderSide(color: AppColors.stone100),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide:
-                        const BorderSide(color: AppColors.stone100),
+                    borderSide: const BorderSide(color: AppColors.stone100),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
@@ -1386,12 +1393,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                       card = _buildSleepCard(
                                           entry.data as SleepEntry);
                                     case _EntryType.slip:
-                                      card = _buildSlipCard(
-                                          entry.data as Slip);
+                                      card = _buildSlipCard(entry.data as Slip);
                                   }
                                   return Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 10),
+                                    padding: const EdgeInsets.only(bottom: 10),
                                     child: card,
                                   );
                                 }),

@@ -3,9 +3,16 @@
 A compassionate, privacy-first sobriety companion built with Flutter.  
 Designed for Android using the **Stillwater Aesthetic System** — calm, warm, and human.
 
-**Current version:** 5.8.0+1 · APK: `build/app/outputs/flutter-apk/app-release.apk`
+**Current version:** 5.8.0+1 · APK: `build/app/outputs/flutter-apk/app-release.apk` (66 MB, built 2026-05-19)
 
-> **Last session (2026-05-19):** Journey card milestones extended to 1 year (6 nodes, animated progress bar between milestones). Pledge + Gratitude cards unstacked to full-width. Notification fixes: MILESTONE_DAYS deduplicated, minimal cadence schedules 4 staggered shots, frequency selector added to Settings. Early warning card added. Unit test suite extended.
+> **Last session (2026-05-19 · session 2):**
+> - **Thought save** — Success snackbar "Thought saved privately" (forest700, floating) shown after saving a thought. Previously sheet closed silently.
+> - **Heatmap** — "Thoughts" added to `_CategoryKey` legend. `cellSize` overflow formula fixed (3dp).
+> - **Progress mini heatmap** — Converted to `ConsumerWidget` watching all 5 data providers. Score-based cell colours now reflect actual logged entries (was showing all sober days as green).
+> - **Profile header** — Removed 3 rows (Sober since / Daily spend / Notifications). Date and spend are now tappable directly in the banner. Standalone Notifications section added.
+> - **Stats card removed** — `_RecoveryStatsCard` / `_StatCol` / `_Vline` deleted (unused).
+> - **patchGoal fix** — `pros` + `cons` now preserved when saving savings goal (data-loss bug fixed).
+> - **Pending:** Safety modal on first launch · GitHub migration (blocked: need new username/email)
 
 ---
 
@@ -84,7 +91,7 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 | `/progress` | `ProgressScreen` | Milestone cards, savings tracker, mood chart, plant growth visual |
 | `/emergency` | `EmergencyScreen` | Breathing exercises, meditation guides, CBT tools, grounding |
 | `/journal` | `JournalScreen` | Daily mood journal with affirmations and vision board |
-| `/settings` | `SettingsScreen` | Profile, notifications, lock, stats, and all deep-link entry cards |
+| `/settings` | `SettingsScreen` | Profile header (tappable avatar, pledge-streak badge), recovery stats (current/best/lifetime days), emergency contact with one-tap call, collapsible motivation sections (count badges), notifications panel with frequency selector, PIN/biometric lock, More section split into Records + Tools & App groups |
 
 ### Deep-link Screens
 
@@ -101,7 +108,7 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 | `/privacy` | `PrivacyScreen` | Privacy policy — fully local, no data leaves device |
 | `/cbt` | `CbtScreen` | CBT thought-challenging tools |
 | `/insights` | `InsightsScreen` | Mood and craving charts (fl_chart) |
-| `/heatmap` | `HeatmapScreen` | Activity heatmap calendar |
+| `/heatmap` | `HeatmapScreen` | 13-week activity heatmap calendar. Cell size computed via `LayoutBuilder` (no horizontal scroll). Weeks computed once in `initState` to eliminate jitter. |
 | `/slip-support` | `SlipSupportScreen` | Urge surfing and slip support flow |
 
 ### Utility Screens

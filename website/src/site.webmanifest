@@ -1,14 +1,12 @@
 {
   "name": "Journey Forward",
   "short_name": "Journey Forward",
-  "icons": [
-    {
-      "src": "/assets/favicon.svg",
-      "sizes": "64x64",
-      "type": "image/svg+xml"
-    }
-  ],
-  "theme_color": "#2E5844",
+  "description": "Private offline recovery companion",
+  "start_url": "/",
+  "display": "standalone",
   "background_color": "#F5F2EE",
-  "display": "browser"
+  "theme_color": "#2E5844",
+  "icons": [
+    { "src": "/assets/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,7 @@ import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/notification_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
@@ -17,22 +20,57 @@ import '../components/luxury_widgets.dart';
 // ─── Daily quotes (indexed by day-of-year mod pool size) ─────────────────────
 
 List<String> _buildQuotes(AppLocalizations l10n) => [
-  l10n.homeQuote0,
-  l10n.homeQuote1,
-  l10n.homeQuote2,
-  l10n.homeQuote3,
-  l10n.homeQuote4,
-  l10n.homeQuote5,
-  l10n.homeQuote6,
-  l10n.homeQuote7,
-  l10n.homeQuote8,
-  l10n.homeQuote9,
-  l10n.homeQuote10,
-  l10n.homeQuote11,
-  l10n.homeQuote12,
-  l10n.homeQuote13,
-  l10n.homeQuote14,
-];
+      l10n.homeQuote0,
+      l10n.homeQuote1,
+      l10n.homeQuote2,
+      l10n.homeQuote3,
+      l10n.homeQuote4,
+      l10n.homeQuote5,
+      l10n.homeQuote6,
+      l10n.homeQuote7,
+      l10n.homeQuote8,
+      l10n.homeQuote9,
+      l10n.homeQuote10,
+      l10n.homeQuote11,
+      l10n.homeQuote12,
+      l10n.homeQuote13,
+      l10n.homeQuote14,
+      l10n.homeQuote15,
+      l10n.homeQuote16,
+      l10n.homeQuote17,
+      l10n.homeQuote18,
+      l10n.homeQuote19,
+      l10n.homeQuote20,
+      l10n.homeQuote21,
+      l10n.homeQuote22,
+      l10n.homeQuote23,
+      l10n.homeQuote24,
+      l10n.homeQuote25,
+      l10n.homeQuote26,
+      l10n.homeQuote27,
+      l10n.homeQuote28,
+      l10n.homeQuote29,
+      l10n.homeQuote30,
+      l10n.homeQuote31,
+      l10n.homeQuote32,
+      l10n.homeQuote33,
+      l10n.homeQuote34,
+      l10n.homeQuote35,
+      l10n.homeQuote36,
+      l10n.homeQuote37,
+      l10n.homeQuote38,
+      l10n.homeQuote39,
+      l10n.homeQuote40,
+      l10n.homeQuote41,
+      l10n.homeQuote42,
+      l10n.homeQuote43,
+      l10n.homeQuote44,
+      l10n.homeQuote45,
+      l10n.homeQuote46,
+      l10n.homeQuote47,
+      l10n.homeQuote48,
+      l10n.homeQuote49,
+    ];
 
 String _dailyQuote(AppLocalizations l10n) {
   final quotes = _buildQuotes(l10n);
@@ -44,34 +82,76 @@ String _dailyQuote(AppLocalizations l10n) {
 // ─── Daily missions pool ──────────────────────────────────────────────────────
 
 List<String> _buildMissionPool(AppLocalizations l10n) => [
-  l10n.homeMission0,
-  l10n.homeMission1,
-  l10n.homeMission2,
-  l10n.homeMission3,
-  l10n.homeMission4,
-  l10n.homeMission5,
-  l10n.homeMission6,
-  l10n.homeMission7,
-  l10n.homeMission8,
-  l10n.homeMission9,
-  l10n.homeMission10,
-  l10n.homeMission11,
-  l10n.homeMission12,
-  l10n.homeMission13,
-  l10n.homeMission14,
-  l10n.homeMission15,
-  l10n.homeMission16,
-  l10n.homeMission17,
-  l10n.homeMission18,
-  l10n.homeMission19,
-];
+      l10n.homeMission0,
+      l10n.homeMission1,
+      l10n.homeMission2,
+      l10n.homeMission3,
+      l10n.homeMission4,
+      l10n.homeMission5,
+      l10n.homeMission6,
+      l10n.homeMission7,
+      l10n.homeMission8,
+      l10n.homeMission9,
+      l10n.homeMission10,
+      l10n.homeMission11,
+      l10n.homeMission12,
+      l10n.homeMission13,
+      l10n.homeMission14,
+      l10n.homeMission15,
+      l10n.homeMission16,
+      l10n.homeMission17,
+      l10n.homeMission18,
+      l10n.homeMission19,
+      l10n.homeMission20,
+      l10n.homeMission21,
+      l10n.homeMission22,
+      l10n.homeMission23,
+      l10n.homeMission24,
+      l10n.homeMission25,
+      l10n.homeMission26,
+      l10n.homeMission27,
+      l10n.homeMission28,
+      l10n.homeMission29,
+      l10n.homeMission30,
+      l10n.homeMission31,
+      l10n.homeMission32,
+      l10n.homeMission33,
+      l10n.homeMission34,
+      l10n.homeMission35,
+      l10n.homeMission36,
+      l10n.homeMission37,
+      l10n.homeMission38,
+      l10n.homeMission39,
+      l10n.homeMission40,
+      l10n.homeMission41,
+      l10n.homeMission42,
+      l10n.homeMission43,
+      l10n.homeMission44,
+      l10n.homeMission45,
+      l10n.homeMission46,
+      l10n.homeMission47,
+      l10n.homeMission48,
+      l10n.homeMission49,
+      l10n.homeMission50,
+      l10n.homeMission51,
+      l10n.homeMission52,
+      l10n.homeMission53,
+      l10n.homeMission54,
+      l10n.homeMission55,
+      l10n.homeMission56,
+      l10n.homeMission57,
+      l10n.homeMission58,
+      l10n.homeMission59,
+    ];
 
 List<String> _dailyMissions(AppLocalizations l10n) {
   final pool = _buildMissionPool(l10n);
   final seed = DateTime.now().difference(DateTime(2024)).inDays;
-  final indices = [seed % pool.length,
+  final indices = [
+    seed % pool.length,
     (seed + 7) % pool.length,
-    (seed + 13) % pool.length];
+    (seed + 13) % pool.length
+  ];
   return indices.map((i) => pool[i]).toList();
 }
 
@@ -93,31 +173,45 @@ class _RecoveryProgress {
   final String? nextIn;
 
   static const _milestoneMinutes = [
-    20, 720, 1440, 2880, 4320, 10080, 20160,
-    43200, 129600, 259200, 525960, 1051920, 2629800, 5259600,
+    720,
+    1440,
+    2880,
+    4320,
+    10080,
+    20160,
+    43200,
+    129600,
+    259200,
+    525960,
+    1051920,
   ];
 
   static const _milestoneLabels = [
-    '20 Minutes', '12 Hours', '1 Day', '2 Days', '3 Days',
-    '1 Week', '2 Weeks', '1 Month', '3 Months', '6 Months',
-    '1 Year', '2 Years', '5 Years', '10 Years',
+    '12 Hours',
+    '24 Hours',
+    '48 Hours',
+    '3 Days',
+    '1 Week',
+    '2 Weeks',
+    '1 Month',
+    '3 Months',
+    '6 Months',
+    '1 Year',
+    '2 Years & Beyond',
   ];
 
   static const _milestoneBodies = [
-    'Heart rate and blood pressure are already stabilising.',
-    'Blood glucose is normalising and liver processing has begun.',
-    'All alcohol has cleared your bloodstream.',
-    'Withdrawal peaks here — your nervous system is fighting to rebalance.',
-    'The acute phase is lifting. Brain chemistry is beginning to normalise.',
-    'Brain fog is clearing and sleep is starting to improve.',
-    'Energy is returning and concentration is sharpening.',
-    'Skin, sleep, and mood are measurably improving.',
-    'The brain\'s dopamine system has substantially normalised.',
-    'White matter in the brain has measurably recovered.',
-    'Lasting structural brain changes — you have rebuilt your mind.',
-    'Reward pathways have re-normalised. Old triggers are weakening.',
-    'Relapse risk is substantially reduced. New patterns are stable.',
-    'Full neurological restoration. Recovery is who you are.',
+    'Your body begins adjusting. Hydration and rest are your allies right now.',
+    'Heart rate and sleep patterns may begin to shift as your body finds its rhythm.',
+    'A significant window — be gentle with yourself. Seek support if anything feels unsafe.',
+    'The most intense early adjustment may begin to ease. A small window of calm can emerge.',
+    'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.',
+    'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.',
+    'Your liver and vital organs may be experiencing meaningful relief.',
+    'Dopamine pathways are gradually adjusting. Satisfaction in daily life may begin to return.',
+    'Many people notice a steadier baseline. Urges may become less frequent and easier to move through.',
+    'The long-term strain on heart, liver, sleep, and mood is meaningfully reduced for many people.',
+    'The benefits of reduced alcohol strain can continue to deepen over time.',
   ];
 
   static _RecoveryProgress compute(Duration elapsed) {
@@ -136,7 +230,10 @@ class _RecoveryProgress {
 
     int idx = 0;
     for (int i = _milestoneMinutes.length - 1; i >= 0; i--) {
-      if (mins >= _milestoneMinutes[i]) { idx = i; break; }
+      if (mins >= _milestoneMinutes[i]) {
+        idx = i;
+        break;
+      }
     }
 
     if (idx == _milestoneMinutes.length - 1) {
@@ -148,15 +245,15 @@ class _RecoveryProgress {
     }
 
     final from = _milestoneMinutes[idx];
-    final to   = _milestoneMinutes[idx + 1];
+    final to = _milestoneMinutes[idx + 1];
     final frac = ((mins - from) / (to - from)).clamp(0.0, 1.0);
 
     return _RecoveryProgress(
       currentLabel: _milestoneLabels[idx],
-      currentBody:  _milestoneBodies[idx],
-      progress:     frac,
-      nextLabel:    _milestoneLabels[idx + 1],
-      nextIn:       _formatRemaining(to - mins),
+      currentBody: _milestoneBodies[idx],
+      progress: frac,
+      nextLabel: _milestoneLabels[idx + 1],
+      nextIn: _formatRemaining(to - mins),
     );
   }
 
@@ -179,13 +276,14 @@ class _MilestoneNode {
 }
 
 List<_MilestoneNode> _buildMilestones(AppLocalizations l10n) => [
-  _MilestoneNode(0,   l10n.homeMilestoneNode0Label,  Icons.eco_outlined),
-  _MilestoneNode(7,   l10n.homeMilestoneNode2Label,  Icons.energy_savings_leaf_outlined),
-  _MilestoneNode(30,  l10n.homeMilestoneNode3Label,  Icons.terrain_outlined),
-  _MilestoneNode(90,  l10n.homeMilestoneNode4Label,  Icons.park_outlined),
-  _MilestoneNode(180, 'Six months',                  Icons.local_florist_outlined),
-  _MilestoneNode(365, 'One year',                    Icons.star_outline_rounded),
-];
+      _MilestoneNode(0, l10n.homeMilestoneNode0Label, Icons.eco_outlined),
+      _MilestoneNode(
+          7, l10n.homeMilestoneNode2Label, Icons.energy_savings_leaf_outlined),
+      _MilestoneNode(30, l10n.homeMilestoneNode3Label, Icons.terrain_outlined),
+      _MilestoneNode(90, l10n.homeMilestoneNode4Label, Icons.park_outlined),
+      _MilestoneNode(180, 'Six months', Icons.local_florist_outlined),
+      _MilestoneNode(365, 'One year', Icons.star_outline_rounded),
+    ];
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
 
@@ -197,82 +295,116 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final _pledgeController    = TextEditingController();
+  final _pledgeController = TextEditingController();
   final _gratitudeController = TextEditingController();
-  bool _pledgeSaving        = false;
-  bool _gratitudeSaving     = false;
-  bool _earlyWarningDismissed = false;
+  bool _pledgeSaving = false;
+  bool _gratitudeSaving = false;
   bool _isFirstLaunch = false;
+  bool _milestonesChecked = false;
+  bool _redirectingToOnboarding = false;
 
-  static const _earlyWarningKey = 'early_warning_seen';
-  static const _homeVisitedKey  = 'home_visited';
+  // Edit-override flags: let user tap a saved card to re-enter input mode.
+  bool _editingPledge = false;
+  bool _editingGratitude = false;
+
+  // Fires at local midnight to clear today's saved state from the screen.
+  Timer? _midnightTimer;
+
+  static const _homeVisitedKey = 'home_visited';
 
   @override
   void initState() {
     super.initState();
     _loadInitialState();
+    _scheduleMidnightReset();
   }
 
   Future<void> _loadInitialState() async {
     final prefs = await SharedPreferences.getInstance();
-    final earlyWarningDismissed = prefs.getBool(_earlyWarningKey) ?? false;
     final homeVisited = prefs.getBool(_homeVisitedKey) ?? false;
     if (!homeVisited) await prefs.setBool(_homeVisitedKey, true);
     if (mounted) {
       setState(() {
-        _earlyWarningDismissed = earlyWarningDismissed;
         _isFirstLaunch = !homeVisited;
       });
     }
   }
 
-  Future<void> _dismissEarlyWarning() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_earlyWarningKey, true);
-    if (mounted) setState(() => _earlyWarningDismissed = true);
-  }
-
   @override
   void dispose() {
+    _midnightTimer?.cancel();
     _pledgeController.dispose();
     _gratitudeController.dispose();
     super.dispose();
   }
 
+  /// Schedules a one-shot timer that fires at the next local midnight,
+  /// invalidates today's gratitude/pledge so the UI clears automatically,
+  /// then re-schedules itself for the following midnight.
+  void _scheduleMidnightReset() {
+    final now = DateTime.now();
+    final nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    final delay = nextMidnight.difference(now);
+    _midnightTimer?.cancel();
+    _midnightTimer = Timer(delay, () {
+      if (!mounted) return;
+      ref.invalidate(gratitudeProvider);
+      setState(() {
+        _editingPledge = false;
+        _editingGratitude = false;
+      });
+      _scheduleMidnightReset(); // re-arm for the next midnight
+    });
+  }
+
+  /// Ensures the first visible character of [text] is uppercase.
+  String _capitalizeFirst(String text) {
+    final t = text.trim();
+    if (t.isEmpty) return t;
+    return t[0].toUpperCase() + t.substring(1);
+  }
+
   String _today() {
     final n = DateTime.now();
-    return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}';
+    return '${n.year}-${n.month.toString().padLeft(2, '0')}-${n.day.toString().padLeft(2, '0')}';
   }
 
   Future<void> _savePledge(UserProfile profile) async {
-    final text = _pledgeController.text.trim();
+    final text = _capitalizeFirst(_pledgeController.text);
     if (text.isEmpty) return;
     setState(() => _pledgeSaving = true);
     H.light();
     await ref.read(profileProvider.notifier).patch((p) => p.copyWith(
-      lastPledgeText: text,
-      lastPledgeDate: _today(),
-      pledgeStreak: p.lastPledgeDate == _yesterday()
-          ? p.pledgeStreak + 1
-          : 1,
-    ));
+          lastPledgeText: text,
+          lastPledgeDate: _today(),
+          pledgeStreak:
+              p.lastPledgeDate == _yesterday() ? p.pledgeStreak + 1 : 1,
+        ));
+    if (!mounted) return;
     _pledgeController.clear();
-    setState(() => _pledgeSaving = false);
+    setState(() {
+      _pledgeSaving = false;
+      _editingPledge = false;
+    });
   }
 
   Future<void> _saveGratitude() async {
-    final text = _gratitudeController.text.trim();
+    final text = _capitalizeFirst(_gratitudeController.text);
     if (text.isEmpty) return;
     setState(() => _gratitudeSaving = true);
     H.light();
     await ref.read(gratitudeProvider.notifier).add(text);
+    if (!mounted) return;
     _gratitudeController.clear();
-    setState(() => _gratitudeSaving = false);
+    setState(() {
+      _gratitudeSaving = false;
+      _editingGratitude = false;
+    });
   }
 
   String _yesterday() {
     final y = DateTime.now().subtract(const Duration(days: 1));
-    return '${y.year}-${y.month.toString().padLeft(2,'0')}-${y.day.toString().padLeft(2,'0')}';
+    return '${y.year}-${y.month.toString().padLeft(2, '0')}-${y.day.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -288,17 +420,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return profileAsync.when(
       loading: () => const Scaffold(
         backgroundColor: AppColors.stone50,
-        body: Center(child: CircularProgressIndicator(color: AppColors.forest600)),
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.forest600)),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.stone50,
         body: Center(child: Text(l10n.homeErrorPrefix(e.toString()))),
       ),
       data: (profile) {
+        // Router-level redirect (main.dart) sends profile-less users to
+        // /onboarding before this screen mounts. The only way we land here
+        // with profile==null is if the provider rebuilt mid-session (e.g.
+        // recovery from a corrupted encrypted blob cleared the data). When
+        // that happens, the prefs sentinel has already been cleared inside
+        // ProfileNotifier.build(), so a one-shot navigation to /onboarding
+        // is safe — the router redirect will keep us there. The post-frame
+        // callback is single-shot (guarded by _redirectingToOnboarding) to
+        // avoid the rebuild-loop that the previous guard caused.
         if (profile == null) {
-          WidgetsBinding.instance.addPostFrameCallback(
-              (_) => context.go('/onboarding'));
-          return const SizedBox.shrink();
+          if (!_redirectingToOnboarding) {
+            _redirectingToOnboarding = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) context.go('/onboarding');
+            });
+          }
+          return const Scaffold(
+            backgroundColor: AppColors.stone50,
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.forest600),
+            ),
+          );
+        }
+        _redirectingToOnboarding = false;
+
+        // Fire milestone notifications once per app session.
+        if (!_milestonesChecked) {
+          _milestonesChecked = true;
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _checkMilestones(profile));
         }
 
         final pledgedToday = profile.lastPledgeDate == _today();
@@ -306,7 +465,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           backgroundColor: AppColors.stone50,
           body: SafeArea(
             child: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               cacheExtent: 500,
               slivers: [
                 SliverToBoxAdapter(
@@ -315,26 +474,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         // ── Header ──────────────────────────────────────────
                         _HomeHeader(
                           username: profile.username,
                           isFirstLaunch: _isFirstLaunch,
-                          soberDays: stats?.days ?? 0,
-                          onAvatarTap: () => _showProfileModal(context, profile),
+                          onAvatarTap: () {
+                            H.light();
+                            context.go('/settings');
+                          },
                         ),
                         const SizedBox(height: 24),
 
                         // ── Serenity Card (hero) ─────────────────────────────
                         RepaintBoundary(child: _SerenityCard(profile: profile)),
                         const SizedBox(height: 14),
-
-                        // ── Early warning card (first 72 h only) ─────────────
-                        if ((stats?.elapsed.inHours ?? 0) < 72 &&
-                            !_earlyWarningDismissed) ...[
-                          _EarlyWarningCard(onDismiss: _dismissEarlyWarning),
-                          const SizedBox(height: 14),
-                        ],
 
                         // ── Money + My Reason ────────────────────────────────
                         if (profile.dailySpend > 0) ...[
@@ -351,21 +504,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         // ── Daily Pledge ──────────────────────────────────────
                         _PledgeCard(
-                          pledgedToday: pledgedToday,
+                          pledgedToday: pledgedToday && !_editingPledge,
                           pledgeText: profile.lastPledgeText,
-                          pledgeStreak: profile.pledgeStreak,
                           controller: _pledgeController,
                           saving: _pledgeSaving,
                           onSave: () => _savePledge(profile),
+                          onEdit: () {
+                            _pledgeController.text =
+                                profile.lastPledgeText ?? '';
+                            setState(() => _editingPledge = true);
+                          },
                         ),
                         const SizedBox(height: 14),
 
                         // ── Daily Gratitude ───────────────────────────────────
                         _GratitudeCard(
-                          todayEntry: todayGratitude,
+                          todayEntry: _editingGratitude ? null : todayGratitude,
                           controller: _gratitudeController,
                           saving: _gratitudeSaving,
                           onSave: _saveGratitude,
+                          onEdit: () {
+                            _gratitudeController.text = todayGratitude ?? '';
+                            setState(() => _editingGratitude = true);
+                          },
                         ),
                         const SizedBox(height: 14),
                         _MyReasonCard(profile: profile),
@@ -377,7 +538,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             goals: profile.weeklyGoals,
                             toggles: goalToggles,
                             onToggle: (i) {
-                              ref.read(weeklyGoalTogglesProvider.notifier).toggle(i);
+                              ref
+                                  .read(weeklyGoalTogglesProvider.notifier)
+                                  .toggle(i);
                               H.selection();
                             },
                           ),
@@ -397,10 +560,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                         // ── Daily Check-In ───────────────────────────────────
                         _CheckInCard(
-                          onCraving:  () => _showCravingSheet(context, ref),
-                          onThought:  () => _showThoughtSheet(context, ref),
+                          onCraving: () => _showCravingSheet(context, ref),
+                          onThought: () => _showThoughtSheet(context, ref),
                           onActivity: () => _showActivitySheet(context, ref),
-                          onSleep:    () => _showSleepSheet(context, ref),
+                          onSleep: () => _showSleepSheet(context, ref),
                         ),
                         const SizedBox(height: 14),
 
@@ -462,13 +625,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _showProfileModal(BuildContext context, UserProfile profile) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _ProfileModal(profile: profile),
-    );
+  // ── Milestone checker ────────────────────────────────────────────────────
+  // Called once per HomeScreen lifecycle (flag prevents re-firing on rebuild).
+
+  Future<void> _checkMilestones(UserProfile profile) async {
+    const milestoneDays = [1, 7, 14, 30, 60, 90, 180, 365, 730, 1095];
+    final now = DateTime.now();
+    final days = SoberStats.compute(profile, now).days;
+
+    // ── Day milestones ──────────────────────────────────────────────────────
+    if (milestoneDays.contains(days) &&
+        !profile.firedMilestoneDays.contains(days)) {
+      await NotificationService.fireDayMilestone(days);
+      H.heavy();
+      if (mounted) {
+        await ref.read(profileProvider.notifier).patch(
+              (p) => p.copyWith(
+                firedMilestoneDays: [...p.firedMilestoneDays, days],
+              ),
+            );
+      }
+    }
+
+    // ── Savings milestones ──────────────────────────────────────────────────
+    if (profile.dailySpend > 0) {
+      const tiers = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
+      final saved = SoberStats.compute(profile, now).moneySaved;
+      for (final tier in tiers) {
+        final tierD = tier.toDouble();
+        if (saved >= tierD && !profile.firedSavingsTiers.contains(tierD)) {
+          await NotificationService.fireSavingsMilestone(
+              tier, profile.currency);
+          if (mounted) {
+            await ref.read(profileProvider.notifier).patch(
+                  (p) => p.copyWith(
+                    firedSavingsTiers: [...p.firedSavingsTiers, tierD],
+                  ),
+                );
+          }
+        }
+      }
+    }
   }
 }
 
@@ -478,13 +675,11 @@ class _HomeHeader extends StatelessWidget {
   const _HomeHeader({
     required this.username,
     required this.isFirstLaunch,
-    required this.soberDays,
     required this.onAvatarTap,
   });
 
   final String username;
   final bool isFirstLaunch;
-  final int soberDays;
   final VoidCallback onAvatarTap;
 
   @override
@@ -492,58 +687,49 @@ class _HomeHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final dateStr = DateFormat('EEEE, d MMMM').format(DateTime.now());
     final name = username.isEmpty ? l10n.homeFriendFallback : username;
-    final greetingText = isFirstLaunch
-        ? l10n.homeGreetingFirst(name)
-        : l10n.homeGreetingReturning(name);
+    final firstName = name.split(' ').first;
+    final greetingText = 'Hi, $firstName';
 
     return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Plant icon ────────────────────────────────────────────────
-          SizedBox(
-            width: 56,
-            height: 56,
-            child: Image.asset(
-              PlantLogic.getPlantAsset(soberDays),
-              fit: BoxFit.contain,
-              semanticLabel: 'Your recovery plant',
-            ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Text block ────────────────────────────────────────────────
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(dateStr,
+                  style: AppTextStyles.bodyLarge
+                      .copyWith(color: AppColors.stoneText)),
+              const SizedBox(height: 6),
+              Text(greetingText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.greetingSerif),
+              const SizedBox(height: 6),
+              Text(l10n.homeTagline, style: AppTextStyles.bodyLarge),
+            ],
           ),
-          const SizedBox(width: 14),
-          // ── Text block ────────────────────────────────────────────────
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(dateStr,
-                    style: AppTextStyles.bodyLarge
-                        .copyWith(color: AppColors.stoneText)),
-                const SizedBox(height: 6),
-                Text(greetingText, style: AppTextStyles.greetingSerif),
-                const SizedBox(height: 6),
-                Text(l10n.homeTagline, style: AppTextStyles.bodyLarge),
-              ],
+        ),
+        const SizedBox(width: 12),
+        // ── Avatar ───────────────────────────────────────────────────
+        GestureDetector(
+          onTap: onAvatarTap,
+          child: Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.softBorder),
+              boxShadow: AppShadows.luxury,
             ),
+            child: const Icon(Icons.person_outline_rounded,
+                color: AppColors.forest, size: 27),
           ),
-          const SizedBox(width: 12),
-          // ── Avatar ───────────────────────────────────────────────────
-          GestureDetector(
-            onTap: onAvatarTap,
-            child: Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.softBorder),
-                boxShadow: AppShadows.luxury,
-              ),
-              child: const Icon(Icons.person_outline_rounded,
-                  color: AppColors.forest, size: 27),
-            ),
-          ),
-        ],
+        ),
+      ],
     );
   }
 }
@@ -555,12 +741,11 @@ class _SerenityCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // This card is the only widget that needs the per-second live clock.
-    final stats = ref.watch(soberStatsProvider);
+    // Use daily provider — plant image & day count only need midnight refresh.
+    // The live HH:MM:SS clock is isolated in _LiveClock below.
+    final stats = ref.watch(soberDaysProvider);
     final days = stats?.days ?? 0;
-    final hours = stats?.hours ?? 0;
-    final minutes = stats?.minutes ?? 0;
-    final seconds = stats?.seconds ?? 0;
+    final elapsed = stats?.elapsed ?? Duration.zero;
 
     return LuxuryCard(
       padding: EdgeInsets.zero,
@@ -599,7 +784,7 @@ class _SerenityCard extends ConsumerWidget {
                 ).createShader(rect),
                 blendMode: BlendMode.dstIn,
                 child: Image.asset(
-                  PlantLogic.getPlantAsset(days),
+                  PlantLogic.getPlantAssetForElapsed(elapsed),
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
                   semanticLabel: PlantLogic.getStageLabel(days),
@@ -634,66 +819,82 @@ class _SerenityCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      const IconChip(icon: Icons.no_drinks_outlined, size: 46),
-                      const SizedBox(width: 14),
-                      Text('DAYS SOBER', style: AppTextStyles.overline.copyWith(fontSize: 12)),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
+                  Text('DAYS SOBER', style: AppTextStyles.overline),
+                  const SizedBox(height: 6),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text('$days', style: AppTextStyles.heroNumber),
                       const SizedBox(width: 10),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 9),
-                        child: Text('days', style: AppTextStyles.displaySmall.copyWith(fontSize: 24)),
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text('days',
+                            style: AppTextStyles.displaySmall.copyWith(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w300,
+                                letterSpacing: -0.4)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.card.withOpacity(.82),
-                      borderRadius: AppRadius.pill,
-                      border: Border.all(color: AppColors.softBorder),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(color: AppColors.leafGreen, shape: BoxShape.circle),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s',
-                          style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 6),
                   SizedBox(
-                    width: 168,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SoftDivider(),
-                        const SizedBox(height: 14),
-                        Text(
-                          'A clearer mind.\nA stronger you.',
-                          style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
-                        ),
-                      ],
+                    width: 180,
+                    child: Text(
+                      'A clearer mind. A stronger you.',
+                      style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  const SoftDivider(),
+                  const SizedBox(height: 10),
+                  // Isolated per-second clock — only this tiny widget rebuilds.
+                  const _LiveClock(),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// \u2500\u2500\u2500 Live HH:MM:SS clock \u2014 only widget that watches the per-second ticker \u2500\u2500\u2500\u2500\u2500\u2500
+// Kept deliberately tiny so the expensive SerenityCard stack never rebuilds.
+
+class _LiveClock extends ConsumerWidget {
+  const _LiveClock();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(soberStatsProvider);
+    final hours = stats?.hours ?? 0;
+    final minutes = stats?.minutes ?? 0;
+    final seconds = stats?.seconds ?? 0;
+
+    return RepaintBoundary(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.card.withOpacity(.82),
+          borderRadius: AppRadius.pill,
+          border: Border.all(color: AppColors.softBorder),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                  color: AppColors.leafGreen, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              '${hours.toString().padLeft(2, '0')}h '
+              '${minutes.toString().padLeft(2, '0')}m '
+              '${seconds.toString().padLeft(2, '0')}s',
+              style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
             ),
           ],
         ),
@@ -712,7 +913,8 @@ class _MoneyCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final stats = ref.watch(soberStatsProvider);
+    // 10-second provider — money ticks live without causing scroll jitter.
+    final stats = ref.watch(soberMoneyProvider);
     final money = stats?.moneySaved ?? 0.0;
     final currency = profile.currency;
     final formatted = _formatMoney(currency, money);
@@ -747,7 +949,9 @@ class _MoneyCard extends ConsumerWidget {
                   // Header: icon + label
                   Row(
                     children: [
-                      const IconChip(icon: Icons.account_balance_wallet_outlined, size: 46),
+                      const IconChip(
+                          icon: Icons.account_balance_wallet_outlined,
+                          size: 46),
                       const SizedBox(width: 14),
                       Text(
                         l10n.homeMoneyReclaimed,
@@ -764,13 +968,14 @@ class _MoneyCard extends ConsumerWidget {
                       formatted,
                       maxLines: 1,
                       softWrap: false,
-                      style: AppTextStyles.moneyNumber.copyWith(fontSize: 52),
+                      style: AppTextStyles.moneyNumber.copyWith(fontSize: 46),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.homeMoneyAllTime,
-                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.mistGrey),
+                    style: AppTextStyles.bodyMedium
+                        .copyWith(color: AppColors.mistGrey),
                   ),
                   const SizedBox(height: 14),
                   const SoftDivider(),
@@ -787,7 +992,8 @@ class _MoneyCard extends ConsumerWidget {
                       child: LinearProgressIndicator(
                         value: progressFraction,
                         backgroundColor: AppColors.mintChip,
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.forest),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.forest),
                         minHeight: 8,
                       ),
                     ),
@@ -796,7 +1002,8 @@ class _MoneyCard extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            l10n.homeMoneyGoalSavedOf(formatted, _formatMoney(currency, goal!)),
+                            l10n.homeMoneyGoalSavedOf(
+                                formatted, _formatMoney(currency, goal!)),
                             style: AppTextStyles.bodySmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -804,7 +1011,8 @@ class _MoneyCard extends ConsumerWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          l10n.homeMoneyGoalPercent((progressFraction * 100).round()),
+                          l10n.homeMoneyGoalPercent(
+                              (progressFraction * 100).round()),
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.forest,
                             fontWeight: FontWeight.w600,
@@ -816,22 +1024,26 @@ class _MoneyCard extends ConsumerWidget {
                   const SizedBox(height: 16),
                   // Set savings goal CTA
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: AppColors.mintChip,
                       borderRadius: AppRadius.lg,
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.track_changes_outlined, color: AppColors.forest, size: 20),
+                        const Icon(Icons.track_changes_outlined,
+                            color: AppColors.forest, size: 20),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             l10n.settingsSavingsGoalLabel,
-                            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.forest),
+                            style: AppTextStyles.bodyMedium
+                                .copyWith(color: AppColors.forest),
                           ),
                         ),
-                        const Icon(Icons.chevron_right, color: AppColors.forest, size: 20),
+                        const Icon(Icons.chevron_right,
+                            color: AppColors.forest, size: 20),
                       ],
                     ),
                   ),
@@ -846,7 +1058,8 @@ class _MoneyCard extends ConsumerWidget {
 
   static String _formatMoney(String currency, double amount) {
     if (currency == 'R') {
-      return NumberFormat.currency(locale: 'en_ZA', symbol: 'R', decimalDigits: 2)
+      return NumberFormat.currency(
+              locale: 'en_ZA', symbol: 'R', decimalDigits: 2)
           .format(amount);
     }
     return '$currency${NumberFormat('#,##0.00').format(amount)}';
@@ -894,16 +1107,18 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
     final amount = double.tryParse(raw);
     final name = _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim();
     await ref.read(profileProvider.notifier).patchGoal(
-      amount: (amount != null && amount > 0) ? amount : null,
-      name: name,
-    );
+          amount: (amount != null && amount > 0) ? amount : null,
+          name: name,
+        );
     if (mounted) Navigator.of(context).pop();
   }
 
   Future<void> _clear() async {
     if (_saving) return;
     setState(() => _saving = true);
-    await ref.read(profileProvider.notifier).patchGoal(amount: null, name: null);
+    await ref
+        .read(profileProvider.notifier)
+        .patchGoal(amount: null, name: null);
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -955,13 +1170,15 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
             style: AppTextStyles.bodyLarge,
             decoration: InputDecoration(
               hintText: l10n.settingsGoalNameHint,
-              hintStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.mistGrey),
+              hintStyle:
+                  AppTextStyles.bodyLarge.copyWith(color: AppColors.mistGrey),
               border: border,
               enabledBorder: border,
               focusedBorder: focusBorder,
               filled: true,
               fillColor: AppColors.stone50,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
           const SizedBox(height: 12),
@@ -972,15 +1189,18 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
             style: AppTextStyles.bodyLarge,
             decoration: InputDecoration(
               hintText: l10n.settingsTargetAmountHint,
-              hintStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.mistGrey),
+              hintStyle:
+                  AppTextStyles.bodyLarge.copyWith(color: AppColors.mistGrey),
               prefixText: '${widget.profile.currency} ',
-              prefixStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.forest),
+              prefixStyle:
+                  AppTextStyles.bodyLarge.copyWith(color: AppColors.forest),
               border: border,
               enabledBorder: border,
               focusedBorder: focusBorder,
               filled: true,
               fillColor: AppColors.stone50,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
           const SizedBox(height: 20),
@@ -1013,7 +1233,8 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
                 onPressed: _saving ? null : _clear,
                 child: Text(
                   l10n.homeMoneyGoalClear,
-                  style: AppTextStyles.bodyLarge.copyWith(color: AppColors.mistGrey),
+                  style: AppTextStyles.bodyLarge
+                      .copyWith(color: AppColors.mistGrey),
                 ),
               ),
             ),
@@ -1030,9 +1251,8 @@ class _MyReasonCard extends StatelessWidget {
 
   String? _reason() {
     // Prefer dedicated reasons; fall back to weekly goals as source
-    final pool = profile.myReasons.isNotEmpty
-        ? profile.myReasons
-        : profile.weeklyGoals;
+    final pool =
+        profile.myReasons.isNotEmpty ? profile.myReasons : profile.weeklyGoals;
     if (pool.isEmpty) return null;
     final now = DateTime.now();
     final dayOfYear = now.difference(DateTime(now.year)).inDays;
@@ -1069,8 +1289,8 @@ class _MyReasonCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('rotates daily',
-                style: AppTextStyles.caption
-                    .copyWith(color: AppColors.stone400)),
+                style:
+                    AppTextStyles.caption.copyWith(color: AppColors.stone400)),
           ] else ...[
             const SizedBox(height: 8),
             Center(
@@ -1089,99 +1309,6 @@ class _MyReasonCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Early Warning Card (shown first 72 h, dismissible) ──────────────────────
-
-class _EarlyWarningCard extends StatelessWidget {
-  const _EarlyWarningCard({required this.onDismiss});
-
-  final VoidCallback onDismiss;
-
-  static const _bullets = [
-    (Icons.wb_cloudy_outlined,      'Headaches and muscle tension'),
-    (Icons.bedtime_outlined,        'Disrupted sleep and vivid dreams'),
-    (Icons.sentiment_dissatisfied_outlined, 'Irritability, anxiety, or low mood'),
-    (Icons.timer_outlined,          'Cravings — they pass in 3–5 minutes'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return LuxuryCard(
-      backgroundColor: AppColors.honeySoft,
-      borderColor: AppColors.honey100,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.spa_outlined, size: 16, color: AppColors.honey),
-              const SizedBox(width: 6),
-              Text(
-                'WHAT TO EXPECT',
-                style: AppTextStyles.overline.copyWith(color: AppColors.honey600),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: onDismiss,
-                child: const Icon(Icons.close_rounded,
-                    size: 18, color: AppColors.honey600),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'The next 72 hours are the hardest part.',
-            style: AppTextStyles.titleSmall.copyWith(color: AppColors.stone800),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'What you\'re feeling is your body healing — not a sign something is wrong. These are all normal:',
-            style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.stone600, height: 1.45),
-          ),
-          const SizedBox(height: 12),
-          for (final (icon, label) in _bullets) ...[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, size: 14, color: AppColors.honey),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(label,
-                      style: AppTextStyles.bodySmall
-                          .copyWith(color: AppColors.stone700)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-          ],
-          const SizedBox(height: 4),
-          Text(
-            'If symptoms feel severe or unmanageable, please speak to a medical professional.',
-            style: AppTextStyles.caption.copyWith(
-                color: AppColors.stone500, fontStyle: FontStyle.italic),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: onDismiss,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.honey,
-                foregroundColor: Colors.white,
-                textStyle: AppTextStyles.labelMedium,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Got it, I\'m ready'),
-            ),
-          ),
         ],
       ),
     );
@@ -1207,7 +1334,8 @@ class _JourneyCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.homeYourJourney, style: AppTextStyles.overline.copyWith(fontSize: 12)),
+            Text(l10n.homeYourJourney,
+                style: AppTextStyles.overline.copyWith(fontSize: 12)),
             const SizedBox(height: 6),
             Text(l10n.homeJourneySubtitle, style: AppTextStyles.bodyLarge),
             const SizedBox(height: 18),
@@ -1219,7 +1347,8 @@ class _JourneyCard extends StatelessWidget {
                   return Expanded(
                     child: Container(
                       height: 2,
-                      color: achieved ? AppColors.leafGreen : AppColors.softBorder,
+                      color:
+                          achieved ? AppColors.leafGreen : AppColors.softBorder,
                     ),
                   );
                 }
@@ -1227,8 +1356,10 @@ class _JourneyCard extends StatelessWidget {
                 final node = milestones[index];
                 final achieved = days >= node.days;
                 final current = achieved &&
-                    (index == milestones.length - 1 || days < milestones[index + 1].days);
-                return _MilestoneNodeWidget(node: node, achieved: achieved, isCurrent: current);
+                    (index == milestones.length - 1 ||
+                        days < milestones[index + 1].days);
+                return _MilestoneNodeWidget(
+                    node: node, achieved: achieved, isCurrent: current);
               }),
             ),
             const SizedBox(height: 10),
@@ -1242,7 +1373,8 @@ class _JourneyCard extends StatelessWidget {
                 } else if (node.days < 365) {
                   timing = 'Day ${node.days}';
                 } else {
-                  timing = node.days == 365 ? '1 year' : '${node.days ~/ 365} yr';
+                  timing =
+                      node.days == 365 ? '1 year' : '${node.days ~/ 365} yr';
                 }
                 return Expanded(
                   child: Column(
@@ -1251,7 +1383,8 @@ class _JourneyCard extends StatelessWidget {
                         node.label,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: achieved ? AppColors.forest : AppColors.stoneText,
+                          color:
+                              achieved ? AppColors.forest : AppColors.stoneText,
                           fontSize: 11,
                           height: 1.25,
                         ),
@@ -1261,7 +1394,9 @@ class _JourneyCard extends StatelessWidget {
                         timing,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.caption.copyWith(
-                          color: achieved ? AppColors.leafGreen : AppColors.mistGrey,
+                          color: achieved
+                              ? AppColors.leafGreen
+                              : AppColors.mistGrey,
                           fontSize: 10,
                         ),
                       ),
@@ -1289,14 +1424,17 @@ class _JourneyProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     int idx = 0;
     for (int i = milestones.length - 1; i >= 0; i--) {
-      if (days >= milestones[i].days) { idx = i; break; }
+      if (days >= milestones[i].days) {
+        idx = i;
+        break;
+      }
     }
 
     final bool isLast = idx == milestones.length - 1;
     final double progress = isLast
         ? 1.0
         : ((days - milestones[idx].days) /
-               (milestones[idx + 1].days - milestones[idx].days))
+                (milestones[idx + 1].days - milestones[idx].days))
             .clamp(0.0, 1.0);
     final int remaining = isLast ? 0 : milestones[idx + 1].days - days;
 
@@ -1306,8 +1444,8 @@ class _JourneyProgressBar extends StatelessWidget {
         Row(children: [
           Text(
             milestones[idx].label,
-            style: AppTextStyles.caption.copyWith(
-                color: AppColors.forest, fontWeight: FontWeight.w600),
+            style: AppTextStyles.caption
+                .copyWith(color: AppColors.forest, fontWeight: FontWeight.w600),
           ),
           const Spacer(),
           if (!isLast)
@@ -1328,8 +1466,7 @@ class _JourneyProgressBar extends StatelessWidget {
               value: value,
               minHeight: 7,
               backgroundColor: AppColors.softBorder,
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(AppColors.forest),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.forest),
             ),
           ),
         ),
@@ -1348,7 +1485,8 @@ class _JourneyProgressBar extends StatelessWidget {
 }
 
 class _MilestoneNodeWidget extends StatelessWidget {
-  const _MilestoneNodeWidget({required this.node, required this.achieved, required this.isCurrent});
+  const _MilestoneNodeWidget(
+      {required this.node, required this.achieved, required this.isCurrent});
 
   final _MilestoneNode node;
   final bool achieved;
@@ -1376,7 +1514,8 @@ class _MilestoneNodeWidget extends StatelessWidget {
               ]
             : null,
       ),
-      child: Icon(node.icon, size: 18, color: achieved ? AppColors.forest : AppColors.mistGrey),
+      child: Icon(node.icon,
+          size: 18, color: achieved ? AppColors.forest : AppColors.mistGrey),
     );
   }
 }
@@ -1385,18 +1524,18 @@ class _PledgeCard extends StatelessWidget {
   const _PledgeCard({
     required this.pledgedToday,
     required this.pledgeText,
-    required this.pledgeStreak,
     required this.controller,
     required this.saving,
     required this.onSave,
+    required this.onEdit,
   });
 
   final bool pledgedToday;
   final String? pledgeText;
-  final int pledgeStreak;
   final TextEditingController controller;
   final bool saving;
   final VoidCallback onSave;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -1411,11 +1550,9 @@ class _PledgeCard extends StatelessWidget {
       controller: controller,
       saving: saving,
       onSave: onSave,
+      onEdit: onEdit,
       hintText: 'e.g., Today I choose clarity.',
       savedText: pledgedToday ? pledgeText : null,
-      supportingText: pledgedToday && pledgeStreak > 0
-          ? '$pledgeStreak calm ${pledgeStreak == 1 ? 'day' : 'days'} kept'
-          : null,
     );
   }
 }
@@ -1426,12 +1563,14 @@ class _GratitudeCard extends StatelessWidget {
     required this.controller,
     required this.saving,
     required this.onSave,
+    required this.onEdit,
   });
 
   final String? todayEntry;
   final TextEditingController controller;
   final bool saving;
   final VoidCallback onSave;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -1446,9 +1585,9 @@ class _GratitudeCard extends StatelessWidget {
       controller: controller,
       saving: saving,
       onSave: onSave,
+      onEdit: onEdit,
       hintText: 'e.g., I\u2019m grateful for\nanother fresh start.',
       savedText: todayEntry,
-      supportingText: todayEntry != null ? 'Logged today' : null,
     );
   }
 }
@@ -1466,8 +1605,8 @@ class _EditorialInputCard extends StatelessWidget {
     required this.saving,
     required this.onSave,
     required this.hintText,
+    required this.onEdit,
     this.savedText,
-    this.supportingText,
   });
 
   final String title;
@@ -1481,59 +1620,84 @@ class _EditorialInputCard extends StatelessWidget {
   final bool saving;
   final VoidCallback onSave;
   final String hintText;
+  final VoidCallback onEdit;
   final String? savedText;
-  final String? supportingText;
 
   @override
   Widget build(BuildContext context) {
+    final isSaved = savedText != null && savedText!.isNotEmpty;
+
     return LuxuryCard(
       padding: const EdgeInsets.all(16),
-      borderColor: borderColor,
+      borderColor: isSaved ? AppColors.softBorder : borderColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Icon + title row (always visible) ─────────────────────────
           Row(
             children: [
-              IconChip(icon: chipIcon, color: chipColor, backgroundColor: chipBackground, size: 38),
+              IconChip(
+                  icon: chipIcon,
+                  color: chipColor,
+                  backgroundColor: chipBackground,
+                  size: 38),
               const SizedBox(width: 12),
-              Expanded(child: Text(title, style: AppTextStyles.overline.copyWith(color: chipColor))),
+              Expanded(
+                  child: Text(title,
+                      style:
+                          AppTextStyles.overline.copyWith(color: chipColor))),
             ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: inputTint,
-              borderRadius: AppRadius.xl,
-              border: Border.all(color: borderColor),
+          if (isSaved) ...[
+            // ── Saved / read-only state ────────────────────────────────
+            // Matches the calm editorial feel of _MyReasonCard.
+            // Tap anywhere on the text to switch back to edit mode.
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: onEdit,
+              behavior: HitTestBehavior.opaque,
+              child: Text(
+                savedText!,
+                style: AppTextStyles.bodySerif.copyWith(
+                  color: AppColors.stone700,
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  height: 1.5,
+                ),
+              ),
             ),
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                savedText != null
-                    ? Text(savedText!, style: AppTextStyles.bodyMedium.copyWith(height: 1.45))
-                    : TextField(
-                        controller: controller,
-                        maxLines: 3,
-                        minLines: 3,
-                        style: AppTextStyles.bodyMedium.copyWith(height: 1.45),
-                        decoration: InputDecoration(
-                          hintText: hintText,
-                          hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.mistGrey),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          filled: false,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                if (supportingText != null) ...[
-                  const SizedBox(height: 6),
-                  Text(supportingText!, style: AppTextStyles.caption.copyWith(color: chipColor)),
-                ],
-                if (savedText == null) ...[
+          ] else ...[
+            // ── Input state ────────────────────────────────────────────
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                color: inputTint,
+                borderRadius: AppRadius.xl,
+                border: Border.all(color: borderColor),
+              ),
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    maxLines: 3,
+                    minLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                    style: AppTextStyles.bodyMedium.copyWith(height: 1.45),
+                    decoration: InputDecoration(
+                      hintText: hintText,
+                      hintStyle: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.mistGrey),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
@@ -1544,23 +1708,26 @@ class _EditorialInputCard extends StatelessWidget {
                         onPressed: saving ? null : onSave,
                         style: FilledButton.styleFrom(
                           backgroundColor: buttonColor,
-                          shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
-                          textStyle: AppTextStyles.labelLarge.copyWith(fontSize: 15),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.lg),
+                          textStyle:
+                              AppTextStyles.labelLarge.copyWith(fontSize: 15),
                         ),
                         child: saving
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2),
                               )
                             : const Text('Save'),
                       ),
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -1569,7 +1736,9 @@ class _EditorialInputCard extends StatelessWidget {
 
 class _WeeklyGoalsCard extends StatelessWidget {
   const _WeeklyGoalsCard({
-    required this.goals, required this.toggles, required this.onToggle,
+    required this.goals,
+    required this.toggles,
+    required this.onToggle,
   });
   final List<String> goals;
   final Set<int> toggles;
@@ -1597,12 +1766,13 @@ class _WeeklyGoalsCard extends StatelessWidget {
                     children: [
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: 24, height: 24,
+                        width: 24,
+                        height: 24,
                         decoration: BoxDecoration(
                           color: done ? AppColors.forest600 : Colors.white,
                           border: Border.all(
-                            color: done
-                                ? AppColors.forest600 : AppColors.stone200,
+                            color:
+                                done ? AppColors.forest600 : AppColors.stone200,
                             width: 1.5,
                           ),
                           borderRadius: AppRadius.sm,
@@ -1619,9 +1789,8 @@ class _WeeklyGoalsCard extends StatelessWidget {
                                 color: done
                                     ? AppColors.stone400
                                     : AppColors.stone700,
-                                decoration: done
-                                    ? TextDecoration.lineThrough
-                                    : null)),
+                                decoration:
+                                    done ? TextDecoration.lineThrough : null)),
                       ),
                     ],
                   ),
@@ -1639,7 +1808,9 @@ class _WeeklyGoalsCard extends StatelessWidget {
 
 class _DailyMissionsCard extends StatelessWidget {
   const _DailyMissionsCard({
-    required this.missions, required this.toggles, required this.onToggle,
+    required this.missions,
+    required this.toggles,
+    required this.onToggle,
   });
   final List<String> missions;
   final Set<int> toggles;
@@ -1647,19 +1818,22 @@ class _DailyMissionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final done = toggles.length;
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('DAILY MISSIONS', style: AppTextStyles.overline),
+          Text(l10n.homeDailyMissions, style: AppTextStyles.overline),
           const SizedBox(height: 4),
           Row(
             children: [
-              Expanded(child: Text('Gentle steps for today.',
-                  style: AppTextStyles.bodyMedium)),
-              Text('$done / ${missions.length}',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.mistGrey)),
+              Expanded(
+                  child: Text(l10n.homeMissionsSubtitle,
+                      style: AppTextStyles.bodyMedium)),
+              Text(l10n.homeMissionsProgress(done, missions.length),
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.mistGrey)),
             ],
           ),
           const SizedBox(height: 12),
@@ -1677,13 +1851,14 @@ class _DailyMissionsCard extends StatelessWidget {
                     children: [
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: 24, height: 24,
+                        width: 24,
+                        height: 24,
                         decoration: BoxDecoration(
-                          color: isDone
-                              ? AppColors.mintChip : Colors.white,
+                          color: isDone ? AppColors.mintChip : Colors.white,
                           border: Border.all(
                             color: isDone
-                                ? AppColors.leafGreen : AppColors.softBorder,
+                                ? AppColors.leafGreen
+                                : AppColors.softBorder,
                             width: 1.5,
                           ),
                           shape: BoxShape.circle,
@@ -1717,18 +1892,25 @@ class _DailyMissionsCard extends StatelessWidget {
 
 class _CheckInCard extends StatelessWidget {
   const _CheckInCard({
-    required this.onCraving, required this.onThought,
-    required this.onActivity, required this.onSleep,
+    required this.onCraving,
+    required this.onThought,
+    required this.onActivity,
+    required this.onSleep,
   });
   final VoidCallback onCraving, onThought, onActivity, onSleep;
 
   @override
   Widget build(BuildContext context) {
     final buttons = [
-      (Icons.favorite_border_rounded, 'Craving',  AppColors.honey,  onCraving),
-      (Icons.psychology_outlined,   'Thought',  AppColors.stone400,  onThought),
-      (Icons.directions_run_rounded,'Activity', AppColors.forest400, onActivity),
-      (Icons.bedtime_outlined,      'Sleep',    AppColors.stone500,  onSleep),
+      (Icons.bolt_rounded, 'Craving', AppColors.honey, onCraving),
+      (Icons.psychology_outlined, 'Thought', AppColors.stone400, onThought),
+      (
+        Icons.directions_run_rounded,
+        'Activity',
+        AppColors.forest400,
+        onActivity
+      ),
+      (Icons.bedtime_outlined, 'Sleep', AppColors.stone500, onSleep),
     ];
 
     return LuxuryCard(
@@ -1791,9 +1973,11 @@ class _TodaysReminderCard extends StatelessWidget {
               color: AppColors.forest400, size: 28),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(quote, style: AppTextStyles.bodySerif
-                .copyWith(color: AppColors.forest700,
-                    fontStyle: FontStyle.italic, fontSize: 15)),
+            child: Text(quote,
+                style: AppTextStyles.bodySerif.copyWith(
+                    color: AppColors.forest700,
+                    fontStyle: FontStyle.italic,
+                    fontSize: 15)),
           ),
         ],
       ),
@@ -1824,7 +2008,7 @@ class _RecoveryBanner extends StatelessWidget {
               children: [
                 const IconChip(icon: Icons.timeline_rounded, size: 38),
                 const SizedBox(width: 12),
-                Text('QUITTING TIMELINE', style: AppTextStyles.overline),
+                Text('THE HEALING TIMELINE', style: AppTextStyles.overline),
                 const Spacer(),
                 const Icon(Icons.chevron_right_rounded,
                     color: AppColors.mistGrey, size: 20),
@@ -1893,177 +2077,6 @@ class _RecoveryBanner extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ─── Profile Modal ────────────────────────────────────────────────────────────
-
-class _ProfileModal extends ConsumerStatefulWidget {
-  const _ProfileModal({required this.profile});
-  final UserProfile profile;
-
-  @override
-  ConsumerState<_ProfileModal> createState() => _ProfileModalState();
-}
-
-class _ProfileModalState extends ConsumerState<_ProfileModal> {
-  late final TextEditingController _username;
-  late final TextEditingController _spend;
-  late String _currency;
-  late DateTime _soberDate;
-  bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _username  = TextEditingController(text: widget.profile.username);
-    _spend     = TextEditingController(
-        text: widget.profile.dailySpend.toStringAsFixed(0));
-    _currency  = widget.profile.currency;
-    _soberDate = DateTime.tryParse(widget.profile.soberDate) ?? DateTime.now();
-  }
-
-  @override
-  void dispose() {
-    _username.dispose();
-    _spend.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    setState(() => _saving = true);
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(
-      username:   _username.text.trim(),
-      dailySpend: double.tryParse(_spend.text) ?? p.dailySpend,
-      currency:   _currency,
-      soberDate:  _soberDate.toIso8601String(),
-    ));
-    setState(() => _saving = false);
-    if (mounted) Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppRadius.xxl,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 36, height: 4,
-              decoration: BoxDecoration(
-                  color: AppColors.stone200, borderRadius: AppRadius.pill),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Edit Profile', style: AppTextStyles.titleLarge),
-                const SizedBox(height: 20),
-                _Field(label: 'Name', controller: _username,
-                    hint: 'Your name'),
-                const SizedBox(height: 12),
-                // Sober date picker
-                GestureDetector(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: _soberDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
-                      builder: (ctx, child) => Theme(
-                        data: Theme.of(ctx).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: AppColors.forest600),
-                        ),
-                        child: child!,
-                      ),
-                    );
-                    if (picked != null) setState(() => _soberDate = picked);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 13),
-                    decoration: BoxDecoration(
-                      color: AppColors.stone50,
-                      border: Border.all(color: AppColors.stone100),
-                      borderRadius: AppRadius.lg,
-                    ),
-                    child: Row(children: [
-                      Expanded(child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Sober since', style: AppTextStyles.caption),
-                          Text(DateFormat('d MMMM yyyy').format(_soberDate),
-                              style: AppTextStyles.bodyMedium
-                                  .copyWith(color: AppColors.stone800)),
-                        ],
-                      )),
-                      const Icon(Icons.calendar_today_outlined,
-                          size: 16, color: AppColors.stone400),
-                    ]),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(child: _Field(label: 'Daily spend',
-                      controller: _spend, hint: '0',
-                      inputType: TextInputType.number)),
-                  const SizedBox(width: 10),
-                  // Currency selector
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _currency,
-                      items: ['R', '\$', '£', '€', 'A\$']
-                          .map((c) => DropdownMenuItem(
-                              value: c, child: Text(c,
-                                  style: AppTextStyles.bodyMedium)))
-                          .toList(),
-                      onChanged: (v) =>
-                          setState(() => _currency = v ?? _currency),
-                      borderRadius: AppRadius.lg,
-                    ),
-                  ),
-                ]),
-                const SizedBox(height: 20),
-                Row(children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: _saving ? null : _save,
-                      style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.forest600),
-                      child: _saving
-                          ? const SizedBox(width: 18, height: 18,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2))
-                          : const Text('Save'),
-                    ),
-                  ),
-                ]),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -2160,13 +2173,11 @@ class _ChoiceChip extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    this.accent = AppColors.forest600,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final Color accent;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -2175,16 +2186,20 @@ class _ChoiceChip extends StatelessWidget {
           duration: const Duration(milliseconds: 160),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? accent.withOpacity(.12) : AppColors.stone50,
+            color: selected
+                ? AppColors.forest600.withOpacity(.12)
+                : AppColors.stone50,
             borderRadius: AppRadius.pill,
             border: Border.all(
-              color: selected ? accent.withOpacity(.35) : AppColors.stone100,
+              color: selected
+                  ? AppColors.forest600.withOpacity(.35)
+                  : AppColors.stone100,
             ),
           ),
           child: Text(
             label,
             style: AppTextStyles.labelLarge.copyWith(
-              color: selected ? accent : AppColors.stone600,
+              color: selected ? AppColors.forest600 : AppColors.stone600,
             ),
           ),
         ),
@@ -2196,13 +2211,11 @@ class _ChoiceWrap extends StatelessWidget {
     required this.options,
     required this.isSelected,
     required this.onTap,
-    this.accent = AppColors.forest600,
   });
 
   final List<String> options;
   final bool Function(String option) isSelected;
   final ValueChanged<String> onTap;
-  final Color accent;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -2213,7 +2226,6 @@ class _ChoiceWrap extends StatelessWidget {
               (option) => _ChoiceChip(
                 label: option,
                 selected: isSelected(option),
-                accent: accent,
                 onTap: () => onTap(option),
               ),
             )
@@ -2422,7 +2434,8 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
             const SizedBox(height: 12),
             _NotesField(
               controller: _notesCtrl,
-              hintText: 'Notes (optional) - e.g., passed a bar on the way home.',
+              hintText:
+                  'Notes (optional) - e.g., passed a bar on the way home.',
             ),
             const SizedBox(height: 18),
             _saveButton(
@@ -2461,7 +2474,15 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
   }
 
   Future<void> _save() async {
+    // Text is fully optional — tone, strength and triggers alone are enough.
     final text = _thoughtCtrl.text.trim();
+    final notes = _notesCtrl.text.trim();
+
+    // Capture context-sensitive objects BEFORE any await — modal contexts
+    // can become stale after async gaps causing silent pop/snackbar failures.
+    final messenger = ScaffoldMessenger.of(context);
+    final nav = Navigator.of(context);
+
     setState(() => _saving = true);
     H.light();
     try {
@@ -2471,25 +2492,30 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
             strength: _strength,
             triggers: _triggers.toList(),
             durationMinutes: _duration.round(),
-            notes: _notesCtrl.text,
+            notes: notes.isEmpty ? null : notes,
           );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Thought saved privately'),
-            backgroundColor: AppColors.forest700,
-            behavior: SnackBarBehavior.floating,
-            shape: const RoundedRectangleBorder(
-              borderRadius: AppRadius.lg,
-            ),
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-        Navigator.of(context).pop();
-      }
-    } catch (_) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: const Text('Thought saved privately'),
+          backgroundColor: AppColors.forest700,
+          behavior: SnackBarBehavior.floating,
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      nav.pop();
+    } catch (e) {
+      debugPrint('[ThoughtSheet] save failed: $e');
       if (mounted) setState(() => _saving = false);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Could not save: $e'),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+        ),
+      );
     }
   }
 
@@ -2598,7 +2624,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
       );
 }
 
-// ?? Activity sheet ???????????????????????????????????????????????????????????
+// ── Activity sheet ────────────────────────────────────────────────────────────
 
 class _ActivitySheet extends ConsumerStatefulWidget {
   const _ActivitySheet();
@@ -2609,40 +2635,126 @@ class _ActivitySheet extends ConsumerStatefulWidget {
 
 class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   String _activity = 'walk';
-  double _minutes = 30;
+  double _minutes = 30; // slider value — used for non-distance activities
+  final _minutesCtrl = TextEditingController(text: '30'); // exact entry
+  final _distanceCtrl = TextEditingController(); // km
   String _effort = 'Gentle';
   String _outcome = 'Calmer';
   final _notesCtrl = TextEditingController();
   bool _saving = false;
 
+  // Row 1: walk, run, cycle, swim   Row 2: weights, yoga, other
   static const _types = [
     ('walk', 'Walk', Icons.directions_walk_rounded),
-    ('exercise', 'Exercise', Icons.fitness_center_rounded),
+    ('run', 'Run', Icons.directions_run_rounded),
+    ('cycle', 'Cycle', Icons.directions_bike_rounded),
+    ('swim', 'Swim', Icons.pool_rounded),
+    ('weights', 'Weights', Icons.fitness_center_rounded),
     ('yoga', 'Yoga', Icons.self_improvement_outlined),
     ('other', 'Other', Icons.more_horiz_rounded),
   ];
 
+  // Activities that log distance + exact time instead of the slider.
+  static const _distanceActivities = {'run', 'cycle', 'swim'};
+  bool get _needsDistance => _distanceActivities.contains(_activity);
+
   @override
   void dispose() {
+    _minutesCtrl.dispose();
+    _distanceCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
+    int minutes;
+    double? distance;
+    if (_needsDistance) {
+      minutes = int.tryParse(_minutesCtrl.text.trim()) ?? 30;
+      final raw = _distanceCtrl.text.trim().replaceAll(',', '.');
+      distance = raw.isEmpty ? null : double.tryParse(raw);
+    } else {
+      minutes = _minutes.round();
+    }
     setState(() => _saving = true);
     H.light();
     try {
       await ref.read(activityProvider.notifier).add(
             _activity,
-            _minutes.round(),
+            minutes,
             effort: _effort,
             outcome: _outcome,
+            distance: distance,
             notes: _notesCtrl.text,
           );
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Widget _typeGrid(BuildContext context) {
+    const row1 = ['walk', 'run', 'cycle', 'swim'];
+    const row2 = ['weights', 'yoga', 'other'];
+
+    Widget chip(({String id, String label, IconData icon}) t) {
+      final sel = _activity == t.id;
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: GestureDetector(
+            onTap: () {
+              H.selection();
+              setState(() => _activity = t.id);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: sel ? AppColors.forest50 : AppColors.stone50,
+                borderRadius: AppRadius.lg,
+                border: Border.all(
+                  color: sel ? AppColors.forest300 : AppColors.stone100,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(t.icon,
+                      size: 20,
+                      color: sel ? AppColors.forest600 : AppColors.stone400),
+                  const SizedBox(height: 4),
+                  Text(
+                    t.label,
+                    style: AppTextStyles.caption.copyWith(
+                      color: sel ? AppColors.forest700 : AppColors.stone400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Build typed record list for each row
+    final all = _types.map((t) => (id: t.$1, label: t.$2, icon: t.$3)).toList();
+    final r1 = all.where((t) => row1.contains(t.id)).toList();
+    final r2 = all.where((t) => row2.contains(t.id)).toList();
+
+    return Column(
+      children: [
+        Row(children: r1.map(chip).toList()),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            ...r2.map(chip),
+            // Spacer filler so the 3-chip row aligns left like the 4-chip row.
+            const Expanded(child: SizedBox()),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
@@ -2652,7 +2764,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _SheetHeader(
-              icon: Icons.directions_walk_rounded,
+              icon: Icons.directions_run_rounded,
               title: 'Log activity',
               subtitle:
                   'Movement can shift the nervous system. Capture enough detail to see what truly helps.',
@@ -2660,59 +2772,136 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
             const SizedBox(height: 22),
             const _SheetSectionLabel('What did you do?'),
             const SizedBox(height: 10),
-            Row(
-              children: _types
-                  .map(
-                    (t) => Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: GestureDetector(
-                          onTap: () {
-                            H.selection();
-                            setState(() => _activity = t.$1);
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 160),
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: _activity == t.$1
-                                  ? AppColors.forest50
-                                  : AppColors.stone50,
+            _typeGrid(context),
+            const SizedBox(height: 18),
+
+            // ── Duration + Distance ──────────────────────────────────────────
+            if (_needsDistance) ...[
+              const _SheetSectionLabel('Time & distance'),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  // Exact time in minutes
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Duration (min)',
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400)),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _minutesCtrl,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.titleSmall
+                              .copyWith(color: AppColors.forest700),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: AppColors.stone50,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            border: OutlineInputBorder(
                               borderRadius: AppRadius.lg,
-                              border: Border.all(
-                                color: _activity == t.$1
-                                    ? AppColors.forest300
-                                    : AppColors.stone100,
-                              ),
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
                             ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  t.$3,
-                                  size: 20,
-                                  color: _activity == t.$1
-                                      ? AppColors.forest600
-                                      : AppColors.stone400,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  t.$2,
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: _activity == t.$1
-                                        ? AppColors.forest700
-                                        : AppColors.stone400,
-                                  ),
-                                ),
-                              ],
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.lg,
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
                             ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.lg,
+                              borderSide: const BorderSide(
+                                  color: AppColors.forest300, width: 1.5),
+                            ),
+                            suffixText: 'min',
+                            suffixStyle: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  )
-                  .toList(),
-            ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Distance in km
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Distance (km)',
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400)),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _distanceCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.titleSmall
+                              .copyWith(color: AppColors.forest700),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: AppColors.stone50,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.lg,
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.lg,
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.lg,
+                              borderSide: const BorderSide(
+                                  color: AppColors.forest300, width: 1.5),
+                            ),
+                            hintText: '0.0',
+                            hintStyle: AppTextStyles.titleSmall
+                                .copyWith(color: AppColors.stone200),
+                            suffixText: 'km',
+                            suffixStyle: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Row(
+                children: [
+                  const _SheetSectionLabel('Duration'),
+                  const Spacer(),
+                  Text(
+                    '${_minutes.round()} min',
+                    style: AppTextStyles.titleSmall
+                        .copyWith(color: AppColors.forest600),
+                  ),
+                ],
+              ),
+              Slider(
+                value: _minutes,
+                min: 5,
+                max: 120,
+                divisions: 23,
+                onChanged: (v) {
+                  H.selection();
+                  setState(() => _minutes = v);
+                },
+                activeColor: AppColors.forest600,
+                inactiveColor: AppColors.stone100,
+              ),
+            ],
             const SizedBox(height: 18),
+
+            // ── Effort ───────────────────────────────────────────────────────
             const _SheetSectionLabel('How much effort did it take?'),
             const SizedBox(height: 10),
             _ChoiceWrap(
@@ -2724,6 +2913,8 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               },
             ),
             const SizedBox(height: 18),
+
+            // ── Outcome ──────────────────────────────────────────────────────
             const _SheetSectionLabel('How did you feel after?'),
             const SizedBox(height: 10),
             _ChoiceWrap(
@@ -2735,34 +2926,12 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               },
             ),
             const SizedBox(height: 18),
-            Row(
-              children: [
-                const _SheetSectionLabel('Duration'),
-                const Spacer(),
-                Text(
-                  '${_minutes.round()} min',
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest600),
-                ),
-              ],
-            ),
-            Slider(
-              value: _minutes,
-              min: 5,
-              max: 120,
-              divisions: 23,
-              onChanged: (v) {
-                H.selection();
-                setState(() => _minutes = v);
-              },
-              activeColor: AppColors.forest600,
-              inactiveColor: AppColors.stone100,
-            ),
-            const SizedBox(height: 12),
+
+            // ── Notes + save ─────────────────────────────────────────────────
             _NotesField(
               controller: _notesCtrl,
               hintText:
-                  'Notes (optional) - e.g., walked after dinner and felt steadier.',
+                  'Notes (optional) — e.g., walked after dinner and felt steadier.',
             ),
             const SizedBox(height: 18),
             _saveButton(
@@ -2944,34 +3113,3 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
       );
 }
 
-// ??? _Field ??????????????????????????????????????????????????????????????????
-
-class _Field extends StatelessWidget {
-  const _Field({
-    required this.label, required this.controller, required this.hint,
-    this.inputType = TextInputType.text,
-  });
-  final String label, hint;
-  final TextEditingController controller;
-  final TextInputType inputType;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.caption),
-        const SizedBox(height: 4),
-        TextField(
-          controller: controller,
-          keyboardType: inputType,
-          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
-          ),
-        ),
-      ],
-    );
-  }
-}

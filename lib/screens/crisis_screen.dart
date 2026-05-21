@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../components/back_button.dart';
 import '../components/glass_card.dart';
 
 // ─── Data models ─────────────────────────────────────────────────────────────
@@ -279,14 +280,14 @@ const _regions = <CrisisRegion>[
 ];
 
 List<String> _buildWithdrawalSymptoms(AppLocalizations l10n) => [
-  l10n.crisisWithdrawal0,
-  l10n.crisisWithdrawal1,
-  l10n.crisisWithdrawal2,
-  l10n.crisisWithdrawal3,
-  l10n.crisisWithdrawal4,
-  l10n.crisisWithdrawal5,
-  l10n.crisisWithdrawal6,
-];
+      l10n.crisisWithdrawal0,
+      l10n.crisisWithdrawal1,
+      l10n.crisisWithdrawal2,
+      l10n.crisisWithdrawal3,
+      l10n.crisisWithdrawal4,
+      l10n.crisisWithdrawal5,
+      l10n.crisisWithdrawal6,
+    ];
 
 // ─── Screen ──────────────────────────────────────────────────────────────────
 
@@ -348,7 +349,8 @@ class _CrisisScreenState extends State<CrisisScreen> {
                   const SizedBox(height: AppSpacing.md),
                   _buildWithdrawalWarning(),
                   const SizedBox(height: AppSpacing.lg),
-                  _buildSectionHeader(AppLocalizations.of(context).crisisSectionHeader),
+                  _buildSectionHeader(
+                      AppLocalizations.of(context).crisisSectionHeader),
                   const SizedBox(height: AppSpacing.sm),
                   ..._regions.map((r) => _buildRegionTile(r)),
                 ],
@@ -371,15 +373,12 @@ class _CrisisScreenState extends State<CrisisScreen> {
       ),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            color: AppColors.stone700,
-            iconSize: 20,
+          LuxuryBackButton(
             tooltip: AppLocalizations.of(context).crisisTooltipBack,
           ),
           const SizedBox(width: AppSpacing.xs),
-          Text(AppLocalizations.of(context).crisisTitle, style: AppTextStyles.titleLarge),
+          Text(AppLocalizations.of(context).crisisTitle,
+              style: AppTextStyles.titleLarge),
         ],
       ),
     );
@@ -475,7 +474,8 @@ class _CrisisScreenState extends State<CrisisScreen> {
       child: Column(
         children: [
           InkWell(
-            onTap: () => setState(() => _withdrawalExpanded = !_withdrawalExpanded),
+            onTap: () =>
+                setState(() => _withdrawalExpanded = !_withdrawalExpanded),
             borderRadius: AppRadius.xl,
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -507,7 +507,8 @@ class _CrisisScreenState extends State<CrisisScreen> {
                         if (!_withdrawalExpanded) ...[
                           const SizedBox(height: 2),
                           Text(
-                            AppLocalizations.of(context).crisisWithdrawalTapHint,
+                            AppLocalizations.of(context)
+                                .crisisWithdrawalTapHint,
                             style: AppTextStyles.caption.copyWith(
                               color: AppColors.honey600,
                             ),
@@ -659,7 +660,8 @@ class _CrisisScreenState extends State<CrisisScreen> {
                 ),
               ),
               subtitle: Text(
-                AppLocalizations.of(context).crisisLinesCount(region.lines.length),
+                AppLocalizations.of(context)
+                    .crisisLinesCount(region.lines.length),
                 style: AppTextStyles.caption,
               ),
               children: [

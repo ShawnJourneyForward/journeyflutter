@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Release signing config — copy to `android/key.properties` (gitignored) and
+# fill in real values. Never commit the real file. Never commit the .jks file.
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# To create the upload keystore (do this ONCE, on a machine you control):
+#
+#   keytool -genkeypair -v \
+#     -keystore upload-keystore.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 \
+#     -alias upload
+#
+# Store upload-keystore.jks somewhere safe OUTSIDE this repo (e.g.
+# ~/keystores/journey-forward/upload-keystore.jks). Back it up — if you
+# lose it you cannot ship updates to the same Play Store listing without
+# going through Google's key-reset process.
+
+storePassword=YOUR_STORE_PASSWORD_HERE
+keyPassword=YOUR_KEY_PASSWORD_HERE
+keyAlias=upload
+storeFile=/absolute/path/to/upload-keystore.jks

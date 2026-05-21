@@ -839,19 +839,19 @@ abstract class AppLocalizations {
   /// No description provided for @homeDailyMissions.
   ///
   /// In en, this message translates to:
-  /// **'DAILY MISSIONS'**
+  /// **'TODAY\'S GENTLE STEPS'**
   String get homeDailyMissions;
 
   /// No description provided for @homeMissionsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Gentle steps for today.'**
+  /// **'Small acts of care for today.'**
   String get homeMissionsSubtitle;
 
   /// No description provided for @homeMissionsProgress.
   ///
   /// In en, this message translates to:
-  /// **'{done} / {total}'**
+  /// **'{done} of {total} complete'**
   String homeMissionsProgress(int done, int total);
 
   /// No description provided for @homeDailyCheckIn.
@@ -1433,206 +1433,656 @@ abstract class AppLocalizations {
   /// No description provided for @homeQuote1.
   ///
   /// In en, this message translates to:
-  /// **'You don\'t have to feel ready. You just have to begin.'**
+  /// **'You do not have to feel ready. You only have to begin.'**
   String get homeQuote1;
 
   /// No description provided for @homeQuote2.
   ///
   /// In en, this message translates to:
-  /// **'The pain you feel today is building the strength you\'ll need tomorrow.'**
+  /// **'Healing is allowed to be quiet.'**
   String get homeQuote2;
 
   /// No description provided for @homeQuote3.
   ///
   /// In en, this message translates to:
-  /// **'Sobriety is not a punishment — it\'s a gift you keep giving yourself.'**
+  /// **'One calm choice can change the shape of a day.'**
   String get homeQuote3;
 
   /// No description provided for @homeQuote4.
   ///
   /// In en, this message translates to:
-  /// **'One day at a time. One breath at a time.'**
+  /// **'You are not starting over. You are starting wiser.'**
   String get homeQuote4;
 
   /// No description provided for @homeQuote5.
   ///
   /// In en, this message translates to:
-  /// **'You are not starting over. You are starting wiser.'**
+  /// **'Recovery is not linear, but it is still real.'**
   String get homeQuote5;
 
   /// No description provided for @homeQuote6.
   ///
   /// In en, this message translates to:
-  /// **'Recovery is not linear — but it is always worth it.'**
+  /// **'Even a difficult sober day is proof that you are choosing yourself.'**
   String get homeQuote6;
 
   /// No description provided for @homeQuote7.
   ///
   /// In en, this message translates to:
-  /// **'Your worst day sober is better than your best day drunk.'**
+  /// **'The version of you that kept going is still here.'**
   String get homeQuote7;
 
   /// No description provided for @homeQuote8.
   ///
   /// In en, this message translates to:
-  /// **'The version of you that never gave up is who you\'re becoming.'**
+  /// **'Strength can look like softness.'**
   String get homeQuote8;
 
   /// No description provided for @homeQuote9.
   ///
   /// In en, this message translates to:
-  /// **'Strength is choosing discomfort over destruction.'**
+  /// **'Clarity is built one honest moment at a time.'**
   String get homeQuote9;
 
   /// No description provided for @homeQuote10.
   ///
   /// In en, this message translates to:
-  /// **'Clarity is a superpower. You\'re building it every single day.'**
+  /// **'You have survived hard days before. Today can be held gently too.'**
   String get homeQuote10;
 
   /// No description provided for @homeQuote11.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve survived every hard day so far. Today is no different.'**
+  /// **'Cravings are temporary. Your progress is still here.'**
   String get homeQuote11;
 
   /// No description provided for @homeQuote12.
   ///
   /// In en, this message translates to:
-  /// **'The cravings lie. Your progress is real.'**
+  /// **'Each morning is another chance to care for yourself.'**
   String get homeQuote12;
 
   /// No description provided for @homeQuote13.
   ///
   /// In en, this message translates to:
-  /// **'Each morning you wake up sober is a victory worth celebrating.'**
+  /// **'Progress does not need to be perfect to be meaningful.'**
   String get homeQuote13;
 
   /// No description provided for @homeQuote14.
   ///
   /// In en, this message translates to:
-  /// **'Progress, not perfection.'**
+  /// **'You are becoming someone you can trust.'**
   String get homeQuote14;
+
+  /// No description provided for @homeQuote15.
+  ///
+  /// In en, this message translates to:
+  /// **'Small choices become a safer life.'**
+  String get homeQuote15;
+
+  /// No description provided for @homeQuote16.
+  ///
+  /// In en, this message translates to:
+  /// **'Peace is not rushed. It is practised.'**
+  String get homeQuote16;
+
+  /// No description provided for @homeQuote17.
+  ///
+  /// In en, this message translates to:
+  /// **'You are allowed to outgrow what once numbed you.'**
+  String get homeQuote17;
+
+  /// No description provided for @homeQuote18.
+  ///
+  /// In en, this message translates to:
+  /// **'The urge will pass. Your dignity can remain.'**
+  String get homeQuote18;
+
+  /// No description provided for @homeQuote19.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery is a return to yourself.'**
+  String get homeQuote19;
+
+  /// No description provided for @homeQuote20.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not behind. You are healing at human speed.'**
+  String get homeQuote20;
+
+  /// No description provided for @homeQuote21.
+  ///
+  /// In en, this message translates to:
+  /// **'A softer life is still a strong life.'**
+  String get homeQuote21;
+
+  /// No description provided for @homeQuote22.
+  ///
+  /// In en, this message translates to:
+  /// **'Your future self is being protected by today\'s choices.'**
+  String get homeQuote22;
+
+  /// No description provided for @homeQuote23.
+  ///
+  /// In en, this message translates to:
+  /// **'You can pause. You can breathe. You can choose again.'**
+  String get homeQuote23;
+
+  /// No description provided for @homeQuote24.
+  ///
+  /// In en, this message translates to:
+  /// **'Every honest day is part of the way forward.'**
+  String get homeQuote24;
+
+  /// No description provided for @homeQuote25.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not need to punish yourself to change.'**
+  String get homeQuote25;
+
+  /// No description provided for @homeQuote26.
+  ///
+  /// In en, this message translates to:
+  /// **'The quiet work counts.'**
+  String get homeQuote26;
+
+  /// No description provided for @homeQuote27.
+  ///
+  /// In en, this message translates to:
+  /// **'Your nervous system is learning safety again.'**
+  String get homeQuote27;
+
+  /// No description provided for @homeQuote28.
+  ///
+  /// In en, this message translates to:
+  /// **'You are worthy of care before you feel strong.'**
+  String get homeQuote28;
+
+  /// No description provided for @homeQuote29.
+  ///
+  /// In en, this message translates to:
+  /// **'Let today be simple. Let today be enough.'**
+  String get homeQuote29;
+
+  /// No description provided for @homeQuote30.
+  ///
+  /// In en, this message translates to:
+  /// **'One breath can become one minute. One minute can become one day.'**
+  String get homeQuote30;
+
+  /// No description provided for @homeQuote31.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not your craving. You are the one witnessing it.'**
+  String get homeQuote31;
+
+  /// No description provided for @homeQuote32.
+  ///
+  /// In en, this message translates to:
+  /// **'You can build a life that no longer asks you to escape it.'**
+  String get homeQuote32;
+
+  /// No description provided for @homeQuote33.
+  ///
+  /// In en, this message translates to:
+  /// **'There is strength in staying.'**
+  String get homeQuote33;
+
+  /// No description provided for @homeQuote34.
+  ///
+  /// In en, this message translates to:
+  /// **'Healing begins where shame loses its voice.'**
+  String get homeQuote34;
+
+  /// No description provided for @homeQuote35.
+  ///
+  /// In en, this message translates to:
+  /// **'You are allowed to need support.'**
+  String get homeQuote35;
+
+  /// No description provided for @homeQuote36.
+  ///
+  /// In en, this message translates to:
+  /// **'The path forward can be gentle and still be powerful.'**
+  String get homeQuote36;
+
+  /// No description provided for @homeQuote37.
+  ///
+  /// In en, this message translates to:
+  /// **'Your progress is not erased by a hard moment.'**
+  String get homeQuote37;
+
+  /// No description provided for @homeQuote38.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the next right thing, not the perfect thing.'**
+  String get homeQuote38;
+
+  /// No description provided for @homeQuote39.
+  ///
+  /// In en, this message translates to:
+  /// **'Sobriety is not a punishment. It is protection.'**
+  String get homeQuote39;
+
+  /// No description provided for @homeQuote40.
+  ///
+  /// In en, this message translates to:
+  /// **'You are learning how to come home to yourself.'**
+  String get homeQuote40;
+
+  /// No description provided for @homeQuote41.
+  ///
+  /// In en, this message translates to:
+  /// **'The life you want is built in ordinary moments.'**
+  String get homeQuote41;
+
+  /// No description provided for @homeQuote42.
+  ///
+  /// In en, this message translates to:
+  /// **'You can be proud without being finished.'**
+  String get homeQuote42;
+
+  /// No description provided for @homeQuote43.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing about healing needs to be loud to be real.'**
+  String get homeQuote43;
+
+  /// No description provided for @homeQuote44.
+  ///
+  /// In en, this message translates to:
+  /// **'Your peace is worth protecting.'**
+  String get homeQuote44;
+
+  /// No description provided for @homeQuote45.
+  ///
+  /// In en, this message translates to:
+  /// **'A craving is a wave, not a command.'**
+  String get homeQuote45;
+
+  /// No description provided for @homeQuote46.
+  ///
+  /// In en, this message translates to:
+  /// **'You are building evidence that you can trust yourself.'**
+  String get homeQuote46;
+
+  /// No description provided for @homeQuote47.
+  ///
+  /// In en, this message translates to:
+  /// **'Today does not need to be conquered. It only needs to be lived.'**
+  String get homeQuote47;
+
+  /// No description provided for @homeQuote48.
+  ///
+  /// In en, this message translates to:
+  /// **'There is still time to become someone new.'**
+  String get homeQuote48;
+
+  /// No description provided for @homeQuote49.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going gently. That still counts.'**
+  String get homeQuote49;
 
   /// No description provided for @homeMission0.
   ///
   /// In en, this message translates to:
-  /// **'Drink 8 glasses of water today'**
+  /// **'Drink a full glass of water slowly.'**
   String get homeMission0;
 
   /// No description provided for @homeMission1.
   ///
   /// In en, this message translates to:
-  /// **'Take a 10-minute walk outside'**
+  /// **'Take a 10-minute walk outside.'**
   String get homeMission1;
 
   /// No description provided for @homeMission2.
   ///
   /// In en, this message translates to:
-  /// **'Write 3 things you\'re grateful for'**
+  /// **'Write down three things you are grateful for.'**
   String get homeMission2;
 
   /// No description provided for @homeMission3.
   ///
   /// In en, this message translates to:
-  /// **'Call or text someone you care about'**
+  /// **'Send a kind message to someone you trust.'**
   String get homeMission3;
 
   /// No description provided for @homeMission4.
   ///
   /// In en, this message translates to:
-  /// **'Do 5 minutes of deep breathing'**
+  /// **'Do five minutes of slow breathing.'**
   String get homeMission4;
 
   /// No description provided for @homeMission5.
   ///
   /// In en, this message translates to:
-  /// **'Read for 15 minutes'**
+  /// **'Read a few pages of something calming.'**
   String get homeMission5;
 
   /// No description provided for @homeMission6.
   ///
   /// In en, this message translates to:
-  /// **'Eat a nourishing meal without distractions'**
+  /// **'Eat one nourishing meal without distractions.'**
   String get homeMission6;
 
   /// No description provided for @homeMission7.
   ///
   /// In en, this message translates to:
-  /// **'Get to bed before 10 pm'**
+  /// **'Prepare for an earlier, softer night.'**
   String get homeMission7;
 
   /// No description provided for @homeMission8.
   ///
   /// In en, this message translates to:
-  /// **'Do one kind thing for yourself today'**
+  /// **'Do one kind thing for yourself today.'**
   String get homeMission8;
 
   /// No description provided for @homeMission9.
   ///
   /// In en, this message translates to:
-  /// **'Spend 10 minutes in silence or meditation'**
+  /// **'Sit in silence for three minutes.'**
   String get homeMission9;
 
   /// No description provided for @homeMission10.
   ///
   /// In en, this message translates to:
-  /// **'Write in your journal tonight'**
+  /// **'Write one honest sentence in your journal.'**
   String get homeMission10;
 
   /// No description provided for @homeMission11.
   ///
   /// In en, this message translates to:
-  /// **'Avoid all social media for 2 hours'**
+  /// **'Put your phone away for one quiet hour.'**
   String get homeMission11;
 
   /// No description provided for @homeMission12.
   ///
   /// In en, this message translates to:
-  /// **'Stretch or do light yoga for 10 minutes'**
+  /// **'Stretch your shoulders, neck, and back.'**
   String get homeMission12;
 
   /// No description provided for @homeMission13.
   ///
   /// In en, this message translates to:
-  /// **'Listen to music that lifts your mood'**
+  /// **'Listen to music that steadies you.'**
   String get homeMission13;
 
   /// No description provided for @homeMission14.
   ///
   /// In en, this message translates to:
-  /// **'Tidy one area of your space'**
+  /// **'Tidy one small area of your space.'**
   String get homeMission14;
 
   /// No description provided for @homeMission15.
   ///
   /// In en, this message translates to:
-  /// **'Spend time in nature, even briefly'**
+  /// **'Step outside and notice the sky.'**
   String get homeMission15;
 
   /// No description provided for @homeMission16.
   ///
   /// In en, this message translates to:
-  /// **'Practise saying \"I am enough\" three times'**
+  /// **'Say \"I am allowed to heal\" three times.'**
   String get homeMission16;
 
   /// No description provided for @homeMission17.
   ///
   /// In en, this message translates to:
-  /// **'Cook something healthy from scratch'**
+  /// **'Make yourself something warm to drink.'**
   String get homeMission17;
 
   /// No description provided for @homeMission18.
   ///
   /// In en, this message translates to:
-  /// **'Reach out to your support network'**
+  /// **'Reach out to your support network.'**
   String get homeMission18;
 
   /// No description provided for @homeMission19.
   ///
   /// In en, this message translates to:
-  /// **'Celebrate your sober streak — you\'ve earned it'**
+  /// **'Honour the progress you have made today.'**
   String get homeMission19;
+
+  /// No description provided for @homeMission20.
+  ///
+  /// In en, this message translates to:
+  /// **'Take five slow breaths before your next decision.'**
+  String get homeMission20;
+
+  /// No description provided for @homeMission21.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down one trigger you noticed today.'**
+  String get homeMission21;
+
+  /// No description provided for @homeMission22.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down one thing that helped you today.'**
+  String get homeMission22;
+
+  /// No description provided for @homeMission23.
+  ///
+  /// In en, this message translates to:
+  /// **'Place one comforting item near your bed.'**
+  String get homeMission23;
+
+  /// No description provided for @homeMission24.
+  ///
+  /// In en, this message translates to:
+  /// **'Wash your face slowly and mindfully.'**
+  String get homeMission24;
+
+  /// No description provided for @homeMission25.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend 10 minutes away from screens.'**
+  String get homeMission25;
+
+  /// No description provided for @homeMission26.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare tomorrow\'s first small task.'**
+  String get homeMission26;
+
+  /// No description provided for @homeMission27.
+  ///
+  /// In en, this message translates to:
+  /// **'Let one room feel a little lighter.'**
+  String get homeMission27;
+
+  /// No description provided for @homeMission28.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice one thing your body needs.'**
+  String get homeMission28;
+
+  /// No description provided for @homeMission29.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a meal that supports your energy.'**
+  String get homeMission29;
+
+  /// No description provided for @homeMission30.
+  ///
+  /// In en, this message translates to:
+  /// **'Read one recovery note or affirmation.'**
+  String get homeMission30;
+
+  /// No description provided for @homeMission31.
+  ///
+  /// In en, this message translates to:
+  /// **'Save one emergency support number somewhere visible.'**
+  String get homeMission31;
+
+  /// No description provided for @homeMission32.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a short note to your future self.'**
+  String get homeMission32;
+
+  /// No description provided for @homeMission33.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a gentle shower or bath.'**
+  String get homeMission33;
+
+  /// No description provided for @homeMission34.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe through a craving without judging it.'**
+  String get homeMission34;
+
+  /// No description provided for @homeMission35.
+  ///
+  /// In en, this message translates to:
+  /// **'Name the emotion underneath the urge.'**
+  String get homeMission35;
+
+  /// No description provided for @homeMission36.
+  ///
+  /// In en, this message translates to:
+  /// **'Do one thing slowly on purpose.'**
+  String get homeMission36;
+
+  /// No description provided for @homeMission37.
+  ///
+  /// In en, this message translates to:
+  /// **'Put clean water beside your bed.'**
+  String get homeMission37;
+
+  /// No description provided for @homeMission38.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a window and take three deep breaths.'**
+  String get homeMission38;
+
+  /// No description provided for @homeMission39.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down one reason you are continuing.'**
+  String get homeMission39;
+
+  /// No description provided for @homeMission40.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend five minutes in natural light.'**
+  String get homeMission40;
+
+  /// No description provided for @homeMission41.
+  ///
+  /// In en, this message translates to:
+  /// **'Make your bed with care.'**
+  String get homeMission41;
+
+  /// No description provided for @homeMission42.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete or mute one digital trigger.'**
+  String get homeMission42;
+
+  /// No description provided for @homeMission43.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose rest before exhaustion.'**
+  String get homeMission43;
+
+  /// No description provided for @homeMission44.
+  ///
+  /// In en, this message translates to:
+  /// **'Write one sentence that begins: \"Today I protected…\"'**
+  String get homeMission44;
+
+  /// No description provided for @homeMission45.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice one moment of peace, however small.'**
+  String get homeMission45;
+
+  /// No description provided for @homeMission46.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank yourself for staying present.'**
+  String get homeMission46;
+
+  /// No description provided for @homeMission47.
+  ///
+  /// In en, this message translates to:
+  /// **'Do a 10-minute reset of your space.'**
+  String get homeMission47;
+
+  /// No description provided for @homeMission48.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one boundary that supports your recovery.'**
+  String get homeMission48;
+
+  /// No description provided for @homeMission49.
+  ///
+  /// In en, this message translates to:
+  /// **'Let yourself pause before reacting.'**
+  String get homeMission49;
+
+  /// No description provided for @homeMission50.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down one thing you are learning about yourself.'**
+  String get homeMission50;
+
+  /// No description provided for @homeMission51.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare a simple comfort plan for tonight.'**
+  String get homeMission51;
+
+  /// No description provided for @homeMission52.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your hand on your chest and breathe slowly.'**
+  String get homeMission52;
+
+  /// No description provided for @homeMission53.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink tea, water, or something calming without rushing.'**
+  String get homeMission53;
+
+  /// No description provided for @homeMission54.
+  ///
+  /// In en, this message translates to:
+  /// **'Spend a few minutes with a plant, pet, or quiet object.'**
+  String get homeMission54;
+
+  /// No description provided for @homeMission55.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down one thing you do not need to carry today.'**
+  String get homeMission55;
+
+  /// No description provided for @homeMission56.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a short walk without headphones.'**
+  String get homeMission56;
+
+  /// No description provided for @homeMission57.
+  ///
+  /// In en, this message translates to:
+  /// **'Do one practical task you have been avoiding.'**
+  String get homeMission57;
+
+  /// No description provided for @homeMission58.
+  ///
+  /// In en, this message translates to:
+  /// **'End the day by naming one quiet victory.'**
+  String get homeMission58;
+
+  /// No description provided for @homeMission59.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind yourself: progress can be gentle.'**
+  String get homeMission59;
 
   /// No description provided for @journalTitle.
   ///
@@ -2381,13 +2831,13 @@ abstract class AppLocalizations {
   /// No description provided for @recoveryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Quitting Timeline'**
+  /// **'The Healing Timeline'**
   String get recoveryTitle;
 
   /// No description provided for @recoverySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'What\'s happening inside your body'**
+  /// **'How your mind and body are restoring themselves'**
   String get recoverySubtitle;
 
   /// No description provided for @recoveryHeroLabel.
@@ -2411,338 +2861,266 @@ abstract class AppLocalizations {
   /// No description provided for @recoveryM1Label.
   ///
   /// In en, this message translates to:
-  /// **'20 Minutes'**
+  /// **'12 Hours'**
   String get recoveryM1Label;
 
   /// No description provided for @recoveryM1Title.
   ///
   /// In en, this message translates to:
-  /// **'Heart rate begins to ease'**
+  /// **'The Reset Begins'**
   String get recoveryM1Title;
 
   /// No description provided for @recoveryM1Body.
   ///
   /// In en, this message translates to:
-  /// **'For many people, heart rate and blood pressure start to fall within the first twenty minutes. Blood circulation begins to improve and the cardiovascular system starts to work under less strain.'**
+  /// **'Your body begins adjusting to the absence of alcohol. Hydration, sleep pressure, blood sugar, and stress hormones may feel unsettled as your system begins to rebalance.'**
   String get recoveryM1Body;
 
   /// No description provided for @recoveryM1System.
   ///
   /// In en, this message translates to:
-  /// **'Heart & Circulation'**
+  /// **'Total Body'**
   String get recoveryM1System;
 
   /// No description provided for @recoveryM2Label.
   ///
   /// In en, this message translates to:
-  /// **'12 Hours'**
+  /// **'24 Hours'**
   String get recoveryM2Label;
 
   /// No description provided for @recoveryM2Title.
   ///
   /// In en, this message translates to:
-  /// **'Oxygen levels restoring'**
+  /// **'Restoring Rhythm'**
   String get recoveryM2Title;
 
   /// No description provided for @recoveryM2Body.
   ///
   /// In en, this message translates to:
-  /// **'Carbon monoxide from alcohol typically clears the blood within twelve hours. For many people, oxygen levels normalise and nutrients begin moving more efficiently through the body.'**
+  /// **'For many people, heart rate, blood pressure, hydration, and sleep patterns begin to shift as the body adjusts. This can feel calming for some and uncomfortable for others.'**
   String get recoveryM2Body;
 
   /// No description provided for @recoveryM2System.
   ///
   /// In en, this message translates to:
-  /// **'Blood & Oxygen'**
+  /// **'Cardiovascular System'**
   String get recoveryM2System;
 
   /// No description provided for @recoveryM3Label.
   ///
   /// In en, this message translates to:
-  /// **'24 Hours'**
+  /// **'48 Hours'**
   String get recoveryM3Label;
 
   /// No description provided for @recoveryM3Title.
   ///
   /// In en, this message translates to:
-  /// **'Heart attack risk dropping'**
+  /// **'The Pivot Point'**
   String get recoveryM3Title;
 
   /// No description provided for @recoveryM3Body.
   ///
   /// In en, this message translates to:
-  /// **'Blood pressure and pulse are generally stabilising by now. Research suggests the risk of a cardiac event begins to decrease within this first day for most people.'**
+  /// **'For people who were drinking heavily, this can be one of the highest-risk windows for withdrawal symptoms. Your nervous system may feel overstimulated as it works to rebalance.'**
   String get recoveryM3Body;
 
   /// No description provided for @recoveryM3System.
   ///
   /// In en, this message translates to:
-  /// **'Heart'**
+  /// **'Central Nervous System'**
   String get recoveryM3System;
 
   /// No description provided for @recoveryM4Label.
   ///
   /// In en, this message translates to:
-  /// **'48 Hours'**
+  /// **'3 Days'**
   String get recoveryM4Label;
 
   /// No description provided for @recoveryM4Title.
   ///
   /// In en, this message translates to:
-  /// **'Senses awakening'**
+  /// **'Clearing the System'**
   String get recoveryM4Title;
 
   /// No description provided for @recoveryM4Body.
   ///
   /// In en, this message translates to:
-  /// **'Nerve endings affected by alcohol begin to recover. Many people notice their sense of smell and taste returning — food and the world around them becoming more vivid again.'**
+  /// **'For many people, the most intense early physical adjustment begins to ease around this point, though recovery is individual and some symptoms can continue.'**
   String get recoveryM4Body;
 
   /// No description provided for @recoveryM4System.
   ///
   /// In en, this message translates to:
-  /// **'Nervous System'**
+  /// **'Total Body'**
   String get recoveryM4System;
 
   /// No description provided for @recoveryM5Label.
   ///
   /// In en, this message translates to:
-  /// **'3 Days'**
+  /// **'1 Week'**
   String get recoveryM5Label;
 
   /// No description provided for @recoveryM5Title.
   ///
   /// In en, this message translates to:
-  /// **'Getting through the hardest part'**
+  /// **'Deepening Rest'**
   String get recoveryM5Title;
 
   /// No description provided for @recoveryM5Body.
   ///
   /// In en, this message translates to:
-  /// **'Lung function is often measurably improving by now. Withdrawal symptoms typically peak around days two to three — reaching this point is a significant achievement. If symptoms feel severe, please reach out to a healthcare professional.'**
+  /// **'Restorative sleep often begins to return. Hydration, appetite, and daily energy may start to feel more stable, although sleep and mood can still fluctuate.'**
   String get recoveryM5Body;
 
   /// No description provided for @recoveryM5System.
   ///
   /// In en, this message translates to:
-  /// **'Lungs'**
+  /// **'Brain & Sleep Cycles'**
   String get recoveryM5System;
 
   /// No description provided for @recoveryM6Label.
   ///
   /// In en, this message translates to:
-  /// **'1 Week'**
+  /// **'2 Weeks'**
   String get recoveryM6Label;
 
   /// No description provided for @recoveryM6Title.
   ///
   /// In en, this message translates to:
-  /// **'Sleep beginning to heal'**
+  /// **'Finding Balance'**
   String get recoveryM6Title;
 
   /// No description provided for @recoveryM6Body.
   ///
   /// In en, this message translates to:
-  /// **'Sleep quality tends to improve as brain chemistry adjusts. Many people notice vivid dreams this week — this is REM rebound, a normal sign of neurological recovery.'**
+  /// **'Physical stamina may begin to return as sleep, appetite, hydration, and daily rhythm become more stable.'**
   String get recoveryM6Body;
 
   /// No description provided for @recoveryM6System.
   ///
   /// In en, this message translates to:
-  /// **'Brain & Sleep'**
+  /// **'Energy & Digestion'**
   String get recoveryM6System;
 
   /// No description provided for @recoveryM7Label.
   ///
   /// In en, this message translates to:
-  /// **'2 Weeks'**
+  /// **'1 Month'**
   String get recoveryM7Label;
 
   /// No description provided for @recoveryM7Title.
   ///
   /// In en, this message translates to:
-  /// **'Circulation improving'**
+  /// **'Meaningful Relief'**
   String get recoveryM7Title;
 
   /// No description provided for @recoveryM7Body.
   ///
   /// In en, this message translates to:
-  /// **'Blood flow is generally improving and physical stamina often returns. Many people notice more energy, clearer skin, and better digestion around this point.'**
+  /// **'Your liver and vital organs may be experiencing meaningful relief from the strain of alcohol. Many people notice steadier energy, clearer thinking, and improved sleep around this stage.'**
   String get recoveryM7Body;
 
   /// No description provided for @recoveryM7System.
   ///
   /// In en, this message translates to:
-  /// **'Circulatory System'**
+  /// **'Liver & Vital Organs'**
   String get recoveryM7System;
 
   /// No description provided for @recoveryM8Label.
   ///
   /// In en, this message translates to:
-  /// **'1 Month'**
+  /// **'3 Months'**
   String get recoveryM8Label;
 
   /// No description provided for @recoveryM8Title.
   ///
   /// In en, this message translates to:
-  /// **'Liver healing accelerates'**
+  /// **'Restoring Joy'**
   String get recoveryM8Title;
 
   /// No description provided for @recoveryM8Body.
   ///
   /// In en, this message translates to:
-  /// **'Research shows fat deposits in the liver typically reduce significantly within the first month. The risk of liver disease is dropping. Sleep often deepens and skin clarity improves for many people.'**
+  /// **'Your body may feel more resilient as sleep, nourishment, movement, and reduced alcohol strain begin working together.'**
   String get recoveryM8Body;
 
   /// No description provided for @recoveryM8System.
   ///
   /// In en, this message translates to:
-  /// **'Liver'**
+  /// **'Neurochemistry'**
   String get recoveryM8System;
 
   /// No description provided for @recoveryM9Label.
   ///
   /// In en, this message translates to:
-  /// **'3 Months'**
+  /// **'6 Months'**
   String get recoveryM9Label;
 
   /// No description provided for @recoveryM9Title.
   ///
   /// In en, this message translates to:
-  /// **'Brain chemistry recovering'**
+  /// **'True Resilience'**
   String get recoveryM9Title;
 
   /// No description provided for @recoveryM9Body.
   ///
   /// In en, this message translates to:
-  /// **'Dopamine pathways are gradually normalising. Many people report improvements in focus, memory, and emotional regulation around this time. Recovery varies — be patient with yourself.'**
+  /// **'Many people notice a steadier baseline by this stage. Stress may feel more manageable, sleep may feel more reliable.'**
   String get recoveryM9Body;
 
   /// No description provided for @recoveryM9System.
   ///
   /// In en, this message translates to:
-  /// **'Brain'**
+  /// **'Nervous System'**
   String get recoveryM9System;
 
   /// No description provided for @recoveryM10Label.
   ///
   /// In en, this message translates to:
-  /// **'6 Months'**
+  /// **'1 Year'**
   String get recoveryM10Label;
 
   /// No description provided for @recoveryM10Title.
   ///
   /// In en, this message translates to:
-  /// **'Immune system strengthening'**
+  /// **'A New Baseline'**
   String get recoveryM10Title;
 
   /// No description provided for @recoveryM10Body.
   ///
   /// In en, this message translates to:
-  /// **'The immune system is generally more resilient by now. Many people find they get sick less often, recover faster, and experience more consistent energy levels.'**
+  /// **'For many people, the long-term strain on the heart, liver, sleep, mood, and daily energy is meaningfully reduced after a year without alcohol.'**
   String get recoveryM10Body;
 
   /// No description provided for @recoveryM10System.
   ///
   /// In en, this message translates to:
-  /// **'Immune System'**
+  /// **'Whole Body'**
   String get recoveryM10System;
 
   /// No description provided for @recoveryM11Label.
   ///
   /// In en, this message translates to:
-  /// **'1 Year'**
+  /// **'2 Years & Beyond'**
   String get recoveryM11Label;
 
   /// No description provided for @recoveryM11Title.
   ///
   /// In en, this message translates to:
-  /// **'Heart disease risk significantly lower'**
+  /// **'Lasting Vitality'**
   String get recoveryM11Title;
 
   /// No description provided for @recoveryM11Body.
   ///
   /// In en, this message translates to:
-  /// **'Research suggests the risk of coronary heart disease can fall to around half that of a continuing drinker after one year. The liver has typically restored itself substantially. This is a profound and life-changing milestone.'**
+  /// **'The benefits of reduced alcohol strain can continue to deepen over time, supporting your body, mind, relationships, and daily sense of stability.'**
   String get recoveryM11Body;
 
   /// No description provided for @recoveryM11System.
   ///
   /// In en, this message translates to:
-  /// **'Heart & Liver'**
+  /// **'Whole Body Renewal'**
   String get recoveryM11System;
-
-  /// No description provided for @recoveryM12Label.
-  ///
-  /// In en, this message translates to:
-  /// **'2 Years'**
-  String get recoveryM12Label;
-
-  /// No description provided for @recoveryM12Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancer risks dropping'**
-  String get recoveryM12Title;
-
-  /// No description provided for @recoveryM12Body.
-  ///
-  /// In en, this message translates to:
-  /// **'The risk of several alcohol-related cancers — including oral, throat, and liver cancers — is measurably lower for most people at this point.'**
-  String get recoveryM12Body;
-
-  /// No description provided for @recoveryM12System.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancer Risk'**
-  String get recoveryM12System;
-
-  /// No description provided for @recoveryM13Label.
-  ///
-  /// In en, this message translates to:
-  /// **'5 Years'**
-  String get recoveryM13Label;
-
-  /// No description provided for @recoveryM13Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Stroke risk approaching baseline'**
-  String get recoveryM13Title;
-
-  /// No description provided for @recoveryM13Body.
-  ///
-  /// In en, this message translates to:
-  /// **'For many people, stroke risk approaches that of someone who has never had a drinking problem. Most key body systems have had substantial time to recover.'**
-  String get recoveryM13Body;
-
-  /// No description provided for @recoveryM13System.
-  ///
-  /// In en, this message translates to:
-  /// **'Brain & Vascular'**
-  String get recoveryM13System;
-
-  /// No description provided for @recoveryM14Label.
-  ///
-  /// In en, this message translates to:
-  /// **'10 Years'**
-  String get recoveryM14Label;
-
-  /// No description provided for @recoveryM14Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancer risk dramatically reduced'**
-  String get recoveryM14Title;
-
-  /// No description provided for @recoveryM14Body.
-  ///
-  /// In en, this message translates to:
-  /// **'Your risk of mouth, throat, oesophageal, and liver cancers has dropped to roughly half that of drinkers. You have given yourself an extraordinary and lasting gift.'**
-  String get recoveryM14Body;
-
-  /// No description provided for @recoveryM14System.
-  ///
-  /// In en, this message translates to:
-  /// **'Whole Body'**
-  String get recoveryM14System;
 
   /// No description provided for @emergencyHomeTitle.
   ///
@@ -4697,7 +5075,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyNoInternetBody.
   ///
   /// In en, this message translates to:
-  /// **'Journey Forward works fully offline. The app does not make any network requests during normal operation. The only internet use is loading fonts from Google Fonts on your first launch — after that, they are cached locally.'**
+  /// **'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app makes no network requests of any kind — no internet connection is needed or used.'**
   String get privacyNoInternetBody;
 
   /// No description provided for @privacyNoAnalytics.

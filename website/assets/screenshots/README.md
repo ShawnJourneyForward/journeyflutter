@@ -1,4 +1,4 @@
-# Real Flutter app screenshots for the Journey Forward website
+﻿# Real Flutter app screenshots for the Journey Forward website
 
 The landing page must use real screenshots from the Flutter app, not website screenshots, generated mockups, browser captures, or review-pack images.
 

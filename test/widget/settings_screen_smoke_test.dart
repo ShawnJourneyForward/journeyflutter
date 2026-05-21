@@ -7,16 +7,22 @@ import '../helpers/test_harness.dart';
 void main() {
   setUpAll(configureTestFonts);
 
-  testWidgets('settings screen renders with a stored profile', (tester) async {
-    final profile = testProfile();
+  testWidgets('settings screen renders the loaded profile username',
+      (tester) async {
+    final profile = testProfile(username: 'Shawn');
     SharedPreferences.setMockInitialValues({
       'profile': profile.toJsonString(),
+      'has_profile': '1',
     });
 
     await tester.pumpWidget(wrapLocalizedScreen(const SettingsScreen()));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(tester.takeException(), isNull);
 
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.text('Shawn'), findsWidgets);
+    // Username must be projected onto the settings screen — proves the
+    // profile reached the UI through the EncryptedStore migration path.
+    expect(find.textContaining('Shawn'), findsWidgets,
+        reason: 'Settings must surface the stored profile data; if this '
+            'fails the profile read pipeline is broken.');
   });
 }

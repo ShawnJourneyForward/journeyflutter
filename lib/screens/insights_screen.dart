@@ -6,6 +6,7 @@ import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
+import '../components/back_button.dart';
 import '../theme/app_theme.dart';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -27,12 +28,12 @@ List<String> _weekLabels(List<DateTime> window) {
 }
 
 int _moodScore(String mood) => switch (mood) {
-      'great'  => 5,
-      'good'   => 4,
-      'okay'   => 3,
-      'hard'   => 2,
+      'great' => 5,
+      'good' => 4,
+      'okay' => 3,
+      'hard' => 2,
       'crisis' => 1,
-      _        => 0,
+      _ => 0,
     };
 
 Color _moodColor(int score) => switch (score) {
@@ -52,20 +53,18 @@ class InsightsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final window     = _last7();
-    final labels     = _weekLabels(window);
+    final window = _last7();
+    final labels = _weekLabels(window);
 
-    final journals   = ref.watch(journalProvider).valueOrNull   ?? [];
-    final cravings   = ref.watch(cravingProvider).valueOrNull   ?? [];
-    final sleeps     = ref.watch(sleepProvider).valueOrNull     ?? [];
-    final activities = ref.watch(activityProvider).valueOrNull  ?? [];
-    final thoughts   = ref.watch(thoughtProvider).valueOrNull   ?? [];
+    final journals = ref.watch(journalProvider).valueOrNull ?? [];
+    final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
+    final sleeps = ref.watch(sleepProvider).valueOrNull ?? [];
+    final activities = ref.watch(activityProvider).valueOrNull ?? [];
+    final thoughts = ref.watch(thoughtProvider).valueOrNull ?? [];
 
     // ── Mood per day (0 = no entry, 1–5 = mood scale) ────────────────────
     final moodByDay = window.map((day) {
-      final entry = journals
-          .where((j) => _sameDay(j.date, day))
-          .firstOrNull;
+      final entry = journals.where((j) => _sameDay(j.date, day)).firstOrNull;
       return entry == null ? 0 : _moodScore(entry.mood);
     }).toList();
 
@@ -96,16 +95,15 @@ class InsightsScreen extends ConsumerWidget {
     final activeDays = actByDay.where((m) => m > 0).length;
 
     // ── Thought sentiment last 7 days ─────────────────────────────────────
-    final recent = thoughts
-        .where((t) => window.any((d) => _sameDay(t.date, d)))
-        .toList();
+    final recent =
+        thoughts.where((t) => window.any((d) => _sameDay(t.date, d))).toList();
     final positiveCount = recent.where((t) => t.type == 'positive').length;
-    final neutralCount  = recent.where((t) => t.type == 'neutral').length;
+    final neutralCount = recent.where((t) => t.type == 'neutral').length;
     final negativeCount = recent.where((t) => t.type == 'negative').length;
 
-    final hasMood     = moodByDay.any((v) => v > 0);
+    final hasMood = moodByDay.any((v) => v > 0);
     final hasCravings = cravingCounts.any((v) => v > 0);
-    final hasSleep    = sleepByDay.any((v) => v > 0);
+    final hasSleep = sleepByDay.any((v) => v > 0);
     final hasActivity = actByDay.any((v) => v > 0);
 
     return Scaffold(
@@ -122,17 +120,12 @@ class InsightsScreen extends ConsumerWidget {
             ),
             Column(
               children: [
-
                 // ── Header ────────────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 14, 24, 0),
                   child: Row(
                     children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            size: 20, color: AppColors.forest700),
-                      ),
+                      const LuxuryBackButton(color: AppColors.forest700),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(l10n.insightsTitle,
@@ -152,7 +145,6 @@ class InsightsScreen extends ConsumerWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                     children: [
-
                       // ── Summary stat chips ───────────────────────────────
                       Row(
                         children: [
@@ -199,7 +191,8 @@ class InsightsScreen extends ConsumerWidget {
                         chartHeight: 148,
                         child: hasMood
                             ? _MoodBarChart(data: moodByDay, labels: labels)
-                            : const _EmptyChart(label: 'No journal entries yet'),
+                            : const _EmptyChart(
+                                label: 'No journal entries yet'),
                       ),
                       const SizedBox(height: 12),
 
@@ -236,9 +229,8 @@ class InsightsScreen extends ConsumerWidget {
                         title: 'Exercise — 7 days (minutes)',
                         child: hasActivity
                             ? _SimpleBarChart(
-                                data: actByDay
-                                    .map((v) => v.toDouble())
-                                    .toList(),
+                                data:
+                                    actByDay.map((v) => v.toDouble()).toList(),
                                 labels: labels,
                                 color: AppColors.honey500,
                               )
@@ -249,7 +241,7 @@ class InsightsScreen extends ConsumerWidget {
                       // ── Thought patterns ─────────────────────────────────
                       _ThoughtPatternCard(
                         positive: positiveCount,
-                        neutral:  neutralCount,
+                        neutral: neutralCount,
                         negative: negativeCount,
                       ),
                     ],
@@ -361,12 +353,12 @@ class _MoodBarChart extends StatelessWidget {
                     const FlLine(color: AppColors.stone100, strokeWidth: 1),
               ),
               titlesData: FlTitlesData(
-                leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false)),
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -392,8 +384,8 @@ class _MoodBarChart extends StatelessWidget {
                       toY: score > 0 ? score.toDouble() : 0.15,
                       color: _moodColor(score),
                       width: 14,
-                      borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(4)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(4)),
                     ),
                   ],
                 );
@@ -407,9 +399,9 @@ class _MoodBarChart extends StatelessWidget {
           children: [
             _MoodLegend(color: AppColors.forest600, label: 'Great'),
             SizedBox(width: 10),
-            _MoodLegend(color: AppColors.honey500,  label: 'Okay'),
+            _MoodLegend(color: AppColors.honey500, label: 'Okay'),
             SizedBox(width: 10),
-            _MoodLegend(color: AppColors.blush400,  label: 'Hard'),
+            _MoodLegend(color: AppColors.blush400, label: 'Hard'),
           ],
         ),
       ],
@@ -450,7 +442,9 @@ class _SimpleLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spots = data.asMap().entries
+    final spots = data
+        .asMap()
+        .entries
         .map((e) => FlSpot(e.key.toDouble(), e.value))
         .toList();
 
@@ -463,12 +457,12 @@ class _SimpleLineChart extends StatelessWidget {
               const FlLine(color: AppColors.stone100, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -525,12 +519,12 @@ class _SimpleBarChart extends StatelessWidget {
               const FlLine(color: AppColors.stone100, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -544,7 +538,9 @@ class _SimpleBarChart extends StatelessWidget {
           ),
         ),
         borderData: FlBorderData(show: false),
-        barGroups: data.asMap().entries
+        barGroups: data
+            .asMap()
+            .entries
             .map((e) => BarChartGroupData(
                   x: e.key,
                   barRods: [
@@ -552,8 +548,8 @@ class _SimpleBarChart extends StatelessWidget {
                       toY: e.value,
                       color: color,
                       width: 14,
-                      borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(4)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(4)),
                       backDrawRodData: BackgroundBarChartRodData(
                         show: true,
                         toY: (maxVal * 1.2).clamp(1, double.infinity),
@@ -637,8 +633,8 @@ class _ThoughtRow extends StatelessWidget {
         SizedBox(
           width: 82,
           child: Text(label,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone600)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone600)),
         ),
         Expanded(
           child: ClipRRect(
@@ -656,8 +652,8 @@ class _ThoughtRow extends StatelessWidget {
           width: 24,
           child: Text(
             '$count',
-            style: AppTextStyles.labelMedium
-                .copyWith(color: AppColors.stone600),
+            style:
+                AppTextStyles.labelMedium.copyWith(color: AppColors.stone600),
             textAlign: TextAlign.right,
           ),
         ),

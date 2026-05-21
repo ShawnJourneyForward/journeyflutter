@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../components/back_button.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
-import '../utils/haptic_service.dart';
+import '../utils/secure_window.dart';
 
 // ─── Slip Log Screen ──────────────────────────────────────────────────────────
 
@@ -19,26 +20,19 @@ class SlipLogScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final slipsAsync = ref.watch(slipProvider);
 
-    return Scaffold(
+    return SecureScreen(
+        child: Scaffold(
       backgroundColor: AppColors.stone50,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // ── Header ────────────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        size: 20, color: AppColors.stone700),
-                    onPressed: () {
-                      H.light();
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  const LuxuryBackButton(),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Column(
@@ -94,8 +88,7 @@ class SlipLogScreen extends ConsumerWidget {
                   child: CircularProgressIndicator(
                       color: AppColors.forest600, strokeWidth: 2),
                 ),
-                error: (e, _) =>
-                    Center(child: Text('Error: $e')),
+                error: (e, _) => Center(child: Text('Error: $e')),
                 data: (slips) {
                   if (slips.isEmpty) {
                     return _EmptyState();
@@ -112,7 +105,7 @@ class SlipLogScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -121,31 +114,31 @@ class SlipLogScreen extends ConsumerWidget {
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            color: AppColors.forest50,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.forest100),
-          ),
-          child: const Icon(Icons.timeline_rounded,
-              size: 34, color: AppColors.forest400),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.forest50,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.forest100),
+              ),
+              child: const Icon(Icons.timeline_rounded,
+                  size: 34, color: AppColors.forest400),
+            ),
+            const SizedBox(height: 18),
+            Text(AppLocalizations.of(context).slipLogEmpty,
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.stone500)),
+            const SizedBox(height: 6),
+            Text(AppLocalizations.of(context).slipLogEmptySubtitle,
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone400)),
+          ],
         ),
-        const SizedBox(height: 18),
-        Text(AppLocalizations.of(context).slipLogEmpty,
-            style: AppTextStyles.titleSmall
-                .copyWith(color: AppColors.stone500)),
-        const SizedBox(height: 6),
-        Text(AppLocalizations.of(context).slipLogEmptySubtitle,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone400)),
-      ],
-    ),
-  );
+      );
 }
 
 // ─── Slip card ────────────────────────────────────────────────────────────────
@@ -165,7 +158,6 @@ class _SlipCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // Header bar
           Container(
             decoration: const BoxDecoration(
@@ -190,8 +182,8 @@ class _SlipCard extends StatelessWidget {
                           .copyWith(color: AppColors.stone700)),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.forest50,
                     borderRadius: AppRadius.pill,

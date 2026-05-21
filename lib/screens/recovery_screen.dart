@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../components/back_button.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
@@ -32,165 +33,162 @@ class _Milestone {
   final String tip;
 }
 
-// Timelines are drawn from population-level research. Individual experience
-// varies — recovery pathways differ and some people, especially those with
-// heavy or long-term use, should seek medical guidance during early withdrawal.
+// This timeline is educational and reflects general recovery patterns only.
+// Individual recovery varies. Journey Forward is not a medical device.
 List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
-  _Milestone(
-    minutes: 20,
-    label: l10n.recoveryM1Label,
-    title: l10n.recoveryM1Title,
-    body: l10n.recoveryM1Body,
-    icon: Icons.favorite_outline_rounded,
-    system: l10n.recoveryM1System,
-    mind: 'The first urges and self-doubt begin here. Your mind may question the decision — that voice is the addiction talking, not you.',
-    experience: 'You may feel restless, irritable, or on edge.',
-    tip: 'Focus on the next hour only. Tell someone you trust what you\'re doing right now.',
-  ),
-  _Milestone(
-    minutes: 720,
-    label: l10n.recoveryM2Label,
-    title: l10n.recoveryM2Title,
-    body: l10n.recoveryM2Body,
-    icon: Icons.air_outlined,
-    system: l10n.recoveryM2System,
-    mind: 'Anxiety and mood dips are common as your brain adjusts to absence of the substance. This is normal neurochemistry shifting, not weakness.',
-    experience: 'Cravings may peak and feel overwhelming. They typically last only 3–5 minutes before subsiding.',
-    tip: 'Ride the wave — cravings always pass. Try box breathing or drink a cold glass of water slowly.',
-  ),
-  _Milestone(
-    minutes: 1440,
-    label: l10n.recoveryM3Label,
-    title: l10n.recoveryM3Title,
-    body: l10n.recoveryM3Body,
-    icon: Icons.monitor_heart_outlined,
-    system: l10n.recoveryM3System,
-    mind: 'Your brain\'s reward circuitry is recalibrating. Dopamine levels are fluctuating, which causes the irritability and low mood you may be feeling.',
-    experience: 'You may feel emotionally raw, tired, or have difficulty concentrating.',
-    tip: 'Sleep is your best ally tonight. Avoid caffeine after 2pm and keep your bedtime routine consistent.',
-  ),
-  _Milestone(
-    minutes: 2880,
-    label: l10n.recoveryM4Label,
-    title: l10n.recoveryM4Title,
-    body: l10n.recoveryM4Body,
-    icon: Icons.self_improvement_outlined,
-    system: l10n.recoveryM4System,
-    mind: 'Peak withdrawal for many substances occurs around 48 hours. Your nervous system is working hard to rebalance. This intensity is temporary.',
-    experience: 'Anxiety, restlessness, and strong cravings are at their most intense now. For alcohol, this is the highest-risk window.',
-    tip: 'If you\'ve been a heavy or long-term user, please have someone check on you. Medical support is wise at this stage.',
-  ),
-  _Milestone(
-    minutes: 4320,
-    label: l10n.recoveryM5Label,
-    title: l10n.recoveryM5Title,
-    body: l10n.recoveryM5Body,
-    icon: Icons.spa_outlined,
-    system: l10n.recoveryM5System,
-    mind: 'The acute phase begins to lift. Your brain is starting to normalise neurotransmitter production. The worst is typically behind you now.',
-    experience: 'A small window of calm may emerge. Many people feel a quiet, cautious optimism at this point.',
-    tip: 'Celebrate 72 hours — it\'s a real physiological milestone. Do something genuinely kind for yourself today.',
-  ),
-  _Milestone(
-    minutes: 10080,
-    label: l10n.recoveryM6Label,
-    title: l10n.recoveryM6Title,
-    body: l10n.recoveryM6Body,
-    icon: Icons.bedtime_outlined,
-    system: l10n.recoveryM6System,
-    mind: 'Post-acute withdrawal symptoms (PAWS) may begin — mood swings, disrupted sleep, and cravings in waves. This phase is normal and can last weeks to months.',
-    experience: 'Improved clarity alongside bouts of emptiness or unexpected craving is common at this stage.',
-    tip: 'Establish a daily routine. Structure is one of the most powerful relapse-prevention tools available to you.',
-  ),
-  _Milestone(
-    minutes: 20160,
-    label: l10n.recoveryM7Label,
-    title: l10n.recoveryM7Title,
-    body: l10n.recoveryM7Body,
-    icon: Icons.directions_run_outlined,
-    system: l10n.recoveryM7System,
-    mind: 'Brain fog starts to lift noticeably. Concentration and memory improve as neurochemistry stabilises. You are building new neural pathways every single day.',
-    experience: 'Energy levels begin to return. Some people feel surprisingly well; others still experience mood dips — both are normal.',
-    tip: 'This is when overconfidence can sneak in. Stay connected to your support system even — especially — when you feel strong.',
-  ),
-  _Milestone(
-    minutes: 43200,
-    label: l10n.recoveryM8Label,
-    title: l10n.recoveryM8Title,
-    body: l10n.recoveryM8Body,
-    icon: Icons.healing_outlined,
-    system: l10n.recoveryM8System,
-    mind: 'One month is a turning point. The brain\'s prefrontal cortex — governing decision-making and impulse control — shows measurable early recovery.',
-    experience: 'Most physical symptoms have resolved. Emotional regulation is improving, though stress can still trigger cravings.',
-    tip: 'Review your triggers. Write down three high-risk situations and your specific plan for each one.',
-  ),
-  _Milestone(
-    minutes: 129600,
-    label: l10n.recoveryM9Label,
-    title: l10n.recoveryM9Title,
-    body: l10n.recoveryM9Body,
-    icon: Icons.psychology_outlined,
-    system: l10n.recoveryM9System,
-    mind: 'The 90-day mark is clinically significant. Research suggests the brain\'s dopamine system has substantially stabilised for many people, and relapse risk tends to drop meaningfully at this point.',
-    experience: 'Many people report feeling more like themselves again. Sleep, mood, and motivation are often notably improved.',
-    tip: 'Build your recovery capital — relationships, hobbies, purpose. These are as protective as any clinical treatment.',
-  ),
-  _Milestone(
-    minutes: 259200,
-    label: l10n.recoveryM10Label,
-    title: l10n.recoveryM10Title,
-    body: l10n.recoveryM10Body,
-    icon: Icons.shield_outlined,
-    system: l10n.recoveryM10System,
-    mind: 'Research suggests deep neurological repair continues at six months. White matter density and cognitive function tend to improve — though the pace and extent varies by individual.',
-    experience: 'Cravings are often less frequent and shorter in duration. Emotional resilience tends to grow and life may feel more manageable.',
-    tip: 'Milestones can paradoxically trigger complacency. Reaffirm your "why" today and write it somewhere visible.',
-  ),
-  _Milestone(
-    minutes: 525960,
-    label: l10n.recoveryM11Label,
-    title: l10n.recoveryM11Title,
-    body: l10n.recoveryM11Body,
-    icon: Icons.favorite_rounded,
-    system: l10n.recoveryM11System,
-    mind: 'One year is a landmark. Research points to meaningful structural changes in the brain — improved prefrontal regulation, stress response, and memory consolidation — though individual recovery pathways vary.',
-    experience: 'Most people describe a new baseline of wellbeing — not euphoria, but genuine stability and earned self-trust.',
-    tip: 'Reflect on who you were 12 months ago. Write yourself a letter from where you stand now.',
-  ),
-  _Milestone(
-    minutes: 1051920,
-    label: l10n.recoveryM12Label,
-    title: l10n.recoveryM12Title,
-    body: l10n.recoveryM12Body,
-    icon: Icons.trending_down_rounded,
-    system: l10n.recoveryM12System,
-    mind: 'At two years, reward pathways continue to stabilise. Cue-induced cravings often become markedly weaker as conditioned responses fade — though ongoing care and connection remain important.',
-    experience: 'Triggers that once felt overwhelming may now feel manageable or even irrelevant.',
-    tip: 'Mentor someone earlier in their recovery. Giving back is one of the most powerful ways to consolidate your own.',
-  ),
-  _Milestone(
-    minutes: 2629800,
-    label: l10n.recoveryM13Label,
-    title: l10n.recoveryM13Title,
-    body: l10n.recoveryM13Body,
-    icon: Icons.star_outline_rounded,
-    system: l10n.recoveryM13System,
-    mind: 'Five years is associated with a substantial reduction in lifetime relapse risk. Neuroplasticity continues, enabling stable patterns of thought and behaviour to deepen across every area of life.',
-    experience: 'Many describe this period as among the richest of their lives — purpose-driven, deeply connected, and genuinely free.',
-    tip: 'Your story is medicine for someone still suffering. Consider sharing it when the moment is right.',
-  ),
-  _Milestone(
-    minutes: 5259600,
-    label: l10n.recoveryM14Label,
-    title: l10n.recoveryM14Title,
-    body: l10n.recoveryM14Body,
-    icon: Icons.emoji_events_outlined,
-    system: l10n.recoveryM14System,
-    mind: 'Decade-long recovery is associated with profound neurological healing in research. The brain\'s capacity to restore and rebuild is remarkable — and your commitment has made the most of it.',
-    experience: 'Recovery is no longer something you do — it has become who you are.',
-    tip: 'You have shown that people can change profoundly and completely. Live that truth fully, every day.',
-  ),
-];
+      _Milestone(
+        minutes: 720,
+        label: l10n.recoveryM1Label,
+        title: l10n.recoveryM1Title,
+        body: l10n.recoveryM1Body,
+        icon: Icons.water_drop_outlined,
+        system: l10n.recoveryM1System,
+        mind:
+            'You might feel a mix of relief and anxiety as your daily routine shifts. This is the normal friction of change.',
+        experience:
+            'The first urges may appear. They can feel urgent, but they are temporary waves.',
+        tip:
+            'Drink a large glass of water. When an urge hits, focus only on getting through the next hour.',
+      ),
+      _Milestone(
+        minutes: 1440,
+        label: l10n.recoveryM2Label,
+        title: l10n.recoveryM2Title,
+        body: l10n.recoveryM2Body,
+        icon: Icons.favorite_outline_rounded,
+        system: l10n.recoveryM2System,
+        mind:
+            'Your brain\'s reward circuitry is noticing the absence of its usual chemical trigger, which can cause irritability or a low mood.',
+        experience:
+            'You may feel emotionally raw, tired, or slightly restless.',
+        tip:
+            'Sleep and rest are your best allies right now. Keep your evening routine calm, quiet, and consistent.',
+      ),
+      _Milestone(
+        minutes: 2880,
+        label: l10n.recoveryM3Label,
+        title: l10n.recoveryM3Title,
+        body: l10n.recoveryM3Body,
+        icon: Icons.self_improvement_outlined,
+        system: l10n.recoveryM3System,
+        mind:
+            'Your system is seeking balance. The intensity you feel right now is the feeling of that adjustment taking place.',
+        experience:
+            'Restlessness and strong urges are common here. You might feel “wired” or on edge.',
+        tip:
+            'Be exceptionally gentle with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.',
+      ),
+      _Milestone(
+        minutes: 4320,
+        label: l10n.recoveryM4Label,
+        title: l10n.recoveryM4Title,
+        body: l10n.recoveryM4Body,
+        icon: Icons.spa_outlined,
+        system: l10n.recoveryM4System,
+        mind:
+            'The mental fog often begins to thin. Neurotransmitter production starts to slowly adjust, paving the way for more natural energy.',
+        experience:
+            'A small window of calm may emerge. You might feel a quiet, cautious optimism taking root.',
+        tip:
+            'Reaching 72 hours is meaningful. Mark it with comfort, care, and support.',
+      ),
+      _Milestone(
+        minutes: 10080,
+        label: l10n.recoveryM5Label,
+        title: l10n.recoveryM5Title,
+        body: l10n.recoveryM5Body,
+        icon: Icons.bedtime_outlined,
+        system: l10n.recoveryM5System,
+        mind:
+            'You may notice unusually vivid dreams — this can be a sign that your brain is adjusting to the deep neurological rest it has been missing.',
+        experience:
+            'Improved clarity, though your mood may still naturally swing up and down.',
+        tip:
+            'Anchor yourself in routine. A predictable morning and evening structure is a powerful tool right now.',
+      ),
+      _Milestone(
+        minutes: 20160,
+        label: l10n.recoveryM6Label,
+        title: l10n.recoveryM6Title,
+        body: l10n.recoveryM6Body,
+        icon: Icons.directions_run_outlined,
+        system: l10n.recoveryM6System,
+        mind:
+            'Concentration and short-term memory begin to sharpen. You are actively building new, healthier neural pathways.',
+        experience:
+            'You might start feeling surprisingly well, though random moments of emptiness are still normal.',
+        tip:
+            'This is when overconfidence can sneak in. Stay connected to your daily practices and support systems.',
+      ),
+      _Milestone(
+        minutes: 43200,
+        label: l10n.recoveryM7Label,
+        title: l10n.recoveryM7Title,
+        body: l10n.recoveryM7Body,
+        icon: Icons.healing_outlined,
+        system: l10n.recoveryM7System,
+        mind:
+            'The brain systems involved in impulse control, decision-making, and emotional regulation may begin to feel steadier over time.',
+        experience:
+            'Emotional regulation continues to improve, and building resilience becomes a steady practice.',
+        tip:
+            'Review your journey so far. Note the situations that still feel tricky, and plan how you will navigate them gracefully.',
+      ),
+      _Milestone(
+        minutes: 129600,
+        label: l10n.recoveryM8Label,
+        title: l10n.recoveryM8Title,
+        body: l10n.recoveryM8Body,
+        icon: Icons.psychology_outlined,
+        system: l10n.recoveryM8System,
+        mind:
+            'Dopamine pathways are gradually adjusting. The ability to find genuine satisfaction in simple, everyday activities may begin to return.',
+        experience:
+            'Many people describe feeling more like themselves again. Motivation may feel more available, though it can still rise and fall.',
+        tip:
+            'Continue to cultivate your environment. Hobbies, nature, and relationships are deeply protective elements of your growth.',
+      ),
+      _Milestone(
+        minutes: 259200,
+        label: l10n.recoveryM9Label,
+        title: l10n.recoveryM9Title,
+        body: l10n.recoveryM9Body,
+        icon: Icons.shield_outlined,
+        system: l10n.recoveryM9System,
+        mind: 'Urges may become less frequent or easier to move through.',
+        experience:
+            'The highs and lows of early recovery begin to smooth out into a more consistent rhythm.',
+        tip:
+            'Take a moment to honor the quiet days. Peace and stability are among the quiet rewards of this process.',
+      ),
+      _Milestone(
+        minutes: 525960,
+        label: l10n.recoveryM10Label,
+        title: l10n.recoveryM10Title,
+        body: l10n.recoveryM10Body,
+        icon: Icons.favorite_rounded,
+        system: l10n.recoveryM10System,
+        mind:
+            'You have lived through many seasons, routines, and emotional moments with more awareness and care.',
+        experience:
+            'Support may still matter, and needing it does not diminish your progress.',
+        tip:
+            'Reflect on the person you were twelve months ago. Write them a letter from where you stand today.',
+      ),
+      _Milestone(
+        minutes: 1051920,
+        label: l10n.recoveryM11Label,
+        title: l10n.recoveryM11Title,
+        body: l10n.recoveryM11Body,
+        icon: Icons.star_outline_rounded,
+        system: l10n.recoveryM11System,
+        mind:
+            'Recovery may feel less like something you are forcing and more like a way of living you have grown into.',
+        experience: '',
+        tip:
+            'Your story may become a source of comfort for someone else. When the moment feels right, share your strength with someone just beginning their path.',
+      ),
+    ];
 
 // ─── Recovery Screen ──────────────────────────────────────────────────────────
 
@@ -201,9 +199,13 @@ class RecoveryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final timeline = _buildTimeline(l10n);
-    final stats = ref.watch(soberStatsProvider);
+    // soberDaysProvider only ticks at midnight; the recovery timeline never
+    // changes mid-second, so the 1-second tick of soberStatsProvider would
+    // just rebuild the whole CustomScrollView for nothing (visible jitter).
+    final stats = ref.watch(soberDaysProvider);
     final elapsedMinutes = stats?.elapsed.inMinutes.clamp(0, 99999999) ?? 0;
-    final achievedCount = timeline.where((m) => elapsedMinutes >= m.minutes).length;
+    final achievedCount =
+        timeline.where((m) => elapsedMinutes >= m.minutes).length;
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -211,21 +213,13 @@ class RecoveryScreen extends ConsumerWidget {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-
             // ── Header ──────────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 20, color: AppColors.stone700),
-                      onPressed: () {
-                        H.light();
-                        Navigator.of(context).pop();
-                      },
-                    ),
+                    const LuxuryBackButton(),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Column(
@@ -261,7 +255,8 @@ class RecoveryScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: AppColors.honey50,
                     borderRadius: AppRadius.lg,
@@ -275,9 +270,10 @@ class RecoveryScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Timelines are drawn from population-level research. '
-                          'Individual recovery varies — if you have concerns about '
-                          'withdrawal or your health, please speak with a medical professional.',
+                          'Journey Forward is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. '
+                          'This timeline is educational and reflects general recovery patterns only. '
+                          'Individual recovery varies. If you drink heavily, have a history of withdrawal, seizures, hallucinations, confusion, '
+                          'or feel physically unsafe, speak with a healthcare professional before stopping suddenly or seek urgent medical care.',
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.honey600,
                             height: 1.45,
@@ -446,7 +442,6 @@ class _TimelineTileState extends State<_TimelineTile> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-
           // ── Left: node + connector ──────────────────────────────────────
           SizedBox(
             width: 52,
@@ -584,17 +579,20 @@ class _TimelineTileState extends State<_TimelineTile> {
                             Text(m.mind,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.stone600, height: 1.6)),
-                            const SizedBox(height: 6),
-                            Text(m.experience,
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                    color: AppColors.stone500,
-                                    height: 1.5,
-                                    fontStyle: FontStyle.italic)),
+                            if (m.experience.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Text(m.experience,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.stone500,
+                                      height: 1.5,
+                                      fontStyle: FontStyle.italic)),
+                            ],
 
                             // Tip box
                             const SizedBox(height: 14),
                             Container(
-                              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                              padding:
+                                  const EdgeInsets.fromLTRB(12, 10, 12, 10),
                               decoration: BoxDecoration(
                                 color: isCurrent
                                     ? AppColors.honey50

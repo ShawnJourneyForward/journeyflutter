@@ -4,12 +4,24 @@ import 'package:journey_forward/models/user_profile.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/test_harness.dart';
+
 const _baseProfile = UserProfile(
   username: 'Shawn',
   soberDate: '2026-01-01T00:00:00.000',
 );
 
 void main() {
+  // ProfileNotifier writes to flutter_secure_storage via EncryptedStore.
+  // Install the in-memory mock so writes succeed in tests (in production,
+  // EncryptedStore.write throws EncryptedStoreException — which is correct
+  // behavior, but a non-starter for unit tests without a real platform).
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    installSecureStorageMock();
+  });
+  setUp(resetSecureStorageMock);
+
   group('ProfileNotifier', () {
     test('save() stores profile and updates state', () async {
       SharedPreferences.setMockInitialValues({});
@@ -45,7 +57,8 @@ void main() {
 
       await container.read(profileProvider.future);
       await container.read(profileProvider.notifier).save(_baseProfile);
-      await container.read(profileProvider.notifier)
+      await container
+          .read(profileProvider.notifier)
           .patch((p) => p.copyWith(username: 'Updated'));
 
       final loaded = await container.read(profileProvider.future);
@@ -60,7 +73,8 @@ void main() {
 
       await container.read(profileProvider.future);
       // No save() — profile is null
-      await container.read(profileProvider.notifier)
+      await container
+          .read(profileProvider.notifier)
           .patch((p) => p.copyWith(username: 'Should not apply'));
 
       expect(await container.read(profileProvider.future), isNull);
@@ -73,7 +87,8 @@ void main() {
 
       await container.read(profileProvider.future);
       await container.read(profileProvider.notifier).save(_baseProfile);
-      await container.read(profileProvider.notifier)
+      await container
+          .read(profileProvider.notifier)
           .patchGoal(amount: 5000.0, name: 'New Car');
 
       final loaded = await container.read(profileProvider.future);
@@ -88,14 +103,15 @@ void main() {
 
       await container.read(profileProvider.future);
       await container.read(profileProvider.notifier).save(
-        const UserProfile(
-          username: 'Shawn',
-          soberDate: '2026-01-01T00:00:00.000',
-          savingsGoal: 1000.0,
-          savingsGoalName: 'Old Goal',
-        ),
-      );
-      await container.read(profileProvider.notifier)
+            const UserProfile(
+              username: 'Shawn',
+              soberDate: '2026-01-01T00:00:00.000',
+              savingsGoal: 1000.0,
+              savingsGoalName: 'Old Goal',
+            ),
+          );
+      await container
+          .read(profileProvider.notifier)
           .patchGoal(amount: null, name: null);
 
       final loaded = await container.read(profileProvider.future);
@@ -109,7 +125,8 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(profileProvider.future);
-      await container.read(profileProvider.notifier)
+      await container
+          .read(profileProvider.notifier)
           .patchGoal(amount: 999.0, name: 'Ghost Goal');
 
       expect(await container.read(profileProvider.future), isNull);

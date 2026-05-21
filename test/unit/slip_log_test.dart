@@ -6,7 +6,16 @@ import 'package:journey_forward/models/user_profile.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/test_harness.dart';
+
 void main() {
+  // Slip recording calls ProfileNotifier.patch which writes to EncryptedStore.
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    installSecureStorageMock();
+  });
+  setUp(resetSecureStorageMock);
+
   group('Slip', () {
     test('serializes and deserializes valid entries', () {
       final slip = Slip(
@@ -58,9 +67,8 @@ void main() {
     test('record persists a slip and resets streak milestones', () async {
       final profile = UserProfile(
         username: 'Shawn',
-        soberDate: DateTime.now()
-            .subtract(const Duration(days: 5))
-            .toIso8601String(),
+        soberDate:
+            DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
         firedMilestoneDays: const [1, 3],
         firedSavingsTiers: const [50],
       );

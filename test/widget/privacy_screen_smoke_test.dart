@@ -6,7 +6,8 @@ import '../helpers/test_harness.dart';
 void main() {
   setUpAll(configureTestFonts);
 
-  testWidgets('privacy screen renders its commitment and sections', (tester) async {
+  testWidgets('privacy screen renders its commitment and sections',
+      (tester) async {
     await tester.pumpWidget(wrapLocalizedScreen(const PrivacyScreen()));
     await tester.pumpAndSettle();
 

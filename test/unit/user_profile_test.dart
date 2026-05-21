@@ -66,7 +66,8 @@ void main() {
       expect(profile.cons, isEmpty);
     });
 
-    test('copyWith can clear nullable fields when null is explicitly passed', () {
+    test('copyWith can clear nullable fields when null is explicitly passed',
+        () {
       const profile = UserProfile(
         username: 'Shawn',
         soberDate: '2026-05-01T08:00:00.000',

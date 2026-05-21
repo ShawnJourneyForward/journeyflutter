@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../components/glass_card.dart';
+import '../components/back_button.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
@@ -40,55 +41,55 @@ class _ActivityDef {
 }
 
 List<_ActivityDef> _buildActivities(AppLocalizations l10n) => [
-  _ActivityDef(
-    id: _Activity.countdown,
-    label: l10n.puzzleActivity0Label,
-    description: l10n.puzzleActivity0Desc,
-    icon: Icons.pin_outlined,
-    color: AppColors.forest600,
-    duration: l10n.puzzleActivity0Duration,
-  ),
-  _ActivityDef(
-    id: _Activity.gratitudeShuffle,
-    label: l10n.puzzleActivity1Label,
-    description: l10n.puzzleActivity1Desc,
-    icon: Icons.shuffle_rounded,
-    color: AppColors.honey500,
-    duration: l10n.puzzleActivity1Duration,
-  ),
-  _ActivityDef(
-    id: _Activity.memoryMatch,
-    label: l10n.puzzleActivity2Label,
-    description: l10n.puzzleActivity2Desc,
-    icon: Icons.grid_view_rounded,
-    color: AppColors.forest500,
-    duration: l10n.puzzleActivity2Duration,
-  ),
-  _ActivityDef(
-    id: _Activity.strengthCompass,
-    label: l10n.puzzleActivity3Label,
-    description: l10n.puzzleActivity3Desc,
-    icon: Icons.explore_outlined,
-    color: AppColors.forest700,
-    duration: l10n.puzzleActivity3Duration,
-  ),
-  _ActivityDef(
-    id: _Activity.nowMoment,
-    label: l10n.puzzleActivity4Label,
-    description: l10n.puzzleActivity4Desc,
-    icon: Icons.center_focus_strong_outlined,
-    color: AppColors.honey600,
-    duration: l10n.puzzleActivity4Duration,
-  ),
-  _ActivityDef(
-    id: _Activity.colorCalm,
-    label: 'Colour Calm',
-    description: 'Tap the expanding circles and let your mind follow.',
-    icon: Icons.circle_outlined,
-    color: AppColors.forest400,
-    duration: '3 min',
-  ),
-];
+      _ActivityDef(
+        id: _Activity.countdown,
+        label: l10n.puzzleActivity0Label,
+        description: l10n.puzzleActivity0Desc,
+        icon: Icons.pin_outlined,
+        color: AppColors.forest600,
+        duration: l10n.puzzleActivity0Duration,
+      ),
+      _ActivityDef(
+        id: _Activity.gratitudeShuffle,
+        label: l10n.puzzleActivity1Label,
+        description: l10n.puzzleActivity1Desc,
+        icon: Icons.shuffle_rounded,
+        color: AppColors.honey500,
+        duration: l10n.puzzleActivity1Duration,
+      ),
+      _ActivityDef(
+        id: _Activity.memoryMatch,
+        label: l10n.puzzleActivity2Label,
+        description: l10n.puzzleActivity2Desc,
+        icon: Icons.grid_view_rounded,
+        color: AppColors.forest500,
+        duration: l10n.puzzleActivity2Duration,
+      ),
+      _ActivityDef(
+        id: _Activity.strengthCompass,
+        label: l10n.puzzleActivity3Label,
+        description: l10n.puzzleActivity3Desc,
+        icon: Icons.explore_outlined,
+        color: AppColors.forest700,
+        duration: l10n.puzzleActivity3Duration,
+      ),
+      _ActivityDef(
+        id: _Activity.nowMoment,
+        label: l10n.puzzleActivity4Label,
+        description: l10n.puzzleActivity4Desc,
+        icon: Icons.center_focus_strong_outlined,
+        color: AppColors.honey600,
+        duration: l10n.puzzleActivity4Duration,
+      ),
+      _ActivityDef(
+        id: _Activity.colorCalm,
+        label: 'Colour Calm',
+        description: 'Tap the expanding circles and let your mind follow.',
+        icon: Icons.circle_outlined,
+        color: AppColors.forest400,
+        duration: '3 min',
+      ),
+    ];
 
 // ─── Puzzle Screen ────────────────────────────────────────────────────────────
 
@@ -115,13 +116,14 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
           child: KeyedSubtree(
             key: ValueKey(_current),
             child: switch (_current) {
-              _Activity.home           => _HomeView(onSelect: _go),
-              _Activity.countdown      => _CountdownView(onBack: _home),
-              _Activity.gratitudeShuffle => _GratitudeShuffleView(onBack: _home),
-              _Activity.memoryMatch    => _MemoryMatchView(onBack: _home),
+              _Activity.home => _HomeView(onSelect: _go),
+              _Activity.countdown => _CountdownView(onBack: _home),
+              _Activity.gratitudeShuffle =>
+                _GratitudeShuffleView(onBack: _home),
+              _Activity.memoryMatch => _MemoryMatchView(onBack: _home),
               _Activity.strengthCompass => _StrengthCompassView(onBack: _home),
-              _Activity.nowMoment      => _NowMomentView(onBack: _home),
-              _Activity.colorCalm      => _ColorCalmView(onBack: _home),
+              _Activity.nowMoment => _NowMomentView(onBack: _home),
+              _Activity.colorCalm => _ColorCalmView(onBack: _home),
             },
           ),
         ),
@@ -139,18 +141,14 @@ class _BackHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(4, 12, 20, 4),
-    child: Row(children: [
-      IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-            size: 18, color: AppColors.stone600),
-        onPressed: onBack,
-      ),
-      Text(title,
-          style: AppTextStyles.titleLarge
-              .copyWith(color: AppColors.forest700)),
-    ]),
-  );
+        padding: const EdgeInsets.fromLTRB(4, 12, 20, 4),
+        child: Row(children: [
+          LuxuryBackButton(onPressed: onBack),
+          Text(title,
+              style: AppTextStyles.titleLarge
+                  .copyWith(color: AppColors.forest700)),
+        ]),
+      );
 }
 
 // ─── Home view ────────────────────────────────────────────────────────────────
@@ -169,11 +167,7 @@ class _HomeView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(-12, 12, 0, 0),
           child: Row(children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  size: 20, color: AppColors.stone700),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+            const LuxuryBackButton(),
             const SizedBox(width: 4),
             Expanded(
               child: Column(
@@ -223,8 +217,7 @@ class _HomeView extends StatelessWidget {
                       child: Icon(a.icon, color: a.color, size: 22),
                     ),
                     const Spacer(),
-                    Text(a.label,
-                        style: AppTextStyles.titleSmall),
+                    Text(a.label, style: AppTextStyles.titleSmall),
                     const SizedBox(height: 4),
                     Text(a.description,
                         style: AppTextStyles.bodySmall.copyWith(height: 1.4),
@@ -232,8 +225,8 @@ class _HomeView extends StatelessWidget {
                         overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 8),
                     Text(a.duration,
-                        style: AppTextStyles.labelSmall.copyWith(
-                            color: a.color, letterSpacing: 0.4)),
+                        style: AppTextStyles.labelSmall
+                            .copyWith(color: a.color, letterSpacing: 0.4)),
                   ],
                 ),
               ),
@@ -263,12 +256,18 @@ class _CountdownViewState extends State<_CountdownView> {
   void _tap() {
     H.light();
     if (_done) {
-      setState(() { _value = 300; _done = false; });
+      setState(() {
+        _value = 300;
+        _done = false;
+      });
       return;
     }
     final next = _value - 3;
     if (next <= 0) {
-      setState(() { _value = 0; _done = true; });
+      setState(() {
+        _value = 0;
+        _done = true;
+      });
     } else {
       setState(() => _value = next);
     }
@@ -288,8 +287,8 @@ class _CountdownViewState extends State<_CountdownView> {
             children: [
               Text(
                 'Counting backwards by 3 interrupts anxiety\nand brings you into the present.',
-                style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.forest200, height: 1.5),
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.forest200, height: 1.5),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -316,8 +315,8 @@ class _CountdownViewState extends State<_CountdownView> {
                                     .copyWith(color: AppColors.honey300)),
                           ])
                         : Text('$_value',
-                            style: AppTextStyles.heroNumber.copyWith(
-                                color: Colors.white, fontSize: 64)),
+                            style: AppTextStyles.heroNumber
+                                .copyWith(color: Colors.white, fontSize: 64)),
                   ),
                 ),
               ),
@@ -367,8 +366,7 @@ class _GratitudeShuffleView extends StatefulWidget {
   final VoidCallback onBack;
 
   @override
-  State<_GratitudeShuffleView> createState() =>
-      _GratitudeShuffleViewState();
+  State<_GratitudeShuffleView> createState() => _GratitudeShuffleViewState();
 }
 
 class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
@@ -446,8 +444,8 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
                   foregroundColor: AppColors.honey600,
                   side: const BorderSide(color: AppColors.honey300),
                   minimumSize: const Size.fromHeight(46),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape:
+                      const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
               ),
             ),
@@ -608,9 +606,7 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
                   border: Border.all(
                     color: _matched[i]
                         ? AppColors.forest200
-                        : (revealed
-                            ? AppColors.stone100
-                            : AppColors.forest600),
+                        : (revealed ? AppColors.stone100 : AppColors.forest600),
                   ),
                 ),
                 child: Center(
@@ -662,10 +658,11 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
       children: [
         _BackHeader(title: 'Strength Compass', onBack: widget.onBack),
         const SizedBox(height: 8),
-        Text('How strong does each feel today? '
+        Text(
+            'How strong does each feel today? '
             'This is just for you — there\'s no right answer.',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone600)),
+            style:
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600)),
         const SizedBox(height: 16),
         for (int i = 0; i < _strengths.length; i++) ...[
           SolidCard(
@@ -675,8 +672,7 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Icon(_strengths[i].$2,
-                      size: 18, color: AppColors.forest600),
+                  Icon(_strengths[i].$2, size: 18, color: AppColors.forest600),
                   const SizedBox(width: 8),
                   Text(_strengths[i].$1, style: AppTextStyles.titleSmall),
                   const Spacer(),
@@ -767,16 +763,19 @@ class _NowMomentViewState extends State<_NowMomentView> {
         // Progress dots
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_nowSteps.length, (i) => AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: i == _step ? 24 : 8,
-            height: 8,
-            margin: const EdgeInsets.symmetric(horizontal: 3),
-            decoration: BoxDecoration(
-              color: i == _step ? AppColors.forest600 : AppColors.stone200,
-              borderRadius: AppRadius.pill,
-            ),
-          )),
+          children: List.generate(
+              _nowSteps.length,
+              (i) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: i == _step ? 24 : 8,
+                    height: 8,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      color:
+                          i == _step ? AppColors.forest600 : AppColors.stone200,
+                      borderRadius: AppRadius.pill,
+                    ),
+                  )),
         ),
         const SizedBox(height: 28),
         LuxuryCard(
@@ -796,8 +795,8 @@ class _NowMomentViewState extends State<_NowMomentView> {
               ),
               const SizedBox(height: 20),
               Text(step.$1,
-                  style: AppTextStyles.overline.copyWith(
-                      color: AppColors.honey400, letterSpacing: 2)),
+                  style: AppTextStyles.overline
+                      .copyWith(color: AppColors.honey400, letterSpacing: 2)),
               const SizedBox(height: 12),
               Text(step.$2,
                   style: AppTextStyles.bodySerif.copyWith(
@@ -872,11 +871,13 @@ class _ColorCalmViewState extends State<_ColorCalmView>
       controller: ctrl,
     );
     setState(() => _ripples.add(ripple));
-    ctrl.forward().then((_) {
-      if (mounted) {
-        setState(() => _ripples.remove(ripple));
-        ctrl.dispose();
-      }
+    // ALWAYS dispose the controller, even if the screen has been unmounted.
+    // The previous .then((_) { if (mounted) ... }) silently leaked the
+    // controller whenever the user backed out mid-animation.
+    ctrl.forward().whenComplete(() {
+      ctrl.dispose();
+      if (!mounted) return;
+      setState(() => _ripples.remove(ripple));
     });
   }
 
@@ -895,8 +896,7 @@ class _ColorCalmViewState extends State<_ColorCalmView>
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             'Tap anywhere. Breathe with the circles.',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone500),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone500),
           ),
         ),
         const SizedBox(height: 12),
@@ -917,8 +917,8 @@ class _ColorCalmViewState extends State<_ColorCalmView>
                     Center(
                       child: _ripples.isEmpty
                           ? Text('Tap anywhere',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.forest600))
+                              style: AppTextStyles.bodyMedium
+                                  .copyWith(color: AppColors.forest600))
                           : const SizedBox.shrink(),
                     ),
                     // Ripples
@@ -942,8 +942,8 @@ class _ColorCalmViewState extends State<_ColorCalmView>
                                 height: radius * 2,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                      color: r.color, width: 2.5),
+                                  border:
+                                      Border.all(color: r.color, width: 2.5),
                                 ),
                               ),
                             ),

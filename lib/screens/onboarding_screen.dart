@@ -1,18 +1,20 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_profile.dart';
+import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/notification_service.dart';
+import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
+import '../components/back_button.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 
@@ -30,25 +32,24 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-
   // ── Form state ──────────────────────────────────────────────────────────────
-  String _username   = '';
+  String _username = '';
   DateTime _soberDate = DateTime.now();
-  double _dailySpend  = 0;
-  String _currency    = 'R';
-  String _lockMethod  = 'none';   // 'none' | 'biometric' | 'pin'
+  double _dailySpend = 0;
+  String _currency = '\$';
+  String _lockMethod = 'none'; // 'none' | 'biometric' | 'pin'
 
   // PIN entry
-  String _pin        = '';
+  String _pin = '';
   String _pinConfirm = '';
   bool _pinConfirming = false;
   String? _pinError;
 
   // Notifications
   bool _notifMotivation = true;
-  bool _notifReminders  = true;
+  bool _notifReminders = true;
   bool _notifMilestones = true;
-  TimeOfDay _morningTime = const TimeOfDay(hour: 8,  minute: 0);
+  TimeOfDay _morningTime = const TimeOfDay(hour: 8, minute: 0);
   TimeOfDay _eveningTime = const TimeOfDay(hour: 20, minute: 0);
 
   // ── Navigation state ────────────────────────────────────────────────────────
@@ -58,17 +59,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   List<_Step> get _steps {
     final all = [
-      _Step.welcome, _Step.name, _Step.date, _Step.spend,
+      _Step.welcome,
+      _Step.name,
+      _Step.date,
+      _Step.spend,
       _Step.security,
       if (_lockMethod == 'pin') _Step.pin,
-      _Step.notifications, _Step.finish,
+      _Step.notifications,
+      _Step.finish,
     ];
     return all;
   }
 
   int get _currentIndex => _steps.indexOf(_step);
   bool get _isFirst => _currentIndex == 0;
-  bool get _isLast  => _currentIndex == _steps.length - 1;
+  bool get _isLast => _currentIndex == _steps.length - 1;
 
   @override
   void initState() {
@@ -94,8 +99,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
     if (_step == _Step.pin) {
       if (!_pinConfirming) {
-        if (_pin.length < 4) { _showError(l10n.onbPinDigitsError); return; }
-        setState(() { _pinConfirming = true; _pinConfirm = ''; _pinError = null; });
+        if (_pin.length < 4) {
+          _showError(l10n.onbPinDigitsError);
+          return;
+        }
+        setState(() {
+          _pinConfirming = true;
+          _pinConfirm = '';
+          _pinError = null;
+        });
         return;
       } else {
         if (_pinConfirm != _pin) {
@@ -138,9 +150,49 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         if (_pinConfirm.isNotEmpty)
           _pinConfirm = _pinConfirm.substring(0, _pinConfirm.length - 1);
       } else {
-        if (_pin.isNotEmpty)
-          _pin = _pin.substring(0, _pin.length - 1);
+        if (_pin.isNotEmpty) _pin = _pin.substring(0, _pin.length - 1);
       }
+    });
+  }
+
+  // ── Security selection ──────────────────────────────────────────────────────
+  // Tapping "biometric" runs an actual authenticate() prompt right then so
+  // we don't quietly save lockMethod='biometric' on a device with no
+  // fingerprint/face enrolled (the previous bug — users would pick it,
+  // finish onboarding, and find the lock screen unable to authenticate).
+  Future<void> _onSecurityChanged(String v) async {
+    if (v == _lockMethod) return;
+
+    if (v == 'biometric') {
+      final auth = LocalAuthentication();
+      try {
+        final supported = await auth.isDeviceSupported();
+        final canCheck = await auth.canCheckBiometrics;
+        if (!supported || !canCheck) {
+          if (!mounted) return;
+          _showError(
+              'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.');
+          return;
+        }
+        final ok = await auth.authenticate(
+          localizedReason: 'Confirm to enable biometric lock',
+          options: const AuthenticationOptions(
+              biometricOnly: false, stickyAuth: true),
+        );
+        if (!ok) return; // user cancelled — keep previous selection
+      } on PlatformException catch (e) {
+        if (!mounted) return;
+        _showError('Biometric setup failed: ${e.message ?? e.code}');
+        return;
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _lockMethod = v;
+      _pin = '';
+      _pinConfirm = '';
+      _pinConfirming = false;
     });
   }
 
@@ -149,49 +201,73 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     setState(() => _saving = true);
     H.medium();
 
-    // Save PIN hash to secure storage (never stored in plaintext)
-    if (_lockMethod == 'pin' && _pin.isNotEmpty) {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
-      );
-      final hash = sha256.convert(utf8.encode(_pin)).toString();
-      await storage.write(key: 'pin_hash', value: hash);
-    }
-
-    // Request notification permission if enabled
-    if (_notifMotivation || _notifReminders || _notifMilestones) {
-      try {
-        final plugin = FlutterLocalNotificationsPlugin();
-        await plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestNotificationsPermission();
-      } catch (_) {} // graceful — notifications are optional
-    }
-
     final _fmt = (TimeOfDay t) =>
-        '${t.hour.toString().padLeft(2,'0')}:${t.minute.toString().padLeft(2,'0')}';
+        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
-    final profile = UserProfile(
-      username:       _username.trim(),
-      soberDate:      _soberDate.toIso8601String(),
-      dailySpend:     _dailySpend,
-      currency:       _currency,
-      timezone:       DateTime.now().timeZoneName,
-      lockMethod:     _lockMethod,
-      weeklyGoals:    const [],
-    );
+    try {
+      // ── Step 1: Save PIN hash to secure storage (PBKDF2 + 128-bit salt) ─────
+      if (_lockMethod == 'pin' && _pin.isNotEmpty) {
+        const storage = FlutterSecureStorage(
+          aOptions: AndroidOptions(encryptedSharedPreferences: true),
+        );
+        await PinHash.writeNew(storage, _pin);
+      }
 
-    // Persist notification settings separately (not on UserProfile yet)
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile', profile.toJsonString());
-    await prefs.setString('lockMethod', _lockMethod);
-    await prefs.setBool('notif_motivation', _notifMotivation);
-    await prefs.setBool('notif_reminders', _notifReminders);
-    await prefs.setBool('notif_milestones', _notifMilestones);
-    await prefs.setString('notif_morning', _fmt(_morningTime));
-    await prefs.setString('notif_evening', _fmt(_eveningTime));
+      // ── Step 2: Build profile ────────────────────────────────────────────────
+      final profile = UserProfile(
+        username: _username.trim(),
+        soberDate: _soberDate.toIso8601String(),
+        dailySpend: _dailySpend,
+        currency: _currency,
+        timezone: DateTime.now().timeZoneName,
+        lockMethod: _lockMethod,
+        weeklyGoals: const [],
+      );
 
-    if (mounted) context.go('/home');
+      // ── Step 3: Persist ALL prefs synchronously to disk ──────────────────────
+      // Use the Riverpod notifier (which writes profile + sets state)
+      // then write the extra keys, then force a reload so the on-disk file
+      // is consistent before any OS-dialog-induced activity recreation.
+      await ref.read(profileProvider.notifier).save(profile);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('lockMethod', _lockMethod);
+      await prefs.setBool('notif_motivation', _notifMotivation);
+      await prefs.setBool('notif_reminders', _notifReminders);
+      await prefs.setBool('notif_milestones', _notifMilestones);
+      await prefs.setString('notif_morning', _fmt(_morningTime));
+      await prefs.setString('notif_evening', _fmt(_eveningTime));
+
+      // CRITICAL: reload() blocks until the SharedPreferences XML on disk
+      // is re-read into memory — this is the closest thing to a sync commit
+      // available via the shared_preferences plugin. Without this, apply()
+      // writes can still be pending in the Android plugin queue when the
+      // notification-permission or exact-alarm system dialog pauses the
+      // activity, and a recreate then reads stale (empty) prefs.
+      await prefs.reload();
+
+      // ── Step 4: Request notification permission (safe — router has redirect) ─
+      // The router-level redirect in main.dart now re-checks profile existence
+      // on every navigation, so even if the OS dialog causes an activity
+      // recreate, the router will route to /home (profile is on disk).
+      if (_notifMotivation || _notifReminders || _notifMilestones) {
+        await NotificationService.requestPermission();
+      }
+
+      // ── Step 5: Schedule daily notifications ─────────────────────────────────
+      if (_notifMotivation || _notifReminders) {
+        await NotificationService.scheduleFromPrefs();
+      }
+
+      // ── Step 6: Navigate to home ─────────────────────────────────────────────
+      if (mounted) context.go('/home');
+    } catch (e) {
+      debugPrint('[Onboarding] _finish failed: $e');
+      if (mounted) {
+        setState(() => _saving = false);
+        _showError('Could not complete setup: $e');
+      }
+    }
   }
 
   void _showError(String msg) {
@@ -215,6 +291,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final progress = (_currentIndex + 1) / total;
 
     return Scaffold(
+      // Stable test anchor — proves the router landed on /onboarding.
+      key: const Key('onboarding-screen'),
       backgroundColor: AppColors.stone50,
       body: SafeArea(
         child: Stack(
@@ -228,91 +306,88 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
             Column(
               children: [
-
-            // ── Top bar: back + progress ───────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
-              child: Row(
-                children: [
-                  if (!_isFirst)
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 18, color: AppColors.stone600),
-                      onPressed: _back,
-                    )
-                  else
-                    const SizedBox(width: 48),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: AppRadius.pill,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeOut,
-                            height: 4,
-                            child: LinearProgressIndicator(
-                              value: progress,
-                              backgroundColor: AppColors.mintChip,
-                              valueColor: const AlwaysStoppedAnimation(
-                                  AppColors.forest600),
-                              minHeight: 4,
+                // ── Top bar: back + progress ───────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
+                  child: Row(
+                    children: [
+                      if (!_isFirst)
+                        LuxuryBackButton(onPressed: _back)
+                      else
+                        const SizedBox(width: 48),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: AppRadius.pill,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.easeOut,
+                                height: 4,
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  backgroundColor: AppColors.mintChip,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      AppColors.forest600),
+                                  minHeight: 4,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.onbStepIndicator(_currentIndex + 1, total),
+                              style: AppTextStyles.caption,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.onbStepIndicator(_currentIndex + 1, total),
-                          style: AppTextStyles.caption,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Step content ───────────────────────────────────────────────
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 320),
-                transitionBuilder: (child, animation) {
-                  final slide = Tween<Offset>(
-                    begin: Offset(_goingForward ? 1.0 : -1.0, 0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                      parent: animation, curve: Curves.easeOutCubic));
-                  return SlideTransition(
-                    position: slide,
-                    child: FadeTransition(opacity: animation, child: child),
-                  );
-                },
-                child: KeyedSubtree(
-                  key: ValueKey(_step),
-                  child: _buildStep(),
-                ),
-              ),
-            ),
-
-            // ── Bottom CTA ─────────────────────────────────────────────────
-            if (_step != _Step.pin && _step != _Step.finish)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _step == _Step.welcome ? _next : _next,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.forest600,
-                      minimumSize: const Size.fromHeight(54),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: AppRadius.luxury),
-                      textStyle: AppTextStyles.labelLarge,
-                    ),
-                    child: Text(_isLast ? l10n.onbBeginMyJourney : l10n.onbContinue),
+                      ),
+                    ],
                   ),
                 ),
-              ),
+
+                // ── Step content ───────────────────────────────────────────────
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 320),
+                    transitionBuilder: (child, animation) {
+                      final slide = Tween<Offset>(
+                        begin: Offset(_goingForward ? 1.0 : -1.0, 0),
+                        end: Offset.zero,
+                      ).animate(CurvedAnimation(
+                          parent: animation, curve: Curves.easeOutCubic));
+                      return SlideTransition(
+                        position: slide,
+                        child: FadeTransition(opacity: animation, child: child),
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey(_step),
+                      child: _buildStep(),
+                    ),
+                  ),
+                ),
+
+                // ── Bottom CTA ─────────────────────────────────────────────────
+                if (_step != _Step.welcome && _step != _Step.pin && _step != _Step.finish)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: _step == _Step.welcome ? _next : _next,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.forest600,
+                          minimumSize: const Size.fromHeight(54),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.luxury),
+                          textStyle: AppTextStyles.labelLarge,
+                        ),
+                        child: Text(_isLast
+                            ? l10n.onbBeginMyJourney
+                            : l10n.onbContinue),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],
@@ -323,34 +398,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildStep() {
     return switch (_step) {
-      _Step.welcome       => _WelcomeStep(onBegin: _next),
-      _Step.name          => _NameStep(
+      _Step.welcome => _WelcomeStep(onBegin: _next),
+      _Step.name => _NameStep(
           value: _username,
           onChanged: (v) => setState(() => _username = v),
           onSubmit: _next,
         ),
-      _Step.date          => _DateStep(
+      _Step.date => _DateStep(
           date: _soberDate,
           onChanged: (d) => setState(() => _soberDate = d),
         ),
-      _Step.spend         => _SpendStep(
+      _Step.spend => _SpendStep(
           spend: _dailySpend,
           currency: _currency,
           onSpendChanged: (v) => setState(() => _dailySpend = v),
           onCurrencyChanged: (v) => setState(() => _currency = v),
         ),
-      _Step.security      => _SecurityStep(
+      _Step.security => _SecurityStep(
           selected: _lockMethod,
-          onChanged: (v) {
-            setState(() {
-              _lockMethod = v;
-              _pin = '';
-              _pinConfirm = '';
-              _pinConfirming = false;
-            });
-          },
+          onChanged: _onSecurityChanged,
         ),
-      _Step.pin           => _PinStep(
+      _Step.pin => _PinStep(
           pin: _pinConfirming ? _pinConfirm : _pin,
           confirming: _pinConfirming,
           error: _pinError,
@@ -370,7 +438,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           onMorningChanged: (t) => setState(() => _morningTime = t),
           onEveningChanged: (t) => setState(() => _eveningTime = t),
         ),
-      _Step.finish        => _FinishStep(
+      _Step.finish => _FinishStep(
           username: _username,
           soberDate: _soberDate,
           saving: _saving,
@@ -442,6 +510,41 @@ class _WelcomeStep extends StatelessWidget {
                   label: AppLocalizations.of(context).onbPrivacyZeroTracking,
                   sub: AppLocalizations.of(context).onbPrivacyZeroTrackingSub,
                 ),
+                const _Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: AppColors.forest100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.info_outline_rounded,
+                            size: 18, color: AppColors.forest700),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Not Medical Advice',
+                                style: AppTextStyles.titleSmall
+                                    .copyWith(color: AppColors.forest700)),
+                            Text(
+                              'This app supports your journey but is not a substitute for medical or clinical advice. Always consult a healthcare professional for medical concerns.',
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(color: AppColors.forest600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -454,8 +557,7 @@ class _WelcomeStep extends StatelessWidget {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
                 minimumSize: const Size.fromHeight(54),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: AppRadius.xl),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.xl),
                 textStyle: AppTextStyles.labelLarge,
               ),
               child: Text(AppLocalizations.of(context).onbLetsBegin),
@@ -469,7 +571,9 @@ class _WelcomeStep extends StatelessWidget {
 
 class _PrivacyBadge extends StatelessWidget {
   const _PrivacyBadge({
-    required this.icon, required this.label, required this.sub,
+    required this.icon,
+    required this.label,
+    required this.sub,
   });
   final IconData icon;
   final String label, sub;
@@ -481,9 +585,11 @@ class _PrivacyBadge extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 36, height: 36,
+            width: 36,
+            height: 36,
             decoration: const BoxDecoration(
-              color: AppColors.forest100, shape: BoxShape.circle,
+              color: AppColors.forest100,
+              shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 18, color: AppColors.forest700),
           ),
@@ -492,10 +598,12 @@ class _PrivacyBadge extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTextStyles.titleSmall
-                    .copyWith(color: AppColors.forest700)),
-                Text(sub, style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.forest600)),
+                Text(label,
+                    style: AppTextStyles.titleSmall
+                        .copyWith(color: AppColors.forest700)),
+                Text(sub,
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.forest600)),
               ],
             ),
           ),
@@ -516,7 +624,9 @@ class _Divider extends StatelessWidget {
 
 class _NameStep extends StatefulWidget {
   const _NameStep({
-    required this.value, required this.onChanged, required this.onSubmit,
+    required this.value,
+    required this.onChanged,
+    required this.onSubmit,
   });
   final String value;
   final ValueChanged<String> onChanged;
@@ -531,7 +641,10 @@ class _NameStepState extends State<_NameStep> {
       TextEditingController(text: widget.value);
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -555,40 +668,75 @@ class _NameStepState extends State<_NameStep> {
 
 // ─── Step 3: Sober Date ───────────────────────────────────────────────────────
 
-class _DateStep extends StatelessWidget {
+class _DateStep extends StatefulWidget {
   const _DateStep({required this.date, required this.onChanged});
   final DateTime date;
   final ValueChanged<DateTime> onChanged;
 
   @override
+  State<_DateStep> createState() => _DateStepState();
+}
+
+class _DateStepState extends State<_DateStep> {
+  ThemeData _pickerTheme(BuildContext ctx) => Theme.of(ctx).copyWith(
+        colorScheme: const ColorScheme.light(
+          primary: AppColors.forest600,
+          onPrimary: Colors.white,
+          surface: Colors.white,
+          onSurface: AppColors.stone800,
+        ),
+      );
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: widget.date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      helpText: AppLocalizations.of(context).onbDatePickerHelp,
+      builder: (ctx, child) =>
+          Theme(data: _pickerTheme(ctx), child: child!),
+    );
+    if (picked != null) {
+      // Preserve existing time component
+      widget.onChanged(DateTime(
+        picked.year, picked.month, picked.day,
+        widget.date.hour, widget.date.minute,
+      ));
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final d = widget.date;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: d.hour, minute: d.minute),
+      builder: (ctx, child) =>
+          Theme(data: _pickerTheme(ctx), child: child!),
+    );
+    if (picked != null) {
+      widget.onChanged(DateTime(
+        d.year, d.month, d.day,
+        picked.hour, picked.minute,
+      ));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final date = widget.date;
+    final timeLabel = TimeOfDay(hour: date.hour, minute: date.minute)
+        .format(context);
+
     return _StepShell(
       headline: l10n.onbDateHeadline,
       sub: l10n.onbDateSub,
       child: Column(
         children: [
+          // ── Date tile ────────────────────────────────────────────────────
           GestureDetector(
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: date,
-                firstDate: DateTime(2000),
-                lastDate: DateTime.now(),
-                helpText: l10n.onbDatePickerHelp,
-                builder: (ctx, child) => Theme(
-                  data: Theme.of(ctx).copyWith(
-                    colorScheme: const ColorScheme.light(
-                        primary: AppColors.forest600,
-                        onPrimary: Colors.white,
-                        surface: Colors.white,
-                        onSurface: AppColors.stone800),
-                  ),
-                  child: child!,
-                ),
-              );
-              if (picked != null) onChanged(picked);
-            },
+            onTap: _pickDate,
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -600,9 +748,11 @@ class _DateStep extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 44, height: 44,
+                    width: 44,
+                    height: 44,
                     decoration: const BoxDecoration(
-                      color: AppColors.forest50, shape: BoxShape.circle,
+                      color: AppColors.forest50,
+                      shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.calendar_today_rounded,
                         color: AppColors.forest600, size: 20),
@@ -612,8 +762,7 @@ class _DateStep extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.onbSoberSince,
-                            style: AppTextStyles.caption),
+                        Text(l10n.onbSoberSince, style: AppTextStyles.caption),
                         const SizedBox(height: 2),
                         Text(
                           DateFormat('EEEE, d MMMM yyyy').format(date),
@@ -630,9 +779,56 @@ class _DateStep extends StatelessWidget {
             ),
           ),
 
+          const SizedBox(height: 10),
+
+          // ── Time tile ────────────────────────────────────────────────────
+          GestureDetector(
+            onTap: _pickTime,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: AppRadius.xl,
+                border: Border.all(color: AppColors.stone100),
+                boxShadow: AppShadows.card,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: const BoxDecoration(
+                      color: AppColors.forest50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.access_time_rounded,
+                        color: AppColors.forest600, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Time of day', style: AppTextStyles.caption),
+                        const SizedBox(height: 2),
+                        Text(
+                          timeLabel,
+                          style: AppTextStyles.titleMedium
+                              .copyWith(color: AppColors.forest700),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.edit_outlined,
+                      size: 16, color: AppColors.stone400),
+                ],
+              ),
+            ),
+          ),
+
           const SizedBox(height: 14),
 
-          // Days count preview
+          // ── Days count preview ───────────────────────────────────────────
           Container(
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             decoration: BoxDecoration(
@@ -665,8 +861,10 @@ class _DateStep extends StatelessWidget {
 
 class _SpendStep extends StatefulWidget {
   const _SpendStep({
-    required this.spend, required this.currency,
-    required this.onSpendChanged, required this.onCurrencyChanged,
+    required this.spend,
+    required this.currency,
+    required this.onSpendChanged,
+    required this.onCurrencyChanged,
   });
   final double spend;
   final String currency;
@@ -678,12 +876,14 @@ class _SpendStep extends StatefulWidget {
 }
 
 class _SpendStepState extends State<_SpendStep> {
-  late final TextEditingController _ctrl =
-      TextEditingController(text: widget.spend > 0
-          ? widget.spend.toStringAsFixed(0) : '');
+  late final TextEditingController _ctrl = TextEditingController(
+      text: widget.spend > 0 ? widget.spend.toStringAsFixed(0) : '');
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -706,12 +906,39 @@ class _SpendStepState extends State<_SpendStep> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: widget.currency,
-                    items: ['R', '\$', '£', '€', 'A\$'].map((c) =>
-                        DropdownMenuItem(
-                          value: c,
-                          child: Text(c, style: AppTextStyles.titleMedium
-                              .copyWith(color: AppColors.forest700)),
-                        )).toList(),
+                    items: [
+                      'R',
+                      '\$',
+                      '£',
+                      '€',
+                      '¥',
+                      'A\$',
+                      'C\$',
+                      'NZ\$',
+                      'HK\$',
+                      'S\$',
+                      'CHF',
+                      'kr',
+                      '₹',
+                      '₩',
+                      '₺',
+                      '₱',
+                      'RM',
+                      '₦',
+                      'GH₵',
+                      'Ksh',
+                      '₫',
+                      '฿',
+                      'лв',
+                      'zł'
+                    ]
+                        .map((c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c,
+                                  style: AppTextStyles.titleMedium
+                                      .copyWith(color: AppColors.forest700)),
+                            ))
+                        .toList(),
                     onChanged: (v) =>
                         widget.onCurrencyChanged(v ?? widget.currency),
                     borderRadius: AppRadius.lg,
@@ -724,8 +951,8 @@ class _SpendStepState extends State<_SpendStep> {
               Expanded(
                 child: TextField(
                   controller: _ctrl,
-                  keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   textInputAction: TextInputAction.done,
                   onChanged: (v) =>
                       widget.onSpendChanged(double.tryParse(v) ?? 0),
@@ -755,8 +982,7 @@ class _SpendStepState extends State<_SpendStep> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      l10n.onbSpendSavingsPreview(
-                          widget.currency,
+                      l10n.onbSpendSavingsPreview(widget.currency,
                           (widget.spend * 30).toStringAsFixed(0)),
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.honey600),
@@ -775,8 +1001,8 @@ class _SpendStepState extends State<_SpendStep> {
               ),
               child: Text(
                 l10n.onbSpendSkipNote,
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone500),
+                style:
+                    AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -824,10 +1050,45 @@ class _SecurityStep extends StatelessWidget {
       child: Column(
         children: [
           ...options.map((o) => _SecurityOption(
-            value: o.value, icon: o.icon, label: o.label, sub: o.sub,
-            selected: selected == o.value,
-            onTap: () => onChanged(o.value),
-          )),
+                value: o.value,
+                icon: o.icon,
+                label: o.label,
+                sub: o.sub,
+                selected: selected == o.value,
+                onTap: () => onChanged(o.value),
+              )),
+          // Data-recovery warning — appears as soon as the user picks any
+          // lock. The app stores everything locally and encrypted; if the
+          // PIN is forgotten or biometrics are reset, there is no recovery
+          // path other than a backup file (Profile → Backup).
+          if (selected == 'pin' || selected == 'biometric') ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.honeySoft,
+                borderRadius: AppRadius.xxl,
+                border: Border.all(color: AppColors.honey100),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 18, color: AppColors.honey500),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      selected == 'pin'
+                          ? 'If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.'
+                          : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
+                      style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.honey500, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -836,8 +1097,12 @@ class _SecurityStep extends StatelessWidget {
 
 class _SecurityOption extends StatelessWidget {
   const _SecurityOption({
-    required this.value, required this.icon, required this.label,
-    required this.sub, required this.selected, required this.onTap,
+    required this.value,
+    required this.icon,
+    required this.label,
+    required this.sub,
+    required this.selected,
+    required this.onTap,
   });
   final String value, label, sub;
   final IconData icon;
@@ -847,7 +1112,10 @@ class _SecurityOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () { H.selection(); onTap(); },
+      onTap: () {
+        H.selection();
+        onTap();
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.only(bottom: 10),
@@ -864,12 +1132,14 @@ class _SecurityOption extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: selected ? AppColors.forest100 : AppColors.stone50,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 20,
+              child: Icon(icon,
+                  size: 20,
                   color: selected ? AppColors.forest600 : AppColors.stone400),
             ),
             const SizedBox(width: 14),
@@ -877,15 +1147,19 @@ class _SecurityOption extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: AppTextStyles.titleSmall.copyWith(
-                      color: selected ? AppColors.forest700 : AppColors.stone800)),
+                  Text(label,
+                      style: AppTextStyles.titleSmall.copyWith(
+                          color: selected
+                              ? AppColors.forest700
+                              : AppColors.stone800)),
                   Text(sub, style: AppTextStyles.bodySmall),
                 ],
               ),
             ),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 20, height: 20,
+              width: 20,
+              height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: selected ? AppColors.forest600 : Colors.white,
@@ -910,8 +1184,12 @@ class _SecurityOption extends StatelessWidget {
 
 class _PinStep extends StatelessWidget {
   const _PinStep({
-    required this.pin, required this.confirming, required this.error,
-    required this.onDigit, required this.onDelete, required this.onNext,
+    required this.pin,
+    required this.confirming,
+    required this.error,
+    required this.onDigit,
+    required this.onDelete,
+    required this.onNext,
   });
   final String pin;
   final bool confirming;
@@ -927,7 +1205,9 @@ class _PinStep extends StatelessWidget {
       children: [
         Expanded(
           child: _StepShell(
-            headline: confirming ? l10n.onbPinConfirmHeadline : l10n.onbPinCreateHeadline,
+            headline: confirming
+                ? l10n.onbPinConfirmHeadline
+                : l10n.onbPinCreateHeadline,
             sub: confirming ? l10n.onbPinConfirmSub : l10n.onbPinCreateSub,
             child: Column(
               children: [
@@ -939,13 +1219,14 @@ class _PinStep extends StatelessWidget {
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       margin: const EdgeInsets.symmetric(horizontal: 10),
-                      width: 16, height: 16,
+                      width: 16,
+                      height: 16,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: filled ? AppColors.forest600 : Colors.white,
                         border: Border.all(
-                          color: filled
-                              ? AppColors.forest600 : AppColors.stone300,
+                          color:
+                              filled ? AppColors.forest600 : AppColors.stone300,
                           width: 2,
                         ),
                       ),
@@ -970,19 +1251,23 @@ class _PinStep extends StatelessWidget {
           child: Column(
             children: [
               for (final row in [
-                ['1','2','3'], ['4','5','6'], ['7','8','9'], ['','0','⌫'],
+                ['1', '2', '3'],
+                ['4', '5', '6'],
+                ['7', '8', '9'],
+                ['', '0', '⌫'],
               ])
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: row.map((d) => d.isEmpty
-                        ? const SizedBox(width: 80)
-                        : _PinButton(
-                            label: d,
-                            onTap: d == '⌫' ? onDelete
-                                : () => onDigit(d),
-                          )).toList(),
+                    children: row
+                        .map((d) => d.isEmpty
+                            ? const SizedBox(width: 80)
+                            : _PinButton(
+                                label: d,
+                                onTap: d == '⌫' ? onDelete : () => onDigit(d),
+                              ))
+                        .toList(),
                   ),
                 ),
               // Next when 4 digits entered
@@ -997,7 +1282,9 @@ class _PinStep extends StatelessWidget {
                       shape: const RoundedRectangleBorder(
                           borderRadius: AppRadius.xl),
                     ),
-                    child: Text(confirming ? l10n.onbPinConfirmButton : l10n.commonNext),
+                    child: Text(confirming
+                        ? l10n.onbPinConfirmButton
+                        : l10n.commonNext),
                   ),
                 ),
             ],
@@ -1017,11 +1304,11 @@ class _PinButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDelete = label == '⌫';
     return SizedBox(
-      width: 80, height: 62,
+      width: 80,
+      height: 62,
       child: Material(
         color: isDelete ? Colors.transparent : AppColors.card,
-        shape: const RoundedRectangleBorder(
-            borderRadius: AppRadius.xl),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xl),
         child: InkWell(
           onTap: onTap,
           borderRadius: AppRadius.xl,
@@ -1053,10 +1340,15 @@ class _PinButton extends StatelessWidget {
 
 class _NotificationsStep extends StatelessWidget {
   const _NotificationsStep({
-    required this.motivation, required this.reminders, required this.milestones,
-    required this.morningTime, required this.eveningTime,
-    required this.onMotivation, required this.onReminders,
-    required this.onMilestones, required this.onMorningChanged,
+    required this.motivation,
+    required this.reminders,
+    required this.milestones,
+    required this.morningTime,
+    required this.eveningTime,
+    required this.onMotivation,
+    required this.onReminders,
+    required this.onMilestones,
+    required this.onMorningChanged,
     required this.onEveningChanged,
   });
   final bool motivation, reminders, milestones;
@@ -1151,8 +1443,11 @@ class _NotificationsStep extends StatelessWidget {
 
 class _NotifToggle extends StatelessWidget {
   const _NotifToggle({
-    required this.icon, required this.label, required this.sub,
-    required this.value, required this.onChanged,
+    required this.icon,
+    required this.label,
+    required this.sub,
+    required this.value,
+    required this.onChanged,
   });
   final IconData icon;
   final String label, sub;
@@ -1185,7 +1480,10 @@ class _NotifToggle extends StatelessWidget {
             ),
             Switch(
               value: value,
-              onChanged: (v) { H.selection(); onChanged(v); },
+              onChanged: (v) {
+                H.selection();
+                onChanged(v);
+              },
               activeColor: AppColors.forest600,
               activeTrackColor: AppColors.forest100,
             ),
@@ -1198,7 +1496,9 @@ class _NotifToggle extends StatelessWidget {
 
 class _TimePicker extends StatelessWidget {
   const _TimePicker({
-    required this.label, required this.time, required this.onChanged,
+    required this.label,
+    required this.time,
+    required this.onChanged,
   });
   final String label;
   final TimeOfDay time;
@@ -1256,8 +1556,10 @@ class _TimePicker extends StatelessWidget {
 
 class _FinishStep extends StatefulWidget {
   const _FinishStep({
-    required this.username, required this.soberDate,
-    required this.saving, required this.onFinish,
+    required this.username,
+    required this.soberDate,
+    required this.saving,
+    required this.onFinish,
   });
   final String username;
   final DateTime soberDate;
@@ -1271,7 +1573,7 @@ class _FinishStep extends StatefulWidget {
 class _FinishStepState extends State<_FinishStep>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
-    vsync: this, duration: const Duration(milliseconds: 600));
+      vsync: this, duration: const Duration(milliseconds: 600));
   late final Animation<double> _scale =
       CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
 
@@ -1282,12 +1584,16 @@ class _FinishStepState extends State<_FinishStep>
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final days = DateTime.now().difference(widget.soberDate).inDays.clamp(0, 99999);
+    final days =
+        DateTime.now().difference(widget.soberDate).inDays.clamp(0, 99999);
     final name = widget.username.trim();
 
     return SingleChildScrollView(
@@ -1309,7 +1615,9 @@ class _FinishStepState extends State<_FinishStep>
           const SizedBox(height: 24),
 
           Text(
-            name.isNotEmpty ? l10n.onbFinishReadyWithName(name) : l10n.onbFinishReady,
+            name.isNotEmpty
+                ? l10n.onbFinishReadyWithName(name)
+                : l10n.onbFinishReady,
             style: AppTextStyles.displaySmall,
             textAlign: TextAlign.center,
           ),
@@ -1354,13 +1662,13 @@ class _FinishStepState extends State<_FinishStep>
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
                 minimumSize: const Size.fromHeight(56),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: AppRadius.xl),
-                textStyle: AppTextStyles.labelLarge
-                    .copyWith(fontSize: 16),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.xl),
+                textStyle: AppTextStyles.labelLarge.copyWith(fontSize: 16),
               ),
               child: widget.saving
-                  ? const SizedBox(width: 22, height: 22,
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2))
                   : Text(l10n.onbBeginMyJourney),
@@ -1376,7 +1684,9 @@ class _FinishStepState extends State<_FinishStep>
 
 class _StepShell extends StatelessWidget {
   const _StepShell({
-    required this.headline, required this.sub, required this.child,
+    required this.headline,
+    required this.sub,
+    required this.child,
   });
   final String headline, sub;
   final Widget child;
@@ -1405,21 +1715,21 @@ class _StepShell extends StatelessWidget {
 // ─── Shared input decoration ──────────────────────────────────────────────────
 
 InputDecoration _inputDecor(String hint, IconData icon) => InputDecoration(
-  hintText: hint,
-  prefixIcon: Icon(icon, size: 20, color: AppColors.stone400),
-  filled: true,
-  fillColor: AppColors.card,
-  border: OutlineInputBorder(
-    borderRadius: AppRadius.xxl,
-    borderSide: const BorderSide(color: AppColors.softBorder),
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderRadius: AppRadius.xxl,
-    borderSide: const BorderSide(color: AppColors.softBorder),
-  ),
-  focusedBorder: OutlineInputBorder(
-    borderRadius: AppRadius.xxl,
-    borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
-  ),
-  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-);
+      hintText: hint,
+      prefixIcon: Icon(icon, size: 20, color: AppColors.stone400),
+      filled: true,
+      fillColor: AppColors.card,
+      border: OutlineInputBorder(
+        borderRadius: AppRadius.xxl,
+        borderSide: const BorderSide(color: AppColors.softBorder),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: AppRadius.xxl,
+        borderSide: const BorderSide(color: AppColors.softBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: AppRadius.xxl,
+        borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );

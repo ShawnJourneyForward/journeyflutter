@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
@@ -26,11 +25,14 @@ class ProgressScreen extends ConsumerStatefulWidget {
 
 class _ProgressScreenState extends ConsumerState<ProgressScreen>
     with SingleTickerProviderStateMixin {
-
   late final TabController _tabs = TabController(length: 2, vsync: this);
 
   @override
-  void dispose() { _tabs.dispose(); super.dispose(); }
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,75 +55,76 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
             ),
             Column(
               children: [
-            // ── Header ─────────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(l10n.progressTitle, style: AppTextStyles.greetingSerif),
+                // ── Header ─────────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(l10n.progressTitle,
+                            style: AppTextStyles.greetingSerif),
+                      ),
+                      if (stats != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.forest50,
+                            borderRadius: AppRadius.pill,
+                            border: Border.all(color: AppColors.forest100),
+                          ),
+                          child: Text(
+                            l10n.progressDaysChip(stats.days),
+                            style: AppTextStyles.labelLarge
+                                .copyWith(color: AppColors.forest600),
+                          ),
+                        ),
+                    ],
                   ),
-                  if (stats != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.forest50,
-                        borderRadius: AppRadius.pill,
-                        border: Border.all(color: AppColors.forest100),
-                      ),
-                      child: Text(
-                        l10n.progressDaysChip(stats.days),
-                        style: AppTextStyles.labelLarge
-                            .copyWith(color: AppColors.forest600),
-                      ),
+                ),
+
+                // ── Tab bar ────────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: AppRadius.pill,
+                      border: Border.all(color: AppColors.softBorder),
                     ),
-                ],
-              ),
-            ),
-
-            // ── Tab bar ────────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.card,
-                  borderRadius: AppRadius.pill,
-                  border: Border.all(color: AppColors.softBorder),
-                ),
-                child: TabBar(
-                  controller: _tabs,
-                  labelStyle: AppTextStyles.labelLarge,
-                  unselectedLabelStyle: AppTextStyles.bodySmall,
-                  labelColor: AppColors.forest700,
-                  unselectedLabelColor: AppColors.stone500,
-                  indicator: BoxDecoration(
-                    color: AppColors.mintChip,
-                    borderRadius: AppRadius.pill,
-                    boxShadow: AppShadows.card,
+                    child: TabBar(
+                      controller: _tabs,
+                      labelStyle: AppTextStyles.labelLarge,
+                      unselectedLabelStyle: AppTextStyles.bodySmall,
+                      labelColor: AppColors.forest700,
+                      unselectedLabelColor: AppColors.stone500,
+                      indicator: BoxDecoration(
+                        color: AppColors.mintChip,
+                        borderRadius: AppRadius.pill,
+                        boxShadow: AppShadows.card,
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        Tab(text: l10n.progressTabJourney),
+                        Tab(text: l10n.progressTabInsights),
+                      ],
+                    ),
                   ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
-                  tabs: [
-                    Tab(text: l10n.progressTabJourney),
-                    Tab(text: l10n.progressTabInsights),
-                  ],
                 ),
-              ),
-            ),
 
-            // ── Tab views ──────────────────────────────────────────────────
-            Expanded(
-              child: TabBarView(
-                controller: _tabs,
-                children: [
-                  _StreakTab(stats: stats, profile:
-                      profileAsync.valueOrNull),
-                  _InsightsTab(),
-                ],
-              ),
-            ),
+                // ── Tab views ──────────────────────────────────────────────────
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabs,
+                    children: [
+                      _StreakTab(
+                          stats: stats, profile: profileAsync.valueOrNull),
+                      _InsightsTab(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -141,14 +144,18 @@ class _StreakTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    // Watch the per-second provider so the live D:H:M:S counter ticks in
+    // sync with the home screen. The outer `stats` (from soberDaysProvider)
+    // is fine for milestone math which only changes at midnight.
+    final liveStats = ref.watch(soberStatsProvider) ?? stats;
     final milestoneLabels = {
-      1:   l10n.progressMilestoneLabel1,
-      3:   l10n.progressMilestoneLabel3,
-      7:   l10n.progressMilestoneLabel7,
-      14:  l10n.progressMilestoneLabel14,
-      30:  l10n.progressMilestoneLabel30,
-      60:  l10n.progressMilestoneLabel60,
-      90:  l10n.progressMilestoneLabel90,
+      1: l10n.progressMilestoneLabel1,
+      3: l10n.progressMilestoneLabel3,
+      7: l10n.progressMilestoneLabel7,
+      14: l10n.progressMilestoneLabel14,
+      30: l10n.progressMilestoneLabel30,
+      60: l10n.progressMilestoneLabel60,
+      90: l10n.progressMilestoneLabel90,
       100: l10n.progressMilestoneLabel100,
       180: l10n.progressMilestoneLabel180,
       365: l10n.progressMilestoneLabel365,
@@ -156,10 +163,9 @@ class _StreakTab extends ConsumerWidget {
     final days = stats?.days ?? 0;
 
     // Next milestone
-    final nextMs = _allMilestones.firstWhere(
-        (m) => m > days, orElse: () => _allMilestones.last);
-    final prevMs = _allMilestones.lastWhere(
-        (m) => m <= days, orElse: () => 0);
+    final nextMs = _allMilestones.firstWhere((m) => m > days,
+        orElse: () => _allMilestones.last);
+    final prevMs = _allMilestones.lastWhere((m) => m <= days, orElse: () => 0);
     final progress = nextMs == prevMs
         ? 1.0
         : ((days - prevMs) / (nextMs - prevMs)).clamp(0.0, 1.0);
@@ -168,7 +174,6 @@ class _StreakTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
-
         // ── Live counter ────────────────────────────────────────────────
         SolidCard(
           padding: EdgeInsets.zero,
@@ -176,24 +181,23 @@ class _StreakTab extends ConsumerWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Text(atMilestone
-                    ? 'Milestone reached'
-                    : 'Current journey',
-                    style: AppTextStyles.labelSmall
-                        .copyWith(color: AppColors.forest600,
-                            letterSpacing: 1.0)),
+                Text(atMilestone ? 'Milestone reached' : 'Current journey',
+                    style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.forest600, letterSpacing: 1.0)),
                 const SizedBox(height: 8),
-                // D : H : M : S
+                // D : H : M : S — ticks every second from soberStatsProvider
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _CounterUnit(value: stats?.days ?? 0,    label: 'DAYS'),
+                    _CounterUnit(value: liveStats?.days ?? 0, label: 'DAYS'),
                     _Colon(),
-                    _CounterUnit(value: stats?.hours ?? 0,   label: 'HRS'),
+                    _CounterUnit(value: liveStats?.hours ?? 0, label: 'HRS'),
                     _Colon(),
-                    _CounterUnit(value: stats?.minutes ?? 0, label: 'MIN'),
+                    _CounterUnit(
+                        value: liveStats?.minutes ?? 0, label: 'MIN'),
                     _Colon(),
-                    _CounterUnit(value: stats?.seconds ?? 0, label: 'SEC'),
+                    _CounterUnit(
+                        value: liveStats?.seconds ?? 0, label: 'SEC'),
                   ],
                 ),
               ],
@@ -247,44 +251,11 @@ class _StreakTab extends ConsumerWidget {
         ),
         const SizedBox(height: 14),
 
-        // ── Heatmap entry point ──────────────────────────────────────────
-        GestureDetector(
-          onTap: () {
-            H.light();
-            context.push('/heatmap');
-          },
-          child: SolidCard(
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.forest50,
-                    borderRadius: AppRadius.md,
-                  ),
-                  child: const Icon(Icons.grid_view_rounded,
-                      size: 20, color: AppColors.forest600),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Activity Heatmap',
-                          style: AppTextStyles.titleSmall),
-                      Text('See your logged activity over time',
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: AppColors.stone400)),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right_rounded,
-                    color: AppColors.stone300),
-              ],
-            ),
+        // ── Inline 28-day sobriety heatmap ──────────────────────────
+        if (profile != null)
+          _MiniHeatmap(
+            soberDate: DateTime.tryParse(profile!.soberDate) ?? DateTime.now(),
           ),
-        ),
         const SizedBox(height: 14),
 
         // ── Milestone achievement grid ─────────────────────────────────────
@@ -364,9 +335,8 @@ class _StreakTab extends ConsumerWidget {
                             color: achieved
                                 ? AppColors.forest700
                                 : AppColors.stone300,
-                            fontWeight: isCurrent
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                            fontWeight:
+                                isCurrent ? FontWeight.w700 : FontWeight.w500,
                           ),
                         ),
                       ],
@@ -389,333 +359,354 @@ class _CounterUnit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: [
-      Text(value.toString().padLeft(2, '0'),
-          style: AppTextStyles.displaySmall
-              .copyWith(color: AppColors.forest700, fontSize: 30)),
-      Text(label, style: AppTextStyles.caption
-          .copyWith(color: AppColors.stone400)),
-    ],
-  );
+        children: [
+          Text(value.toString().padLeft(2, '0'),
+              style: AppTextStyles.displaySmall
+                  .copyWith(color: AppColors.forest700, fontSize: 30)),
+          Text(label,
+              style: AppTextStyles.caption.copyWith(color: AppColors.stone400)),
+        ],
+      );
 }
 
 class _Colon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 4),
-    child: Text(':',
-        style: AppTextStyles.displaySmall
-            .copyWith(fontSize: 26, color: AppColors.stone200)),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Text(':',
+            style: AppTextStyles.displaySmall
+                .copyWith(fontSize: 26, color: AppColors.stone200)),
+      );
 }
-
 
 // ─── Insights Tab ──────────────────────────────────────────────────────────
 
 class _InsightsTab extends ConsumerWidget {
-  const _InsightsTab({super.key});
+  const _InsightsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cravings = ref.watch(_cravingsProvider);
-    final sleep    = ref.watch(_sleepProvider);
-    final thoughts = ref.watch(_thoughtsProvider);
-    final activity = ref.watch(_activityProvider);
+    final window = _last14();
+    final cravings = ref.watch(_cravings14Provider);
+    final sleep = ref.watch(_sleep14Provider);
+    final activity = ref.watch(_activity14Provider);
+    final thoughts = ref.watch(_thoughts14Provider);
+
+    String cravingTrendSub(String t) => t == 'Easing'
+        ? 'Urges are easing'
+        : t == 'Rising'
+            ? 'Urges are rising'
+            : 'Urges are stable';
+    String sleepTrendSub(String t) => t == 'Easing'
+        ? 'Sleep decreasing'
+        : t == 'Rising'
+            ? 'Sleep improving'
+            : 'Sleep is steady';
+    String activityTrendSub(String t) => t == 'Easing'
+        ? 'Activity slowing'
+        : t == 'Rising'
+            ? 'Activity rising'
+            : 'Activity steady';
+    String thoughtsTrendSub(String t) => t == 'Easing'
+        ? 'Fewer reflections'
+        : t == 'Rising'
+            ? 'More reflections'
+            : 'Reflections steady';
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
-
-        // ── 4-stat summary ────────────────────────────────────────────────
-        Row(
-          children: [
-            _StatChip(
-                label: 'Cravings',
-                value: '${cravings.last7}',
-                sub: '7 days',
-                color: AppColors.honey500),
-            const SizedBox(width: 10),
-            _StatChip(
-                label: 'Thoughts',
-                value: '${thoughts.last7}',
-                sub: '7 days',
-                color: AppColors.stone400),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            _StatChip(
-                label: 'Avg Sleep',
-                value: sleep.avgHours > 0
-                    ? '${sleep.avgHours.toStringAsFixed(1)}h'
-                    : '—',
-                sub: '7 days',
-                color: AppColors.forest400),
-            const SizedBox(width: 10),
-            _StatChip(
-                label: 'Active Days',
-                value: '${activity.activeDays7}',
-                sub: '7 days',
-                color: AppColors.honey500),
-          ],
+        _InsightTile(
+          title: 'Craving Support',
+          subtitle: 'Every log is a brave step toward healing.',
+          data: cravings,
+          barColor: AppColors.honey500,
+          yLabel: 'Logs',
+          window: window,
+          trendSub: cravingTrendSub(cravings.trend),
+          quote:
+              'Logging a craving is a sign of strength.\nYou\'re choosing awareness and support.',
         ),
         const SizedBox(height: 14),
-
-        // ── Craving trend chart ───────────────────────────────────────────
-        _ChartCard(
-          title: 'Cravings — 7 days',
-          child: cravings.dailyCounts.every((v) => v == 0)
-              ? _EmptyChart(label: 'No cravings logged')
-              : _LineChart(
-                  data: cravings.dailyCounts.map((v) => v.toDouble()).toList(),
-                  color: AppColors.honey500,
-                ),
+        _InsightTile(
+          title: 'Sleep Quality',
+          subtitle: 'Hours logged per night, tracked daily.',
+          data: sleep,
+          barColor: AppColors.forest400,
+          yLabel: 'Hrs',
+          window: window,
+          trendSub: sleepTrendSub(sleep.trend),
+          quote:
+              'Rest is part of recovery.\nEvery hour of sleep supports your healing.',
         ),
         const SizedBox(height: 14),
-
-        // ── Sleep chart ───────────────────────────────────────────────────
-        _ChartCard(
-          title: 'Sleep — 7 days',
-          child: sleep.dailyHours.every((v) => v == 0)
-              ? _EmptyChart(label: 'No sleep logged')
-              : _BarChart(
-                  data: sleep.dailyHours,
-                  color: AppColors.forest400,
-                ),
+        _InsightTile(
+          title: 'Movement',
+          subtitle: 'Active minutes per day, two weeks out.',
+          data: activity,
+          barColor: AppColors.leafGreen,
+          yLabel: 'Min',
+          window: window,
+          trendSub: activityTrendSub(activity.trend),
+          quote: 'Movement lifts the spirit.\nEvery active minute counts.',
         ),
         const SizedBox(height: 14),
-
-        // ── Exercise chart ─────────────────────────────────────────────────
-        _ChartCard(
-          title: 'Exercise — 7 days (minutes)',
-          child: activity.dailyMinutes.every((v) => v == 0)
-              ? _EmptyChart(label: 'No activity logged')
-              : _BarChart(
-                  data: activity.dailyMinutes.map((v) => v.toDouble()).toList(),
-                  color: AppColors.honey500,
-                ),
-        ),
-
-        const SizedBox(height: 14),
-        Center(
-          child: TextButton.icon(
-            onPressed: () => context.push('/insights'),
-            icon: const Icon(Icons.bar_chart_rounded, size: 16),
-            label: const Text('Full Insights'),
-            style: TextButton.styleFrom(
-                foregroundColor: AppColors.forest600,
-                textStyle: AppTextStyles.labelLarge),
-          ),
+        _InsightTile(
+          title: 'Reflective Thoughts',
+          subtitle: 'Thoughts logged each day across 14 days.',
+          data: thoughts,
+          barColor: AppColors.stone400,
+          yLabel: 'Logs',
+          window: window,
+          trendSub: thoughtsTrendSub(thoughts.trend),
+          quote:
+              'Reflection builds resilience.\nYour thoughts are your inner compass.',
         ),
       ],
     );
   }
 }
 
-// ─── Insights data providers (lightweight, derived from storage) ────────────
+// ─── 14-day window helper ──────────────────────────────────────────────────
 
-List<DateTime> _last7() {
-  final today = DateTime.now();
-  return List.generate(7, (i) {
-    final d = today.subtract(Duration(days: 6 - i));
-    return DateTime(d.year, d.month, d.day);
-  });
+List<DateTime> _last14() {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final weekday = today.weekday; // 1 = Mon, 7 = Sun
+  final currentMonday = today.subtract(Duration(days: weekday - 1));
+  final windowStart = currentMonday.subtract(const Duration(days: 7));
+  return List.generate(14, (i) => windowStart.add(Duration(days: i)));
 }
 
 bool _sameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
-class _CravingStats {
-  final int last7;
-  final List<int> dailyCounts;
-  const _CravingStats({required this.last7, required this.dailyCounts});
+String _fmtNum(double v) =>
+    v % 1 == 0 ? v.toInt().toString() : v.toStringAsFixed(1);
+
+// ─── _Insight14 model ─────────────────────────────────────────────────────
+
+class _Insight14 {
+  final List<double> dailyValues;
+  final double thisWeek;
+  final double lastWeek;
+  final String trend;
+  const _Insight14({
+    required this.dailyValues,
+    required this.thisWeek,
+    required this.lastWeek,
+    required this.trend,
+  });
 }
 
-class _SleepStats {
-  final double avgHours;
-  final List<double> dailyHours;
-  const _SleepStats({required this.avgHours, required this.dailyHours});
+String _calcTrend(double tw, double lw) {
+  if (tw < lw) return 'Easing';
+  if (tw > lw) return 'Rising';
+  return 'Stable';
 }
 
-class _ThoughtStats {
-  final int last7;
-  const _ThoughtStats({required this.last7});
-}
+// ─── 14-day providers ─────────────────────────────────────────────────────
 
-class _ActivityStats {
-  final int activeDays7;
-  final List<int> dailyMinutes;
-  const _ActivityStats({required this.activeDays7, required this.dailyMinutes});
-}
-
-final _cravingsProvider = Provider<_CravingStats>((ref) {
-  final window   = _last7();
-  final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
-  final counts   = window
-      .map((day) => cravings.where((c) => _sameDay(c.date, day)).length)
+final _cravings14Provider = Provider<_Insight14>((ref) {
+  final window = _last14();
+  final all = ref.watch(cravingProvider).valueOrNull ?? [];
+  final values = window
+      .map((d) => all.where((c) => _sameDay(c.date, d)).length.toDouble())
       .toList();
-  return _CravingStats(
-    last7: counts.fold(0, (a, b) => a + b),
-    dailyCounts: counts,
-  );
+  final lw = values.sublist(0, 7).fold(0.0, (a, b) => a + b);
+  final tw = values.sublist(7).fold(0.0, (a, b) => a + b);
+  return _Insight14(
+      dailyValues: values,
+      thisWeek: tw,
+      lastWeek: lw,
+      trend: _calcTrend(tw, lw));
 });
 
-final _sleepProvider = Provider<_SleepStats>((ref) {
-  final window = _last7();
-  final sleeps  = ref.watch(sleepProvider).valueOrNull ?? [];
-  final hours   = window.map((day) {
-    final entries = sleeps.where((s) => _sameDay(s.date, day)).toList();
+final _sleep14Provider = Provider<_Insight14>((ref) {
+  final window = _last14();
+  final all = ref.watch(sleepProvider).valueOrNull ?? [];
+  final values = window.map((d) {
+    final entries = all.where((s) => _sameDay(s.date, d)).toList();
     if (entries.isEmpty) return 0.0;
     return entries.map((s) => s.hours).reduce((a, b) => a + b) / entries.length;
   }).toList();
-  final valid = hours.where((h) => h > 0).toList();
-  return _SleepStats(
-    avgHours: valid.isEmpty
-        ? 0.0
-        : valid.reduce((a, b) => a + b) / valid.length,
-    dailyHours: hours,
-  );
+  final lw = values.sublist(0, 7).fold(0.0, (a, b) => a + b);
+  final tw = values.sublist(7).fold(0.0, (a, b) => a + b);
+  return _Insight14(
+      dailyValues: values,
+      thisWeek: tw,
+      lastWeek: lw,
+      trend: _calcTrend(tw, lw));
 });
 
-final _thoughtsProvider = Provider<_ThoughtStats>((ref) {
-  final window   = _last7();
-  final thoughts = ref.watch(thoughtProvider).valueOrNull ?? [];
-  final count    = thoughts
-      .where((t) => window.any((d) => _sameDay(t.date, d)))
-      .length;
-  return _ThoughtStats(last7: count);
-});
-
-final _activityProvider = Provider<_ActivityStats>((ref) {
-  final window     = _last7();
-  final activities = ref.watch(activityProvider).valueOrNull ?? [];
-  final minutes    = window
-      .map((day) => activities
-          .where((a) => _sameDay(a.date, day))
-          .fold(0, (sum, a) => sum + a.minutes))
+final _activity14Provider = Provider<_Insight14>((ref) {
+  final window = _last14();
+  final all = ref.watch(activityProvider).valueOrNull ?? [];
+  final values = window
+      .map((d) => all
+          .where((a) => _sameDay(a.date, d))
+          .fold(0, (sum, a) => sum + a.minutes)
+          .toDouble())
       .toList();
-  return _ActivityStats(
-    activeDays7: minutes.where((m) => m > 0).length,
-    dailyMinutes: minutes,
-  );
+  final lw = values.sublist(0, 7).fold(0.0, (a, b) => a + b);
+  final tw = values.sublist(7).fold(0.0, (a, b) => a + b);
+  return _Insight14(
+      dailyValues: values,
+      thisWeek: tw,
+      lastWeek: lw,
+      trend: _calcTrend(tw, lw));
 });
 
-// ─── Chart widgets ─────────────────────────────────────────────────────────
+final _thoughts14Provider = Provider<_Insight14>((ref) {
+  final window = _last14();
+  final all = ref.watch(thoughtProvider).valueOrNull ?? [];
+  final values = window
+      .map((d) => all.where((t) => _sameDay(t.date, d)).length.toDouble())
+      .toList();
+  final lw = values.sublist(0, 7).fold(0.0, (a, b) => a + b);
+  final tw = values.sublist(7).fold(0.0, (a, b) => a + b);
+  return _Insight14(
+      dailyValues: values,
+      thisWeek: tw,
+      lastWeek: lw,
+      trend: _calcTrend(tw, lw));
+});
 
-class _StatChip extends StatelessWidget {
-  const _StatChip({
-    required this.label, required this.value,
-    required this.sub,   required this.color,
+// ─── _InsightTile ─────────────────────────────────────────────────────────
+
+class _InsightTile extends StatelessWidget {
+  const _InsightTile({
+    required this.title,
+    required this.subtitle,
+    required this.data,
+    required this.barColor,
+    required this.yLabel,
+    required this.window,
+    required this.trendSub,
+    required this.quote,
   });
-  final String label, value, sub;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: SolidCard(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: AppTextStyles.caption),
-          const SizedBox(height: 4),
-          Text(value,
-              style: AppTextStyles.displaySmall
-                  .copyWith(fontSize: 28, color: color)),
-          Text(sub, style: AppTextStyles.bodySmall),
-        ],
-      ),
-    ),
-  );
-}
-
-class _ChartCard extends StatelessWidget {
-  const _ChartCard({required this.title, required this.child});
   final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => SolidCard(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: AppTextStyles.titleSmall),
-        const SizedBox(height: 14),
-        SizedBox(height: 120, child: child),
-      ],
-    ),
-  );
-}
-
-class _EmptyChart extends StatelessWidget {
-  const _EmptyChart({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.show_chart_rounded,
-            color: AppColors.stone200, size: 32),
-        const SizedBox(height: 6),
-        Text(label, style: AppTextStyles.bodySmall),
-      ],
-    ),
-  );
-}
-
-class _LineChart extends StatelessWidget {
-  const _LineChart({required this.data, required this.color});
-  final List<double> data;
-  final Color color;
+  final String subtitle;
+  final _Insight14 data;
+  final Color barColor;
+  final String yLabel;
+  final List<DateTime> window;
+  final String trendSub;
+  final String quote;
 
   @override
   Widget build(BuildContext context) {
-    final spots = data.asMap().entries
-        .map((e) => FlSpot(e.key.toDouble(), e.value))
-        .toList();
+    final trendIcon = data.trend == 'Easing'
+        ? '↓'
+        : data.trend == 'Rising'
+            ? '↑'
+            : '→';
+    final trendColor = data.trend == 'Easing'
+        ? AppColors.forest600
+        : data.trend == 'Rising'
+            ? AppColors.honey500
+            : AppColors.stone400;
 
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          getDrawingHorizontalLine: (_) =>
-              FlLine(color: AppColors.stone100, strokeWidth: 1),
-        ),
-        titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (v, _) {
-                const labels = ['M','T','W','T','F','S','S'];
-                final i = v.toInt();
-                if (i < 0 || i >= labels.length) return const SizedBox.shrink();
-                return Text(labels[i], style: AppTextStyles.caption);
-              },
-              reservedSize: 20,
+    return SolidCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Title row
+          Text(
+            '$title — 14 days',
+            style: AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
+          ),
+          const SizedBox(height: 4),
+
+          // ── Subtitle
+          Text(subtitle,
+              style: AppTextStyles.bodySmall
+                  .copyWith(fontStyle: FontStyle.italic)),
+          const SizedBox(height: 14),
+
+          // ── Summary row
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                _SummaryCol(
+                    label: 'This week',
+                    value: _fmtNum(data.thisWeek),
+                    valueColor: trendColor),
+                const VerticalDivider(
+                    thickness: 1, width: 1, color: AppColors.stone100),
+                _SummaryCol(
+                    label: 'Last week',
+                    value: _fmtNum(data.lastWeek),
+                    valueColor: AppColors.stone500),
+                const VerticalDivider(
+                    thickness: 1, width: 1, color: AppColors.stone100),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Trend',
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400)),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${data.trend} $trendIcon',
+                          style: AppTextStyles.labelLarge
+                              .copyWith(color: trendColor, fontSize: 16),
+                        ),
+                        Text(trendSub,
+                            style: AppTextStyles.caption
+                                .copyWith(color: AppColors.stone400)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        borderData: FlBorderData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            color: color,
-            barWidth: 2.5,
-            dotData: const FlDotData(show: false),
-            belowBarData: BarAreaData(
-              show: true,
-              color: color.withOpacity(0.08),
+          const SizedBox(height: 12),
+
+          // ── Bar chart (Y-axis units printed as a quiet caption,
+          //    not as an arrow-and-label row — feels less clinical).
+          Row(
+            children: [
+              const Spacer(),
+              Text(yLabel,
+                  style: AppTextStyles.caption.copyWith(
+                      color: AppColors.stone400, fontSize: 10)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 170,
+            child: _MiniBarChart14(
+              values: data.dailyValues,
+              barColor: barColor,
+              window: window,
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // ── Motivational quote
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.stone50,
+              borderRadius: AppRadius.md,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.spa_outlined,
+                    size: 18, color: AppColors.forest400),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(quote,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone500)),
+                ),
+              ],
             ),
           ),
         ],
@@ -724,62 +715,386 @@ class _LineChart extends StatelessWidget {
   }
 }
 
-class _BarChart extends StatelessWidget {
-  const _BarChart({required this.data, required this.color});
-  final List<double> data;
-  final Color color;
+class _SummaryCol extends StatelessWidget {
+  const _SummaryCol({
+    required this.label,
+    required this.value,
+    required this.valueColor,
+  });
+  final String label;
+  final String value;
+  final Color valueColor;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(label,
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400)),
+              const SizedBox(height: 4),
+              Text(value,
+                  style: AppTextStyles.labelLarge
+                      .copyWith(color: valueColor, fontSize: 22)),
+            ],
+          ),
+        ),
+      );
+}
+
+// ─── _MiniBarChart14 ──────────────────────────────────────────────────────
+//
+// Stillwater-aesthetic bar chart:
+//   • Soft vertical gradient fill (color at top → tinted lighter at base)
+//   • Generously rounded tops
+//   • Dashed horizontal grid lines (no full-height background "wall")
+//   • Today's bar gets a subtle ring to anchor the user in time
+//   • Touch a bar to see its value in a soft pill tooltip — no permanent
+//     number-clutter floating above every bar
+
+class _MiniBarChart14 extends StatelessWidget {
+  const _MiniBarChart14({
+    required this.values,
+    required this.barColor,
+    required this.window,
+  });
+  final List<double> values;
+  final Color barColor;
+  final List<DateTime> window;
 
   @override
   Widget build(BuildContext context) {
+    const dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final maxRaw =
+        values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
+    // Add 25% headroom so the tallest bar doesn't kiss the top edge.
+    final maxY = (maxRaw < 1.0 ? 1.0 : maxRaw) * 1.25;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Soft tinted top of the gradient — lighter, more breathable.
+    final barTop = Color.lerp(barColor, Colors.white, 0.15) ?? barColor;
+    final barBottom = Color.lerp(barColor, Colors.white, 0.55) ?? barColor;
+
     return BarChart(
       BarChartData(
+        maxY: maxY,
+        minY: 0,
+        alignment: BarChartAlignment.spaceAround,
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          getDrawingHorizontalLine: (_) =>
-              FlLine(color: AppColors.stone100, strokeWidth: 1),
+          // 3 evenly spaced grid lines — enough to read, not enough to clutter.
+          horizontalInterval: maxY / 3,
+          getDrawingHorizontalLine: (_) => FlLine(
+            color: AppColors.stone100,
+            strokeWidth: 1,
+            dashArray: const [4, 6],
+          ),
         ),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              interval: maxY / 3,
+              getTitlesWidget: (v, meta) {
+                if (v == meta.max || v == meta.min) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Text(
+                    _fmtNum(v),
+                    style: AppTextStyles.caption.copyWith(
+                        fontSize: 10, color: AppColors.stone400),
+                  ),
+                );
+              },
+            ),
+          ),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
+              reservedSize: 32,
+              interval: 1,
               getTitlesWidget: (v, _) {
-                const labels = ['M','T','W','T','F','S','S'];
                 final i = v.toInt();
-                if (i < 0 || i >= labels.length) return const SizedBox.shrink();
-                return Text(labels[i], style: AppTextStyles.caption);
+                if (i < 0 || i >= window.length) {
+                  return const SizedBox.shrink();
+                }
+                final isToday = _sameDay(window[i], today);
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        dayLetters[window[i].weekday - 1],
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: 10,
+                          color: isToday
+                              ? AppColors.forest700
+                              : AppColors.stone500,
+                          fontWeight: isToday
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        window[i].day.toString(),
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: 9,
+                          color: isToday
+                              ? AppColors.forest600
+                              : AppColors.stone400,
+                          fontWeight: isToday
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               },
-              reservedSize: 20,
             ),
           ),
         ),
         borderData: FlBorderData(show: false),
-        barGroups: data.asMap().entries.map((e) =>
-          BarChartGroupData(
-            x: e.key,
-            barRods: [
-              BarChartRodData(
-                toY: e.value,
-                color: color,
-                width: 14,
-                borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(4)),
-                backDrawRodData: BackgroundBarChartRodData(
-                  show: true,
-                  toY: (data.reduce((a, b) => a > b ? a : b) * 1.2)
-                      .clamp(1, double.infinity),
-                  color: AppColors.stone50,
+        barGroups: values
+            .asMap()
+            .entries
+            .map(
+              (e) => BarChartGroupData(
+                x: e.key,
+                barRods: [
+                  BarChartRodData(
+                    toY: e.value == 0 ? maxY * 0.01 : e.value,
+                    width: 12,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(6)),
+                    gradient: e.value == 0
+                        ? null
+                        : LinearGradient(
+                            colors: [barTop, barBottom],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                    color: e.value == 0 ? AppColors.stone100 : null,
+                  ),
+                ],
+              ),
+            )
+            .toList(),
+        barTouchData: BarTouchData(
+          enabled: true,
+          handleBuiltInTouches: true,
+          touchTooltipData: BarTouchTooltipData(
+            tooltipRoundedRadius: 10,
+            tooltipPadding: const EdgeInsets.symmetric(
+                horizontal: 10, vertical: 6),
+            tooltipMargin: 8,
+            getTooltipColor: (_) => AppColors.forest700,
+            getTooltipItem: (group, _, rod, __) {
+              final i = group.x;
+              if (i < 0 || i >= values.length) return null;
+              final raw = values[i];
+              return BarTooltipItem(
+                _fmtNum(raw),
+                AppTextStyles.labelMedium.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Mini 28-day Cravings Heatmap ────────────────────────────────────────────
+//
+// Tracks ONLY cravings logged from the Home screen. Every user's heatmap
+// starts at Day 1 (their first day in the app — soberDate). Each cell shows
+// the count of cravings logged that day so progress is visible at a glance.
+
+class _MiniHeatmap extends ConsumerWidget {
+  const _MiniHeatmap({required this.soberDate});
+  final DateTime soberDate;
+
+  // Color scales with craving count. 0 = empty (neutral), more = stronger.
+  static Color _cellColor(int count) => switch (count) {
+        0 => AppColors.stone100,
+        1 => const Color(0xFFD1E8D5),
+        2 || 3 => const Color(0xFF8FC49A),
+        >= 4 && <= 6 => AppColors.forest400,
+        _ => AppColors.forest600,
+      };
+
+  // Text color flips to white once the cell is dark enough to need contrast.
+  static Color _textColor(int count) =>
+      count >= 2 ? Colors.white : AppColors.forest700;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
+
+    final soberDay0 = DateTime(soberDate.year, soberDate.month, soberDate.day);
+    final now = DateTime.now();
+    final today0 = DateTime(now.year, now.month, now.day);
+    final daysSober =
+        today0.difference(soberDay0).inDays; // 0-based (0 = day 1)
+
+    // Build craving-count map: dayIndex (0-based) → number of cravings logged.
+    final Map<int, int> counts = {};
+    for (final e in cravings) {
+      final d = DateTime(e.date.year, e.date.month, e.date.day);
+      final idx = d.difference(soberDay0).inDays;
+      if (idx >= 0 && idx < 28) counts[idx] = (counts[idx] ?? 0) + 1;
+    }
+
+    return SolidCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header
+          Row(
+            children: [
+              Text('Cravings Heatmap', style: AppTextStyles.titleSmall),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  H.light();
+                  context.push('/heatmap');
+                },
+                child: Text('View full',
+                    style: AppTextStyles.labelLarge.copyWith(
+                        color: AppColors.forest600,
+                        fontWeight: FontWeight.w600)),
               ),
             ],
           ),
-        ).toList(),
+          const SizedBox(height: 4),
+          Text(
+            'Tracks only cravings logged from the Home screen.',
+            style: AppTextStyles.caption
+                .copyWith(color: AppColors.stone500, fontSize: 11),
+          ),
+          const SizedBox(height: 14),
+
+          // ── 4 rows × 7 cols = 28 days, each labelled with the day number
+          //    and showing the craving count when one or more were logged.
+          LayoutBuilder(builder: (ctx, constraints) {
+            const labelW = 28.0;
+            const gap = 4.0;
+            final cellSize = ((constraints.maxWidth - labelW - gap * 6) / 7)
+                .clamp(18.0, 40.0);
+
+            return Column(
+              children: List.generate(4, (row) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: gap),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Row label
+                      SizedBox(
+                        width: labelW,
+                        child: Text('Wk ${row + 1}',
+                            style: AppTextStyles.caption.copyWith(
+                                color: AppColors.stone400, fontSize: 9)),
+                      ),
+                      // 7 tiles
+                      ...List.generate(7, (col) {
+                        final idx = row * 7 + col;
+                        final dayNumber = idx + 1; // 1-based for display
+                        final isFuture = idx > daysSober;
+                        final isToday = idx == daysSober;
+                        final count = counts[idx] ?? 0;
+                        return Padding(
+                          padding: EdgeInsets.only(right: col < 6 ? gap : 0),
+                          child: Container(
+                            width: cellSize,
+                            height: cellSize,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: isFuture
+                                  ? AppColors.stone100
+                                  : _cellColor(count),
+                              borderRadius: BorderRadius.circular(6),
+                              border: isToday
+                                  ? Border.all(
+                                      color: AppColors.forest400, width: 1.5)
+                                  : null,
+                            ),
+                            // Past / today cells show count when > 0,
+                            // otherwise show the day number for context.
+                            // Future cells stay empty so they read as
+                            // "not yet" rather than "0 cravings".
+                            child: isFuture
+                                ? null
+                                : Text(
+                                    count > 0 ? '$count' : '$dayNumber',
+                                    style: AppTextStyles.caption.copyWith(
+                                      fontSize: 10,
+                                      fontWeight: count > 0
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                      color: count > 0
+                                          ? _textColor(count)
+                                          : AppColors.stone400,
+                                    ),
+                                  ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                );
+              }),
+            );
+          }),
+
+          const SizedBox(height: 10),
+
+          // ── Legend (fewer cravings ← → more cravings)
+          Row(
+            children: [
+              Text('Fewer',
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400, fontSize: 9)),
+              const SizedBox(width: 4),
+              for (final c in [
+                AppColors.stone100,
+                const Color(0xFFD1E8D5),
+                const Color(0xFF8FC49A),
+                AppColors.forest400,
+                AppColors.forest600,
+              ])
+                Container(
+                  width: 10,
+                  height: 10,
+                  margin: const EdgeInsets.only(right: 2),
+                  decoration: BoxDecoration(
+                      color: c, borderRadius: BorderRadius.circular(2)),
+                ),
+              Text('More',
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400, fontSize: 9)),
+            ],
+          ),
+        ],
       ),
     );
   }

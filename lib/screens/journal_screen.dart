@@ -12,60 +12,77 @@ import '../l10n/app_localizations.dart';
 // ─── Zen quotes ───────────────────────────────────────────────────────────────
 
 List<(String, String)> _buildZenQuotes(AppLocalizations l10n) => [
-  (l10n.zenQuote0, l10n.zenQuoteAuthor0),
-  (l10n.zenQuote1, l10n.zenQuoteAuthor1),
-  (l10n.zenQuote2, l10n.zenQuoteAuthor2),
-  (l10n.zenQuote3, l10n.zenQuoteAuthor3),
-  (l10n.zenQuote4, l10n.zenQuoteAuthor4),
-  (l10n.zenQuote5, l10n.zenQuoteAuthor5),
-  (l10n.zenQuote6, l10n.zenQuoteAuthor6),
-  (l10n.zenQuote7, l10n.zenQuoteAuthor7),
-  (l10n.zenQuote8, l10n.zenQuoteAuthor8),
-  (l10n.zenQuote9, l10n.zenQuoteAuthor9),
-  (l10n.zenQuote10, l10n.zenQuoteAuthor10),
-  (l10n.zenQuote11, l10n.zenQuoteAuthor11),
-  (l10n.zenQuote12, l10n.zenQuoteAuthor12),
-  (l10n.zenQuote13, l10n.zenQuoteAuthor13),
-  (l10n.zenQuote14, l10n.zenQuoteAuthor14),
-  (l10n.zenQuote15, l10n.zenQuoteAuthor15),
-  (l10n.zenQuote16, l10n.zenQuoteAuthor16),
-  (l10n.zenQuote17, l10n.zenQuoteAuthor17),
-  (l10n.zenQuote18, l10n.zenQuoteAuthor18),
-  (l10n.zenQuote19, l10n.zenQuoteAuthor19),
-  (l10n.zenQuote20, l10n.zenQuoteAuthor20),
-  (l10n.zenQuote21, l10n.zenQuoteAuthor21),
-  (l10n.zenQuote22, l10n.zenQuoteAuthor22),
-  (l10n.zenQuote23, l10n.zenQuoteAuthor23),
-  (l10n.zenQuote24, l10n.zenQuoteAuthor24),
-  (l10n.zenQuote25, l10n.zenQuoteAuthor25),
-  (l10n.zenQuote26, l10n.zenQuoteAuthor26),
-  (l10n.zenQuote27, l10n.zenQuoteAuthor27),
-  (l10n.zenQuote28, l10n.zenQuoteAuthor28),
-  (l10n.zenQuote29, l10n.zenQuoteAuthor29),
-];
+      (l10n.zenQuote0, l10n.zenQuoteAuthor0),
+      (l10n.zenQuote1, l10n.zenQuoteAuthor1),
+      (l10n.zenQuote2, l10n.zenQuoteAuthor2),
+      (l10n.zenQuote3, l10n.zenQuoteAuthor3),
+      (l10n.zenQuote4, l10n.zenQuoteAuthor4),
+      (l10n.zenQuote5, l10n.zenQuoteAuthor5),
+      (l10n.zenQuote6, l10n.zenQuoteAuthor6),
+      (l10n.zenQuote7, l10n.zenQuoteAuthor7),
+      (l10n.zenQuote8, l10n.zenQuoteAuthor8),
+      (l10n.zenQuote9, l10n.zenQuoteAuthor9),
+      (l10n.zenQuote10, l10n.zenQuoteAuthor10),
+      (l10n.zenQuote11, l10n.zenQuoteAuthor11),
+      (l10n.zenQuote12, l10n.zenQuoteAuthor12),
+      (l10n.zenQuote13, l10n.zenQuoteAuthor13),
+      (l10n.zenQuote14, l10n.zenQuoteAuthor14),
+      (l10n.zenQuote15, l10n.zenQuoteAuthor15),
+      (l10n.zenQuote16, l10n.zenQuoteAuthor16),
+      (l10n.zenQuote17, l10n.zenQuoteAuthor17),
+      (l10n.zenQuote18, l10n.zenQuoteAuthor18),
+      (l10n.zenQuote19, l10n.zenQuoteAuthor19),
+      (l10n.zenQuote20, l10n.zenQuoteAuthor20),
+      (l10n.zenQuote21, l10n.zenQuoteAuthor21),
+      (l10n.zenQuote22, l10n.zenQuoteAuthor22),
+      (l10n.zenQuote23, l10n.zenQuoteAuthor23),
+      (l10n.zenQuote24, l10n.zenQuoteAuthor24),
+      (l10n.zenQuote25, l10n.zenQuoteAuthor25),
+      (l10n.zenQuote26, l10n.zenQuoteAuthor26),
+      (l10n.zenQuote27, l10n.zenQuoteAuthor27),
+      (l10n.zenQuote28, l10n.zenQuoteAuthor28),
+      (l10n.zenQuote29, l10n.zenQuoteAuthor29),
+    ];
 
 List<String> _buildDefaultAffirmations(AppLocalizations l10n) => [
-  l10n.journalAffirm0,
-  l10n.journalAffirm1,
-  l10n.journalAffirm2,
-  l10n.journalAffirm3,
-  l10n.journalAffirm4,
-  l10n.journalAffirm5,
-  l10n.journalAffirm6,
-  l10n.journalAffirm7,
-  l10n.journalAffirm8,
-  l10n.journalAffirm9,
-  l10n.journalAffirm10,
-  l10n.journalAffirm11,
-  l10n.journalAffirm12,
-  l10n.journalAffirm13,
-  l10n.journalAffirm14,
-];
+      l10n.journalAffirm0,
+      l10n.journalAffirm1,
+      l10n.journalAffirm2,
+      l10n.journalAffirm3,
+      l10n.journalAffirm4,
+      l10n.journalAffirm5,
+      l10n.journalAffirm6,
+      l10n.journalAffirm7,
+      l10n.journalAffirm8,
+      l10n.journalAffirm9,
+      l10n.journalAffirm10,
+      l10n.journalAffirm11,
+      l10n.journalAffirm12,
+      l10n.journalAffirm13,
+      l10n.journalAffirm14,
+    ];
 
 const _visionEmojis = [
-  '🌟', '💪', '❤️', '🏡', '👨‍👩‍👧', '💰', '🎓', '🌱',
-  '✈️', '🎨', '🏃', '🧘', '📚', '🎯', '🌈', '🕊️',
-  '🤝', '🌺', '⭐', '🔥',
+  '🌟',
+  '💪',
+  '❤️',
+  '🏡',
+  '👨‍👩‍👧',
+  '💰',
+  '🎓',
+  '🌱',
+  '✈️',
+  '🎨',
+  '🏃',
+  '🧘',
+  '📚',
+  '🎯',
+  '🌈',
+  '🕊️',
+  '🤝',
+  '🌺',
+  '⭐',
+  '🔥',
 ];
 
 // ─── Journal screen ───────────────────────────────────────────────────────────
@@ -84,7 +101,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final tabs = [l10n.journalTabJournal, l10n.journalTabAffirm, l10n.journalTabVision, l10n.journalTabZen];
+    final tabs = [
+      l10n.journalTabJournal,
+      l10n.journalTabAffirm,
+      l10n.journalTabVision,
+      l10n.journalTabZen
+    ];
     return Scaffold(
       backgroundColor: AppColors.stone50,
       body: SafeArea(
@@ -106,29 +128,29 @@ class _JournalScreenState extends ConsumerState<JournalScreen>
                 ),
                 Expanded(
                   child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 240),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                transitionBuilder: (child, anim) => FadeTransition(
-                  opacity: anim,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.04, 0),
-                      end: Offset.zero,
-                    ).animate(anim),
-                    child: child,
-                  ),
-                ),
-                child: KeyedSubtree(
-                  key: ValueKey(_tab),
-                  child: switch (_tab) {
-                    0 => const _JournalTab(),
-                    1 => const _AffirmTab(),
-                    2 => const _VisionTab(),
-                    3 => const _ZenTab(),
-                    _ => const SizedBox.shrink(),
-                  },
-                ),
+                    duration: const Duration(milliseconds: 240),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, anim) => FadeTransition(
+                      opacity: anim,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.04, 0),
+                          end: Offset.zero,
+                        ).animate(anim),
+                        child: child,
+                      ),
+                    ),
+                    child: KeyedSubtree(
+                      key: ValueKey(_tab),
+                      child: switch (_tab) {
+                        0 => const _JournalTab(),
+                        1 => const _AffirmTab(),
+                        2 => const _VisionTab(),
+                        3 => const _ZenTab(),
+                        _ => const SizedBox.shrink(),
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -179,7 +201,8 @@ class _Header extends StatelessWidget {
                       duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: selected ? AppColors.mintChip : Colors.transparent,
+                        color:
+                            selected ? AppColors.mintChip : Colors.transparent,
                         borderRadius: AppRadius.full,
                         boxShadow: selected ? AppShadows.card : null,
                       ),
@@ -190,9 +213,8 @@ class _Header extends StatelessWidget {
                             color: selected
                                 ? AppColors.forest700
                                 : AppColors.stone400,
-                            fontWeight: selected
-                                ? FontWeight.w600
-                                : FontWeight.w500,
+                            fontWeight:
+                                selected ? FontWeight.w600 : FontWeight.w500,
                           ),
                         ),
                       ),
@@ -267,17 +289,25 @@ class _JournalCard extends ConsumerWidget {
   final JournalEntry entry;
 
   static const _moodData = {
-    'great':  (Icons.sentiment_very_satisfied_rounded, AppColors.forest600, 'Great'),
-    'good':   (Icons.sentiment_satisfied_rounded, AppColors.forest400, 'Good'),
-    'okay':   (Icons.sentiment_neutral_rounded, AppColors.honey500, 'Okay'),
-    'hard':   (Icons.sentiment_dissatisfied_rounded, AppColors.honey500, 'Hard'),
-    'crisis': (Icons.sentiment_very_dissatisfied_rounded, AppColors.forest600, 'Crisis'),
+    'great': (
+      Icons.sentiment_very_satisfied_rounded,
+      AppColors.forest600,
+      'Great'
+    ),
+    'good': (Icons.sentiment_satisfied_rounded, AppColors.forest400, 'Good'),
+    'okay': (Icons.sentiment_neutral_rounded, AppColors.honey500, 'Okay'),
+    'hard': (Icons.sentiment_dissatisfied_rounded, AppColors.honey500, 'Hard'),
+    'crisis': (
+      Icons.sentiment_very_dissatisfied_rounded,
+      AppColors.forest600,
+      'Crisis'
+    ),
   };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (icon, color, label) =
-        _moodData[entry.mood] ?? (Icons.sentiment_neutral_rounded, AppColors.stone400, 'Okay');
+    final (icon, color, label) = _moodData[entry.mood] ??
+        (Icons.sentiment_neutral_rounded, AppColors.stone400, 'Okay');
 
     return Dismissible(
       key: Key(entry.id),
@@ -290,8 +320,8 @@ class _JournalCard extends ConsumerWidget {
           color: AppColors.honeySoft,
           borderRadius: AppRadius.lg,
         ),
-        child: const Icon(Icons.delete_outline_rounded,
-            color: AppColors.honey500),
+        child:
+            const Icon(Icons.delete_outline_rounded, color: AppColors.honey500),
       ),
       confirmDismiss: (_) async {
         return await showDialog<bool>(
@@ -320,8 +350,7 @@ class _JournalCard extends ConsumerWidget {
           ),
         );
       },
-      onDismissed: (_) =>
-          ref.read(journalProvider.notifier).delete(entry.id),
+      onDismissed: (_) => ref.read(journalProvider.notifier).delete(entry.id),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -351,8 +380,8 @@ class _JournalCard extends ConsumerWidget {
             const SizedBox(height: 10),
             Text(
               entry.text,
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone700),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone700),
               maxLines: 5,
               overflow: TextOverflow.ellipsis,
             ),
@@ -424,7 +453,8 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
                       .copyWith(color: AppColors.forest700)),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.close_rounded, color: AppColors.stone400),
+                icon:
+                    const Icon(Icons.close_rounded, color: AppColors.stone400),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -448,14 +478,14 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: selected ? AppColors.forest50 : Colors.transparent,
                     borderRadius: AppRadius.md,
                     border: Border.all(
-                      color: selected
-                          ? AppColors.forest200
-                          : AppColors.stone100,
+                      color:
+                          selected ? AppColors.forest200 : AppColors.stone100,
                     ),
                   ),
                   child: Column(
@@ -485,13 +515,11 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
             maxLines: 6,
             minLines: 4,
             autofocus: true,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone800),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
-              hintText:
-                  'Write freely — no one else will see this...',
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone300),
+              hintText: 'Write freely — no one else will see this...',
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
               filled: true,
               fillColor: AppColors.stone50,
               border: OutlineInputBorder(
@@ -504,8 +532,8 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(
-                    color: AppColors.forest400, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.forest400, width: 1.5),
               ),
               contentPadding: const EdgeInsets.all(14),
             ),
@@ -525,12 +553,11 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.lg),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
               child: Text('Save Entry',
-                  style: AppTextStyles.labelLarge
-                      .copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelLarge.copyWith(color: Colors.white)),
             ),
           ),
         ],
@@ -595,9 +622,8 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                     }
                   }),
                   onDelete: i < custom.length
-                      ? () => ref
-                          .read(affirmationProvider.notifier)
-                          .remove(all[i])
+                      ? () =>
+                          ref.read(affirmationProvider.notifier).remove(all[i])
                       : null,
                 ),
               ),
@@ -614,9 +640,8 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                   width: i == _page ? 20 : 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: i == _page
-                        ? AppColors.forest600
-                        : AppColors.stone200,
+                    color:
+                        i == _page ? AppColors.forest600 : AppColors.stone200,
                     borderRadius: AppRadius.full,
                   ),
                 ),
@@ -692,6 +717,8 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
   void _showAddSheet(BuildContext context, WidgetRef ref) {
     final ctrl = TextEditingController();
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    // Dispose the controller after the sheet closes — without this, every
+    // FAB tap created a controller that was never freed.
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -715,8 +742,8 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
               controller: ctrl,
               maxLines: 3,
               autofocus: true,
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone800),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
               decoration: InputDecoration(
                 hintText: 'I am...',
                 hintStyle: AppTextStyles.bodyMedium
@@ -733,8 +760,8 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
-                  borderSide: const BorderSide(
-                      color: AppColors.forest400, width: 1.5),
+                  borderSide:
+                      const BorderSide(color: AppColors.forest400, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.all(14),
               ),
@@ -747,24 +774,23 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                   final t = ctrl.text.trim();
                   if (t.isEmpty) return;
                   ref.read(affirmationProvider.notifier).add(t);
-                  Navigator.pop(ctx);
                   H.medium();
+                  Navigator.pop(ctx);
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text('Add',
-                    style: AppTextStyles.labelLarge
-                        .copyWith(color: Colors.white)),
+                    style:
+                        AppTextStyles.labelLarge.copyWith(color: Colors.white)),
               ),
             ),
           ],
         ),
       ),
-    );
+    ).whenComplete(ctrl.dispose);
   }
 }
 
@@ -827,9 +853,8 @@ class _AffirmCard extends StatelessWidget {
                         ? Icons.favorite_rounded
                         : Icons.favorite_border_rounded,
                     size: 22,
-                    color: isFavourite
-                        ? AppColors.honey500
-                        : AppColors.stone300,
+                    color:
+                        isFavourite ? AppColors.honey500 : AppColors.stone300,
                   ),
                 ),
               ],
@@ -909,8 +934,7 @@ class _VisionTab extends ConsumerWidget {
                       subtitle: 'Tap + to add a dream or goal',
                     )
                   : GridView.builder(
-                      padding:
-                          const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -946,8 +970,7 @@ class _VisionTab extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _VisionAddSheet(
-        onSave: (item) =>
-            ref.read(visionBoardProvider.notifier).add(item),
+        onSave: (item) => ref.read(visionBoardProvider.notifier).add(item),
       ),
     );
   }
@@ -1004,13 +1027,12 @@ class _VisionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(item.emoji,
-                style: const TextStyle(fontSize: 36)),
+            Text(item.emoji, style: const TextStyle(fontSize: 36)),
             const SizedBox(height: 10),
             Text(
               item.title,
-              style: AppTextStyles.titleSmall
-                  .copyWith(color: AppColors.forest700),
+              style:
+                  AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -1019,8 +1041,8 @@ class _VisionCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 item.description,
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone400),
+                style:
+                    AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -1094,19 +1116,15 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
                     height: 44,
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: selected
-                          ? AppColors.forest50
-                          : AppColors.stone50,
+                      color: selected ? AppColors.forest50 : AppColors.stone50,
                       borderRadius: AppRadius.md,
                       border: Border.all(
-                        color: selected
-                            ? AppColors.forest300
-                            : AppColors.stone100,
+                        color:
+                            selected ? AppColors.forest300 : AppColors.stone100,
                       ),
                     ),
                     child: Center(
-                      child: Text(e,
-                          style: const TextStyle(fontSize: 22)),
+                      child: Text(e, style: const TextStyle(fontSize: 22)),
                     ),
                   ),
                 );
@@ -1118,15 +1136,14 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
           TextField(
             controller: _titleCtrl,
             autofocus: true,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone800),
-            decoration: _inputDecor('Dream title (e.g. Be present for my kids)'),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+            decoration:
+                _inputDecor('Dream title (e.g. Be present for my kids)'),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _descCtrl,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone800),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: _inputDecor('Short description (optional)'),
           ),
           const SizedBox(height: 16),
@@ -1148,12 +1165,11 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.lg),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
               child: Text('Add to Vision Board',
-                  style: AppTextStyles.labelLarge
-                      .copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelLarge.copyWith(color: Colors.white)),
             ),
           ),
         ],
@@ -1163,8 +1179,7 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: AppTextStyles.bodyMedium
-            .copyWith(color: AppColors.stone300),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
         filled: true,
         fillColor: AppColors.stone50,
         border: OutlineInputBorder(
@@ -1177,8 +1192,7 @@ class _VisionAddSheetState extends State<_VisionAddSheet> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide:
-              const BorderSide(color: AppColors.forest400, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.forest400, width: 1.5),
         ),
         contentPadding: const EdgeInsets.all(14),
       );
@@ -1393,12 +1407,11 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
         Expanded(
           child: TextField(
             controller: _ctrl,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone800),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
               hintText: _hint,
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone300),
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
               border: InputBorder.none,
               isDense: true,
               contentPadding: EdgeInsets.zero,
@@ -1413,8 +1426,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
             setState(() => _saved = true);
           },
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: AppColors.honey50,
               borderRadius: AppRadius.md,
@@ -1465,8 +1477,7 @@ class _ReflectionPromptsState extends State<_ReflectionPrompts> {
         GestureDetector(
           onTap: () {
             H.selection();
-            setState(
-                () => _current = (_current + 1) % _prompts.length);
+            setState(() => _current = (_current + 1) % _prompts.length);
           },
           child: Row(
             children: [
@@ -1557,14 +1568,22 @@ class _MindfulMoment extends StatelessWidget {
   const _MindfulMoment();
 
   static const _exercises = [
-    ('5-4-3-2-1 Grounding',
-        'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.'),
-    ('Box Breath',
-        'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.'),
-    ('Body Scan',
-        'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.'),
-    ('Gratitude Breath',
-        'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.'),
+    (
+      '5-4-3-2-1 Grounding',
+      'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.'
+    ),
+    (
+      'Box Breath',
+      'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.'
+    ),
+    (
+      'Body Scan',
+      'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.'
+    ),
+    (
+      'Gratitude Breath',
+      'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.'
+    ),
   ];
 
   @override
@@ -1576,8 +1595,8 @@ class _MindfulMoment extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: AppTextStyles.labelMedium
-                .copyWith(color: AppColors.forest600)),
+            style:
+                AppTextStyles.labelMedium.copyWith(color: AppColors.forest600)),
         const SizedBox(height: 6),
         Text(desc,
             style: AppTextStyles.bodyMedium.copyWith(
@@ -1639,8 +1658,8 @@ class _EmptyState extends StatelessWidget {
                   .copyWith(color: AppColors.stone500)),
           const SizedBox(height: 6),
           Text(subtitle,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone400)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone400)),
         ],
       ),
     );

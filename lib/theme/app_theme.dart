@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // ─── Stillwater Aesthetic System ─────────────────────────────────────────────
 // Mirrors the Tailwind palette in tailwind.config.js exactly.
@@ -8,7 +7,7 @@ class AppColors {
   AppColors._();
 
   // Cream / Stone — backgrounds, hairlines, secondary text
-  static const stone50  = Color(0xFFF5F2EE); // cream — page bg
+  static const stone50 = Color(0xFFF5F2EE); // cream — page bg
   static const stone100 = Color(0xFFEDE8E1); // hairlines, chip inputs
   static const stone200 = Color(0xFFD6CFC5);
   static const stone300 = Color(0xFFB8AFA3);
@@ -20,7 +19,7 @@ class AppColors {
   static const stone900 = Color(0xFF18211E);
 
   // Forest Green — primary CTA, icons, active states
-  static const forest50  = Color(0xFFEEF5EE); // icon chip fill
+  static const forest50 = Color(0xFFEEF5EE); // icon chip fill
   static const forest100 = Color(0xFFDCE8DC); // card borders, subtle highlights
   static const forest200 = Color(0xFFB9D1B9);
   static const forest300 = Color(0xFF8DBBA0);
@@ -32,7 +31,7 @@ class AppColors {
   static const forest900 = Color(0xFF0F2318);
 
   // Honey Amber — Daily Gratitude accent only
-  static const honey50  = Color(0xFFFAF1DD); // honey chip / soft warning bg
+  static const honey50 = Color(0xFFFAF1DD); // honey chip / soft warning bg
   static const honey100 = Color(0xFFF5E3BB);
   static const honey200 = Color(0xFFEDD39B);
   static const honey300 = Color(0xFFE2BC6E);
@@ -41,7 +40,7 @@ class AppColors {
   static const honey600 = Color(0xFFA8845A); // gratitude icon colour
 
   // Blush — destructive UI only (delete, slip indicators)
-  static const blush50  = Color(0xFFFCF0F0);
+  static const blush50 = Color(0xFFFCF0F0);
   static const blush100 = Color(0xFFF9E1E1);
   static const blush400 = Color(0xFFD97272);
   static const blush500 = Color(0xFFC45E5E);
@@ -50,124 +49,190 @@ class AppColors {
 
   // ─── Luxury Aesthetic System ──────────────────────────────────────────────
   // Warm card surface — slightly warmer than pure white
-  static const card       = Color(0xFFFFFDF8);
+  static const card = Color(0xFFFFFDF8);
 
   // Typography hierarchy
   static const forestDark = Color(0xFF1F4D38); // darkest heading ink
-  static const stoneText  = Color(0xFF26332F); // body text on cream
-  static const mistGrey   = Color(0xFF8D99A6); // labels, placeholders, secondary
+  static const stoneText = Color(0xFF26332F); // body text on cream
+  static const mistGrey = Color(0xFF8D99A6); // labels, placeholders, secondary
 
   // UI functional
-  static const leafGreen  = Color(0xFF3F7A5A); // active states, chart line
-  static const mintChip   = Color(0xFFE8F1E8); // icon chip fill, quote bg
+  static const leafGreen = Color(0xFF3F7A5A); // active states, chart line
+  static const mintChip = Color(0xFFE8F1E8); // icon chip fill, quote bg
   static const softBorder = Color(0x1A2E5844); // 10% forest — card borders
-  static const honeySoft  = Color(0xFFF8EBCB); // honey chip background
+  static const honeySoft = Color(0xFFF8EBCB); // honey chip background
 
   // Semantic aliases
-  static const cream       = stone50;
-  static const forest      = forest700;
-  static const honey       = honey500;
-  static const background  = cream;
+  static const cream = stone50;
+  static const forest = forest700;
+  static const honey = honey500;
+  static const background = cream;
   static const surfaceCard = card;
   static const primaryText = stoneText;
   static const secondaryText = stone600;
   static const placeholder = stone400;
-  static const primary     = forest;
+  static const primary = forest;
   static const primaryDark = forestDark;
-  static const accent      = honey;
-  static const danger      = blush600;
+  static const accent = honey;
+  static const danger = blush600;
 }
 
 // ─── Typography ───────────────────────────────────────────────────────────────
 // Fraunces = display / serif headings  |  Inter = body / UI
-// Uses google_fonts package so fonts resolve without bundled .ttf files.
+// Both fonts are now bundled as variable .ttf files in assets/fonts/. Flutter
+// resolves any weight (100–900) from the single file — no Google Fonts CDN
+// round-trip required. This makes the app fully offline and removes the
+// "100% on device" caveat that google_fonts.gstatic.com previously created.
+
+const _kSerif = 'Fraunces';
+const _kSans = 'Inter';
 
 class AppTextStyles {
   AppTextStyles._();
 
   // Serif display — sober counter, big numerals, milestone labels
-  static TextStyle get displayLarge => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w500, fontSize: 56, height: 1.05,
-    color: AppColors.forestDark, letterSpacing: -0.7,
+  static const TextStyle displayLarge = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w500,
+    fontSize: 56,
+    height: 1.05,
+    color: AppColors.forestDark,
+    letterSpacing: -0.7,
   );
-  static TextStyle get displayMedium => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w500, fontSize: 40, height: 1.1,
+  static const TextStyle displayMedium = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w500,
+    fontSize: 40,
+    height: 1.1,
     color: AppColors.forestDark,
   );
-  static TextStyle get displaySmall => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w500, fontSize: 32, height: 1.15,
+  static const TextStyle displaySmall = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w500,
+    fontSize: 32,
+    height: 1.15,
     color: AppColors.forestDark,
   );
-  static TextStyle get greetingSerif => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w500, fontSize: 38, height: 1.12,
-    color: AppColors.forestDark, letterSpacing: -0.35,
+  static const TextStyle greetingSerif = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w500,
+    fontSize: 30,
+    height: 1.12,
+    color: AppColors.forestDark,
+    letterSpacing: -0.2,
   );
-  static TextStyle get heroNumber => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w400, fontSize: 82, height: .92,
-    color: AppColors.forestDark, letterSpacing: -1.4,
+  static const TextStyle heroNumber = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w300,
+    fontSize: 80,
+    height: 1.0,
+    color: AppColors.forestDark,
+    letterSpacing: -1.0,
   );
-  static TextStyle get moneyNumber => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w500, fontSize: 42, height: 1.0,
-    color: AppColors.forestDark, letterSpacing: -0.4,
+  static const TextStyle moneyNumber = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w300,
+    fontSize: 40,
+    height: 1.0,
+    color: AppColors.forestDark,
+    letterSpacing: -0.5,
   );
 
   // Serif body — affirmation cards, journal prompts, recovery prose
-  static TextStyle get headlineSerif => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w400, fontSize: 22, height: 1.35,
+  static const TextStyle headlineSerif = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w400,
+    fontSize: 22,
+    height: 1.35,
     color: AppColors.stoneText,
   );
-  static TextStyle get bodySerif => GoogleFonts.fraunces(
-    fontWeight: FontWeight.w400, fontSize: 17, height: 1.5,
+  static const TextStyle bodySerif = TextStyle(
+    fontFamily: _kSerif,
+    fontWeight: FontWeight.w400,
+    fontSize: 17,
+    height: 1.5,
     color: AppColors.stoneText,
   );
 
   // Sans — all UI labels, buttons, nav
-  static TextStyle get titleLarge => GoogleFonts.inter(
-    fontWeight: FontWeight.w700, fontSize: 18, height: 1.3,
+  static const TextStyle titleLarge = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w700,
+    fontSize: 18,
+    height: 1.3,
     color: AppColors.stoneText,
   );
-  static TextStyle get titleMedium => GoogleFonts.inter(
-    fontWeight: FontWeight.w600, fontSize: 15, height: 1.35,
+  static const TextStyle titleMedium = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w600,
+    fontSize: 15,
+    height: 1.35,
     color: AppColors.stoneText,
   );
-  static TextStyle get titleSmall => GoogleFonts.inter(
-    fontWeight: FontWeight.w600, fontSize: 13, height: 1.4,
+  static const TextStyle titleSmall = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w600,
+    fontSize: 13,
+    height: 1.4,
     color: AppColors.stoneText,
   );
-  static TextStyle get bodyLarge => GoogleFonts.inter(
-    fontWeight: FontWeight.w400, fontSize: 17, height: 1.45,
+  static const TextStyle bodyLarge = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w400,
+    fontSize: 17,
+    height: 1.45,
     color: AppColors.stoneText,
   );
-  static TextStyle get bodyMedium => GoogleFonts.inter(
-    fontWeight: FontWeight.w400, fontSize: 14, height: 1.5,
+  static const TextStyle bodyMedium = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    height: 1.5,
     color: AppColors.stoneText,
   );
-  static TextStyle get bodySmall => GoogleFonts.inter(
-    fontWeight: FontWeight.w400, fontSize: 12, height: 1.4,
+  static const TextStyle bodySmall = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    height: 1.4,
     color: AppColors.mistGrey,
   );
-  static TextStyle get labelLarge => GoogleFonts.inter(
-    fontWeight: FontWeight.w600, fontSize: 14, height: 1.3,
+  static const TextStyle labelLarge = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w600,
+    fontSize: 14,
+    height: 1.3,
     letterSpacing: 0.1,
   );
-  static TextStyle get labelMedium => GoogleFonts.inter(
-    fontWeight: FontWeight.w600, fontSize: 12, height: 1.25,
+  static const TextStyle labelMedium = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w600,
+    fontSize: 12,
+    height: 1.25,
     letterSpacing: 0.2,
   );
-  static TextStyle get labelSmall => GoogleFonts.inter(
-    fontWeight: FontWeight.w600, fontSize: 10, height: 1.2,
+  static const TextStyle labelSmall = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w600,
+    fontSize: 10,
+    height: 1.2,
     letterSpacing: 0.8,
   );
-  static TextStyle get caption => GoogleFonts.inter(
-    fontWeight: FontWeight.w500, fontSize: 11, height: 1.3,
-    color: AppColors.mistGrey, letterSpacing: 0.3,
+  static const TextStyle caption = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w500,
+    fontSize: 11,
+    height: 1.3,
+    color: AppColors.mistGrey,
+    letterSpacing: 0.3,
   );
-  static TextStyle get overline => GoogleFonts.inter(
-    fontWeight: FontWeight.w700,
+  static const TextStyle overline = TextStyle(
+    fontFamily: _kSans,
+    fontWeight: FontWeight.w500,
     fontSize: 11,
     height: 1.2,
     color: AppColors.forest,
-    letterSpacing: 1.3,
+    letterSpacing: 3.0,
   );
 }
 
@@ -185,10 +250,10 @@ class AppSpacing {
 
 class AppRadius {
   AppRadius._();
-  static const sm  = BorderRadius.all(Radius.circular(8));
-  static const md  = BorderRadius.all(Radius.circular(12));
-  static const lg  = BorderRadius.all(Radius.circular(16));
-  static const xl  = BorderRadius.all(Radius.circular(20));
+  static const sm = BorderRadius.all(Radius.circular(8));
+  static const md = BorderRadius.all(Radius.circular(12));
+  static const lg = BorderRadius.all(Radius.circular(16));
+  static const xl = BorderRadius.all(Radius.circular(20));
   static const xxl = BorderRadius.all(Radius.circular(24));
   static const luxury = BorderRadius.all(Radius.circular(30));
   static const pill = BorderRadius.all(Radius.circular(100));
@@ -218,28 +283,38 @@ class AppShadows {
   // Soft card lift — white surface on cream background
   static const card = [
     BoxShadow(
-      color: Color(0x0A1E293B), blurRadius: 8,  offset: Offset(0, 1),
+      color: Color(0x0A1E293B),
+      blurRadius: 8,
+      offset: Offset(0, 1),
     ),
     BoxShadow(
-      color: Color(0x0A1E293B), blurRadius: 24, offset: Offset(0, 4),
+      color: Color(0x0A1E293B),
+      blurRadius: 24,
+      offset: Offset(0, 4),
     ),
   ];
 
   // Glass card — diffuse, no hard edge
   static const glass = [
     BoxShadow(
-      color: Color(0x14000000), blurRadius: 32, offset: Offset(0, 8),
+      color: Color(0x14000000),
+      blurRadius: 32,
+      offset: Offset(0, 8),
       spreadRadius: -4,
     ),
     BoxShadow(
-      color: Color(0x08000000), blurRadius: 8, offset: Offset(0, 2),
+      color: Color(0x08000000),
+      blurRadius: 8,
+      offset: Offset(0, 2),
     ),
   ];
 
   // Elevated CTA button
   static const button = [
     BoxShadow(
-      color: Color(0x333E745A), blurRadius: 16, offset: Offset(0, 6),
+      color: Color(0x333E745A),
+      blurRadius: 16,
+      offset: Offset(0, 6),
       spreadRadius: -2,
     ),
   ];
@@ -250,25 +325,25 @@ class AppShadows {
 ThemeData buildAppTheme() {
   const colorScheme = ColorScheme(
     brightness: Brightness.light,
-    primary:         AppColors.forest600,
-    onPrimary:       Colors.white,
+    primary: AppColors.forest600,
+    onPrimary: Colors.white,
     primaryContainer: AppColors.forest100,
     onPrimaryContainer: AppColors.forest800,
-    secondary:       AppColors.honey500,
-    onSecondary:     Colors.white,
+    secondary: AppColors.honey500,
+    onSecondary: Colors.white,
     secondaryContainer: AppColors.honey50,
     onSecondaryContainer: AppColors.forest700,
-    error:           AppColors.blush600,
-    onError:         Colors.white,
-    errorContainer:  AppColors.blush50,
+    error: AppColors.blush600,
+    onError: Colors.white,
+    errorContainer: AppColors.blush50,
     onErrorContainer: AppColors.blush700,
-    surface:         AppColors.card,
-    onSurface:       AppColors.stone800,
+    surface: AppColors.card,
+    onSurface: AppColors.stone800,
     surfaceContainerHighest: AppColors.stone100,
-    outline:         AppColors.stone200,
-    outlineVariant:  AppColors.stone100,
-    shadow:          Color(0x1A1E293B),
-    scrim:           Color(0x661E293B),
+    outline: AppColors.stone200,
+    outlineVariant: AppColors.stone100,
+    shadow: Color(0x1A1E293B),
+    scrim: Color(0x661E293B),
   );
 
   return ThemeData(
@@ -276,7 +351,6 @@ ThemeData buildAppTheme() {
     colorScheme: colorScheme,
     scaffoldBackgroundColor: AppColors.cream,
     fontFamily: 'Inter',
-
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.cream,
       foregroundColor: AppColors.stone800,
@@ -285,21 +359,23 @@ ThemeData buildAppTheme() {
       centerTitle: false,
       titleTextStyle: AppTextStyles.titleLarge,
     ),
-
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
       selectedItemColor: AppColors.forest600,
       unselectedItemColor: AppColors.stone400,
       selectedLabelStyle: TextStyle(
-        fontFamily: 'Inter', fontWeight: FontWeight.w600, fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w600,
+        fontSize: 10,
       ),
       unselectedLabelStyle: TextStyle(
-        fontFamily: 'Inter', fontWeight: FontWeight.w500, fontSize: 10,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w500,
+        fontSize: 10,
       ),
       elevation: 0,
       type: BottomNavigationBarType.fixed,
     ),
-
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.forest600,
@@ -311,7 +387,6 @@ ThemeData buildAppTheme() {
         minimumSize: const Size.fromHeight(52),
       ),
     ),
-
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.forest600,
@@ -321,14 +396,12 @@ ThemeData buildAppTheme() {
         minimumSize: const Size.fromHeight(52),
       ),
     ),
-
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: AppColors.forest600,
         textStyle: AppTextStyles.labelLarge,
       ),
     ),
-
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.stone50,
@@ -351,7 +424,6 @@ ThemeData buildAppTheme() {
       hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     ),
-
     cardTheme: CardThemeData(
       color: AppColors.card,
       elevation: 0,
@@ -359,7 +431,6 @@ ThemeData buildAppTheme() {
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.luxury),
       margin: EdgeInsets.zero,
     ),
-
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.stone50,
       selectedColor: AppColors.forest50,
@@ -368,48 +439,47 @@ ThemeData buildAppTheme() {
       shape: const StadiumBorder(),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     ),
-
     dividerTheme: const DividerThemeData(
       color: AppColors.stone100,
       thickness: 1,
       space: 1,
     ),
-
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.forest600,
       linearTrackColor: AppColors.stone100,
       linearMinHeight: 6,
     ),
-
     sliderTheme: const SliderThemeData(
       activeTrackColor: AppColors.forest600,
       inactiveTrackColor: AppColors.stone100,
       thumbColor: AppColors.forest600,
       overlayColor: Color(0x1A3E745A),
     ),
-
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
-        (s) => s.contains(WidgetState.selected) ? AppColors.forest600 : Colors.white,
+        (s) => s.contains(WidgetState.selected)
+            ? AppColors.forest600
+            : Colors.white,
       ),
       trackColor: WidgetStateProperty.resolveWith(
-        (s) => s.contains(WidgetState.selected) ? AppColors.forest200 : AppColors.stone200,
+        (s) => s.contains(WidgetState.selected)
+            ? AppColors.forest200
+            : AppColors.stone200,
       ),
     ),
-
-    textTheme: GoogleFonts.interTextTheme().copyWith(
-      displayLarge:   AppTextStyles.displayLarge,
-      displayMedium:  AppTextStyles.displayMedium,
-      displaySmall:   AppTextStyles.displaySmall,
+    textTheme: const TextTheme(
+      displayLarge: AppTextStyles.displayLarge,
+      displayMedium: AppTextStyles.displayMedium,
+      displaySmall: AppTextStyles.displaySmall,
       headlineMedium: AppTextStyles.headlineSerif,
-      titleLarge:     AppTextStyles.titleLarge,
-      titleMedium:    AppTextStyles.titleMedium,
-      titleSmall:     AppTextStyles.titleSmall,
-      bodyLarge:      AppTextStyles.bodyLarge,
-      bodyMedium:     AppTextStyles.bodyMedium,
-      bodySmall:      AppTextStyles.bodySmall,
-      labelLarge:     AppTextStyles.labelLarge,
-      labelSmall:     AppTextStyles.labelSmall,
+      titleLarge: AppTextStyles.titleLarge,
+      titleMedium: AppTextStyles.titleMedium,
+      titleSmall: AppTextStyles.titleSmall,
+      bodyLarge: AppTextStyles.bodyLarge,
+      bodyMedium: AppTextStyles.bodyMedium,
+      bodySmall: AppTextStyles.bodySmall,
+      labelLarge: AppTextStyles.labelLarge,
+      labelSmall: AppTextStyles.labelSmall,
     ),
   );
 }

@@ -66,7 +66,9 @@ void main() {
       await container.read(weeklyGoalTogglesProvider.notifier).toggle(0);
       await container.read(weeklyGoalTogglesProvider.notifier).toggle(1);
       await container.read(weeklyGoalTogglesProvider.notifier).toggle(2);
-      await container.read(weeklyGoalTogglesProvider.notifier).toggle(1); // remove
+      await container
+          .read(weeklyGoalTogglesProvider.notifier)
+          .toggle(1); // remove
 
       final state = container.read(weeklyGoalTogglesProvider);
       expect(state, containsAll([0, 2]));
@@ -143,7 +145,8 @@ void main() {
       expect(container.read(missionTogglesProvider), isEmpty);
     });
 
-    test('weekly goals do NOT reset on date change (unlike missions)', () async {
+    test('weekly goals do NOT reset on date change (unlike missions)',
+        () async {
       final yesterday = DateTime.now().subtract(const Duration(days: 1));
       final ymd = '${yesterday.year}-'
           '${yesterday.month.toString().padLeft(2, '0')}-'

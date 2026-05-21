@@ -57,3 +57,17 @@ website/dist/
 *.docx
 *.pdf
 Plant Video/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Release signing — NEVER commit any of these. A leaked upload keystore lets
+# anyone publish a malicious update to the Play Store under this app's identity.
+# ──────────────────────────────────────────────────────────────────────────────
+*.jks
+*.keystore
+*.p12
+*.pfx
+**/key.properties
+**/jks/
+android/keystore/
+upload-keystore.jks
+release-key.jks

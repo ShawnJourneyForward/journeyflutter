@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +15,8 @@ import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/notification_service.dart';
+import '../utils/pin_hash.dart';
 
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
@@ -47,7 +47,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     ctrl.dispose();
     if (result == null || result.isEmpty) return;
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(username: result));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(username: result));
   }
 
   Future<void> _editSoberDate(UserProfile p) async {
@@ -60,22 +62,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: Theme.of(ctx).colorScheme.copyWith(
-            primary: AppColors.forest600,
-            onPrimary: Colors.white,
-            surface: Colors.white,
-          ),
+                primary: AppColors.forest600,
+                onPrimary: Colors.white,
+                surface: Colors.white,
+              ),
         ),
         child: child!,
       ),
     );
     if (picked == null) return;
-    await ref.read(profileProvider.notifier).patch(
-      (p) => p.copyWith(
-        soberDate: picked.toIso8601String(),
-        firedMilestoneDays: [],
-        firedSavingsTiers: [],
-      ),
+    // Preserve the existing time-of-day so editing only the date doesn't
+    // silently reset hours/minutes/seconds to midnight.
+    final existingTime = DateTime.tryParse(p.soberDate) ?? DateTime.now();
+    final merged = DateTime(
+      picked.year, picked.month, picked.day,
+      existingTime.hour, existingTime.minute, existingTime.second,
     );
+    await ref.read(profileProvider.notifier).patch(
+          (p) => p.copyWith(
+            soberDate: merged.toIso8601String(),
+            firedMilestoneDays: [],
+            firedSavingsTiers: [],
+          ),
+        );
   }
 
   Future<void> _editDailySpend(UserProfile p) async {
@@ -95,11 +104,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (result == null) return;
     final spend = double.tryParse(result['spend'] as String) ?? 0;
     await ref.read(profileProvider.notifier).patch(
-      (p) => p.copyWith(
-        dailySpend: spend,
-        currency: result['currency'] as String,
-      ),
-    );
+          (p) => p.copyWith(
+            dailySpend: spend,
+            currency: result['currency'] as String,
+          ),
+        );
   }
 
   Future<void> _editSavingsGoal(UserProfile p) async {
@@ -114,7 +123,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text(l10n.settingsSavingsGoalDialogTitle, style: AppTextStyles.titleMedium),
+        title: Text(l10n.settingsSavingsGoalDialogTitle,
+            style: AppTextStyles.titleMedium),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -127,7 +137,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: amtCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: _inputDecor(l10n.settingsTargetAmountHint),
               style: AppTextStyles.bodyMedium,
             ),
@@ -136,12 +147,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel,
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.stone500)),
           ),
           if (p.savingsGoal != null)
             TextButton(
               onPressed: () => Navigator.pop(ctx, {'clear': true}),
-              child: Text(l10n.commonClear, style: AppTextStyles.labelMedium.copyWith(color: AppColors.blush500)),
+              child: Text(l10n.commonClear,
+                  style: AppTextStyles.labelMedium
+                      .copyWith(color: AppColors.blush500)),
             ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
@@ -149,7 +164,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'name': nameCtrl.text.trim(),
               'amount': amtCtrl.text.trim(),
             }),
-            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave,
+                style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -159,29 +175,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     if (result == null) return;
     if (result['clear'] == true) {
-      await ref.read(profileProvider.notifier).patchGoal(amount: null, name: null);
+      await ref
+          .read(profileProvider.notifier)
+          .patchGoal(amount: null, name: null);
       return;
     }
     final amt = double.tryParse(result['amount'] as String);
     await ref.read(profileProvider.notifier).patch(
-      (p) => p.copyWith(
-        savingsGoalName: (result['name'] as String).isEmpty ? null : result['name'] as String,
-        savingsGoal: amt,
-      ),
-    );
+          (p) => p.copyWith(
+            savingsGoalName: (result['name'] as String).isEmpty
+                ? null
+                : result['name'] as String,
+            savingsGoal: amt,
+          ),
+        );
   }
 
   Future<void> _editEmergencyContact(UserProfile p) async {
     final l10n = AppLocalizations.of(context);
-    final nameCtrl = TextEditingController(text: p.emergencyContact?.name ?? '');
-    final phoneCtrl = TextEditingController(text: p.emergencyContact?.phone ?? '');
+    final nameCtrl =
+        TextEditingController(text: p.emergencyContact?.name ?? '');
+    final phoneCtrl =
+        TextEditingController(text: p.emergencyContact?.phone ?? '');
 
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text(l10n.settingsEmergencyContactDialogTitle, style: AppTextStyles.titleMedium),
+        title: Text(l10n.settingsEmergencyContactDialogTitle,
+            style: AppTextStyles.titleMedium),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -203,17 +226,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel,
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.stone500)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave,
+                style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
     );
-    if (result != true) { nameCtrl.dispose(); phoneCtrl.dispose(); return; }
+    if (result != true) {
+      nameCtrl.dispose();
+      phoneCtrl.dispose();
+      return;
+    }
 
     final name = nameCtrl.text.trim();
     final phone = phoneCtrl.text.trim();
@@ -221,44 +251,56 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     phoneCtrl.dispose();
 
     await ref.read(profileProvider.notifier).patch(
-      (p) => p.copyWith(
-        emergencyContact: name.isEmpty && phone.isEmpty
-            ? null
-            : EmergencyContact(name: name, phone: phone),
-      ),
-    );
+          (p) => p.copyWith(
+            emergencyContact: name.isEmpty && phone.isEmpty
+                ? null
+                : EmergencyContact(name: name, phone: phone),
+          ),
+        );
   }
 
   // ── Reason / goal editors ─────────────────────────────────────────────────
 
   Future<void> _addReason(UserProfile p, String text) async {
     if (text.isEmpty) return;
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: [...p.myReasons, text]));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(myReasons: [...p.myReasons, text]));
   }
 
   Future<void> _removeReasonAt(UserProfile p, int index) async {
     final updated = [...p.myReasons]..removeAt(index);
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(myReasons: updated));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(myReasons: updated));
   }
 
   Future<void> _addPro(UserProfile p, String text) async {
     if (text.isEmpty) return;
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(pros: [...p.pros, text]));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(pros: [...p.pros, text]));
   }
 
   Future<void> _removeProAt(UserProfile p, int index) async {
     final updated = [...p.pros]..removeAt(index);
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(pros: updated));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(pros: updated));
   }
 
   Future<void> _addCon(UserProfile p, String text) async {
     if (text.isEmpty) return;
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(cons: [...p.cons, text]));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(cons: [...p.cons, text]));
   }
 
   Future<void> _removeConAt(UserProfile p, int index) async {
     final updated = [...p.cons]..removeAt(index);
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(cons: updated));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(cons: updated));
   }
 
   Future<void> _addWeeklyGoal(UserProfile p) async {
@@ -272,12 +314,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     ctrl.dispose();
     if (result == null || result.isEmpty) return;
     final updated = [...p.weeklyGoals, result];
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(weeklyGoals: updated));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(weeklyGoals: updated));
   }
 
   Future<void> _removeWeeklyGoal(UserProfile p, String goal) async {
     final updated = p.weeklyGoals.where((g) => g != goal).toList();
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(weeklyGoals: updated));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(weeklyGoals: updated));
   }
 
   // ── Lock method ───────────────────────────────────────────────────────────
@@ -285,44 +331,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _setLockNone(UserProfile p) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('lockMethod', 'none');
-    await _storage.delete(key: 'pin_hash');
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'none'));
+    // Delete both the modern (v2 salted) and legacy unsalted PIN hashes.
+    await _storage.delete(key: PinHash.storageKey);
+    await _storage.delete(key: PinHash.legacyKey);
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(lockMethod: 'none'));
     H.light();
   }
 
   Future<void> _setLockBiometric(UserProfile p) async {
     try {
-      final canCheck = await _auth.canCheckBiometrics;
       final supported = await _auth.isDeviceSupported();
-      if (!canCheck || !supported) {
+      final canCheck = await _auth.canCheckBiometrics;
+      final available = await _auth.getAvailableBiometrics();
+      if (!supported || !canCheck || available.isEmpty) {
         if (mounted) {
-          _showSnack('Biometrics not available on this device');
+          _showSnack(
+              'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.');
         }
         return;
       }
       final authenticated = await _auth.authenticate(
         localizedReason: 'Confirm to enable biometric lock',
-        options: const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
+        options:
+            const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
       );
       if (!authenticated) return;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('lockMethod', 'biometric');
-      await _storage.delete(key: 'pin_hash');
-      await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'biometric'));
+      await _storage.delete(key: PinHash.storageKey);
+      await _storage.delete(key: PinHash.legacyKey);
+      await ref
+          .read(profileProvider.notifier)
+          .patch((p) => p.copyWith(lockMethod: 'biometric'));
       H.light();
-    } on PlatformException {
-      if (mounted) _showSnack('Biometric authentication failed');
+    } on PlatformException catch (e) {
+      if (!mounted) return;
+      final msg = switch (e.code) {
+        'NotEnrolled' =>
+          'No biometrics enrolled on this device. Add a fingerprint or face in your phone\'s settings.',
+        'NotAvailable' =>
+          'Biometric hardware is unavailable right now. Try again in a moment.',
+        'LockedOut' =>
+          'Too many failed attempts. Wait a moment and try again.',
+        'PermanentlyLockedOut' =>
+          'Biometrics are locked. Use your phone\'s screen lock to re-enable.',
+        _ => 'Biometric authentication failed: ${e.message ?? e.code}',
+      };
+      _showSnack(msg);
     }
   }
 
   Future<void> _setLockPin(UserProfile p) async {
     final pin = await _showPinSetup();
     if (pin == null) return;
-    final hash = sha256.convert(utf8.encode(pin)).toString();
-    await _storage.write(key: 'pin_hash', value: hash);
+    // PBKDF2-HMAC-SHA256 with 128-bit random salt and 150k iterations.
+    // This is what makes a 4-digit PIN's hash impractical to brute-force
+    // even if the secure-storage blob ever leaks.
+    await PinHash.writeNew(_storage, pin);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('lockMethod', 'pin');
-    await ref.read(profileProvider.notifier).patch((p) => p.copyWith(lockMethod: 'pin'));
+    await ref
+        .read(profileProvider.notifier)
+        .patch((p) => p.copyWith(lockMethod: 'pin'));
     H.medium();
   }
 
@@ -343,10 +415,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final parts = s.split(':');
       return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
     }
-    final morning  = parseTime(prefs.getString('notif_morning') ?? '08:00');
-    final evening  = parseTime(prefs.getString('notif_evening') ?? '20:00');
-    final motiv    = prefs.getBool('notif_motivation') ?? true;
-    final remind   = prefs.getBool('notif_reminders')  ?? true;
+
+    final morning = parseTime(prefs.getString('notif_morning') ?? '08:00');
+    final evening = parseTime(prefs.getString('notif_evening') ?? '20:00');
+    final motiv = prefs.getBool('notif_motivation') ?? true;
+    final remind = prefs.getBool('notif_reminders') ?? true;
     final mileston = prefs.getBool('notif_milestones') ?? true;
 
     if (!mounted) return;
@@ -366,11 +439,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final fmt = (TimeOfDay t) =>
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-    await prefs.setString('notif_morning',    fmt(result['morning'] as TimeOfDay));
-    await prefs.setString('notif_evening',    fmt(result['evening'] as TimeOfDay));
-    await prefs.setBool('notif_motivation',   result['motivation'] as bool);
-    await prefs.setBool('notif_reminders',    result['reminders']  as bool);
-    await prefs.setBool('notif_milestones',   result['milestones'] as bool);
+    await prefs.setString('notif_morning', fmt(result['morning'] as TimeOfDay));
+    await prefs.setString('notif_evening', fmt(result['evening'] as TimeOfDay));
+    await prefs.setBool('notif_motivation', result['motivation'] as bool);
+    await prefs.setBool('notif_reminders', result['reminders'] as bool);
+    await prefs.setBool('notif_milestones', result['milestones'] as bool);
+
+    // Actually schedule the notifications now that prefs are saved.
+    await NotificationService.scheduleFromPrefs();
+
     if (mounted) _showSnack('Notification settings saved');
   }
 
@@ -402,12 +479,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.commonCancel, style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+            child: Text(l10n.commonCancel,
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.stone500)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(l10n.commonSave, style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+            child: Text(l10n.commonSave,
+                style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -415,28 +495,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
-    hintText: hint,
-    hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
-    filled: true,
-    fillColor: AppColors.stone50,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-    border: OutlineInputBorder(
-      borderRadius: AppRadius.lg,
-      borderSide: const BorderSide(color: AppColors.stone100),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: AppRadius.lg,
-      borderSide: const BorderSide(color: AppColors.stone100),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: AppRadius.lg,
-      borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
-    ),
-  );
+        hintText: hint,
+        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+        filled: true,
+        fillColor: AppColors.stone50,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        border: OutlineInputBorder(
+          borderRadius: AppRadius.lg,
+          borderSide: const BorderSide(color: AppColors.stone100),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppRadius.lg,
+          borderSide: const BorderSide(color: AppColors.stone100),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppRadius.lg,
+          borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+        ),
+      );
 
   void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
+      content: Text(msg,
+          style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
       backgroundColor: AppColors.stone700,
       behavior: SnackBarBehavior.floating,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
@@ -449,21 +531,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileProvider);
-    final stats = ref.watch(soberDaysProvider);
+    // Same 10-second provider as home screen so money always matches.
+    final stats = ref.watch(soberMoneyProvider);
 
     return profileAsync.when(
       loading: () => const Scaffold(
         backgroundColor: AppColors.stone50,
-        body: Center(child: CircularProgressIndicator(color: AppColors.forest600)),
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.forest600)),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.stone50,
         body: Center(child: Text('Error: $e')),
       ),
       data: (profile) {
+        // Router-level redirect handles null-profile (see main.dart).
+        // Show a spinner if we somehow land here without one rather than
+        // racing the router with our own context.go call.
         if (profile == null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) => context.go('/onboarding'));
-          return const SizedBox.shrink();
+          return const Scaffold(
+            backgroundColor: AppColors.stone50,
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.forest600),
+            ),
+          );
         }
         return _buildContent(profile, stats);
       },
@@ -473,9 +564,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget _buildContent(UserProfile profile, SoberStats? stats) {
     final l10n = AppLocalizations.of(context);
     final soberDate = DateTime.tryParse(profile.soberDate);
-    final dateLabel = soberDate != null
-        ? DateFormat('d MMMM yyyy').format(soberDate)
-        : '—';
+    final dateLabel =
+        soberDate != null ? DateFormat('d MMMM yyyy').format(soberDate) : '—';
     final moneySaved = stats?.moneySaved ?? 0;
     final moneyLabel = profile.dailySpend > 0
         ? '${profile.currency}${NumberFormat('#,##0.00').format(moneySaved)}'
@@ -680,8 +770,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               onChanged: (val) {
                                 H.sync(val);
                                 ref.read(profileProvider.notifier).patch(
-                                  (p) => p.copyWith(hapticsEnabled: val),
-                                );
+                                      (p) => p.copyWith(hapticsEnabled: val),
+                                    );
                               },
                               activeColor: AppColors.forest600,
                             ),
@@ -732,7 +822,12 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initials = profile.username.trim().isNotEmpty
-        ? profile.username.trim().split(' ').take(2).map((w) => w[0].toUpperCase()).join()
+        ? profile.username
+            .trim()
+            .split(' ')
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
         : '?';
 
     // Full-bleed forest banner — rows removed, all four corners round.
@@ -760,8 +855,8 @@ class _ProfileHeader extends StatelessWidget {
               ),
               child: Center(
                 child: Text(initials,
-                    style: AppTextStyles.titleLarge
-                        .copyWith(color: Colors.white)),
+                    style:
+                        AppTextStyles.titleLarge.copyWith(color: Colors.white)),
               ),
             ),
           ),
@@ -823,8 +918,8 @@ class _ProfileHeader extends StatelessWidget {
                 if (pledgeStreak > 0) ...[
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: AppColors.honey500.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
@@ -871,8 +966,6 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-
-
 // ─── Savings goal card ────────────────────────────────────────────────────────
 
 class _SavingsGoalCard extends StatelessWidget {
@@ -889,7 +982,8 @@ class _SavingsGoalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasGoal = profile.savingsGoal != null && profile.savingsGoal! > 0;
     final saved = stats?.moneySaved ?? 0;
-    final progress = hasGoal ? (saved / profile.savingsGoal!).clamp(0.0, 1.0) : 0.0;
+    final progress =
+        hasGoal ? (saved / profile.savingsGoal!).clamp(0.0, 1.0) : 0.0;
 
     return SolidCard(
       borderRadius: AppRadius.xl,
@@ -1185,13 +1279,12 @@ class _MotivationSectionState extends State<_MotivationSection> {
                 // Item rows
                 for (int i = 0; i < widget.items.length; i++)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: i < widget.items.length - 1
                         ? const BoxDecoration(
                             border: Border(
-                                bottom:
-                                    BorderSide(color: AppColors.stone100)))
+                                bottom: BorderSide(color: AppColors.stone100)))
                         : null,
                     child: Row(
                       children: [
@@ -1302,20 +1395,25 @@ class _WeeklyGoalsCard extends StatelessWidget {
               child: Row(
                 children: [
                   const Icon(Icons.check_circle_outline,
-                    size: 18, color: AppColors.forest600),
+                      size: 18, color: AppColors.forest600),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(goals[i], style: AppTextStyles.bodyMedium),
                   ),
                   GestureDetector(
                     onTap: () => onRemove(goals[i]),
-                    child: const Icon(Icons.close, size: 16, color: AppColors.stone300),
+                    child: const Icon(Icons.close,
+                        size: 16, color: AppColors.stone300),
                   ),
                 ],
               ),
             ),
             if (i < goals.length - 1)
-              const Divider(height: 1, color: AppColors.stone100, indent: 20, endIndent: 20),
+              const Divider(
+                  height: 1,
+                  color: AppColors.stone100,
+                  indent: 20,
+                  endIndent: 20),
           ],
           if (goals.isNotEmpty)
             const Divider(height: 1, color: AppColors.stone100),
@@ -1347,36 +1445,69 @@ class _SecurityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SolidCard(
-      borderRadius: AppRadius.xl,
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          _LockOption(
-            icon: Icons.lock_open_outlined,
-            label: 'No lock',
-            subtitle: 'App opens immediately',
-            selected: current == 'none',
-            onTap: onNone,
-            borderBottom: true,
+    return Column(
+      children: [
+        SolidCard(
+          borderRadius: AppRadius.xl,
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              _LockOption(
+                icon: Icons.lock_open_outlined,
+                label: 'No lock',
+                subtitle: 'App opens immediately',
+                selected: current == 'none',
+                onTap: onNone,
+                borderBottom: true,
+              ),
+              _LockOption(
+                icon: Icons.fingerprint_rounded,
+                label: 'Biometric',
+                subtitle: 'Fingerprint or face unlock',
+                selected: current == 'biometric',
+                onTap: onBiometric,
+                borderBottom: true,
+              ),
+              _LockOption(
+                icon: Icons.pin_outlined,
+                label: 'PIN',
+                subtitle: '4-digit numeric PIN',
+                selected: current == 'pin',
+                onTap: onPin,
+              ),
+            ],
           ),
-          _LockOption(
-            icon: Icons.fingerprint_rounded,
-            label: 'Biometric',
-            subtitle: 'Fingerprint or face unlock',
-            selected: current == 'biometric',
-            onTap: onBiometric,
-            borderBottom: true,
-          ),
-          _LockOption(
-            icon: Icons.pin_outlined,
-            label: 'PIN',
-            subtitle: '4-digit numeric PIN',
-            selected: current == 'pin',
-            onTap: onPin,
+        ),
+        // Data-recovery warning — same message the user sees in onboarding.
+        if (current == 'pin' || current == 'biometric') ...[
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.honeySoft,
+              borderRadius: AppRadius.xxl,
+              border: Border.all(color: AppColors.honey100),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.warning_amber_rounded,
+                    size: 18, color: AppColors.honey500),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    current == 'pin'
+                        ? 'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.'
+                        : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
+                    style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.honey500, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -1421,8 +1552,8 @@ class _LockOption extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(icon,
-                size: 20,
-                color: selected ? AppColors.forest600 : AppColors.stone400),
+                  size: 20,
+                  color: selected ? AppColors.forest600 : AppColors.stone400),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -1430,8 +1561,10 @@ class _LockOption extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label,
-                    style: AppTextStyles.titleSmall.copyWith(
-                      color: selected ? AppColors.forest700 : AppColors.stone800)),
+                      style: AppTextStyles.titleSmall.copyWith(
+                          color: selected
+                              ? AppColors.forest700
+                              : AppColors.stone800)),
                   Text(subtitle, style: AppTextStyles.bodySmall),
                 ],
               ),
@@ -1524,6 +1657,12 @@ class _MoreCard extends StatelessWidget {
                 borderBottom: true,
               ),
               _SettingsRow(
+                icon: Icons.event_available_outlined,
+                label: 'Meeting planner',
+                onTap: () => context.push('/meetings'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
                 icon: Icons.phone_in_talk_outlined,
                 iconColor: AppColors.blush500,
                 label: 'Crisis lines',
@@ -1579,10 +1718,10 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
   @override
   void initState() {
     super.initState();
-    _morning    = widget.morningTime;
-    _evening    = widget.eveningTime;
+    _morning = widget.morningTime;
+    _evening = widget.eveningTime;
     _motivation = widget.motivation;
-    _reminders  = widget.reminders;
+    _reminders = widget.reminders;
     _milestones = widget.milestones;
   }
 
@@ -1594,16 +1733,21 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: Theme.of(ctx).colorScheme.copyWith(
-            primary: AppColors.forest600,
-            onPrimary: Colors.white,
-            surface: Colors.white,
-          ),
+                primary: AppColors.forest600,
+                onPrimary: Colors.white,
+                surface: Colors.white,
+              ),
         ),
         child: child!,
       ),
     );
     if (picked == null) return;
-    setState(() { if (isMorning) _morning = picked; else _evening = picked; });
+    setState(() {
+      if (isMorning)
+        _morning = picked;
+      else
+        _evening = picked;
+    });
   }
 
   String _fmt(TimeOfDay t) {
@@ -1621,7 +1765,9 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.fromLTRB(
-        20, 12, 20,
+        20,
+        12,
+        20,
         MediaQuery.of(context).viewInsets.bottom + 32,
       ),
       child: Column(
@@ -1630,16 +1776,18 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: AppColors.stone200, borderRadius: AppRadius.pill),
+                  color: AppColors.stone200, borderRadius: AppRadius.pill),
             ),
           ),
           const SizedBox(height: 20),
           Text('Notifications', style: AppTextStyles.titleMedium),
           const SizedBox(height: 2),
           Text('Check-in and reminder schedule',
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
           const SizedBox(height: 20),
 
           // Times
@@ -1705,15 +1853,16 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
               onPressed: () {
                 H.medium();
                 Navigator.pop(context, {
-                  'morning':    _morning,
-                  'evening':    _evening,
+                  'morning': _morning,
+                  'evening': _evening,
                   'motivation': _motivation,
-                  'reminders':  _reminders,
+                  'reminders': _reminders,
                   'milestones': _milestones,
                 });
               },
               child: Text(AppLocalizations.of(context).commonSave,
-                  style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelMedium.copyWith(color: Colors.white)),
             ),
           ),
         ],
@@ -1738,26 +1887,28 @@ class _SheetTimeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: borderBottom
-          ? const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.stone100)))
-          : null,
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: AppColors.forest600),
-          const SizedBox(width: 14),
-          Expanded(child: Text(label, style: AppTextStyles.titleSmall)),
-          Text(value,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.forest600)),
-          const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.stone300),
-        ],
-      ),
-    ),
-  );
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          decoration: borderBottom
+              ? const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AppColors.stone100)))
+              : null,
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: AppColors.forest600),
+              const SizedBox(width: 14),
+              Expanded(child: Text(label, style: AppTextStyles.titleSmall)),
+              Text(value,
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.forest600)),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: AppColors.stone300),
+            ],
+          ),
+        ),
+      );
 }
 
 class _SheetToggleRow extends StatelessWidget {
@@ -1774,25 +1925,26 @@ class _SheetToggleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    decoration: borderBottom
-        ? const BoxDecoration(
-            border: Border(bottom: BorderSide(color: AppColors.stone100)))
-        : null,
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(label,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone700)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: borderBottom
+            ? const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AppColors.stone100)))
+            : null,
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(label,
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.stone700)),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: AppColors.forest600,
+            ),
+          ],
         ),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeColor: AppColors.forest600,
-        ),
-      ],
-    ),
-  );
+      );
 }
 
 // ─── Shared row widget ────────────────────────────────────────────────────────
@@ -1843,15 +1995,15 @@ class _SettingsRow extends StatelessWidget {
                   Text(label, style: AppTextStyles.titleSmall),
                   if (value != null)
                     Text(value!,
-                      style: AppTextStyles.bodySmall,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                        style: AppTextStyles.bodySmall,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
             if (onTap != null)
               const Icon(Icons.chevron_right_rounded,
-                size: 20, color: AppColors.stone300),
+                  size: 20, color: AppColors.stone300),
           ],
         ),
       ),
@@ -1867,9 +2019,9 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    text.toUpperCase(),
-    style: AppTextStyles.overline,
-  );
+        text.toUpperCase(),
+        style: AppTextStyles.overline,
+      );
 }
 
 // ─── Daily spend + currency dialog ───────────────────────────────────────────
@@ -1886,7 +2038,32 @@ class _SpendDialog extends StatefulWidget {
 class _SpendDialogState extends State<_SpendDialog> {
   late String _currency;
 
-  static const _currencies = ['R', '\$', '€', '£', '¥', 'A\$', 'C\$'];
+  static const _currencies = [
+    'R',
+    '\$',
+    '£',
+    '€',
+    '¥',
+    'A\$',
+    'C\$',
+    'NZ\$',
+    'HK\$',
+    'S\$',
+    'CHF',
+    'kr',
+    '₹',
+    '₩',
+    '₺',
+    '₱',
+    'RM',
+    '₦',
+    'GH₵',
+    'Ksh',
+    '₫',
+    '฿',
+    'лв',
+    'zł'
+  ];
 
   @override
   void initState() {
@@ -1899,13 +2076,14 @@ class _SpendDialogState extends State<_SpendDialog> {
     return AlertDialog(
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-      title: Text(AppLocalizations.of(context).settingsDailySpendLabel, style: AppTextStyles.titleMedium),
+      title: Text(AppLocalizations.of(context).settingsDailySpendLabel,
+          style: AppTextStyles.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('How much did you spend per day?',
-            style: AppTextStyles.bodySmall),
+              style: AppTextStyles.bodySmall),
           const SizedBox(height: 12),
           TextField(
             controller: widget.controller,
@@ -1914,10 +2092,12 @@ class _SpendDialogState extends State<_SpendDialog> {
             decoration: InputDecoration(
               hintText: '0.00',
               prefixText: '$_currency ',
-              hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
               filled: true,
               fillColor: AppColors.stone50,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
                 borderSide: const BorderSide(color: AppColors.stone100),
@@ -1928,7 +2108,8 @@ class _SpendDialogState extends State<_SpendDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             style: AppTextStyles.bodyMedium,
@@ -1944,16 +2125,17 @@ class _SpendDialogState extends State<_SpendDialog> {
               return GestureDetector(
                 onTap: () => setState(() => _currency = c),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: sel ? AppColors.forest600 : AppColors.stone50,
                     borderRadius: AppRadius.pill,
                     border: Border.all(
-                      color: sel ? AppColors.forest600 : AppColors.stone100),
+                        color: sel ? AppColors.forest600 : AppColors.stone100),
                   ),
                   child: Text(c,
-                    style: AppTextStyles.labelMedium.copyWith(
-                      color: sel ? Colors.white : AppColors.stone600)),
+                      style: AppTextStyles.labelMedium.copyWith(
+                          color: sel ? Colors.white : AppColors.stone600)),
                 ),
               );
             }).toList(),
@@ -1964,7 +2146,8 @@ class _SpendDialogState extends State<_SpendDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(AppLocalizations.of(context).commonCancel,
-            style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+              style: AppTextStyles.labelMedium
+                  .copyWith(color: AppColors.stone500)),
         ),
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: AppColors.forest600),
@@ -1973,7 +2156,7 @@ class _SpendDialogState extends State<_SpendDialog> {
             'currency': _currency,
           }),
           child: Text(AppLocalizations.of(context).commonSave,
-            style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+              style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
         ),
       ],
     );
@@ -1998,7 +2181,10 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
   void _onDigit(String d) {
     if (_entered.length >= 4) return;
     H.selection();
-    setState(() { _entered += d; _error = null; });
+    setState(() {
+      _entered += d;
+      _error = null;
+    });
     if (_entered.length == 4) _onComplete();
   }
 
@@ -2010,13 +2196,22 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
 
   void _onComplete() {
     if (_step == 0) {
-      setState(() { _first = _entered; _entered = ''; _step = 1; });
+      setState(() {
+        _first = _entered;
+        _entered = '';
+        _step = 1;
+      });
     } else {
       if (_entered == _first) {
         Navigator.pop(context, _entered);
       } else {
         H.heavy();
-        setState(() { _entered = ''; _error = 'PINs don\'t match. Try again.'; _step = 0; _first = ''; });
+        setState(() {
+          _entered = '';
+          _error = 'PINs don\'t match. Try again.';
+          _step = 0;
+          _first = '';
+        });
       }
     }
   }
@@ -2027,42 +2222,58 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
       title: Text(_step == 0 ? 'Set a PIN' : 'Confirm PIN',
-        style: AppTextStyles.titleMedium),
+          style: AppTextStyles.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(_step == 0 ? 'Enter a 4-digit PIN' : 'Enter your PIN again',
-            style: AppTextStyles.bodySmall),
+              style: AppTextStyles.bodySmall),
           const SizedBox(height: 20),
           // Dot indicators
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(4, (i) => AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              margin: const EdgeInsets.symmetric(horizontal: 6),
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: i < _entered.length ? AppColors.forest600 : AppColors.stone100,
-              ),
-            )),
+            children: List.generate(
+                4,
+                (i) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      width: 14,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: i < _entered.length
+                            ? AppColors.forest600
+                            : AppColors.stone100,
+                      ),
+                    )),
           ),
           if (_error != null) ...[
             const SizedBox(height: 12),
             Text(_error!,
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.blush500)),
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.blush500)),
           ],
           const SizedBox(height: 20),
           // Numpad
-          for (final row in [['1','2','3'], ['4','5','6'], ['7','8','9'], ['','0','⌫']])
+          for (final row in [
+            ['1', '2', '3'],
+            ['4', '5', '6'],
+            ['7', '8', '9'],
+            ['', '0', '⌫']
+          ])
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: row.map((d) => _PinKey(digit: d, onTap: d == '⌫'
-                    ? _onDelete
-                    : d.isEmpty ? null : () => _onDigit(d))).toList(),
+                children: row
+                    .map((d) => _PinKey(
+                        digit: d,
+                        onTap: d == '⌫'
+                            ? _onDelete
+                            : d.isEmpty
+                                ? null
+                                : () => _onDigit(d)))
+                    .toList(),
               ),
             ),
         ],
@@ -2071,7 +2282,8 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(AppLocalizations.of(context).commonCancel,
-            style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500)),
+              style: AppTextStyles.labelMedium
+                  .copyWith(color: AppColors.stone500)),
         ),
       ],
     );
@@ -2094,14 +2306,13 @@ class _PinKey extends StatelessWidget {
         decoration: BoxDecoration(
           color: onTap != null ? AppColors.stone50 : Colors.transparent,
           borderRadius: AppRadius.md,
-          border: onTap != null
-              ? Border.all(color: AppColors.stone100)
-              : null,
+          border: onTap != null ? Border.all(color: AppColors.stone100) : null,
         ),
         child: Center(
           child: Text(digit,
-            style: AppTextStyles.titleMedium.copyWith(
-              color: digit == '⌫' ? AppColors.blush400 : AppColors.stone800)),
+              style: AppTextStyles.titleMedium.copyWith(
+                  color:
+                      digit == '⌫' ? AppColors.blush400 : AppColors.stone800)),
         ),
       ),
     );

@@ -1,12 +1,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- ── Network (google_fonts downloads fonts once on first run only) ──── -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- ── NO network permission ───────────────────────────────────────────
+         Removed INTERNET permission entirely. The app is fully offline:
+           - Fonts are bundled (assets/fonts/Inter-Variable.ttf, Fraunces-Variable.ttf)
+           - No analytics SDKs
+           - No crash reporting
+           - No cloud sync
+         The Play Store "Data safety" form must reflect this — declare
+         "No data collected" and "No data shared". -->
 
     <!-- ── Notifications ──────────────────────────────────────────────────── -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- SCHEDULE_EXACT_ALARM: required for AndroidScheduleMode.exactAllowWhileIdle
+         in flutter_local_notifications. Users are prompted at runtime on Android 12+.
+         USE_EXACT_ALARM (auto-granted, no prompt) is reserved for alarm/clock apps
+         and triggers Play Store policy review — not appropriate here. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <!-- ── Biometric lock ─────────────────────────────────────────────────── -->
@@ -26,8 +36,10 @@
         android:label="Journey Forward"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
         <activity
             android:name=".MainActivity"

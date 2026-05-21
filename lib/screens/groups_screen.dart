@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
+import '../components/back_button.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 
@@ -147,21 +148,13 @@ class GroupsScreen extends StatelessWidget {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-
             // ── Header ──────────────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 20, color: AppColors.stone700),
-                      onPressed: () {
-                        H.light();
-                        Navigator.of(context).pop();
-                      },
-                    ),
+                    const LuxuryBackButton(),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Column(
@@ -252,7 +245,6 @@ class _GroupCardState extends State<_GroupCard> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-
           // Tap header to expand
           InkWell(
             onTap: () {
@@ -280,8 +272,7 @@ class _GroupCardState extends State<_GroupCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(g.name,
-                            style: AppTextStyles.titleSmall),
+                        Text(g.name, style: AppTextStyles.titleSmall),
                         const SizedBox(height: 2),
                         Text(g.tagline,
                             style: AppTextStyles.bodySmall
@@ -317,8 +308,8 @@ class _GroupCardState extends State<_GroupCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(g.description,
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.stone600, height: 1.55)),
+                          style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.stone600, height: 1.55)),
                       const SizedBox(height: 12),
                       // Approach chips
                       Wrap(
@@ -357,13 +348,14 @@ class _GroupCardState extends State<_GroupCard> {
                           width: double.infinity,
                           child: OutlinedButton.icon(
                             onPressed: _openWebsite,
-                            icon: const Icon(Icons.open_in_new_rounded,
-                                size: 16),
-                            label: Text(AppLocalizations.of(context).groupsVisitWebsite),
+                            icon:
+                                const Icon(Icons.open_in_new_rounded, size: 16),
+                            label: Text(AppLocalizations.of(context)
+                                .groupsVisitWebsite),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.forest600,
-                              side: const BorderSide(
-                                  color: AppColors.forest200),
+                              side:
+                                  const BorderSide(color: AppColors.forest200),
                               shape: const RoundedRectangleBorder(
                                   borderRadius: AppRadius.lg),
                               minimumSize: const Size.fromHeight(44),
