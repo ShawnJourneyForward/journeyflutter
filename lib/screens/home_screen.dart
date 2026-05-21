@@ -16,6 +16,8 @@ import '../utils/notification_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
+import '../components/todays_strength_card.dart';
+import 'pre_craving_plan_screen.dart' show showPreCravingPlan;
 
 // ─── Daily quotes (indexed by day-of-year mod pool size) ─────────────────────
 
@@ -567,6 +569,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const SizedBox(height: 14),
 
+                        // ── Today's strength: hard-day badge + pattern insight ─
+                        const TodaysStrengthCard(),
+                        const SizedBox(height: 14),
+
                         // ── Today's Reminder ─────────────────────────────────
                         _TodaysReminderCard(quote: _dailyQuote(l10n)),
                         const SizedBox(height: 14),
@@ -589,8 +595,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _showCravingSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+  Future<void> _showCravingSheet(BuildContext context, WidgetRef ref) async {
+    // Surface the pre-craving plan BEFORE the log sheet. If the user runs
+    // through it and feels okay, we never open the log — the goal is to
+    // interrupt the impulse, not catalogue it. They can still "Still log it".
+    final wantsToLogAnyway = await showPreCravingPlan(context, ref);
+    final hasPlan =
+        (ref.read(profileProvider).valueOrNull?.preCravingPlan ?? const [])
+            .isNotEmpty;
+    if (hasPlan && !wantsToLogAnyway) return;
+    if (!context.mounted) return;
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -3112,4 +3127,5 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
         ),
       );
 }
+
 

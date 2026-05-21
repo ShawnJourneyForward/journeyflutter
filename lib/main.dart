@@ -31,9 +31,12 @@ import 'screens/puzzle_screen.dart';
 import 'screens/recovery_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/cbt_screen.dart';
+import 'screens/future_letter_screen.dart';
 import 'screens/heatmap_screen.dart';
+import 'screens/pre_craving_plan_screen.dart';
 import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
+import 'screens/thought_record_screen.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 
@@ -240,7 +243,7 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
 
     return MaterialApp.router(
       title: 'Journey Forward',
-      theme: buildAppTheme(),
+      theme: buildAppTheme(highContrast: profile?.highContrast ?? false),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -248,7 +251,11 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
+      // Only English is shipped as a real translation. The other .arb files
+      // (af/es/pt/zu) currently mirror English verbatim — exposing them would
+      // mislead users who pick their language and get English back. Restore
+      // here once a locale has a genuine translation pass.
+      supportedLocales: const [Locale('en')],
       routerConfig: _router,
     );
   }
@@ -406,6 +413,18 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/privacy',
         builder: (_, __) => const PrivacyScreen(),
+      ),
+      GoRoute(
+        path: '/future-letter',
+        builder: (_, __) => const FutureLetterScreen(),
+      ),
+      GoRoute(
+        path: '/pre-craving-plan',
+        builder: (_, __) => const PreCravingPlanScreen(),
+      ),
+      GoRoute(
+        path: '/thought-record',
+        builder: (_, __) => const ThoughtRecordScreen(),
       ),
     ],
   );

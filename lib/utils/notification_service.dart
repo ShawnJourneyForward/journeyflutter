@@ -102,6 +102,33 @@ class NotificationService {
     }
   }
 
+  // ── Exact-alarm capability ───────────────────────────────────────────────
+  //
+  // Android 12+ gates SCHEDULE_EXACT_ALARM behind a runtime check. On a fresh
+  // Android 14+ install the system may deny it by default; using
+  // exactAllowWhileIdle without permission causes zonedSchedule to throw and
+  // the user's reminders silently stop firing. Recovery reminders don't need
+  // second-precision, so we fall back to inexactAllowWhileIdle when exact
+  // alarms aren't available. Cached per process so we don't hit the platform
+  // channel on every schedule call.
+  static bool? _canScheduleExactCached;
+
+  static Future<AndroidScheduleMode> _bestScheduleMode() async {
+    if (_canScheduleExactCached == null) {
+      try {
+        final android = _plugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+        _canScheduleExactCached =
+            await android?.canScheduleExactNotifications() ?? false;
+      } catch (_) {
+        _canScheduleExactCached = false;
+      }
+    }
+    return _canScheduleExactCached!
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
   // ── Permission request ───────────────────────────────────────────────────
 
   static Future<bool> requestPermission() async {
@@ -165,6 +192,8 @@ class NotificationService {
         ),
       );
 
+      final scheduleMode = await _bestScheduleMode();
+
       // Morning notification (ID 1)
       await _plugin.zonedSchedule(
         1,
@@ -172,7 +201,7 @@ class NotificationService {
         morningBody,
         _nextInstanceOf(morningTime.hour, morningTime.minute),
         details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
         matchDateTimeComponents: DateTimeComponents.time,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -185,7 +214,7 @@ class NotificationService {
         eveningBody,
         _nextInstanceOf(eveningTime.hour, eveningTime.minute),
         details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
         matchDateTimeComponents: DateTimeComponents.time,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
@@ -317,7 +346,7 @@ class NotificationService {
           iOS: const DarwinNotificationDetails(
               presentAlert: true, presentSound: true),
         ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: await _bestScheduleMode(),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );

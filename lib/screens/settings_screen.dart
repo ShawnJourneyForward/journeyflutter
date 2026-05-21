@@ -748,6 +748,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 14),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom:
+                                BorderSide(color: AppColors.stone100, width: 1),
+                          ),
+                        ),
                         child: Row(
                           children: [
                             Container(
@@ -771,6 +777,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 H.sync(val);
                                 ref.read(profileProvider.notifier).patch(
                                       (p) => p.copyWith(hapticsEnabled: val),
+                                    );
+                              },
+                              activeColor: AppColors.forest600,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 14),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: AppColors.stone100,
+                                borderRadius: AppRadius.sm,
+                              ),
+                              child: const Icon(Icons.contrast_rounded,
+                                  size: 18, color: AppColors.stone700),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('High contrast',
+                                      style: AppTextStyles.bodyMedium),
+                                  Text(
+                                    'Darker text & stronger borders',
+                                    style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.stone500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch(
+                              value: profile.highContrast,
+                              onChanged: (val) {
+                                H.selection();
+                                ref.read(profileProvider.notifier).patch(
+                                      (p) => p.copyWith(highContrast: val),
                                     );
                               },
                               activeColor: AppColors.forest600,
@@ -1648,6 +1697,24 @@ class _MoreCard extends StatelessWidget {
                 icon: Icons.psychology_outlined,
                 label: 'CBT thought tools',
                 onTap: () => context.push('/cbt'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.fact_check_outlined,
+                label: 'Thought record (CBT)',
+                onTap: () => context.push('/thought-record'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.mail_outline_rounded,
+                label: 'Letters to future you',
+                onTap: () => context.push('/future-letter'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.checklist_rounded,
+                label: 'Pre-craving plan',
+                onTap: () => context.push('/pre-craving-plan'),
                 borderBottom: true,
               ),
               _SettingsRow(

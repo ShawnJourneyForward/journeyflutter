@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPrivacy100OnDeviceSub.
   ///
   /// In en, this message translates to:
-  /// **'Your data never leaves this phone'**
+  /// **'Your data stays on this phone unless you choose to export it'**
   String get onbPrivacy100OnDeviceSub;
 
   /// No description provided for @onbPrivacyNoAccount.
@@ -431,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbSpendSub.
   ///
   /// In en, this message translates to:
-  /// **'Your daily spend lets us show how much you\'re reclaiming. Leave it at 0 to skip — this calculation never leaves your device.'**
+  /// **'Your daily spend lets us show how much you\'re reclaiming. Leave it at 0 to skip — this calculation stays on your device.'**
   String get onbSpendSub;
 
   /// No description provided for @onbSpendAmountHint.
@@ -497,7 +497,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbSecurityPinSub.
   ///
   /// In en, this message translates to:
-  /// **'PIN is hashed and stored only in your phone\'s secure enclave'**
+  /// **'Your PIN is salted, hashed, and stored in your device\'s encrypted storage'**
   String get onbSecurityPinSub;
 
   /// No description provided for @onbPinCreateHeadline.
@@ -515,7 +515,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbPinCreateSub.
   ///
   /// In en, this message translates to:
-  /// **'Your PIN is hashed and stored only in your device\'s secure enclave — not in the app, not in the cloud.'**
+  /// **'Your PIN is salted and hashed, then stored in your device\'s encrypted storage — never in plaintext, never in the cloud.'**
   String get onbPinCreateSub;
 
   /// No description provided for @onbPinConfirmSub.
@@ -911,7 +911,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeRecoveryBannerSub3.
   ///
   /// In en, this message translates to:
-  /// **'Your liver is repairing itself'**
+  /// **'Your liver has begun repairing itself'**
   String get homeRecoveryBannerSub3;
 
   /// No description provided for @homeRecoveryBannerSub4.
@@ -2681,7 +2681,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneOneDayBenefit.
   ///
   /// In en, this message translates to:
-  /// **'Alcohol is clearing from your bloodstream. Blood pressure is normalising and your liver has begun its repair work. Tonight\'s sleep — though possibly restless — is the first night of genuine, sober healing.'**
+  /// **'Alcohol is clearing from your bloodstream. Many people see blood pressure begin to normalise as the body starts its repair work. Tonight\'s sleep — though possibly restless — is the first night of genuine, sober healing.'**
   String get milestoneOneDayBenefit;
 
   /// No description provided for @milestoneThreeDays.
@@ -2717,7 +2717,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneOneWeekBenefit.
   ///
   /// In en, this message translates to:
-  /// **'One full week. Liver enzymes are already measurably lower. Many people notice sharper thinking, better skin hydration, and more natural energy. Your brain\'s dopamine system has begun to heal.'**
+  /// **'One full week. For many people, liver enzymes start to trend lower around this stage. Some notice sharper thinking, better skin hydration, and more natural energy as the brain\'s dopamine system begins to recover.'**
   String get milestoneOneWeekBenefit;
 
   /// No description provided for @milestoneTwoWeeks.
@@ -2735,7 +2735,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneTwoWeeksBenefit.
   ///
   /// In en, this message translates to:
-  /// **'Two weeks of healing. Fatty deposits in your liver are reducing and blood pressure has dropped meaningfully. Anxiety is stabilising. Most people sleep more deeply and wake more rested than in a long time.'**
+  /// **'Two weeks of healing. For many people, fatty deposits in the liver start to reduce and blood pressure trends downward. Anxiety often begins to stabilise, and many sleep more deeply than they have in a long time.'**
   String get milestoneTwoWeeksBenefit;
 
   /// No description provided for @milestoneOneMonth.
@@ -2753,7 +2753,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneOneMonthBenefit.
   ///
   /// In en, this message translates to:
-  /// **'One month. Liver function has improved substantially. Immune cells are stronger. Mental clarity and emotional stability are noticeably better. The cravings are becoming easier to observe without acting on them.'**
+  /// **'One month. Many people see meaningful improvements in liver function and immune response around this stage. Mental clarity and emotional stability often feel noticeably better, and cravings can become easier to observe without acting on them.'**
   String get milestoneOneMonthBenefit;
 
   /// No description provided for @milestoneTwoMonths.
@@ -2771,7 +2771,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneTwoMonthsBenefit.
   ///
   /// In en, this message translates to:
-  /// **'Two months. The brain\'s prefrontal cortex — responsible for decisions, impulse control, and empathy — is visibly healing. Cholesterol levels are improving. You are physically and neurologically different from who you were.'**
+  /// **'Two months. Research suggests the prefrontal cortex — responsible for decisions, impulse control, and empathy — begins to recover meaningfully around this stage. Many people see improvements in cholesterol levels. You are physically and neurologically different from who you were.'**
   String get milestoneTwoMonthsBenefit;
 
   /// No description provided for @milestoneThreeMonths.
@@ -2807,7 +2807,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneSixMonthsBenefit.
   ///
   /// In en, this message translates to:
-  /// **'Six months. Your liver has made substantial progress in reversing alcohol-related damage. Blood pressure is meaningfully lower. Many people report that at this point, sobriety has begun to feel like their identity — not their goal.'**
+  /// **'Six months. For many people, the liver has made substantial progress in reversing alcohol-related damage and blood pressure is meaningfully lower. Many report that at this point, sobriety has begun to feel like their identity — not their goal.'**
   String get milestoneSixMonthsBenefit;
 
   /// No description provided for @milestoneOneYear.
@@ -2825,7 +2825,7 @@ abstract class AppLocalizations {
   /// No description provided for @milestoneOneYearBenefit.
   ///
   /// In en, this message translates to:
-  /// **'One year. Research suggests the risk of coronary heart disease drops to roughly half that of a continuing drinker. Your liver has largely repaired itself. This is a profound milestone — one that changes the statistical trajectory of your life.'**
+  /// **'One year. Research suggests the risk of coronary heart disease may drop substantially compared with continuing drinkers, and for many people the liver has largely repaired itself. This is a profound milestone — one that can change the trajectory of your life.'**
   String get milestoneOneYearBenefit;
 
   /// No description provided for @recoveryTitle.
@@ -5123,7 +5123,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPINBiometricBody.
   ///
   /// In en, this message translates to:
-  /// **'If you enable a PIN, it is stored as a SHA-256 hash in your device\'s secure encrypted storage — never as plaintext. Biometric unlock uses your device\'s native biometric system and Journey Forward never accesses or stores biometric data.'**
+  /// **'If you enable a PIN, it is salted and run through a slow key-derivation hash (PBKDF2-style), then stored in your device\'s encrypted storage — never as plaintext. Biometric unlock uses your device\'s native biometric system; Journey Forward never accesses or stores your biometric data.'**
   String get privacyPINBiometricBody;
 
   /// No description provided for @privacyHowToDelete.

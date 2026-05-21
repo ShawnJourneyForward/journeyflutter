@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/voice_input.dart';
 import '../providers/app_providers.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
@@ -417,6 +418,8 @@ class _JournalEntrySheet extends StatefulWidget {
 class _JournalEntrySheetState extends State<_JournalEntrySheet> {
   final _ctrl = TextEditingController();
   String _mood = 'okay';
+  bool _listening = false;
+  String _baseline = ''; // text already typed before mic was tapped
 
   static const _moods = [
     ('great', '😄', 'Great'),
@@ -428,8 +431,46 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
 
   @override
   void dispose() {
+    if (_listening) VoiceInput.instance.cancel();
     _ctrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _toggleListening() async {
+    if (_listening) {
+      await VoiceInput.instance.stop();
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
+    final ok = await VoiceInput.instance.init();
+    if (!ok) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Voice input is unavailable. Check microphone permission in Settings.',
+            style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
+        backgroundColor: AppColors.stone600,
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    H.medium();
+    _baseline = _ctrl.text;
+    if (_baseline.isNotEmpty && !_baseline.endsWith(' ')) _baseline += ' ';
+    setState(() => _listening = true);
+    await VoiceInput.instance.start(
+      onResult: (text, isFinal) {
+        if (!mounted) return;
+        _ctrl.text = '$_baseline$text';
+        _ctrl.selection =
+            TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
+        if (isFinal) {
+          setState(() => _listening = false);
+        }
+      },
+      listenFor: const Duration(minutes: 2),
+      pauseFor: const Duration(seconds: 4),
+    );
   }
 
   @override
@@ -506,9 +547,48 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
           ),
 
           const SizedBox(height: 16),
-          Text('What\'s on your mind?',
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.stone500)),
+          Row(
+            children: [
+              Text('What\'s on your mind?',
+                  style: AppTextStyles.labelMedium
+                      .copyWith(color: AppColors.stone500)),
+              const Spacer(),
+              GestureDetector(
+                onTap: _toggleListening,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _listening
+                        ? AppColors.blush500
+                        : AppColors.forest50,
+                    borderRadius: AppRadius.pill,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _listening
+                            ? Icons.stop_rounded
+                            : Icons.mic_none_rounded,
+                        size: 14,
+                        color: _listening
+                            ? Colors.white
+                            : AppColors.forest700,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _listening ? 'Stop' : 'Speak',
+                        style: AppTextStyles.labelSmall.copyWith(
+                            color: _listening
+                                ? Colors.white
+                                : AppColors.forest700),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _ctrl,
@@ -582,8 +662,37 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
   final _pageController = PageController();
   final Set<String> _favourites = {};
 
-  List<String> _allAffirmations(List<String> custom, List<String> defaults) =>
-      [...custom, ...defaults];
+  // Personalised cards seeded from the user's profile + recent gratitude.
+  // These rotate daily (day-of-year mod) so the user doesn't see the same
+  // one every time but they don't feel random either. Empty list when there
+  // is no name + no gratitude — keeps the existing affirmation flow intact.
+  List<String> _personalCards(String? name, List<String> gratitudes) {
+    final out = <String>[];
+    if (name != null && name.trim().isNotEmpty) {
+      final n = name.trim();
+      out.addAll([
+        '$n, you are doing harder things than most people will ever try.',
+        '$n, your sober self is the realest version of you.',
+        '$n, this moment is enough. You are enough.',
+        '$n, the version of you a year from now is rooting for today\'s you.',
+      ]);
+    }
+    // Pull from recent gratitudes — turn the user's own words into a mirror.
+    for (final g in gratitudes.take(3)) {
+      final clean = g.trim();
+      if (clean.length > 4 && clean.length < 80) {
+        out.add('You wrote this: "$clean" — that\'s still true.');
+      }
+    }
+    return out;
+  }
+
+  List<String> _allAffirmations(
+    List<String> personal,
+    List<String> custom,
+    List<String> defaults,
+  ) =>
+      [...personal, ...custom, ...defaults];
 
   @override
   void dispose() {
@@ -597,7 +706,13 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
     final defaults = _buildDefaultAffirmations(l10n);
     final customAsync = ref.watch(affirmationProvider);
     final custom = customAsync.valueOrNull ?? [];
-    final all = _allAffirmations(custom, defaults);
+    final profile = ref.watch(profileProvider).valueOrNull;
+    final pastGratitudes = ref.watch(allGratitudeProvider).valueOrNull ?? [];
+    final personal = _personalCards(
+      profile?.username,
+      pastGratitudes.map((g) => g.text).toList(),
+    );
+    final all = _allAffirmations(personal, custom, defaults);
 
     return Stack(
       children: [

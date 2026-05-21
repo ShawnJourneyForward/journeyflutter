@@ -23,6 +23,13 @@ class UserProfile {
   final bool hapticsEnabled;
   final List<int> firedMilestoneDays;
   final List<double> firedSavingsTiers;
+  // Pre-craving plan: 3 short steps the user has pre-committed to running
+  // when a craving hits. Surfaces BEFORE the craving log so the plan is the
+  // first thing they see when they're at risk.
+  final List<String> preCravingPlan;
+  // High-contrast variant of the Stillwater theme — separate from dark mode.
+  // Recovery hours skew late-night, this keeps text legible on tired eyes.
+  final bool highContrast;
 
   const UserProfile({
     required this.username,
@@ -44,6 +51,8 @@ class UserProfile {
     this.hapticsEnabled = true,
     this.firedMilestoneDays = const [],
     this.firedSavingsTiers = const [],
+    this.preCravingPlan = const [],
+    this.highContrast = false,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> j) => UserProfile(
@@ -84,6 +93,11 @@ class UserProfile {
                 ?.map((e) => (e as num).toDouble())
                 .toList() ??
             [],
+        preCravingPlan: (j['preCravingPlan'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            const [],
+        highContrast: (j['highContrast'] as bool?) ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -107,6 +121,8 @@ class UserProfile {
         'hapticsEnabled': hapticsEnabled,
         'firedMilestoneDays': firedMilestoneDays,
         'firedSavingsTiers': firedSavingsTiers,
+        'preCravingPlan': preCravingPlan,
+        'highContrast': highContrast,
       };
 
   String toJsonString() => jsonEncode(toJson());
@@ -131,6 +147,8 @@ class UserProfile {
     bool? hapticsEnabled,
     List<int>? firedMilestoneDays,
     List<double>? firedSavingsTiers,
+    List<String>? preCravingPlan,
+    bool? highContrast,
   }) =>
       UserProfile(
         username: username ?? this.username,
@@ -159,6 +177,8 @@ class UserProfile {
         hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
         firedMilestoneDays: firedMilestoneDays ?? this.firedMilestoneDays,
         firedSavingsTiers: firedSavingsTiers ?? this.firedSavingsTiers,
+        preCravingPlan: preCravingPlan ?? this.preCravingPlan,
+        highContrast: highContrast ?? this.highContrast,
       );
 }
 

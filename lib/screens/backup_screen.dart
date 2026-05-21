@@ -13,7 +13,9 @@ import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/backup_crypto.dart';
 import '../utils/encrypted_store.dart';
+import '../utils/haptic_service.dart';
 
 // ─── Keys exported in a backup ────────────────────────────────────────────────
 
@@ -28,6 +30,12 @@ const _exportKeys = [
   'thoughts',
   'activities',
   'sleep_logs',
+  // v5.8 feature data — must travel with the backup or the user silently
+  // loses these on restore.
+  'future_letters',
+  'hard_days',
+  'thought_records',
+  'meetings',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
@@ -49,6 +57,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   // ── Export ─────────────────────────────────────────────────────────────────
 
   Future<void> _export() async {
+    // Ask up-front whether to passphrase-protect. Default is unprotected to
+    // preserve the long-standing v1 backup format users already have on disk,
+    // but the recommended choice is encrypted — phones get lost / shared.
+    final passphrase = await _promptPassphrase(forExport: true);
+    if (passphrase == null) return; // user cancelled the dialog
+    final usingEncryption = passphrase.isNotEmpty;
+
     setState(() => _exporting = true);
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -72,13 +87,26 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         'data': data,
       });
 
-      final file =
-          File('${Directory.systemTemp.path}/journey_forward_backup.json');
-      await file.writeAsString(payload);
+      final fileContents = usingEncryption
+          ? BackupCrypto.encrypt(payload, passphrase)
+          : payload;
+      final filename = usingEncryption
+          ? 'journey_forward_backup.jfwbk'
+          : 'journey_forward_backup.json';
+
+      final file = File('${Directory.systemTemp.path}/$filename');
+      await file.writeAsString(fileContents);
 
       await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'application/json')],
-        subject: 'Journey Forward Backup',
+        [
+          XFile(file.path,
+              mimeType: usingEncryption
+                  ? 'application/octet-stream'
+                  : 'application/json'),
+        ],
+        subject: usingEncryption
+            ? 'Journey Forward Backup (encrypted)'
+            : 'Journey Forward Backup',
       );
     } catch (e) {
       if (mounted) {
@@ -88,6 +116,115 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
+  }
+
+  // ── Passphrase prompt ─────────────────────────────────────────────────────
+  //
+  // Returns:
+  //   • a non-empty string  → user wants encryption with that passphrase
+  //   • an empty string     → user chose "skip" (plaintext backup)
+  //   • null                → user cancelled the dialog
+  Future<String?> _promptPassphrase({required bool forExport}) async {
+    final ctrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    String? error;
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setLocal) {
+          return AlertDialog(
+            backgroundColor: AppColors.card,
+            shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+            title: Text(
+              forExport ? 'Protect your backup?' : 'Enter backup passphrase',
+              style: AppTextStyles.titleMedium,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  forExport
+                      ? 'Set a passphrase to encrypt the backup file. Without it, anyone with the file can read your journal.'
+                      : 'This file is encrypted. Type the passphrase you used when exporting.',
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.stone600, height: 1.4),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: ctrl,
+                  obscureText: true,
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Passphrase',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                if (forExport) ...[
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: confirmCtrl,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm passphrase',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+                if (error != null) ...[
+                  const SizedBox(height: 8),
+                  Text(error!,
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.blush600)),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(null),
+                child: Text('Cancel',
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: AppColors.stone500)),
+              ),
+              if (forExport)
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(''),
+                  child: Text('Skip (plain JSON)',
+                      style: AppTextStyles.labelMedium
+                          .copyWith(color: AppColors.stone500)),
+                ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.forest700),
+                onPressed: () {
+                  if (ctrl.text.isEmpty) {
+                    setLocal(() => error = 'Passphrase cannot be empty.');
+                    return;
+                  }
+                  if (forExport && ctrl.text != confirmCtrl.text) {
+                    setLocal(() => error = 'Passphrases do not match.');
+                    return;
+                  }
+                  if (forExport && ctrl.text.length < 8) {
+                    setLocal(() =>
+                        error = 'Use at least 8 characters — longer is safer.');
+                    return;
+                  }
+                  Navigator.of(ctx).pop(ctrl.text);
+                },
+                child: Text(forExport ? 'Encrypt' : 'Unlock',
+                    style:
+                        AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+              ),
+            ],
+          );
+        });
+      },
+    );
+    ctrl.dispose();
+    confirmCtrl.dispose();
+    H.light();
+    return result;
   }
 
   // ── Import ─────────────────────────────────────────────────────────────────
@@ -133,7 +270,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['json'],
+        allowedExtensions: ['json', 'jfwbk'],
       );
 
       if (result == null || result.files.single.path == null) {
@@ -141,7 +278,26 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         return;
       }
 
-      final raw = await File(result.files.single.path!).readAsString();
+      var raw = await File(result.files.single.path!).readAsString();
+
+      // Encrypted backup? Prompt for the passphrase and decrypt before
+      // attempting the JSON shape check.
+      if (BackupCrypto.looksEncrypted(raw)) {
+        if (!mounted) return;
+        final pass = await _promptPassphrase(forExport: false);
+        if (pass == null || pass.isEmpty) {
+          setState(() => _importing = false);
+          return;
+        }
+        try {
+          raw = BackupCrypto.decrypt(raw, pass);
+        } on BackupCryptoException catch (e) {
+          if (mounted) _showSnack(e.message, error: true);
+          setState(() => _importing = false);
+          return;
+        }
+      }
+
       final parsed = jsonDecode(raw) as Map<String, dynamic>;
 
       if (parsed['app'] != 'Journey Forward') {

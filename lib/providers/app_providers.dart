@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/future_letter.dart';
+import '../models/hard_day.dart';
+import '../models/thought_record.dart';
 import '../models/user_profile.dart';
 import '../utils/encrypted_store.dart';
 
@@ -145,6 +148,11 @@ class ProfileNotifier extends AsyncNotifier<UserProfile?> {
     final json = profile.toJsonString();
     await EncryptedStore.write(_dataKey, json);
     await prefs.setString(_existsKey, '1');
+    // Mirror the sober date (and only the sober date) into plain prefs so
+    // the home-screen widget — which cannot read encrypted storage — can
+    // render the streak. Sober date alone is what's already visible on the
+    // lock screen counter, so this doesn't widen the user's exposure.
+    await prefs.setString('profile_sober_date', profile.soberDate);
     // Remove any legacy plaintext profile entry so future loads only see
     // the encrypted value.
     await prefs.remove(_legacyKey);
@@ -1169,3 +1177,207 @@ class MeetingsNotifier extends AsyncNotifier<List<Meeting>> {
 final meetingsProvider =
     AsyncNotifierProvider<MeetingsNotifier, List<Meeting>>(
         MeetingsNotifier.new);
+
+// ─── Future-self letters ──────────────────────────────────────────────────────
+
+class FutureLetterNotifier extends AsyncNotifier<List<FutureLetter>> {
+  static const _key = 'future_letters';
+
+  @override
+  Future<List<FutureLetter>> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    return _safeParseList(raw, FutureLetter.fromJson)
+      ..sort((a, b) => a.unlockAt.compareTo(b.unlockAt));
+  }
+
+  Future<void> _persist(List<FutureLetter> list) async {
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(list.map((e) => e.toJson()).toList()));
+    state = AsyncData(list);
+  }
+
+  Future<void> add(FutureLetter letter) async {
+    final current = state.valueOrNull ?? [];
+    await _persist([...current, letter]
+      ..sort((a, b) => a.unlockAt.compareTo(b.unlockAt)));
+  }
+
+  Future<void> markOpened(String id) async {
+    final current = state.valueOrNull ?? [];
+    final updated = current
+        .map((l) => l.id == id ? l.copyWith(opened: true) : l)
+        .toList();
+    await _persist(updated);
+  }
+
+  Future<void> remove(String id) async {
+    final current = state.valueOrNull ?? [];
+    await _persist(current.where((l) => l.id != id).toList());
+  }
+}
+
+final futureLetterProvider =
+    AsyncNotifierProvider<FutureLetterNotifier, List<FutureLetter>>(
+        FutureLetterNotifier.new);
+
+// ─── Hard day badges ──────────────────────────────────────────────────────────
+
+class HardDayNotifier extends AsyncNotifier<List<HardDay>> {
+  static const _key = 'hard_days';
+
+  @override
+  Future<List<HardDay>> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    return _safeParseList(raw, HardDay.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  Future<void> _persist(List<HardDay> list) async {
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(list.map((e) => e.toJson()).toList()));
+    state = AsyncData(list);
+  }
+
+  Future<void> mark({String? note}) async {
+    final current = state.valueOrNull ?? [];
+    final today = DateTime.now();
+    // One per calendar day — marking twice on the same day updates the note
+    // rather than double-counting.
+    final existingIdx = current.indexWhere((h) =>
+        h.date.year == today.year &&
+        h.date.month == today.month &&
+        h.date.day == today.day);
+    final entry = HardDay(
+      id: today.millisecondsSinceEpoch.toString(),
+      date: today,
+      note: note?.trim().isEmpty == true ? null : note?.trim(),
+    );
+    final updated = [...current];
+    if (existingIdx >= 0) {
+      updated[existingIdx] = entry;
+    } else {
+      updated.insert(0, entry);
+    }
+    await _persist(updated);
+  }
+
+  Future<void> remove(String id) async {
+    final current = state.valueOrNull ?? [];
+    await _persist(current.where((h) => h.id != id).toList());
+  }
+
+  bool isMarkedToday() {
+    final list = state.valueOrNull ?? [];
+    final today = DateTime.now();
+    return list.any((h) =>
+        h.date.year == today.year &&
+        h.date.month == today.month &&
+        h.date.day == today.day);
+  }
+}
+
+final hardDayProvider =
+    AsyncNotifierProvider<HardDayNotifier, List<HardDay>>(HardDayNotifier.new);
+
+// ─── CBT thought records (full version) ───────────────────────────────────────
+
+class ThoughtRecordNotifier extends AsyncNotifier<List<ThoughtRecord>> {
+  static const _key = 'thought_records';
+
+  @override
+  Future<List<ThoughtRecord>> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    return _safeParseList(raw, ThoughtRecord.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  Future<void> _persist(List<ThoughtRecord> list) async {
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(list.map((e) => e.toJson()).toList()));
+    state = AsyncData(list);
+  }
+
+  Future<void> add(ThoughtRecord record) async {
+    final current = state.valueOrNull ?? [];
+    await _persist([record, ...current]);
+  }
+
+  Future<void> remove(String id) async {
+    final current = state.valueOrNull ?? [];
+    await _persist(current.where((r) => r.id != id).toList());
+  }
+}
+
+final thoughtRecordProvider =
+    AsyncNotifierProvider<ThoughtRecordNotifier, List<ThoughtRecord>>(
+        ThoughtRecordNotifier.new);
+
+// ─── Craving pattern detection (derived) ──────────────────────────────────────
+//
+// Reads cravings and surfaces ONE actionable pattern: the day-of-week +
+// 2-hour window that holds the most cravings. Returns null when there
+// aren't enough data points (<5) — a pattern from 2 cravings is noise.
+
+class CravingPattern {
+  final int weekday; // 1 = Monday, 7 = Sunday (DateTime.weekday convention)
+  final int startHour; // 0–22 (window is [startHour, startHour+2))
+  final int count;
+  final int totalCravings;
+  const CravingPattern({
+    required this.weekday,
+    required this.startHour,
+    required this.count,
+    required this.totalCravings,
+  });
+
+  String get weekdayLabel => const [
+        '', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+        'Friday', 'Saturday', 'Sunday',
+      ][weekday];
+
+  String get timeLabel {
+    String fmt(int h) {
+      if (h == 0) return '12am';
+      if (h < 12) return '${h}am';
+      if (h == 12) return '12pm';
+      return '${h - 12}pm';
+    }
+    return '${fmt(startHour)}–${fmt((startHour + 2) % 24)}';
+  }
+}
+
+final cravingPatternProvider = Provider<CravingPattern?>((ref) {
+  final cravings = ref.watch(cravingProvider).valueOrNull ?? const [];
+  if (cravings.length < 5) return null;
+
+  // Bucket by (weekday, 2-hour window). 7 days × 12 windows = 84 buckets.
+  final buckets = <int, int>{};
+  for (final c in cravings) {
+    final wd = c.date.weekday;
+    final win = c.date.hour ~/ 2; // 0..11
+    final key = wd * 100 + win;
+    buckets[key] = (buckets[key] ?? 0) + 1;
+  }
+  // Pick the largest bucket; require at least 3 cravings in it.
+  int bestKey = 0;
+  int bestCount = 0;
+  buckets.forEach((k, v) {
+    if (v > bestCount) {
+      bestCount = v;
+      bestKey = k;
+    }
+  });
+  if (bestCount < 3) return null;
+  return CravingPattern(
+    weekday: bestKey ~/ 100,
+    startHour: (bestKey % 100) * 2,
+    count: bestCount,
+    totalCravings: cravings.length,
+  );
+});

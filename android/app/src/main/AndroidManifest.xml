@@ -13,11 +13,11 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <!-- SCHEDULE_EXACT_ALARM: required for AndroidScheduleMode.exactAllowWhileIdle
-         in flutter_local_notifications. Users are prompted at runtime on Android 12+.
-         USE_EXACT_ALARM (auto-granted, no prompt) is reserved for alarm/clock apps
-         and triggers Play Store policy review — not appropriate here. -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- SCHEDULE_EXACT_ALARM removed: NotificationService.scheduleFromPrefs now
+         falls back to AndroidScheduleMode.inexactAllowWhileIdle when the
+         exact-alarm capability is unavailable, which is the right default for
+         a daily recovery reminder. Inexact scheduling triggers within a few
+         minutes of the chosen time and removes Play Store policy friction. -->
 
     <!-- ── Biometric lock ─────────────────────────────────────────────────── -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
@@ -76,6 +76,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
+
+        <!-- ── Home screen widget ───────────────────────────────────────── -->
+        <receiver
+            android:name=".JourneyWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/journey_widget_info"/>
+        </receiver>
     </application>
 
     <queries>
@@ -90,6 +102,14 @@
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>
+        </intent>
+        <!-- speech_to_text needs to enumerate any installed speech service
+             (Google "Speech Services", Samsung Voice, etc.) on Android 11+. -->
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE"/>
         </intent>
     </queries>
 </manifest>

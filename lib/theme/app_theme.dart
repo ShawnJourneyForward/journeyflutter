@@ -322,28 +322,33 @@ class AppShadows {
 
 // ─── ThemeData ────────────────────────────────────────────────────────────────
 
-ThemeData buildAppTheme() {
-  const colorScheme = ColorScheme(
+ThemeData buildAppTheme({bool highContrast = false}) {
+  // High-contrast variant — darkens forest tones to reach WCAG AAA on text,
+  // lifts borders from 10% to 40% forest, and replaces placeholder mist-grey
+  // with stone700. Tested on cream background only; we never opted into a
+  // dark mode because recovery hours skew late-night and the cream surface
+  // tested as gentler on eyes than a dark canvas.
+  final colorScheme = ColorScheme(
     brightness: Brightness.light,
-    primary: AppColors.forest600,
+    primary: highContrast ? AppColors.forest800 : AppColors.forest600,
     onPrimary: Colors.white,
     primaryContainer: AppColors.forest100,
-    onPrimaryContainer: AppColors.forest800,
-    secondary: AppColors.honey500,
+    onPrimaryContainer: AppColors.forest900,
+    secondary: highContrast ? AppColors.honey600 : AppColors.honey500,
     onSecondary: Colors.white,
     secondaryContainer: AppColors.honey50,
-    onSecondaryContainer: AppColors.forest700,
-    error: AppColors.blush600,
+    onSecondaryContainer: AppColors.forest800,
+    error: highContrast ? AppColors.blush700 : AppColors.blush600,
     onError: Colors.white,
     errorContainer: AppColors.blush50,
     onErrorContainer: AppColors.blush700,
     surface: AppColors.card,
-    onSurface: AppColors.stone800,
+    onSurface: highContrast ? AppColors.stone900 : AppColors.stone800,
     surfaceContainerHighest: AppColors.stone100,
-    outline: AppColors.stone200,
-    outlineVariant: AppColors.stone100,
-    shadow: Color(0x1A1E293B),
-    scrim: Color(0x661E293B),
+    outline: highContrast ? AppColors.stone500 : AppColors.stone200,
+    outlineVariant: highContrast ? AppColors.stone300 : AppColors.stone100,
+    shadow: const Color(0x1A1E293B),
+    scrim: const Color(0x661E293B),
   );
 
   return ThemeData(
