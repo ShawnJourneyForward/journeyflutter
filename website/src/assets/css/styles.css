@@ -965,3 +965,378 @@ p {
     padding-bottom: 56px;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   STILLWATER UPGRADE — realistic device frame, hero depth, scroll reveals
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Realistic Android device frame ─────────────────────────────────
+   A proper phone silhouette: dark bezel, punch-hole camera, side button,
+   multi-layer ambient + contact shadows. Replaces the flat white-card
+   look. Use <div class="device"> wrapping a screen element. */
+.device {
+  position: relative;
+  width: min(340px, 80vw);
+  aspect-ratio: 9 / 20; /* matches 720x1600 screenshots exactly — no crop */
+  padding: 11px;
+  border-radius: 46px;
+  background:
+    linear-gradient(160deg, #1d211e 0%, #0e1311 55%, #161a17 100%);
+  box-shadow:
+    /* outer ambient */
+    0 60px 110px -40px rgba(20, 36, 28, 0.55),
+    0 30px 50px -18px rgba(20, 36, 28, 0.35),
+    /* contact shadow */
+    0 8px 18px -6px rgba(15, 25, 20, 0.45),
+    /* edge highlight */
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  transition: transform 600ms cubic-bezier(.2, .7, .2, 1);
+}
+
+.device::before {
+  /* top edge specular highlight — catches imaginary light */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 28px;
+  border-radius: 46px 46px 50% 50% / 46px 46px 100% 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent);
+  pointer-events: none;
+}
+
+.device::after {
+  /* right side power button */
+  content: "";
+  position: absolute;
+  top: 22%;
+  right: -2px;
+  width: 3px;
+  height: 56px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(180deg, #0a0d0b, #1d211e, #0a0d0b);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.device-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  background: var(--card);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.device-screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.device-screen::before {
+  /* punch-hole camera */
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #2a2e2b 0%, #050706 65%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(0, 0, 0, 0.4);
+  z-index: 3;
+}
+
+.device-screen::after {
+  /* subtle screen reflection sheen */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Hero device — subtle 3D tilt, only on wide screens */
+.hero .device.tilt {
+  transform: perspective(1400px) rotateY(-6deg) rotateX(3deg) translateZ(0);
+}
+
+.hero .device.tilt:hover {
+  transform: perspective(1400px) rotateY(-3deg) rotateX(1.5deg) translateZ(0);
+}
+
+@media (max-width: 760px) {
+  .hero .device.tilt {
+    transform: none;
+  }
+}
+
+/* Smaller device variants for the screen-row preview section */
+.device.compact {
+  width: min(260px, 70vw);
+  padding: 9px;
+  border-radius: 36px;
+}
+.device.compact .device-screen {
+  border-radius: 28px;
+}
+.device.compact .device-screen::before {
+  top: 10px;
+  width: 8px;
+  height: 8px;
+}
+
+/* ── Hero: stronger atmosphere ─────────────────────────────────────── */
+.botanical-hero {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgba(63, 122, 90, 0.10), transparent 50%),
+    radial-gradient(ellipse at 12% 78%, rgba(201, 152, 70, 0.07), transparent 45%);
+}
+
+.hero-copy h1 {
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+
+.hero-copy .lede {
+  font-size: clamp(1.18rem, 1.7vw, 1.42rem);
+  line-height: 1.45;
+  color: rgba(38, 51, 47, 0.92);
+}
+
+.hero .button {
+  min-height: 54px;
+  padding: 0 28px;
+  font-size: 1.02rem;
+}
+
+.hero-visual {
+  position: relative;
+}
+
+/* Watercolor leaf behind the hero device — soft botanical wash */
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  inset: -8% -14%;
+  background:
+    radial-gradient(circle at 30% 35%, rgba(63, 122, 90, 0.18), transparent 55%),
+    radial-gradient(circle at 70% 65%, rgba(232, 241, 232, 0.45), transparent 60%);
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* ── App preview section: switch to realistic devices ─────────────── */
+.screen-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  align-items: end;
+}
+
+.screen-row .device {
+  width: 100%;
+  max-width: 240px;
+  margin-inline: auto;
+  transition: transform 500ms cubic-bezier(.2, .7, .2, 1);
+}
+
+.screen-row .device:hover {
+  transform: translateY(-6px);
+}
+
+.screen-row figcaption {
+  margin-top: 14px;
+  color: rgba(38, 51, 47, 0.62);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 1040px) {
+  .screen-row {
+    gap: 18px;
+  }
+  .screen-row .device {
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 760px) {
+  .screen-row {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .screen-row .device {
+    max-width: 260px;
+  }
+}
+
+/* ── Trust grid — refine ──────────────────────────────────────────── */
+.trust-grid {
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.6), rgba(232, 241, 232, 0.4));
+  border-color: rgba(46, 88, 68, 0.10);
+}
+
+.trust-grid article {
+  position: relative;
+  transition: background 200ms ease;
+}
+
+.trust-grid article:hover {
+  background: rgba(255, 253, 248, 0.98);
+}
+
+/* ── Feature cards — tighten ──────────────────────────────────────── */
+.feature-card {
+  border-radius: var(--radius-lg);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+/* ── Scroll reveal — fade up on intersection ──────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 700ms cubic-bezier(.2, .7, .2, 1),
+    transform 700ms cubic-bezier(.2, .7, .2, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal][data-reveal-delay="1"] { transition-delay: 80ms; }
+[data-reveal][data-reveal-delay="2"] { transition-delay: 160ms; }
+[data-reveal][data-reveal-delay="3"] { transition-delay: 240ms; }
+[data-reveal][data-reveal-delay="4"] { transition-delay: 320ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero .device.tilt {
+    transform: none;
+  }
+}
+
+/* ── Feature tiles — concrete capabilities grid ──────────────────────
+   Companion to the high-level Track/Reflect/Return cards. These call out
+   specific named features so visitors can see what's actually inside. */
+.tiles-section {
+  padding-top: clamp(72px, 6vw, 96px);
+  padding-bottom: clamp(72px, 6vw, 96px);
+}
+
+.tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 38px;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(165deg, rgba(255, 253, 248, 0.96), rgba(232, 241, 232, 0.42));
+  box-shadow: var(--shadow-soft);
+  transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+  overflow: hidden;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: rgba(46, 88, 68, 0.18);
+}
+
+.tile::before {
+  /* subtle botanical wash, top-right */
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -30%;
+  width: 70%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(63, 122, 90, 0.10), transparent 70%);
+  pointer-events: none;
+}
+
+.tile-glyph {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--forest-dark);
+  background: rgba(232, 241, 232, 0.9);
+  border: 1px solid rgba(46, 88, 68, 0.10);
+}
+
+.tile-glyph svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tile h3 {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.tile p {
+  margin: 0;
+  color: rgba(38, 51, 47, 0.74);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 1040px) {
+  .tiles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .tiles-grid {
+    grid-template-columns: 1fr;
+  }
+  .tile {
+    padding: 22px 20px;
+  }
+}

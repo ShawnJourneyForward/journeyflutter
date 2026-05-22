@@ -434,7 +434,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWeeklyGoals => 'Weekly Goals';
 
   @override
-  String get homeDailyMissions => 'TODAY\'S GENTLE STEPS';
+  String get homeDailyMissions => 'TODAY\'S STEPS';
 
   @override
   String get homeMissionsSubtitle => 'Small acts of care for today.';
@@ -2642,7 +2642,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get slipLogEmpty => 'No slips recorded';
 
   @override
-  String get slipLogEmptySubtitle => 'Your current streak is fully intact.';
+  String get slipLogEmptySubtitle => 'Your recovery journey is continuing.';
 
   @override
   String get slipLogNoNote => 'No note recorded.';
@@ -2652,8 +2652,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count days streak',
-      one: '1 day streak',
+      other: '$count days sober',
+      one: '1 day sober',
     );
     return '$_temp0';
   }
@@ -2666,7 +2666,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupExportDesc =>
-      'Save all your journal entries, gratitude logs, slip records, and profile data as a JSON file you can store or share.';
+      'Save all your journal entries, gratitude logs, slip records, and profile data. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.';
 
   @override
   String get backupExportButton => 'Export now';
@@ -2707,7 +2707,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupPrivacyWarning =>
-      'Your backup file is unencrypted. Store it somewhere only you can access.';
+      'Encrypted backups (.jfwbk) require your passphrase to open. Plain JSON backups are unencrypted — store them somewhere only you can access.';
 
   @override
   String get backupConfirmTitle => 'Restore backup?';
@@ -2752,7 +2752,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyNoInternetBody =>
-      'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app makes no network requests of any kind — no internet connection is needed or used.';
+      'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app itself makes no network requests. If you tap a link to a crisis line, support group, or external resource, your device will open it in your system browser — outside of the app and subject to that site\'s own privacy policy.';
 
   @override
   String get privacyNoAnalytics => 'No analytics or tracking';
@@ -2773,7 +2773,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyBackupRestoreBody =>
-      'When you export a backup, a JSON file is created and shared via your device\'s share sheet — the same way you share photos. Journey Forward does not receive or store this file. You control where it goes.';
+      'When you export a backup, a file is created and shared via your device\'s share sheet — the same way you share photos. You can choose an encrypted backup (.jfwbk, protected by your passphrase) or a plain JSON file. Journey Forward does not receive or store this file. You control where it goes.';
 
   @override
   String get privacyPINBiometric => 'PIN and biometric lock';

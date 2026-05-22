@@ -26,8 +26,9 @@
     <!-- ── Voice journal (speech-to-text) ────────────────────────────────── -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
-    <!-- ── Vision board (camera + gallery) ───────────────────────────────── -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- ── Vision board (gallery only — no camera capture) ──────────────── -->
+    <!-- CAMERA permission deliberately omitted: image_picker is called with  -->
+    <!-- ImageSource.gallery only. No camera capture feature is present.      -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"/>

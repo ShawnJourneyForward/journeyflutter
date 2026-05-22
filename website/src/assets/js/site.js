@@ -78,7 +78,40 @@ function bindConfiguredLinks() {
   });
 }
 
+function bindScrollReveals() {
+  const targets = document.querySelectorAll('[data-reveal]');
+  if (!targets.length) return;
+
+  const prefersReducedMotion =
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) {
+    targets.forEach((t) => t.classList.add('is-visible'));
+    return;
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((t) => t.classList.add('is-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+  );
+
+  targets.forEach((t) => observer.observe(t));
+}
+
 renderNav();
 renderFooter();
 bindConfiguredLinks();
+bindScrollReveals();
 

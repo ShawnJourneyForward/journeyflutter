@@ -433,7 +433,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeWeeklyGoals => 'Weekly Goals';
 
   @override
-  String get homeDailyMissions => 'TODAY\'S GENTLE STEPS';
+  String get homeDailyMissions => 'TODAY\'S STEPS';
 
   @override
   String get homeMissionsSubtitle => 'Small acts of care for today.';

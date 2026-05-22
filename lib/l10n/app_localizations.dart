@@ -839,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDailyMissions.
   ///
   /// In en, this message translates to:
-  /// **'TODAY\'S GENTLE STEPS'**
+  /// **'TODAY\'S STEPS'**
   String get homeDailyMissions;
 
   /// No description provided for @homeMissionsSubtitle.
@@ -4889,7 +4889,7 @@ abstract class AppLocalizations {
   /// No description provided for @slipLogEmptySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your current streak is fully intact.'**
+  /// **'Your recovery journey is continuing.'**
   String get slipLogEmptySubtitle;
 
   /// No description provided for @slipLogNoNote.
@@ -4901,7 +4901,7 @@ abstract class AppLocalizations {
   /// No description provided for @slipLogStreakBadge.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 day streak} other{{count} days streak}}'**
+  /// **'{count, plural, =1{1 day sober} other{{count} days sober}}'**
   String slipLogStreakBadge(int count);
 
   /// No description provided for @backupTitle.
@@ -4919,7 +4919,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupExportDesc.
   ///
   /// In en, this message translates to:
-  /// **'Save all your journal entries, gratitude logs, slip records, and profile data as a JSON file you can store or share.'**
+  /// **'Save all your journal entries, gratitude logs, slip records, and profile data. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.'**
   String get backupExportDesc;
 
   /// No description provided for @backupExportButton.
@@ -4997,7 +4997,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupPrivacyWarning.
   ///
   /// In en, this message translates to:
-  /// **'Your backup file is unencrypted. Store it somewhere only you can access.'**
+  /// **'Encrypted backups (.jfwbk) require your passphrase to open. Plain JSON backups are unencrypted — store them somewhere only you can access.'**
   String get backupPrivacyWarning;
 
   /// No description provided for @backupConfirmTitle.
@@ -5075,7 +5075,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyNoInternetBody.
   ///
   /// In en, this message translates to:
-  /// **'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app makes no network requests of any kind — no internet connection is needed or used.'**
+  /// **'Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app itself makes no network requests. If you tap a link to a crisis line, support group, or external resource, your device will open it in your system browser — outside of the app and subject to that site\'s own privacy policy.'**
   String get privacyNoInternetBody;
 
   /// No description provided for @privacyNoAnalytics.
@@ -5111,7 +5111,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyBackupRestoreBody.
   ///
   /// In en, this message translates to:
-  /// **'When you export a backup, a JSON file is created and shared via your device\'s share sheet — the same way you share photos. Journey Forward does not receive or store this file. You control where it goes.'**
+  /// **'When you export a backup, a file is created and shared via your device\'s share sheet — the same way you share photos. You can choose an encrypted backup (.jfwbk, protected by your passphrase) or a plain JSON file. Journey Forward does not receive or store this file. You control where it goes.'**
   String get privacyBackupRestoreBody;
 
   /// No description provided for @privacyPINBiometric.

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/models/future_letter.dart';
-import 'package:journey_forward/models/hard_day.dart';
 import 'package:journey_forward/models/thought_record.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';

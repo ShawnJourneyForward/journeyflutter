@@ -34,64 +34,50 @@ class LuxuryCard extends StatelessWidget {
   }
 }
 
+// ─── Botanical corner decoration ─────────────────────────────────────────────
+// A real watercolor leaf asset rendered at low opacity with a shader mask that
+// fades the edges into the screen background — no rectangle border, no harsh
+// crop. Same visual language as the home hero card backdrop, applied to every
+// screen via this widget so the corner reads as part of the page texture
+// rather than a pasted-in shape.
 class BotanicalBackground extends StatelessWidget {
   const BotanicalBackground({super.key, this.width = 180, this.height = 110});
 
   final double width;
   final double height;
 
+  // Reuses an existing growth_stages WebP — no new asset to bundle. Stage 30
+  // has a balanced multi-leaf composition that reads well at small sizes.
+  static const _asset = 'assets/images/growth_stages/stage_30.webp';
+
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: width,
-        height: height,
-        child: CustomPaint(painter: _BotanicalBranchPainter()),
-      );
-}
-
-class _BotanicalBranchPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stem = Paint()
-      ..color = AppColors.forest.withOpacity(.11)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    final leaf = Paint()
-      ..color = AppColors.forest.withOpacity(.08)
-      ..style = PaintingStyle.fill;
-
-    final path = Path()
-      ..moveTo(size.width * .12, size.height)
-      ..cubicTo(size.width * .28, size.height * .76, size.width * .35,
-          size.height * .35, size.width * .52, size.height * .08)
-      ..moveTo(size.width * .38, size.height * .52)
-      ..cubicTo(size.width * .48, size.height * .48, size.width * .58,
-          size.height * .36, size.width * .68, size.height * .18)
-      ..moveTo(size.width * .46, size.height * .33)
-      ..cubicTo(size.width * .58, size.height * .31, size.width * .72,
-          size.height * .22, size.width * .86, size.height * .02);
-    canvas.drawPath(path, stem);
-
-    void drawLeaf(Offset center, double rx, double ry, double angle) {
-      canvas.save();
-      canvas.translate(center.dx, center.dy);
-      canvas.rotate(angle);
-      final leafPath = Path()
-        ..moveTo(0, -ry)
-        ..cubicTo(rx, -ry * .35, rx, ry * .35, 0, ry)
-        ..cubicTo(-rx, ry * .35, -rx, -ry * .35, 0, -ry);
-      canvas.drawPath(leafPath, leaf);
-      canvas.restore();
-    }
-
-    drawLeaf(Offset(size.width * .28, size.height * .67), 13, 26, -.7);
-    drawLeaf(Offset(size.width * .43, size.height * .44), 15, 29, -.3);
-    drawLeaf(Offset(size.width * .58, size.height * .28), 15, 31, .2);
-    drawLeaf(Offset(size.width * .72, size.height * .17), 15, 30, .35);
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Opacity(
+        opacity: 0.28,
+        child: ShaderMask(
+          shaderCallback: (rect) => const RadialGradient(
+            center: Alignment(0.4, -0.2),
+            radius: 0.95,
+            colors: [
+              Colors.white,
+              Colors.white,
+              Colors.transparent,
+            ],
+            stops: [0.0, 0.45, 1.0],
+          ).createShader(rect),
+          blendMode: BlendMode.dstIn,
+          child: Image.asset(
+            _asset,
+            fit: BoxFit.cover,
+            alignment: Alignment.topRight,
+          ),
+        ),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class IconChip extends StatelessWidget {
