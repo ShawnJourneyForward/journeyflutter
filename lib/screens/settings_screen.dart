@@ -733,102 +733,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                child: SolidCard(
-                  borderRadius: AppRadius.xl,
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      _SettingsRow(
-                        icon: Icons.notifications_outlined,
-                        label: 'Check-in & reminders',
-                        value: 'Morning & evening times',
-                        onTap: _editNotifications,
-                        borderBottom: true,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 14),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom:
-                                BorderSide(color: AppColors.stone100, width: 1),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: AppColors.forest50,
-                                borderRadius: AppRadius.sm,
-                              ),
-                              child: const Icon(Icons.vibration_rounded,
-                                  size: 18, color: AppColors.forest700),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Text('Haptic feedback',
-                                  style: AppTextStyles.bodyMedium),
-                            ),
-                            Switch(
-                              value: profile.hapticsEnabled,
-                              onChanged: (val) {
-                                H.sync(val);
-                                ref.read(profileProvider.notifier).patch(
-                                      (p) => p.copyWith(hapticsEnabled: val),
-                                    );
-                              },
-                              activeColor: AppColors.forest600,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 14),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: AppColors.stone100,
-                                borderRadius: AppRadius.sm,
-                              ),
-                              child: const Icon(Icons.contrast_rounded,
-                                  size: 18, color: AppColors.stone700),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('High contrast',
-                                      style: AppTextStyles.bodyMedium),
-                                  Text(
-                                    'Darker text & stronger borders',
-                                    style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.stone500),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Switch(
-                              value: profile.highContrast,
-                              onChanged: (val) {
-                                H.selection();
-                                ref.read(profileProvider.notifier).patch(
-                                      (p) => p.copyWith(highContrast: val),
-                                    );
-                              },
-                              activeColor: AppColors.forest600,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                child: _NotificationsCard(
+                  profile: profile,
+                  onEditReminders: _editNotifications,
                 ),
               ),
             ),
@@ -836,8 +743,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // ── More (Records + Tools & App) ─────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: _MoreCard(),
+              ),
+            ),
+
+            // ── About ────────────────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                child: _SectionLabel('About'),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+                child: const _AboutCard(),
               ),
             ),
           ],
@@ -1480,7 +1401,7 @@ class _WeeklyGoalsCard extends StatelessWidget {
 
 // ─── Security card ────────────────────────────────────────────────────────────
 
-class _SecurityCard extends StatelessWidget {
+class _SecurityCard extends StatefulWidget {
   const _SecurityCard({
     required this.current,
     required this.onNone,
@@ -1493,70 +1414,128 @@ class _SecurityCard extends StatelessWidget {
   final VoidCallback onPin;
 
   @override
+  State<_SecurityCard> createState() => _SecurityCardState();
+}
+
+class _SecurityCardState extends State<_SecurityCard> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SolidCard(
-          borderRadius: AppRadius.xl,
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              _LockOption(
-                icon: Icons.lock_open_outlined,
-                label: 'No lock',
-                subtitle: 'App opens immediately',
-                selected: current == 'none',
-                onTap: onNone,
-                borderBottom: true,
-              ),
-              _LockOption(
-                icon: Icons.fingerprint_rounded,
-                label: 'Biometric',
-                subtitle: 'Fingerprint or face unlock',
-                selected: current == 'biometric',
-                onTap: onBiometric,
-                borderBottom: true,
-              ),
-              _LockOption(
-                icon: Icons.pin_outlined,
-                label: 'PIN',
-                subtitle: '4-digit numeric PIN',
-                selected: current == 'pin',
-                onTap: onPin,
-              ),
-            ],
-          ),
-        ),
-        // Data-recovery warning — same message the user sees in onboarding.
-        if (current == 'pin' || current == 'biometric') ...[
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.honeySoft,
-              borderRadius: AppRadius.xxl,
-              border: Border.all(color: AppColors.honey100),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.warning_amber_rounded,
-                    size: 18, color: AppColors.honey500),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    current == 'pin'
-                        ? 'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.'
-                        : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
-                    style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.honey500, height: 1.4),
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          // Collapsible header
+          InkWell(
+            onTap: () {
+              H.selection();
+              setState(() => _expanded = !_expanded);
+            },
+            borderRadius: _expanded
+                ? const BorderRadius.vertical(top: Radius.circular(20))
+                : AppRadius.xl,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  Icon(Icons.lock_outline_rounded,
+                      size: 16, color: AppColors.forest600),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('App lock',
+                            style: AppTextStyles.titleSmall
+                                .copyWith(color: AppColors.forest700)),
+                        Text(
+                          widget.current == 'none'
+                              ? 'No lock'
+                              : widget.current == 'biometric'
+                                  ? 'Biometric'
+                                  : 'PIN',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.stone500),
+                        ),
+                      ],
+                    ),
                   ),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 20, color: AppColors.stone400),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Expandable body
+          AnimatedCrossFade(
+            firstCurve: Curves.easeOutCubic,
+            secondCurve: Curves.easeInCubic,
+            sizeCurve: Curves.easeInOutCubic,
+            duration: const Duration(milliseconds: 260),
+            crossFadeState:
+                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            secondChild: const SizedBox.shrink(),
+            firstChild: Column(
+              children: [
+                const Divider(height: 1, color: AppColors.stone100),
+                _LockOption(
+                  icon: Icons.lock_open_outlined,
+                  label: 'No lock',
+                  subtitle: 'App opens immediately',
+                  selected: widget.current == 'none',
+                  onTap: widget.onNone,
+                  borderBottom: true,
                 ),
+                _LockOption(
+                  icon: Icons.fingerprint_rounded,
+                  label: 'Biometric',
+                  subtitle: 'Fingerprint or face unlock',
+                  selected: widget.current == 'biometric',
+                  onTap: widget.onBiometric,
+                  borderBottom: true,
+                ),
+                _LockOption(
+                  icon: Icons.pin_outlined,
+                  label: 'PIN',
+                  subtitle: '4-digit numeric PIN',
+                  selected: widget.current == 'pin',
+                  onTap: widget.onPin,
+                ),
+                // Data-recovery warning
+                if (widget.current == 'pin' || widget.current == 'biometric') ...[
+                  const Divider(height: 1, color: AppColors.stone100),
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.warning_amber_rounded,
+                            size: 18, color: AppColors.honey500),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            widget.current == 'pin'
+                                ? 'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.'
+                                : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
+                            style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.honey500, height: 1.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         ],
-      ],
+      ),
     );
   }
 }
@@ -1643,9 +1622,9 @@ class _LockOption extends StatelessWidget {
 
 // ─── More links card ──────────────────────────────────────────────────────────
 
-class _MoreCard extends StatelessWidget {
+class _MoreCard extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1673,7 +1652,10 @@ class _MoreCard extends StatelessWidget {
               _SettingsRow(
                 icon: Icons.insights_outlined,
                 label: 'Mood & craving insights',
-                onTap: () => context.push('/insights'),
+                onTap: () {
+                  ref.read(progressTabProvider.notifier).state = 1;
+                  context.go('/progress');
+                },
                 borderBottom: true,
               ),
               _SettingsRow(
@@ -1697,12 +1679,6 @@ class _MoreCard extends StatelessWidget {
                 icon: Icons.psychology_outlined,
                 label: 'CBT thought tools',
                 onTap: () => context.push('/cbt'),
-                borderBottom: true,
-              ),
-              _SettingsRow(
-                icon: Icons.fact_check_outlined,
-                label: 'Thought record (CBT)',
-                onTap: () => context.push('/thought-record'),
                 borderBottom: true,
               ),
               _SettingsRow(
@@ -1751,6 +1727,170 @@ class _MoreCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── Notifications card (collapsible) ────────────────────────────────────────
+
+class _NotificationsCard extends ConsumerStatefulWidget {
+  const _NotificationsCard({
+    required this.profile,
+    required this.onEditReminders,
+  });
+  final UserProfile profile;
+  final VoidCallback onEditReminders;
+
+  @override
+  ConsumerState<_NotificationsCard> createState() => _NotificationsCardState();
+}
+
+class _NotificationsCardState extends ConsumerState<_NotificationsCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = widget.profile;
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          // Collapsible header
+          InkWell(
+            onTap: () {
+              H.selection();
+              setState(() => _expanded = !_expanded);
+            },
+            borderRadius: _expanded
+                ? const BorderRadius.vertical(top: Radius.circular(20))
+                : AppRadius.xl,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  const Icon(Icons.notifications_outlined,
+                      size: 16, color: AppColors.forest600),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Notifications',
+                        style: AppTextStyles.titleSmall
+                            .copyWith(color: AppColors.forest700)),
+                  ),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 20, color: AppColors.stone400),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Expandable body
+          AnimatedCrossFade(
+            firstCurve: Curves.easeOutCubic,
+            secondCurve: Curves.easeInCubic,
+            sizeCurve: Curves.easeInOutCubic,
+            duration: const Duration(milliseconds: 260),
+            crossFadeState:
+                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            secondChild: const SizedBox.shrink(),
+            firstChild: Column(
+              children: [
+                const Divider(height: 1, color: AppColors.stone100),
+                _SettingsRow(
+                  icon: Icons.notifications_outlined,
+                  label: 'Check-in & reminders',
+                  value: 'Morning & evening times',
+                  onTap: widget.onEditReminders,
+                  borderBottom: true,
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: AppColors.stone100, width: 1)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.forest50,
+                          borderRadius: AppRadius.sm,
+                        ),
+                        child: const Icon(Icons.vibration_rounded,
+                            size: 18, color: AppColors.forest700),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text('Haptic feedback',
+                            style: AppTextStyles.bodyMedium),
+                      ),
+                      Switch(
+                        value: profile.hapticsEnabled,
+                        onChanged: (val) {
+                          H.sync(val);
+                          ref.read(profileProvider.notifier).patch(
+                                (p) => p.copyWith(hapticsEnabled: val),
+                              );
+                        },
+                        activeColor: AppColors.forest600,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.forest50,
+                          borderRadius: AppRadius.sm,
+                        ),
+                        child: const Icon(Icons.straighten_rounded,
+                            size: 18, color: AppColors.forest700),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Imperial units',
+                                style: AppTextStyles.bodyMedium),
+                            Text(
+                              'Distance in miles instead of km',
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.stone500),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: profile.useImperial,
+                        onChanged: (val) {
+                          H.selection();
+                          ref.read(profileProvider.notifier).patch(
+                                (p) => p.copyWith(useImperial: val),
+                              );
+                        },
+                        activeColor: AppColors.forest600,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -2073,6 +2213,197 @@ class _SettingsRow extends StatelessWidget {
                   size: 20, color: AppColors.stone300),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── About card ───────────────────────────────────────────────────────────────
+
+class _AboutCard extends StatefulWidget {
+  const _AboutCard();
+
+  @override
+  State<_AboutCard> createState() => _AboutCardState();
+}
+
+class _AboutCardState extends State<_AboutCard> {
+  bool _expanded = false;
+
+  static const _playStoreUrl =
+      'https://play.google.com/store/apps/details?id=com.journeyforward.journey_forward';
+
+  static const _bodyText =
+      'Recovery and personal growth are rarely a straight line. Having walked a difficult road myself, I know how heavy some days can feel — and how exhausting it can be to use tools filled with noise, pressure, and distraction.\n\n'
+      'When you are trying to heal or rebuild, the last thing you need is advertising, attention-grabbing notifications, or the worry that your deeply personal reflections are being harvested.\n\n'
+      'Your recovery is not a data product.\n\n'
+      'I built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and gentle progress.\n\n'
+      'Because Journey Forward has no accounts, analytics, tracking, or cloud sync, I have no way of seeing how you experience the app, what feels confusing, or what features might help you most. If something is not working, or if you have an idea for a future improvement, you are welcome to contact me directly.\n\n'
+      'This app is not here to shame you, score you, or punish you for difficult moments. It is here to help you return — to your reason, your routines, your breath, and the next small step forward.\n\n'
+      'I am also working toward language support, including Zulu and Afrikaans, so Journey Forward can become more welcoming while keeping its privacy-first foundation.\n\n'
+      'My hope is that this space helps you find grounding, reflection, and the grace to take one honest step at a time.\n\n'
+      '— Shawn';
+
+  Future<void> _shareApp() async {
+    final uri = Uri.parse(_playStoreUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SolidCard(
+      borderRadius: AppRadius.xl,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          // Collapsible header
+          InkWell(
+            onTap: () {
+              H.selection();
+              setState(() => _expanded = !_expanded);
+            },
+            borderRadius: _expanded
+                ? const BorderRadius.vertical(top: Radius.circular(20))
+                : AppRadius.xl,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded,
+                      size: 16, color: AppColors.forest600),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'About Journey Forward',
+                      style: AppTextStyles.titleSmall
+                          .copyWith(color: AppColors.forest700),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 20, color: AppColors.stone400),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Expandable body
+          AnimatedCrossFade(
+            firstCurve: Curves.easeOutCubic,
+            secondCurve: Curves.easeInCubic,
+            sizeCurve: Curves.easeInOutCubic,
+            duration: const Duration(milliseconds: 260),
+            crossFadeState:
+                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            secondChild: const SizedBox.shrink(),
+            firstChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Divider(height: 1, color: AppColors.stone100),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _bodyText,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.stone700,
+                          height: 1.6,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: () async {
+                                final uri = Uri(
+                                    scheme: 'mailto',
+                                    path: 'shawn@journeyforward.app');
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                }
+                              },
+                              child: Text(
+                                'shawn@journeyforward.app',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.forest600,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.forest600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          InkWell(
+                            onTap: () async {
+                              H.light();
+                              await Clipboard.setData(const ClipboardData(
+                                  text: 'shawn@journeyforward.app'));
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context)
+                                ..hideCurrentSnackBar()
+                                ..showSnackBar(SnackBar(
+                                  content: const Text('Email copied'),
+                                  backgroundColor: AppColors.forest600,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 2),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: AppRadius.md),
+                                ));
+                            },
+                            borderRadius: AppRadius.pill,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.forest50,
+                                borderRadius: AppRadius.pill,
+                                border: Border.all(color: AppColors.forest100),
+                              ),
+                              child: const Icon(
+                                Icons.copy_rounded,
+                                size: 14,
+                                color: AppColors.forest600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.forest700,
+                            side: const BorderSide(
+                                color: AppColors.forest200, width: 1.5),
+                            backgroundColor: AppColors.forest50,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: AppRadius.xl),
+                          ),
+                          icon: const Icon(Icons.share_outlined, size: 18),
+                          label: Text(
+                            'Share app',
+                            style: AppTextStyles.labelMedium
+                                .copyWith(color: AppColors.forest700),
+                          ),
+                          onPressed: _shareApp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

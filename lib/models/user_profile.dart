@@ -27,9 +27,16 @@ class UserProfile {
   // when a craving hits. Surfaces BEFORE the craving log so the plan is the
   // first thing they see when they're at risk.
   final List<String> preCravingPlan;
+  // Parallel to preCravingPlan — a GoRouter route path for each step that the
+  // user linked to a Toolkit exercise (e.g. '/emergency'). Empty string means
+  // no link for that step.  Shorter than preCravingPlan means remaining steps
+  // have no link.
+  final List<String> preCravingLinks;
   // High-contrast variant of the Stillwater theme — separate from dark mode.
   // Recovery hours skew late-night, this keeps text legible on tired eyes.
   final bool highContrast;
+  // When true the activity sheet labels distance in miles instead of km.
+  final bool useImperial;
 
   const UserProfile({
     required this.username,
@@ -52,7 +59,9 @@ class UserProfile {
     this.firedMilestoneDays = const [],
     this.firedSavingsTiers = const [],
     this.preCravingPlan = const [],
+    this.preCravingLinks = const [],
     this.highContrast = false,
+    this.useImperial = false,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> j) => UserProfile(
@@ -97,7 +106,12 @@ class UserProfile {
                 ?.map((e) => e as String)
                 .toList() ??
             const [],
+        preCravingLinks: (j['preCravingLinks'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            const [],
         highContrast: (j['highContrast'] as bool?) ?? false,
+        useImperial: (j['useImperial'] as bool?) ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -122,7 +136,9 @@ class UserProfile {
         'firedMilestoneDays': firedMilestoneDays,
         'firedSavingsTiers': firedSavingsTiers,
         'preCravingPlan': preCravingPlan,
+        'preCravingLinks': preCravingLinks,
         'highContrast': highContrast,
+        'useImperial': useImperial,
       };
 
   String toJsonString() => jsonEncode(toJson());
@@ -148,7 +164,9 @@ class UserProfile {
     List<int>? firedMilestoneDays,
     List<double>? firedSavingsTiers,
     List<String>? preCravingPlan,
+    List<String>? preCravingLinks,
     bool? highContrast,
+    bool? useImperial,
   }) =>
       UserProfile(
         username: username ?? this.username,
@@ -178,7 +196,9 @@ class UserProfile {
         firedMilestoneDays: firedMilestoneDays ?? this.firedMilestoneDays,
         firedSavingsTiers: firedSavingsTiers ?? this.firedSavingsTiers,
         preCravingPlan: preCravingPlan ?? this.preCravingPlan,
+        preCravingLinks: preCravingLinks ?? this.preCravingLinks,
         highContrast: highContrast ?? this.highContrast,
+        useImperial: useImperial ?? this.useImperial,
       );
 }
 

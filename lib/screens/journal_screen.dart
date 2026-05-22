@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -884,6 +885,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
               controller: ctrl,
               maxLines: 3,
               autofocus: true,
+              textCapitalization: TextCapitalization.sentences,
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
               decoration: InputDecoration(
@@ -1907,6 +1909,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
         Expanded(
           child: TextField(
             controller: _ctrl,
+            textCapitalization: TextCapitalization.sentences,
             style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
               hintText: _hint,
@@ -2044,6 +2047,7 @@ class _ThreeGoodThingsState extends State<_ThreeGoodThings> {
               Expanded(
                 child: TextField(
                   controller: _ctrls[i],
+                  textCapitalization: TextCapitalization.sentences,
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.stone800),
                   decoration: InputDecoration(
@@ -2070,19 +2074,23 @@ class _MindfulMoment extends StatelessWidget {
   static const _exercises = [
     (
       '5-4-3-2-1 Grounding',
-      'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.'
+      'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.',
+      false,
     ),
     (
       'Box Breath',
-      'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.'
+      'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.',
+      true, // has guided exercise in Toolkit
     ),
     (
       'Body Scan',
-      'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.'
+      'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.',
+      false,
     ),
     (
       'Gratitude Breath',
-      'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.'
+      'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.',
+      true,
     ),
   ];
 
@@ -2090,19 +2098,67 @@ class _MindfulMoment extends StatelessWidget {
   Widget build(BuildContext context) {
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
-    final (title, desc) = _exercises[dayOfYear % _exercises.length];
+    final (title, desc, hasGuided) =
+        _exercises[dayOfYear % _exercises.length];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style:
-                AppTextStyles.labelMedium.copyWith(color: AppColors.forest600)),
+            style: AppTextStyles.labelMedium
+                .copyWith(color: AppColors.forest600)),
         const SizedBox(height: 6),
         Text(desc,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.stone600,
               height: 1.5,
             )),
+        if (hasGuided) ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => context.go('/emergency'),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              decoration: BoxDecoration(
+                color: AppColors.forest50,
+                borderRadius: AppRadius.md,
+                border: Border.all(color: AppColors.forest200),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.air_rounded,
+                      size: 16, color: AppColors.forest600),
+                  const SizedBox(width: 7),
+                  Text('Open guided breathing in Your Toolkit',
+                      style: AppTextStyles.labelSmall
+                          .copyWith(color: AppColors.forest700)),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_right_rounded,
+                      size: 15, color: AppColors.forest500),
+                ],
+              ),
+            ),
+          ),
+        ] else ...[
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => context.go('/emergency'),
+            child: Row(
+              children: [
+                const Icon(Icons.air_rounded,
+                    size: 14, color: AppColors.forest400),
+                const SizedBox(width: 6),
+                Text('More breathing exercises in Your Toolkit',
+                    style: AppTextStyles.labelSmall
+                        .copyWith(color: AppColors.forest600)),
+                const SizedBox(width: 3),
+                const Icon(Icons.chevron_right_rounded,
+                    size: 14, color: AppColors.forest500),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

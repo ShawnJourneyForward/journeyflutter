@@ -3,7 +3,7 @@
 A compassionate, privacy-first sobriety companion built with Flutter.
 Designed for Android using the **Stillwater Aesthetic System** — calm, warm, and human.
 
-**Current version:** 5.8.0+1
+**Current version:** 5.9.0+1
 **Latest release APK:** `build/app/outputs/flutter-apk/app-release.apk` (~67 MB, built locally — produce a signed AAB for Play Store submission)
 
 ---
@@ -68,7 +68,7 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 
 | Key | Storage | Contents |
 |---|---|---|
-| `profile` | **Encrypted** (`EncryptedStore`) | `UserProfile` — sober date, spend, currency, lock method, notification flags, high-contrast pref, pre-craving plan |
+| `profile` | **Encrypted** (`EncryptedStore`) | `UserProfile` — sober date, spend, currency, lock method, notification flags, high-contrast pref, pre-craving plan + linked Toolkit routes |
 | `has_profile` | Plain prefs | Sentinel "1" so the synchronous router redirect can answer "is there a profile?" without awaiting encrypted storage |
 | `profile_sober_date` | Plain prefs | Mirror of `profile.soberDate` so the home-screen widget can render the streak without touching encrypted storage |
 | `journal_entries` | Plain prefs | Mood journal (mood 1–5 + text) |
@@ -79,7 +79,7 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 | `activities` | Plain prefs | Exercise / movement logs |
 | `sleep_logs` | Plain prefs | Sleep hours + quality 1–5 |
 | `custom_affirmations` | Plain prefs | User-written affirmations |
-| `vision_board` | Plain prefs | Vision board image items |
+| `vision_board` | Plain prefs | Vision board items — icon key (20 vector icons), title, description, optional local photo path |
 | `future_letters` | Plain prefs | Sealed letters to future self (v5.8) |
 | `hard_days` | Plain prefs | "I made it through a hard day" battle log (v5.8) |
 | `thought_records` | Plain prefs | Full CBT thought records — 10-distortion catalogue (v5.8) |
@@ -96,8 +96,8 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 |---|---|---|
 | `/home` | `HomeScreen` | Sober clock, streak, check-in cards, daily mission, money saved. `TodaysStrengthCard` rotates between unopened-letter / detected-craving-pattern / hard-day mark. Journey card: 6-node milestone timeline. |
 | `/progress` | `ProgressScreen` | Milestone cards, savings tracker, mood chart, plant growth visual |
-| `/emergency` | `EmergencyScreen` | Breathing exercises, meditation, CBT tools, grounding |
-| `/journal` | `JournalScreen` | Mood journal + affirmations + vision board, with voice-input mic and name-personalised affirmations |
+| `/emergency` | `EmergencyScreen` | **Your Toolkit** — Breathing library (box, 4-7-8, etc.), grounding, CBT tools, meditations |
+| `/journal` | `JournalScreen` | Mood journal + affirmations (personalised + voice-input) + vision board (photo, 20 vector icons, edit) |
 | `/settings` | `SettingsScreen` | Profile, recovery stats, lock method, notifications, high-contrast toggle, tools & app links |
 
 ### Deep-link Screens
@@ -115,9 +115,8 @@ All lists are sorted newest-first on load. Components receive data via `ref.watc
 | `/backup` | `BackupScreen` | Export / import — optionally passphrase-encrypted (`.jfwbk`) or plain JSON |
 | `/privacy` | `PrivacyScreen` | Privacy policy |
 | `/cbt` | `CbtScreen` | Quick CBT thought-challenging tools |
-| `/thought-record` | `ThoughtRecordScreen` | Full CBT thought records (5-step editor, distortion catalogue, mood delta) |
 | `/future-letter` | `FutureLetterScreen` | Write a sealed letter to your future sober self; unlocks on a chosen date |
-| `/pre-craving-plan` | `PreCravingPlanScreen` | Edit your 3-step playbook for the moment a craving hits |
+| `/pre-craving-plan` | `PreCravingPlanScreen` | Edit 3-step craving playbook with optional Toolkit exercise links (one-tap open during a craving) |
 | `/insights` | `InsightsScreen` | Mood and craving charts (fl_chart) |
 | `/heatmap` | `HeatmapScreen` | 13-week activity heatmap |
 | `/slip-support` | `SlipSupportScreen` | Urge surfing and slip support flow |
@@ -201,7 +200,7 @@ ARB files live in `lib/l10n/`. Add new keys to `app_en.arb` and run `flutter pub
 
 The PIN hash is **never** included in a backup (it lives in `flutter_secure_storage` and can't be migrated). `lockMethod` is forced to `none` on restore so a restored profile can never lock the user out without a hash.
 
-Both formats include `future_letters`, `hard_days`, `thought_records`, and `meetings` as of v5.8.
+Both formats include `future_letters`, `hard_days`, `thought_records`, and `meetings` as of v5.8.  The `thought_records` key is preserved for backward compatibility (data is not deleted); the Thought Record screen is no longer linked from the Settings UI as of v5.9.
 
 ---
 

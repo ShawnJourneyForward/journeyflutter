@@ -38,7 +38,6 @@ import 'screens/heatmap_screen.dart';
 import 'screens/pre_craving_plan_screen.dart';
 import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
-import 'screens/thought_record_screen.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 
@@ -433,10 +432,6 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/pre-craving-plan',
         builder: (_, __) => const PreCravingPlanScreen(),
-      ),
-      GoRoute(
-        path: '/thought-record',
-        builder: (_, __) => const ThoughtRecordScreen(),
       ),
     ],
   );
