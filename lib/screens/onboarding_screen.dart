@@ -461,16 +461,8 @@ class _WelcomeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Plant hero
-          Center(
-            child: SizedBox(
-              height: 200,
-              child: Image.asset(
-                PlantLogic.getPlantAsset(0),
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
+          // Plant hero with botanical arch frame
+          Center(child: _OnboardingPlantFrame(days: 0, height: 220)),
           const SizedBox(height: 28),
 
           Text(AppLocalizations.of(context).onbWelcomeTitle,
@@ -1600,17 +1592,10 @@ class _FinishStepState extends State<_FinishStep>
       padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
       child: Column(
         children: [
-          // Animated plant
+          // Animated plant with botanical arch frame
           ScaleTransition(
             scale: _scale,
-            child: SizedBox(
-              height: 180,
-              child: Image.asset(
-                PlantLogic.getPlantAsset(days),
-                fit: BoxFit.contain,
-                semanticLabel: PlantLogic.getStageLabel(days),
-              ),
-            ),
+            child: _OnboardingPlantFrame(days: days, height: 200),
           ),
           const SizedBox(height: 24),
 
@@ -1675,6 +1660,255 @@ class _FinishStepState extends State<_FinishStep>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Botanical arch frame — onboarding screens 1 & 7 ────────────────────────
+// Double-line tombstone border (outer forest300 / inner forest100) with lotus
+// badge, side diamonds, corner leaf ornaments, and bottom dot trio.
+
+class _OnboardingPlantFrame extends StatelessWidget {
+  const _OnboardingPlantFrame({required this.days, required this.height});
+  final int days;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: height,
+      height: height,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final w = constraints.maxWidth;
+        final h = constraints.maxHeight;
+        final archR = w * 0.48;
+        final sideMidY = archR + (h - archR) * 0.5;
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // ── Double arch border ──────────────────────────────────────
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _OnbFramePainter(archRadius: archR),
+              ),
+            ),
+
+            // ── Plant (radial-fade fill) ────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 18),
+              child: ShaderMask(
+                shaderCallback: (rect) => const RadialGradient(
+                  center: Alignment.center,
+                  radius: 0.72,
+                  colors: [Colors.white, Colors.white, Colors.transparent],
+                  stops: [0.0, 0.60, 1.0],
+                ).createShader(rect),
+                blendMode: BlendMode.dstIn,
+                child: Image.asset(
+                  PlantLogic.getPlantAsset(days),
+                  fit: BoxFit.contain,
+                  semanticLabel: PlantLogic.getStageLabel(days),
+                ),
+              ),
+            ),
+
+            // ── Top lotus badge ─────────────────────────────────────────
+            Positioned(
+              top: -13,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.cream,
+                    shape: BoxShape.circle,
+                    border:
+                        Border.all(color: AppColors.forest300, width: 1.0),
+                    boxShadow: [
+                      BoxShadow(
+                        // ignore: deprecated_member_use
+                        color: AppColors.forest100.withOpacity(0.7),
+                        blurRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.spa_outlined,
+                      size: 14, color: AppColors.forest500),
+                ),
+              ),
+            ),
+
+            // ── Left side diamond ────────────────────────────────────────
+            Positioned(
+              left: -5,
+              top: sideMidY - 5,
+              child: Transform.rotate(
+                angle: 0.7854,
+                child: Container(width: 9, height: 9,
+                    color: AppColors.forest300),
+              ),
+            ),
+
+            // ── Right side diamond ───────────────────────────────────────
+            Positioned(
+              right: -5,
+              top: sideMidY - 5,
+              child: Transform.rotate(
+                angle: 0.7854,
+                child: Container(width: 9, height: 9,
+                    color: AppColors.forest300),
+              ),
+            ),
+
+            // ── Bottom-left leaf ornament ────────────────────────────────
+            const Positioned(
+              left: 10,
+              bottom: 10,
+              child: _OnbLeafOrnament(mirrored: false),
+            ),
+
+            // ── Bottom-right leaf ornament ───────────────────────────────
+            const Positioned(
+              right: 10,
+              bottom: 10,
+              child: _OnbLeafOrnament(mirrored: true),
+            ),
+
+            // ── Bottom dot trio ──────────────────────────────────────────
+            Positioned(
+              bottom: -6,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Transform.rotate(
+                        angle: 0.7854,
+                        child: Container(
+                            width: 4, height: 4,
+                            color: AppColors.forest300)),
+                    const SizedBox(width: 5),
+                    Transform.rotate(
+                        angle: 0.7854,
+                        child: Container(
+                            width: 7, height: 7,
+                            color: AppColors.forest400)),
+                    const SizedBox(width: 5),
+                    Transform.rotate(
+                        angle: 0.7854,
+                        child: Container(
+                            width: 4, height: 4,
+                            color: AppColors.forest300)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+}
+
+class _OnbFramePainter extends CustomPainter {
+  const _OnbFramePainter({required this.archRadius});
+  final double archRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final r = archRadius;
+    const cr = 6.0;
+
+    // ── Outer border: forest300, 1.0 px ────────────────────────────────
+    final outerPaint = Paint()
+      ..color = AppColors.forest300
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final outerPath = Path()
+      ..moveTo(cr, h)
+      ..lineTo(w - cr, h)
+      ..quadraticBezierTo(w, h, w, h - cr)
+      ..lineTo(w, r)
+      ..arcToPoint(Offset(0, r),
+          radius: Radius.circular(r), clockwise: false)
+      ..lineTo(0, h - cr)
+      ..quadraticBezierTo(0, h, cr, h);
+    canvas.drawPath(outerPath, outerPaint);
+
+    // ── Inner border: forest100, 0.8 px, inset 5.5 px ──────────────────
+    const inset = 5.5;
+    final ir = (r - inset).clamp(0.0, double.infinity);
+    const icr = 4.0;
+
+    final innerPaint = Paint()
+      ..color = AppColors.forest100
+      ..strokeWidth = 0.8
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final innerPath = Path()
+      ..moveTo(inset + icr, h - inset)
+      ..lineTo(w - inset - icr, h - inset)
+      ..quadraticBezierTo(
+          w - inset, h - inset, w - inset, h - inset - icr)
+      ..lineTo(w - inset, ir)
+      ..arcToPoint(Offset(inset, ir),
+          radius: Radius.circular(ir), clockwise: false)
+      ..lineTo(inset, h - inset - icr)
+      ..quadraticBezierTo(
+          inset, h - inset, inset + icr, h - inset);
+    canvas.drawPath(innerPath, innerPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _OnbFramePainter old) =>
+      old.archRadius != archRadius;
+}
+
+class _OnbLeafOrnament extends StatelessWidget {
+  const _OnbLeafOrnament({required this.mirrored});
+  final bool mirrored;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scaleX: mirrored ? -1.0 : 1.0,
+      child: SizedBox(
+        width: 34,
+        height: 28,
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: Transform.rotate(
+                angle: -0.4,
+                child: const Icon(Icons.energy_savings_leaf_outlined,
+                    size: 18, color: AppColors.forest200),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 2,
+              child: Transform.rotate(
+                angle: 0.9,
+                child: const Icon(Icons.energy_savings_leaf_outlined,
+                    size: 14, color: AppColors.forest200),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

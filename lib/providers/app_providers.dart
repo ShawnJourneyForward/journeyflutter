@@ -213,6 +213,10 @@ final soberMoneyProvider = Provider<SoberStats?>((ref) {
 // ─── Stable sober stats (updates only when profile changes or at midnight) ────
 // Use this for any widget that doesn't need the per-second h/m/s clock.
 
+// ─── Progress screen tab index ────────────────────────────────────────────────
+// Settings "Mood & craving insights" sets this to 1 before navigating to /progress.
+final progressTabProvider = StateProvider<int>((ref) => 0);
+
 final soberDaysProvider = Provider<SoberStats?>((ref) {
   final profileAsync = ref.watch(profileProvider);
   // Re-run only when the calendar date changes, not every tick
@@ -543,20 +547,23 @@ class VisionItem {
   final String id;
   final String title;
   final String description;
-  final String emoji;
+  final String emoji; // stores icon key (e.g. 'guide') or legacy emoji
+  final String? imagePath; // optional local photo file path
 
   const VisionItem({
     required this.id,
     required this.title,
     required this.description,
     required this.emoji,
+    this.imagePath,
   });
 
   factory VisionItem.fromJson(Map<String, dynamic> j) => VisionItem(
         id: j['id'] as String,
         title: j['title'] as String,
         description: (j['description'] as String?) ?? '',
-        emoji: (j['emoji'] as String?) ?? '✨',
+        emoji: (j['emoji'] as String?) ?? 'guide',
+        imagePath: j['imagePath'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -564,8 +571,27 @@ class VisionItem {
         'title': title,
         'description': description,
         'emoji': emoji,
+        if (imagePath != null) 'imagePath': imagePath,
       };
+
+  VisionItem copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? emoji,
+    Object? imagePath = _sentinel,
+  }) =>
+      VisionItem(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        emoji: emoji ?? this.emoji,
+        imagePath:
+            imagePath == _sentinel ? this.imagePath : imagePath as String?,
+      );
 }
+
+const _sentinel = Object();
 
 class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
   static const _key = 'vision_board';
@@ -580,6 +606,15 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
   Future<void> add(VisionItem item) async {
     final current = state.valueOrNull ?? [];
     final updated = [...current, item];
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  Future<void> saveItem(VisionItem item) async {
+    final current = state.valueOrNull ?? [];
+    final updated = current.map((e) => e.id == item.id ? item : e).toList();
     final prefs = await ref.read(prefsProvider.future);
     await prefs.setString(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));

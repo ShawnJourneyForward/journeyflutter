@@ -16,8 +16,6 @@ import '../utils/notification_service.dart';
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
-import '../components/todays_strength_card.dart';
-import 'pre_craving_plan_screen.dart' show showPreCravingPlan;
 
 // ─── Daily quotes (indexed by day-of-year mod pool size) ─────────────────────
 
@@ -498,10 +496,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
 
                         // ── Journey milestone nodes ──────────────────────────
-                        _JourneyCard(
+                        RepaintBoundary(child: _JourneyCard(
                           days: stats?.days ?? 0,
                           onTap: () => context.push('/milestone'),
-                        ),
+                        )),
                         const SizedBox(height: 14),
 
                         // ── Daily Pledge ──────────────────────────────────────
@@ -569,10 +567,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // ── Today's strength: hard-day badge + pattern insight ─
-                        const TodaysStrengthCard(),
-                        const SizedBox(height: 14),
-
                         // ── Today's Reminder ─────────────────────────────────
                         _TodaysReminderCard(quote: _dailyQuote(l10n)),
                         const SizedBox(height: 14),
@@ -596,15 +590,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _showCravingSheet(BuildContext context, WidgetRef ref) async {
-    // Surface the pre-craving plan BEFORE the log sheet. If the user runs
-    // through it and feels okay, we never open the log — the goal is to
-    // interrupt the impulse, not catalogue it. They can still "Still log it".
-    final wantsToLogAnyway = await showPreCravingPlan(context, ref);
-    final hasPlan =
-        (ref.read(profileProvider).valueOrNull?.preCravingPlan ?? const [])
-            .isNotEmpty;
-    if (hasPlan && !wantsToLogAnyway) return;
-    if (!context.mounted) return;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -722,8 +707,8 @@ class _HomeHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.greetingSerif),
-              const SizedBox(height: 6),
-              Text(l10n.homeTagline, style: AppTextStyles.bodyLarge),
+              // Tagline removed — same line now lives inside the hero card
+              // so the greeting stays compact and the card sits higher.
             ],
           ),
         ),
@@ -756,8 +741,8 @@ class _SerenityCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use daily provider — plant image & day count only need midnight refresh.
-    // The live HH:MM:SS clock is isolated in _LiveClock below.
+    // Daily provider — plant image only needs midnight refresh.
+    // The live counter is isolated in _LiveCounter below.
     final stats = ref.watch(soberDaysProvider);
     final days = stats?.days ?? 0;
     final elapsed = stats?.elapsed ?? Duration.zero;
@@ -766,105 +751,384 @@ class _SerenityCard extends ConsumerWidget {
       padding: EdgeInsets.zero,
       clip: true,
       child: SizedBox(
-        height: 294,
+        height: 470,
         child: Stack(
           children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.card,
-                      AppColors.card,
-                      AppColors.mintChip.withOpacity(.34),
-                    ],
-                    stops: const [0, .46, 1],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: -12,
-              top: 6,
-              bottom: -2,
-              width: 258,
-              child: ShaderMask(
-                shaderCallback: (rect) => const LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [Colors.transparent, Colors.white, Colors.white],
-                  stops: [0, .18, 1],
-                ).createShader(rect),
-                blendMode: BlendMode.dstIn,
-                child: Image.asset(
-                  PlantLogic.getPlantAssetForElapsed(elapsed),
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
-                  semanticLabel: PlantLogic.getStageLabel(days),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: 240,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      AppColors.card,
-                      AppColors.card.withOpacity(.62),
-                      AppColors.card.withOpacity(.02),
-                    ],
-                    stops: const [0, .24, 1],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 22,
-              top: 20,
-              right: 22,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 30),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('DAYS SOBER', style: AppTextStyles.overline),
-                  const SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('$days', style: AppTextStyles.heroNumber),
-                      const SizedBox(width: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Text('days',
-                            style: AppTextStyles.displaySmall.copyWith(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                letterSpacing: -0.4)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  SizedBox(
-                    width: 180,
-                    child: Text(
-                      'A clearer mind. A stronger you.',
-                      style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
+                  const _HeroCardHeader(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Every day forward is a win.',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.displaySmall.copyWith(
+                      fontSize: 22,
+                      height: 1.15,
+                      color: AppColors.forest700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const SoftDivider(),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: _FramedPlant(
+                      asset: PlantLogic.getPlantAssetForElapsed(elapsed),
+                      label: PlantLogic.getStageLabel(days),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const _TimeSoberLabel(),
                   const SizedBox(height: 10),
-                  // Isolated per-second clock — only this tiny widget rebuilds.
-                  const _LiveClock(),
+                  const _LiveCounter(),
                 ],
+              ),
+            ),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _BottomFlourish(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Decorative header band — line ─ circled leaf ─ line ────────────────────
+class _HeroCardHeader extends StatelessWidget {
+  const _HeroCardHeader();
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 28,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 26),
+              color: AppColors.forest200,
+            ),
+          ),
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.forest300, width: 1),
+            ),
+            child: const Icon(
+              Icons.spa_outlined,
+              size: 14,
+              color: AppColors.forest600,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 26),
+              color: AppColors.forest200,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Diamond divider — line ─ small rotated square ─ line ───────────────────
+class _DiamondDivider extends StatelessWidget {
+  const _DiamondDivider();
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 84,
+      height: 8,
+      child: Row(
+        children: [
+          Expanded(child: Container(height: 1, color: AppColors.forest100)),
+          const SizedBox(width: 5),
+          Transform.rotate(
+            angle: 0.7854, // 45°
+            child: Container(
+              width: 4,
+              height: 4,
+              color: AppColors.forest300,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Expanded(child: Container(height: 1, color: AppColors.forest100)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── "TIME SOBER" caption with leaf flourishes ──────────────────────────────
+class _TimeSoberLabel extends StatelessWidget {
+  const _TimeSoberLabel();
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(width: 26, height: 1, color: AppColors.forest100),
+        const SizedBox(width: 6),
+        const Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
+        const SizedBox(width: 8),
+        Text(
+          'TIME SOBER',
+          style: AppTextStyles.overline.copyWith(
+            color: AppColors.stone500,
+            letterSpacing: 2.4,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 8),
+        const Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
+        const SizedBox(width: 6),
+        Container(width: 26, height: 1, color: AppColors.forest100),
+      ],
+    );
+  }
+}
+
+// ─── Plant image with seamless radial-fade edge blend ────────────────────────
+//
+// The growth_stages art assets have a soft watercolor background that
+// otherwise reads as a hard rectangle pasted onto the card. ShaderMask with
+// a RadialGradient (opaque centre → transparent outer ring) feathers every
+// edge so the plant melts into the card.  No matter which stage (sapling →
+// full bloom) is loaded, the centre stays crisp and the silhouette fades.
+class _BlendedPlant extends StatelessWidget {
+  const _BlendedPlant({required this.asset, required this.label});
+  final String asset;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (rect) => const RadialGradient(
+        center: Alignment.center,
+        radius: 0.78,
+        // Opaque in the middle, fully transparent past 95% of the radius.
+        // Adjust stops to feather more / less aggressively.
+        colors: [
+          Colors.white,
+          Colors.white,
+          Color(0x66FFFFFF),
+          Color(0x00FFFFFF),
+        ],
+        stops: [0.0, 0.55, 0.85, 1.0],
+      ).createShader(rect),
+      blendMode: BlendMode.dstIn,
+      child: Image.asset(
+        asset,
+        fit: BoxFit.contain,
+        semanticLabel: label,
+      ),
+    );
+  }
+}
+
+// ─── Plant inside a botanical arch frame ─────────────────────────────────────
+//
+// Draws a tombstone/shrine arch border (CustomPaint) around the blended plant.
+// Decorative elements mirror the card's existing language: lotus circle at the
+// arch peak, diamond accents on the sides, small leaf ornaments at the base.
+class _FramedPlant extends StatelessWidget {
+  const _FramedPlant({required this.asset, required this.label});
+  final String asset;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final w = constraints.maxWidth;
+      final h = constraints.maxHeight;
+      // Arch radius: ~half the width creates a gentle dome at the top.
+      final archR = w * 0.48;
+      // Vertical midpoint of the straight sides (below arch) for side diamonds.
+      final sideMidY = archR + (h - archR) * 0.5;
+
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // ── Arch border (CustomPaint) ──────────────────────────────────
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _TombstoneFramePainter(archRadius: archR),
+            ),
+          ),
+
+          // ── Plant image, inset to sit comfortably inside the arch ────────
+          // Minimal horizontal inset so width grows proportionally with height.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
+            child: _BlendedPlant(asset: asset, label: label),
+          ),
+
+          // ── Left-side mid diamond ──────────────────────────────────────
+          Positioned(
+            left: -3,
+            top: sideMidY - 3,
+            child: Transform.rotate(
+              angle: 0.7854,
+              child: Container(width: 6, height: 6, color: AppColors.forest300),
+            ),
+          ),
+
+          // ── Right-side mid diamond ─────────────────────────────────────
+          Positioned(
+            right: -3,
+            top: sideMidY - 3,
+            child: Transform.rotate(
+              angle: 0.7854,
+              child: Container(width: 6, height: 6, color: AppColors.forest300),
+            ),
+          ),
+
+          // ── Bottom-left leaf ornament ──────────────────────────────────
+          const Positioned(
+            left: 10,
+            bottom: 10,
+            child: _LeafOrnament(mirrored: false),
+          ),
+
+          // ── Bottom-right leaf ornament ─────────────────────────────────
+          const Positioned(
+            right: 10,
+            bottom: 10,
+            child: _LeafOrnament(mirrored: true),
+          ),
+
+          // ── Bottom-centre dot trio ─────────────────────────────────────
+          Positioned(
+            bottom: -5,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Transform.rotate(
+                    angle: 0.7854,
+                    child: Container(
+                        width: 3, height: 3, color: AppColors.forest300),
+                  ),
+                  const SizedBox(width: 4),
+                  Transform.rotate(
+                    angle: 0.7854,
+                    child: Container(
+                        width: 5, height: 5, color: AppColors.forest400),
+                  ),
+                  const SizedBox(width: 4),
+                  Transform.rotate(
+                    angle: 0.7854,
+                    child: Container(
+                        width: 3, height: 3, color: AppColors.forest300),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+// ─── CustomPainter: tombstone/arch border ─────────────────────────────────────
+//
+// Draws: flat bottom → right side up → right arch base → semicircle arc →
+//        left arch base → left side down → flat bottom (closed).
+// The arch radius equals archRadius so the dome peak sits at y=0.
+class _TombstoneFramePainter extends CustomPainter {
+  const _TombstoneFramePainter({required this.archRadius});
+  final double archRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.forest300
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+    final r = archRadius;
+    const cr = 5.0; // corner radius at bottom corners
+
+    final path = Path()
+      // bottom-left, small corner chamfer
+      ..moveTo(cr, h)
+      ..lineTo(w - cr, h)
+      ..quadraticBezierTo(w, h, w, h - cr)
+      // right straight side up to arch base
+      ..lineTo(w, r)
+      // arch: right → over the top → left  (anticlockwise = dome facing up)
+      ..arcToPoint(
+        Offset(0, r),
+        radius: Radius.circular(r),
+        clockwise: false,
+      )
+      // left straight side down
+      ..lineTo(0, h - cr)
+      ..quadraticBezierTo(0, h, cr, h);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _TombstoneFramePainter old) =>
+      old.archRadius != archRadius;
+}
+
+// ─── Small leaf ornament drawn at each bottom corner of the frame ─────────────
+class _LeafOrnament extends StatelessWidget {
+  const _LeafOrnament({required this.mirrored});
+  final bool mirrored;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scaleX: mirrored ? -1.0 : 1.0,
+      child: SizedBox(
+        width: 28,
+        height: 22,
+        child: Stack(
+          children: [
+            // Lower leaf (larger, rotated out)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: Transform.rotate(
+                angle: -0.4,
+                child: const Icon(
+                  Icons.energy_savings_leaf_outlined,
+                  size: 15,
+                  color: AppColors.forest200,
+                ),
+              ),
+            ),
+            // Upper leaf (smaller, angled inward)
+            Positioned(
+              top: 0,
+              right: 2,
+              child: Transform.rotate(
+                angle: 0.9,
+                child: const Icon(
+                  Icons.energy_savings_leaf_outlined,
+                  size: 11,
+                  color: AppColors.forest200,
+                ),
               ),
             ),
           ],
@@ -874,45 +1138,150 @@ class _SerenityCard extends ConsumerWidget {
   }
 }
 
-// \u2500\u2500\u2500 Live HH:MM:SS clock \u2014 only widget that watches the per-second ticker \u2500\u2500\u2500\u2500\u2500\u2500
+// ─── Bottom decorative band — forest strip with circled leaf badge ─────────
+class _BottomFlourish extends StatelessWidget {
+  const _BottomFlourish();
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 22,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: 8,
+              color: AppColors.forest600,
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -2,
+            child: Center(
+              child: Container(
+                width: 22,
+                height: 22,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.card,
+                  border: Border.all(color: AppColors.forest600, width: 1.2),
+                ),
+                child: const Icon(
+                  Icons.spa,
+                  size: 11,
+                  color: AppColors.forest600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// \u2500\u2500\u2500 Live 4-column counter \u2014 only widget that watches the per-second ticker \u2500\u2500\u2500\u2500
 // Kept deliberately tiny so the expensive SerenityCard stack never rebuilds.
 
-class _LiveClock extends ConsumerWidget {
-  const _LiveClock();
+class _LiveCounter extends ConsumerWidget {
+  const _LiveCounter();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(soberStatsProvider);
+    final days = stats?.days ?? 0;
     final hours = stats?.hours ?? 0;
     final minutes = stats?.minutes ?? 0;
     final seconds = stats?.seconds ?? 0;
 
     return RepaintBoundary(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColors.card.withOpacity(.82),
-          borderRadius: AppRadius.pill,
-          border: Border.all(color: AppColors.softBorder),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                  color: AppColors.leafGreen, shape: BoxShape.circle),
+      child: Row(
+        children: [
+          Expanded(
+            child: _CounterTile(
+              value: '$days',
+              label: days == 1 ? 'DAY' : 'DAYS',
             ),
-            const SizedBox(width: 10),
-            Text(
-              '${hours.toString().padLeft(2, '0')}h '
-              '${minutes.toString().padLeft(2, '0')}m '
-              '${seconds.toString().padLeft(2, '0')}s',
-              style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _CounterTile(
+              value: '$hours',
+              label: hours == 1 ? 'HOUR' : 'HOURS',
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _CounterTile(
+              value: '$minutes',
+              label: minutes == 1 ? 'MINUTE' : 'MINUTES',
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _CounterTile(
+              value: '$seconds',
+              label: seconds == 1 ? 'SECOND' : 'SECONDS',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Single counter tile: large serif digit + tiny caption.
+// FittedBox on the digit lets values up to 9999 days shrink within the tile
+// instead of overflowing; values 1–999 render at the full 30px size.
+class _CounterTile extends StatelessWidget {
+  const _CounterTile({required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.forest100, width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 32,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: AppTextStyles.displaySmall.copyWith(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.forest700,
+                  letterSpacing: -0.5,
+                  height: 1,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.stone500,
+              letterSpacing: 1.2,
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -939,15 +1308,9 @@ class _MoneyCard extends ConsumerWidget {
         ? (money / goal).clamp(0.0, 1.0).toDouble()
         : null;
 
-    return GestureDetector(
-      onTap: () => showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => _GoalSheet(profile: profile),
-      ),
-      child: LuxuryCard(
+    return LuxuryCard(
         padding: EdgeInsets.zero,
+        clip: true,
         child: Stack(
           children: [
             // Botanical leaves \u2014 top-right decoration
@@ -957,7 +1320,8 @@ class _MoneyCard extends ConsumerWidget {
               child: BotanicalBackground(width: 160, height: 130),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              // Extra 42 px bottom so content clears the _BottomFlourish band.
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 42),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1036,38 +1400,17 @@ class _MoneyCard extends ConsumerWidget {
                       ],
                     ),
                   ],
-                  const SizedBox(height: 16),
-                  // Set savings goal CTA
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.mintChip,
-                      borderRadius: AppRadius.lg,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.track_changes_outlined,
-                            color: AppColors.forest, size: 20),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            l10n.settingsSavingsGoalLabel,
-                            style: AppTextStyles.bodyMedium
-                                .copyWith(color: AppColors.forest),
-                          ),
-                        ),
-                        const Icon(Icons.chevron_right,
-                            color: AppColors.forest, size: 20),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _BottomFlourish(),
+            ),
           ],
         ),
-      ),
     );
   }
 
@@ -1345,8 +1688,14 @@ class _JourneyCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: LuxuryCard(
-        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-        child: Column(
+        clip: true,
+        padding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            Padding(
+              // Extra bottom clears the _BottomFlourish band.
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 40),
+              child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.homeYourJourney,
@@ -1422,6 +1771,15 @@ class _JourneyCard extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             _JourneyProgressBar(days: days, milestones: milestones),
+          ],
+        ),
+            ),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _BottomFlourish(),
+            ),
           ],
         ),
       ),
@@ -1835,8 +2193,15 @@ class _DailyMissionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final done = toggles.length;
-    return SolidCard(
-      child: Column(
+    return LuxuryCard(
+      clip: true,
+      padding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          Padding(
+            // Extra bottom clears the _BottomFlourish band.
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.homeDailyMissions, style: AppTextStyles.overline),
@@ -1897,6 +2262,15 @@ class _DailyMissionsCard extends StatelessWidget {
               ),
             );
           }),
+        ],
+      ),
+          ),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _BottomFlourish(),
+          ),
         ],
       ),
     );
@@ -2658,18 +3032,18 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   final _notesCtrl = TextEditingController();
   bool _saving = false;
 
-  // Row 1: walk, run, cycle, swim   Row 2: weights, yoga, other
+  // Row 1: walk, run, cycle, swim   Row 2: gym, yoga, other
   static const _types = [
     ('walk', 'Walk', Icons.directions_walk_rounded),
     ('run', 'Run', Icons.directions_run_rounded),
     ('cycle', 'Cycle', Icons.directions_bike_rounded),
     ('swim', 'Swim', Icons.pool_rounded),
-    ('weights', 'Weights', Icons.fitness_center_rounded),
+    ('gym', 'Gym', Icons.fitness_center_rounded),
     ('yoga', 'Yoga', Icons.self_improvement_outlined),
     ('other', 'Other', Icons.more_horiz_rounded),
   ];
 
-  // Activities that log distance + exact time instead of the slider.
+  // Activities that log distance + exact time instead of a plain duration field.
   static const _distanceActivities = {'run', 'cycle', 'swim'};
   bool get _needsDistance => _distanceActivities.contains(_activity);
 
@@ -2710,7 +3084,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
 
   Widget _typeGrid(BuildContext context) {
     const row1 = ['walk', 'run', 'cycle', 'swim'];
-    const row2 = ['weights', 'yoga', 'other'];
+    const row2 = ['gym', 'yoga', 'other'];
 
     Widget chip(({String id, String label, IconData icon}) t) {
       final sel = _activity == t.id;
@@ -2773,7 +3147,12 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheetShell(
+  Widget build(BuildContext context) {
+    final useImperial =
+        ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
+    final distanceUnit = useImperial ? 'miles' : 'km';
+
+    return _sheetShell(
         context: context,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2840,12 +3219,12 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Distance in km
+                  // Distance field — unit label reflects imperial/metric setting
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Distance (km)',
+                        Text('Distance ($distanceUnit)',
                             style: AppTextStyles.caption
                                 .copyWith(color: AppColors.stone400)),
                         const SizedBox(height: 6),
@@ -2879,7 +3258,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                             hintText: '0.0',
                             hintStyle: AppTextStyles.titleSmall
                                 .copyWith(color: AppColors.stone200),
-                            suffixText: 'km',
+                            suffixText: distanceUnit,
                             suffixStyle: AppTextStyles.caption
                                 .copyWith(color: AppColors.stone400),
                           ),
@@ -2890,28 +3269,36 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                 ],
               ),
             ] else ...[
-              Row(
-                children: [
-                  const _SheetSectionLabel('Duration'),
-                  const Spacer(),
-                  Text(
-                    '${_minutes.round()} min',
-                    style: AppTextStyles.titleSmall
-                        .copyWith(color: AppColors.forest600),
+              const _SheetSectionLabel('Duration'),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _minutesCtrl,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest700),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.stone50,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: AppRadius.lg,
+                    borderSide: const BorderSide(color: AppColors.stone100),
                   ),
-                ],
-              ),
-              Slider(
-                value: _minutes,
-                min: 5,
-                max: 120,
-                divisions: 23,
-                onChanged: (v) {
-                  H.selection();
-                  setState(() => _minutes = v);
-                },
-                activeColor: AppColors.forest600,
-                inactiveColor: AppColors.stone100,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: AppRadius.lg,
+                    borderSide: const BorderSide(color: AppColors.stone100),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: AppRadius.lg,
+                    borderSide: const BorderSide(
+                        color: AppColors.forest300, width: 1.5),
+                  ),
+                  suffixText: 'min',
+                  suffixStyle: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400),
+                ),
               ),
             ],
             const SizedBox(height: 18),
@@ -2957,6 +3344,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
           ],
         ),
       );
+  }
 }
 
 // ?? Sleep sheet ??????????????????????????????????????????????????????????????

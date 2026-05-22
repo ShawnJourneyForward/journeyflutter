@@ -279,9 +279,9 @@ class _HomeTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
-        Text('Calm Toolkit', style: AppTextStyles.greetingSerif),
+        Text('Your Toolkit', style: AppTextStyles.greetingSerif),
         const SizedBox(height: 4),
-        Text('Choose the gentlest next step.', style: AppTextStyles.bodyLarge),
+        Text('One Day at a Time', style: AppTextStyles.bodyLarge),
         const SizedBox(height: 16),
 
         // Emergency call button
@@ -400,6 +400,7 @@ class _BreathingTabState extends State<_BreathingTab>
 
   // Session state
   bool _paused = false;
+  bool _sessionStarted = false; // true once user taps Start for the first time
   int _phaseIndex = 0;
   int _phaseRemaining = 0;
   int _totalSeconds = 0;
@@ -450,18 +451,27 @@ class _BreathingTabState extends State<_BreathingTab>
     }
   }
 
-  void _startSession() {
-    final phases = _phases;
+  // Enter the session screen without starting the timer — user sees "Start".
+  void _enterSession() {
+    _timer?.cancel();
+    _circleCtrl.stop();
+    _circleCtrl.value = 0;
     _phaseIndex = 0;
-    _phaseRemaining = phases[0].$2;
+    _phaseRemaining = _phases[0].$2;
     _totalSeconds = _sessionDuration;
     _paused = false;
+    _sessionStarted = false;
     setState(() => _view = _BreathView.session);
-    // Fire the haptic for the FIRST phase (always Inhale) so the session
-    // starts with the same pulse the user will feel on every transition.
-    _phaseHaptic(phases[0].$1);
+  }
+
+  // Called when the user taps "Start" — begin the actual countdown.
+  void _beginSession() {
+    _sessionStarted = true;
+    _paused = false;
+    _phaseHaptic(_phases[0].$1);
     _animatePhase();
     _scheduleTimer();
+    setState(() {});
   }
 
   void _scheduleTimer() {
@@ -525,6 +535,7 @@ class _BreathingTabState extends State<_BreathingTab>
     _circleCtrl.value = 0;
     setState(() {
       _paused = false;
+      _sessionStarted = false;
       _view = _BreathView.select;
       _phaseIndex = 0;
       _phaseRemaining = 0;
@@ -588,7 +599,7 @@ class _BreathingTabState extends State<_BreathingTab>
               pattern: _patterns[rescueIdx],
               onBegin: () {
                 setState(() => _selectedIndex = rescueIdx);
-                _startSession();
+                _enterSession();
               },
             ),
             const SizedBox(height: 24),
@@ -611,7 +622,7 @@ class _BreathingTabState extends State<_BreathingTab>
                         pattern: _patterns[idx],
                         onTap: () {
                           setState(() => _selectedIndex = idx);
-                          _startSession();
+                          _enterSession();
                         },
                       ))
                   .toList(),
@@ -744,15 +755,19 @@ class _BreathingTabState extends State<_BreathingTab>
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(currentName,
-                                  style: AppTextStyles.titleSmall.copyWith(
-                                      color: AppColors.forest700,
-                                      fontWeight: FontWeight.w500)),
-                              Text('$_phaseRemaining',
-                                  style: AppTextStyles.heroNumber.copyWith(
-                                      fontSize: 40,
-                                      color: AppColors.forestDark,
-                                      height: 1.0)),
+                              Text(
+                                _sessionStarted ? currentName : 'Ready',
+                                style: AppTextStyles.titleSmall.copyWith(
+                                    color: AppColors.forest700,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              Text(
+                                _sessionStarted ? '$_phaseRemaining' : '·',
+                                style: AppTextStyles.heroNumber.copyWith(
+                                    fontSize: 40,
+                                    color: AppColors.forestDark,
+                                    height: 1.0),
+                              ),
                               Text(_pattern.name,
                                   style: AppTextStyles.caption
                                       .copyWith(color: AppColors.stone500)),
@@ -860,14 +875,22 @@ class _BreathingTabState extends State<_BreathingTab>
                       children: [
                         Expanded(
                           child: FilledButton(
-                            onPressed: _paused ? _resumeSession : _pauseSession,
+                            onPressed: !_sessionStarted
+                                ? _beginSession
+                                : _paused
+                                    ? _resumeSession
+                                    : _pauseSession,
                             style: FilledButton.styleFrom(
                               backgroundColor: AppColors.forest700,
                               minimumSize: const Size.fromHeight(48),
                               shape: const RoundedRectangleBorder(
                                   borderRadius: AppRadius.xl),
                             ),
-                            child: Text(_paused ? 'Resume' : 'Pause'),
+                            child: Text(!_sessionStarted
+                                ? 'Start'
+                                : _paused
+                                    ? 'Resume'
+                                    : 'Pause'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -958,7 +981,7 @@ class _BreathingTabState extends State<_BreathingTab>
                 pattern: p,
                 onTap: () {
                   setState(() => _selectedIndex = idx);
-                  _startSession();
+                  _enterSession();
                 },
               );
             },
@@ -1140,38 +1163,39 @@ class _LibraryCard extends StatelessWidget {
           boxShadow: AppShadows.luxury,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: const BoxDecoration(
-                      color: AppColors.forest50, shape: BoxShape.circle),
-                  child: Icon(icon, size: 24, color: AppColors.forest600),
-                ),
-                const SizedBox(height: 10),
-                Text(pattern.name,
-                    style: AppTextStyles.displaySmall.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.forestDark)),
-                const SizedBox(height: 4),
-                Text(pattern.description,
-                    style: AppTextStyles.caption,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
-              ],
+            Container(
+              width: 50,
+              height: 50,
+              decoration: const BoxDecoration(
+                  color: AppColors.forest50, shape: BoxShape.circle),
+              child: Icon(icon, size: 24, color: AppColors.forest600),
             ),
-            // Fixed-width, single-line pill so the Box pattern (4·4·4·4 — four
-            // numbers) doesn't wrap to two lines on narrow phones, which would
-            // make its chip taller than the others and visually misalign the
-            // 2×2 grid. FittedBox shrinks the text on very narrow phones
-            // rather than allowing a wrap.
+            const SizedBox(height: 8),
+            Text(pattern.name,
+                style: AppTextStyles.displaySmall.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.forestDark)),
+            const SizedBox(height: 4),
+            // Expanded so the description takes remaining space and the
+            // rhythm pill always anchors to the same bottom position across
+            // all 4 tiles, regardless of how many lines the description uses.
+            Expanded(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  pattern.description,
+                  style: AppTextStyles.caption,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Rhythm pill — FittedBox prevents wrapping on narrow phones.
             Container(
               height: 24,
               alignment: Alignment.center,

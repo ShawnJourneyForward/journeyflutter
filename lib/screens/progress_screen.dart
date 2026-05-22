@@ -280,8 +280,9 @@ class _StreakTab extends ConsumerWidget {
                   GestureDetector(
                     onTap: () => context.push('/milestone'),
                     child: Text('Cards',
-                        style: AppTextStyles.labelSmall
-                            .copyWith(color: AppColors.forest600)),
+                        style: AppTextStyles.labelLarge.copyWith(
+                            color: AppColors.forest600,
+                            fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
