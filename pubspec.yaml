@@ -26,12 +26,12 @@ dependencies:
   # ── Local notifications ───────────────────────────────────────────────────────
   flutter_local_notifications: ^17.2.3
   timezone: ^0.9.4
+  flutter_timezone: ^3.0.0          # resolves device IANA timezone name for correct DST handling
 
   # ── Auth / lock ───────────────────────────────────────────────────────────────
   local_auth: ^2.3.0              # biometric (mirrors @capgo/capacitor-native-biometric)
 
-  # ── TTS + STT ─────────────────────────────────────────────────────────────────
-  flutter_tts: ^4.0.2             # affirmations read-aloud, meditation guide
+  # ── STT ──────────────────────────────────────────────────────────────────────
   speech_to_text: ^7.0.0          # journal voice entry
 
   # ── Ambient audio (rain · forest · ocean · fire) ──────────────────────────────

@@ -41,6 +41,16 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
     // soberDaysProvider only rebuilds at midnight — no need for per-second ticks here.
     final stats = ref.watch(soberDaysProvider);
 
+    // Switch to the requested tab when navigating from Settings.
+    ref.listen(progressTabProvider, (_, next) {
+      if (next != _tabs.index) {
+        _tabs.animateTo(next);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(progressTabProvider.notifier).state = 0;
+        });
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppColors.stone50,
       body: SafeArea(
@@ -331,7 +341,7 @@ class _StreakTab extends ConsumerWidget {
                               : ms >= 30
                                   ? '${ms ~/ 30}mo'
                                   : '${ms}d',
-                          style: AppTextStyles.caption.copyWith(
+                          style: AppTextStyles.labelSmall.copyWith(
                             color: achieved
                                 ? AppColors.forest700
                                 : AppColors.stone300,
@@ -452,7 +462,7 @@ class _InsightsTab extends ConsumerWidget {
         ),
         const SizedBox(height: 14),
         _InsightTile(
-          title: 'Reflective Thoughts',
+          title: 'Thoughts',
           subtitle: 'Thoughts logged each day across 14 days.',
           data: thoughts,
           barColor: AppColors.stone400,
@@ -1018,7 +1028,6 @@ class _MiniHeatmap extends ConsumerWidget {
                       // 7 tiles
                       ...List.generate(7, (col) {
                         final idx = row * 7 + col;
-                        final dayNumber = idx + 1; // 1-based for display
                         final isFuture = idx > daysSober;
                         final isToday = idx == daysSober;
                         final count = counts[idx] ?? 0;
@@ -1038,22 +1047,14 @@ class _MiniHeatmap extends ConsumerWidget {
                                       color: AppColors.forest400, width: 1.5)
                                   : null,
                             ),
-                            // Past / today cells show count when > 0,
-                            // otherwise show the day number for context.
-                            // Future cells stay empty so they read as
-                            // "not yet" rather than "0 cravings".
-                            child: isFuture
+                            child: (isFuture || count == 0)
                                 ? null
                                 : Text(
-                                    count > 0 ? '$count' : '$dayNumber',
+                                    '$count',
                                     style: AppTextStyles.caption.copyWith(
                                       fontSize: 10,
-                                      fontWeight: count > 0
-                                          ? FontWeight.w700
-                                          : FontWeight.w500,
-                                      color: count > 0
-                                          ? _textColor(count)
-                                          : AppColors.stone400,
+                                      fontWeight: FontWeight.w700,
+                                      color: _textColor(count),
                                     ),
                                   ),
                           ),

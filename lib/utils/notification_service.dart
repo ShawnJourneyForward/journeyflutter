@@ -42,26 +42,26 @@ class NotificationService {
   static const _savingsTiers = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
 
   static const _milestoneMessages = {
-    1: '1 Day Sober. The hardest step is the first. You did it.',
-    7: '7 Days Sober. One full week clean — that\'s real strength.',
-    14: '14 Days Sober. Two weeks. Your body is already healing.',
-    30: '30 Days Sober. One month — you\'re building something real.',
-    60: '60 Days Sober. Two months of fighting and winning.',
-    90: '90 Days Sober. Three months. This is who you are now.',
-    180: '180 Days Sober. Half a year. Unbelievable progress.',
-    365: '1 Year Sober. 365 days. You are an inspiration.',
-    730: '2 Years Sober. Two years of choosing yourself every single day.',
-    1095: '3 Years Sober. Three years. You\'ve transformed your life.',
+    1: '1 Day Sober. The first step is the hardest. You showed up.',
+    7: '7 Days Sober. One full week — that takes real courage.',
+    14: '14 Days Sober. Two weeks. Your body and mind are already responding.',
+    30: '30 Days Sober. One month of choosing yourself, one day at a time.',
+    60: '60 Days Sober. Two months. Every single day has mattered.',
+    90: '90 Days Sober. Three months. Keep going at your own pace.',
+    180: '180 Days Sober. Half a year. That\'s a lot of days showing up.',
+    365: '1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.',
+    730: '2 Years Sober. Two years of choosing yourself, over and over again.',
+    1095: '3 Years Sober. Three years. Your path forward is your own.',
   };
 
   // ── Motivational copy ─────────────────────────────────────────────────────
 
   static const _morningReminders = [
-    'Start your day strong — Check in and complete your missions.',
-    'Good morning. Your streak is worth protecting today.',
+    'Good morning. Your recovery is worth showing up for today.',
     'One day at a time. You\'ve got this — check in now.',
-    'Morning check-in time — Log your mood and set your intentions.',
+    'Morning check-in — Log your mood and set your intentions.',
     'Your sober journey continues today. Open the app and check in.',
+    'A new day, a fresh start. Take a moment to ground yourself.',
   ];
 
   static const _eveningReminders = [
@@ -69,7 +69,7 @@ class NotificationService {
     'Evening check-in — How did your day go? Log it and reflect.',
     'Don\'t forget to log today before it slips away.',
     'Great job today — Take a moment to reflect and log your day.',
-    'Your streak is still going strong — Log tonight before you sleep.',
+    'You kept going today. Log tonight before you sleep.',
   ];
 
   // ── Initialise ───────────────────────────────────────────────────────────
@@ -101,6 +101,9 @@ class NotificationService {
       debugPrint('[NotificationService] init failed: $e\n$st');
     }
   }
+
+  // ── Milestones toggle (kept in sync by scheduleFromPrefs) ────────────────
+  static bool _milestonesEnabled = true;
 
   // ── Exact-alarm capability ───────────────────────────────────────────────
   //
@@ -155,6 +158,9 @@ class NotificationService {
       final eveningStr = prefs.getString('notif_evening') ?? '20:00';
       final wantMotiv = prefs.getBool('notif_motivation') ?? true;
       final wantRemind = prefs.getBool('notif_reminders') ?? true;
+      // Milestones toggle — read here so the Settings pref actually does something.
+      // fireDayMilestone / fireSavingsMilestone check this before posting.
+      _milestonesEnabled = prefs.getBool('notif_milestones') ?? true;
 
       // Cancel old scheduled reminders before re-scheduling.
       await _plugin.cancel(1);
@@ -230,6 +236,7 @@ class NotificationService {
   // ── Milestone notifications ──────────────────────────────────────────────
 
   static Future<void> fireDayMilestone(int days) async {
+    if (!_milestonesEnabled) return;
     if (!_milestoneDays.contains(days)) return;
     final msg = _milestoneMessages[days];
     if (msg == null) return;
@@ -261,6 +268,7 @@ class NotificationService {
   }
 
   static Future<void> fireSavingsMilestone(int tier, String currency) async {
+    if (!_milestonesEnabled) return;
     if (!_savingsTiers.contains(tier)) return;
     final tierIndex = _savingsTiers.indexOf(tier);
     final fmt = '$currency${tier.toStringAsFixed(0)}';
@@ -320,7 +328,7 @@ class NotificationService {
       await _plugin.cancel(id);
       final fireAt = when.subtract(Duration(minutes: minutesBefore));
       if (!fireAt.isAfter(DateTime.now())) return; // past — nothing to fire
-      final tzWhen = tz.TZDateTime.from(fireAt.toUtc(), tz.UTC);
+      final tzWhen = tz.TZDateTime.from(fireAt, tz.local);
       final timeLabel =
           '${when.hour.toString().padLeft(2, '0')}:${when.minute.toString().padLeft(2, '0')}';
       final body = location == null || location.isEmpty
@@ -382,24 +390,20 @@ class NotificationService {
     return (hour: h.clamp(0, 23), minute: m.clamp(0, 59));
   }
 
-  /// Computes the next UTC instant at which the device's local clock will
-  /// show [hour]:[minute].
+  /// Computes the next occurrence of [hour]:[minute] in the device's local
+  /// IANA timezone (tz.local, set from FlutterTimezone at app startup).
   ///
-  /// Uses [DateTime.now()] (local wall-clock) rather than [tz.local] so that
-  /// no native timezone-name plugin is required — the OS offset is baked in
-  /// automatically via [DateTime.toUtc()].  The resulting [tz.TZDateTime] is
-  /// in UTC, so [matchDateTimeComponents] repeats at the same UTC instant
-  /// every day (i.e. the correct local time, stable unless the device moves
-  /// to a different timezone, in which case the next [scheduleFromPrefs]
-  /// call re-anchors it).
+  /// Scheduling in tz.local — not tz.UTC — means [matchDateTimeComponents]
+  /// repeats at the correct *wall-clock* time every day. DST transitions are
+  /// handled automatically: when clocks spring forward or fall back the OS
+  /// adjusts the underlying UTC trigger so the user still sees 08:00.
   static tz.TZDateTime _nextInstanceOf(int hour, int minute) {
-    final now = DateTime.now(); // device local time
-    var local = DateTime(now.year, now.month, now.day, hour, minute);
-    if (local.isBefore(now)) {
-      local = local.add(const Duration(days: 1));
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(
+        tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
     }
-    final utc = local.toUtc();
-    return tz.TZDateTime(
-        tz.UTC, utc.year, utc.month, utc.day, utc.hour, utc.minute);
+    return scheduled;
   }
 }

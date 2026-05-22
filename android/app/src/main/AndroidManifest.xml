@@ -63,8 +63,13 @@
         <receiver
             android:exported="false"
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+        <!-- exported="true" is required: BOOT_COMPLETED / MY_PACKAGE_REPLACED are
+             sent by the Android system (a different UID), so the receiver must
+             be externally reachable. Without this flag the system silently
+             drops the broadcast and scheduled notifications never recover
+             after a reboot or package replacement. -->
         <receiver
-            android:exported="false"
+            android:exported="true"
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -107,9 +112,6 @@
              (Google "Speech Services", Samsung Voice, etc.) on Android 11+. -->
         <intent>
             <action android:name="android.speech.RecognitionService"/>
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.TTS_SERVICE"/>
         </intent>
     </queries>
 </manifest>

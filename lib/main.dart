@@ -4,7 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'l10n/app_localizations.dart';
 import 'providers/app_providers.dart';
@@ -69,9 +71,14 @@ void main() async {
     );
   };
 
-  // Load the full IANA timezone database required by flutter_local_notifications.
+  // Load the full IANA timezone database and point tz.local at the device's
+  // real timezone. This is required for correct DST handling — without it,
+  // notifications are anchored to the UTC offset at schedule time and drift
+  // by ±1 hour when clocks change (UK, EU, US, AUS users are all affected).
   try {
     tz.initializeTimeZones();
+    final String deviceTz = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(deviceTz));
   } catch (e) {
     debugPrint('[main] timezone init failed: $e');
   }
@@ -80,6 +87,11 @@ void main() async {
   // Both calls already swallow their own errors, but wrap as belt-and-braces.
   try {
     await NotificationService.init();
+    // Re-request the POST_NOTIFICATIONS permission on every launch.
+    // On Android 13+ the permission can be reset when the APK is replaced
+    // (fresh install over existing). requestPermission() is a no-op when
+    // the permission is already granted, so this is safe to call every time.
+    await NotificationService.requestPermission();
     await NotificationService.scheduleFromPrefs();
   } catch (e) {
     debugPrint('[main] notification setup failed: $e');

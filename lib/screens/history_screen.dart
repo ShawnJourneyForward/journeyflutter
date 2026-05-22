@@ -1038,7 +1038,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   Widget _buildSlipCard(Slip e) {
     final streakLabel =
-        e.streakDays == 1 ? '1 day streak' : '${e.streakDays} day streak';
+        e.streakDays == 1 ? '1 day sober' : '${e.streakDays} days sober';
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -1088,7 +1088,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Previous streak: $streakLabel',
+                      'Sober at the time: $streakLabel',
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone600),
                     ),
@@ -1256,7 +1256,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   _buildStatChip(
                     icon: Icons.local_florist_rounded,
                     value: soberStats != null ? '${soberStats.days}d' : '--',
-                    label: 'Current streak',
+                    label: 'Days sober',
                   ),
                 ],
               ),

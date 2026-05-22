@@ -60,7 +60,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                     color: AppColors.honey50,
                     borderRadius: AppRadius.pill,
                   ),
-                  child: Text('$markedCount won',
+                  child: Text('$markedCount hard ${markedCount == 1 ? 'day' : 'days'}',
                       style: AppTextStyles.caption.copyWith(
                           color: AppColors.honey600, fontSize: 10)),
                 ),
@@ -97,11 +97,11 @@ class TodaysStrengthCard extends ConsumerWidget {
               colour: markedToday ? AppColors.forest600 : AppColors.honey600,
               bg: markedToday ? AppColors.forest50 : AppColors.honey50,
               title: markedToday
-                  ? "Today's win recorded"
-                  : 'Hard day but still sober?',
+                  ? 'Hard day recorded'
+                  : 'Staying sober on a hard day?',
               subtitle: markedToday
-                  ? 'Streak counts the days. This counts the battles.'
-                  : 'Mark it — fighting for sobriety IS sobriety.',
+                  ? 'Time sober counts the days. This records the hard ones.'
+                  : 'Mark it — being present on a hard day is real recovery.',
               actionLabel: markedToday ? 'Undo' : 'Mark it',
               onTap: () async {
                 H.medium();
@@ -118,7 +118,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                          'Logged. That was a real win — well done.',
+                          'Logged. Staying present on a hard day matters.',
                           style: AppTextStyles.bodySmall
                               .copyWith(color: Colors.white)),
                       backgroundColor: AppColors.forest600,
