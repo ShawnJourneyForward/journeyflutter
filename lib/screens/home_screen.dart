@@ -79,6 +79,72 @@ String _dailyQuote(AppLocalizations l10n) {
   return quotes[doy % quotes.length];
 }
 
+// ─── Hero card daily line ────────────────────────────────────────────────────
+//
+// Rotates the serif line under the Serenity card header. Same visual style as
+// the original "Every day forward is a win." — short, declarative, present
+// tense, about progress. No softening language ("gentle", "ease", "breathe").
+// 50 entries; cycles by day-of-year so the same line shows from midnight
+// to midnight without flicker, and the cycle repeats every ~7 weeks.
+const _heroQuotes = <String>[
+  'Every day forward is a win.',
+  'Progress is built in days like this.',
+  "You're farther than yesterday.",
+  'Today counted. Tomorrow will too.',
+  'Momentum compounds. Keep going.',
+  'Each day is a brick in the wall.',
+  'You chose this. Again.',
+  'Sober is a verb today.',
+  'The streak is the strategy.',
+  'You earned this day.',
+  'Forward is the only direction.',
+  'Days stack into years.',
+  'Discipline becomes identity.',
+  "You're rewriting the story.",
+  'The next right choice is the whole game.',
+  'Show up. The rest follows.',
+  'Old life. New chapter.',
+  'You did the hard thing today.',
+  "Progress isn't loud. It's daily.",
+  'Better is built, not found.',
+  'Today is the receipt.',
+  'You moved the needle.',
+  'Sobriety is the work and the reward.',
+  'What you do daily defines you.',
+  'Hours add to days. Days add to years.',
+  "You're closer than you were.",
+  'The first hard choice is behind you.',
+  "You're not who you were yesterday.",
+  'Action over feeling. Always.',
+  'Hard now. Easier later.',
+  "You're stacking days.",
+  "The streak doesn't lie.",
+  'Choose forward. Choose again.',
+  "You showed up. That's everything.",
+  'Days like this are how it changes.',
+  "You're building something real.",
+  'Today is proof.',
+  'Discipline is freedom.',
+  'One choice. Then the next.',
+  'The reps are the result.',
+  "You're earning your future.",
+  'Effort compounds quietly.',
+  "Today's win is tomorrow's foundation.",
+  'Forward is enough.',
+  "You're not starting over. You're continuing.",
+  'The work is the win.',
+  'Strong is what you become.',
+  'The hard days build you.',
+  'Decision by decision. Day by day.',
+  "You're doing it.",
+];
+
+String _heroDailyLine() {
+  final now = DateTime.now();
+  final doy = now.difference(DateTime(now.year)).inDays;
+  return _heroQuotes[doy % _heroQuotes.length];
+}
+
 // ─── Daily missions pool ──────────────────────────────────────────────────────
 
 List<String> _buildMissionPool(AppLocalizations l10n) => [
@@ -782,7 +848,7 @@ class _SerenityCard extends ConsumerWidget {
                   const _HeroCardHeader(),
                   const SizedBox(height: 16),
                   Text(
-                    'Every day forward is a win.',
+                    _heroDailyLine(),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.displaySmall.copyWith(
                       fontSize: 22,
