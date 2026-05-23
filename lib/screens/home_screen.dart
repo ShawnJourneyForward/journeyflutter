@@ -503,78 +503,99 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: 14),
 
                         // ── Daily Pledge ──────────────────────────────────────
-                        _PledgeCard(
-                          pledgedToday: pledgedToday && !_editingPledge,
-                          pledgeText: profile.lastPledgeText,
-                          controller: _pledgeController,
-                          saving: _pledgeSaving,
-                          onSave: () => _savePledge(profile),
-                          onEdit: () {
-                            _pledgeController.text =
-                                profile.lastPledgeText ?? '';
-                            setState(() => _editingPledge = true);
-                          },
+                        // Each card wrapped in RepaintBoundary so it lives on
+                        // its own compositor layer. Scroll becomes a pure GPU
+                        // translation — no shadow/decoration repaints, no
+                        // jitter when 1-sec/10-sec timers tick on the hero.
+                        RepaintBoundary(
+                          child: _PledgeCard(
+                            pledgedToday: pledgedToday && !_editingPledge,
+                            pledgeText: profile.lastPledgeText,
+                            controller: _pledgeController,
+                            saving: _pledgeSaving,
+                            onSave: () => _savePledge(profile),
+                            onEdit: () {
+                              _pledgeController.text =
+                                  profile.lastPledgeText ?? '';
+                              setState(() => _editingPledge = true);
+                            },
+                          ),
                         ),
                         const SizedBox(height: 14),
 
                         // ── Daily Gratitude ───────────────────────────────────
-                        _GratitudeCard(
-                          todayEntry: _editingGratitude ? null : todayGratitude,
-                          controller: _gratitudeController,
-                          saving: _gratitudeSaving,
-                          onSave: _saveGratitude,
-                          onEdit: () {
-                            _gratitudeController.text = todayGratitude ?? '';
-                            setState(() => _editingGratitude = true);
-                          },
+                        RepaintBoundary(
+                          child: _GratitudeCard(
+                            todayEntry:
+                                _editingGratitude ? null : todayGratitude,
+                            controller: _gratitudeController,
+                            saving: _gratitudeSaving,
+                            onSave: _saveGratitude,
+                            onEdit: () {
+                              _gratitudeController.text = todayGratitude ?? '';
+                              setState(() => _editingGratitude = true);
+                            },
+                          ),
                         ),
                         const SizedBox(height: 14),
-                        _MyReasonCard(profile: profile),
+                        RepaintBoundary(child: _MyReasonCard(profile: profile)),
                         const SizedBox(height: 14),
 
                         // ── Weekly Goals ─────────────────────────────────────
                         if (profile.weeklyGoals.isNotEmpty) ...[
-                          _WeeklyGoalsCard(
-                            goals: profile.weeklyGoals,
-                            toggles: goalToggles,
-                            onToggle: (i) {
-                              ref
-                                  .read(weeklyGoalTogglesProvider.notifier)
-                                  .toggle(i);
-                              H.selection();
-                            },
+                          RepaintBoundary(
+                            child: _WeeklyGoalsCard(
+                              goals: profile.weeklyGoals,
+                              toggles: goalToggles,
+                              onToggle: (i) {
+                                ref
+                                    .read(weeklyGoalTogglesProvider.notifier)
+                                    .toggle(i);
+                                H.selection();
+                              },
+                            ),
                           ),
                           const SizedBox(height: 14),
                         ],
 
                         // ── Daily Missions ───────────────────────────────────
-                        _DailyMissionsCard(
-                          missions: missions,
-                          toggles: missionToggles,
-                          onToggle: (i) {
-                            ref.read(missionTogglesProvider.notifier).toggle(i);
-                            H.selection();
-                          },
+                        RepaintBoundary(
+                          child: _DailyMissionsCard(
+                            missions: missions,
+                            toggles: missionToggles,
+                            onToggle: (i) {
+                              ref
+                                  .read(missionTogglesProvider.notifier)
+                                  .toggle(i);
+                              H.selection();
+                            },
+                          ),
                         ),
                         const SizedBox(height: 14),
 
                         // ── Daily Check-In ───────────────────────────────────
-                        _CheckInCard(
-                          onCraving: () => _showCravingSheet(context, ref),
-                          onThought: () => _showThoughtSheet(context, ref),
-                          onActivity: () => _showActivitySheet(context, ref),
-                          onSleep: () => _showSleepSheet(context, ref),
+                        RepaintBoundary(
+                          child: _CheckInCard(
+                            onCraving: () => _showCravingSheet(context, ref),
+                            onThought: () => _showThoughtSheet(context, ref),
+                            onActivity: () => _showActivitySheet(context, ref),
+                            onSleep: () => _showSleepSheet(context, ref),
+                          ),
                         ),
                         const SizedBox(height: 14),
 
                         // ── Today's Reminder ─────────────────────────────────
-                        _TodaysReminderCard(quote: _dailyQuote(l10n)),
+                        RepaintBoundary(
+                          child: _TodaysReminderCard(quote: _dailyQuote(l10n)),
+                        ),
                         const SizedBox(height: 14),
 
                         // ── Recovery Timeline Banner ─────────────────────────
-                        _RecoveryBanner(
-                          elapsed: stats?.elapsed ?? Duration.zero,
-                          onTap: () => context.push('/recovery'),
+                        RepaintBoundary(
+                          child: _RecoveryBanner(
+                            elapsed: stats?.elapsed ?? Duration.zero,
+                            onTap: () => context.push('/recovery'),
+                          ),
                         ),
                         const SizedBox(height: 32),
                       ],
