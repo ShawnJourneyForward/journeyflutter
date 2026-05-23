@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../components/glass_card.dart';
-import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
@@ -56,13 +55,6 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -4,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             Column(
               children: [
                 // ── Header ─────────────────────────────────────────────────────

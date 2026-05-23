@@ -445,10 +445,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await prefs.setBool('notif_reminders', result['reminders'] as bool);
     await prefs.setBool('notif_milestones', result['milestones'] as bool);
 
-    // Actually schedule the notifications now that prefs are saved.
+    // Re-request POST_NOTIFICATIONS before scheduling. On Android 13+ the
+    // system prompt is only shown the first time; subsequent calls return
+    // the current grant state without re-prompting. Surfacing the result
+    // tells the user whether reminders will actually appear — otherwise a
+    // silent "saved" snack would lie when permission is revoked.
+    final wantAny = (result['motivation'] as bool) ||
+        (result['reminders'] as bool) ||
+        (result['milestones'] as bool);
+    final granted =
+        wantAny ? await NotificationService.requestPermission() : true;
+
+    // Schedule regardless — if permission was granted in a previous session
+    // and the request channel returns false (some OEMs do), schedules still
+    // post correctly.
     await NotificationService.scheduleFromPrefs();
 
-    if (mounted) _showSnack('Notification settings saved');
+    if (!mounted) return;
+    if (wantAny && !granted) {
+      _showSnack(
+          'Saved — but notifications are blocked in system settings. '
+          'Enable them under Settings → Apps → Journey Forward → Notifications.');
+    } else {
+      _showSnack('Notification settings saved');
+    }
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────

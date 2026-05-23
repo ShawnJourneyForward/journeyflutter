@@ -15,7 +15,6 @@ import '../utils/notification_service.dart';
 import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
 import '../components/back_button.dart';
-import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 
 // ─── Step enum ────────────────────────────────────────────────────────────────
@@ -297,13 +296,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             Column(
               children: [
                 // ── Top bar: back + progress ───────────────────────────────────

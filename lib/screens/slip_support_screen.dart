@@ -67,13 +67,6 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             Column(
               children: [
                 // ── Header ─────────────────────────────────────────────────

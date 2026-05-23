@@ -11,7 +11,6 @@ import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 import '../utils/voice_input.dart';
 import '../providers/app_providers.dart';
-import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 
 // ─── Zen quotes ───────────────────────────────────────────────────────────────
@@ -141,13 +140,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -20,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             Column(
               children: [
                 _Header(

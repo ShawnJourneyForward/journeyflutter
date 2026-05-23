@@ -1029,32 +1029,40 @@ class _FramedPlant extends StatelessWidget {
           ),
 
           // ── Bottom-centre dot trio ─────────────────────────────────────
+          // FittedBox keeps the decoration from triggering a RenderFlex
+          // overflow when the parent LayoutBuilder gets a very narrow
+          // width (e.g. during the first layout pass on small test
+          // surfaces). Row renders at its natural 19px when there's
+          // room and scales down gracefully otherwise.
           Positioned(
             bottom: -5,
             left: 0,
             right: 0,
             child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Transform.rotate(
-                    angle: 0.7854,
-                    child: Container(
-                        width: 3, height: 3, color: AppColors.forest300),
-                  ),
-                  const SizedBox(width: 4),
-                  Transform.rotate(
-                    angle: 0.7854,
-                    child: Container(
-                        width: 5, height: 5, color: AppColors.forest400),
-                  ),
-                  const SizedBox(width: 4),
-                  Transform.rotate(
-                    angle: 0.7854,
-                    child: Container(
-                        width: 3, height: 3, color: AppColors.forest300),
-                  ),
-                ],
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Transform.rotate(
+                      angle: 0.7854,
+                      child: Container(
+                          width: 3, height: 3, color: AppColors.forest300),
+                    ),
+                    const SizedBox(width: 4),
+                    Transform.rotate(
+                      angle: 0.7854,
+                      child: Container(
+                          width: 5, height: 5, color: AppColors.forest400),
+                    ),
+                    const SizedBox(width: 4),
+                    Transform.rotate(
+                      angle: 0.7854,
+                      child: Container(
+                          width: 3, height: 3, color: AppColors.forest300),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1334,12 +1342,6 @@ class _MoneyCard extends ConsumerWidget {
         clip: true,
         child: Stack(
           children: [
-            // Botanical leaves \u2014 top-right decoration
-            const Positioned(
-              right: 0,
-              top: 0,
-              child: BotanicalBackground(width: 160, height: 130),
-            ),
             Padding(
               // Extra 42 px bottom so content clears the _BottomFlourish band.
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 42),

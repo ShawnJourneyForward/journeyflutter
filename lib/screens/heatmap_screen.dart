@@ -262,12 +262,6 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  const Positioned(
-                    right: 0,
-                    top: -6,
-                    child:
-                        IgnorePointer(child: BotanicalBackground(width: 140, height: 120)),
-                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8, 12, 20, 0),
                     child: Column(

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../components/glass_card.dart';
-import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../components/back_button.dart';
@@ -181,13 +180,6 @@ class _EmergencyScreenState extends ConsumerState<EmergencyScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               child: KeyedSubtree(
@@ -566,13 +558,6 @@ class _BreathingTabState extends State<_BreathingTab>
 
     return Stack(
       children: [
-        const Positioned(
-          top: -6,
-          right: -18,
-          child: IgnorePointer(
-            child: BotanicalBackground(width: 160, height: 130),
-          ),
-        ),
         ListView(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
           children: [
@@ -666,13 +651,6 @@ class _BreathingTabState extends State<_BreathingTab>
 
     return Stack(
       children: [
-        const Positioned(
-          top: -6,
-          right: -18,
-          child: IgnorePointer(
-            child: BotanicalBackground(width: 160, height: 130),
-          ),
-        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/glass_card.dart';
-import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../components/back_button.dart';
@@ -111,13 +110,6 @@ class InsightsScreen extends ConsumerWidget {
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             Column(
               children: [
                 // ── Header ────────────────────────────────────────────────

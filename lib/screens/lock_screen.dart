@@ -13,7 +13,6 @@ import '../utils/haptic_service.dart';
 import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
 import '../utils/secure_window.dart';
-import '../components/luxury_widgets.dart';
 
 class LockScreen extends StatefulWidget {
   const LockScreen({super.key});
@@ -213,13 +212,6 @@ class _LockScreenState extends State<LockScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            const Positioned(
-              top: -6,
-              right: -18,
-              child: IgnorePointer(
-                child: BotanicalBackground(width: 150, height: 92),
-              ),
-            ),
             _lockMethod == 'biometric'
                 ? _BiometricView(
                     error: _error,
