@@ -41,6 +41,11 @@ List<T> _safeParseList<T>(
 DateTime _safeParseDate(String? raw) =>
     raw == null ? DateTime.now() : (DateTime.tryParse(raw) ?? DateTime.now());
 
+/// Nullable variant: returns null for null/invalid input instead of `now()`.
+/// Used for genuinely optional date fields (e.g. vision target date).
+DateTime? _nullableParseDate(String? raw) =>
+    raw == null ? null : DateTime.tryParse(raw);
+
 // ─── 1-second tick ────────────────────────────────────────────────────────────
 
 final timerProvider = StreamProvider<DateTime>((ref) =>
@@ -543,35 +548,158 @@ final affirmationProvider =
 
 // ─── Vision board items ───────────────────────────────────────────────────────
 
+/// A small concrete step the user wants to take toward a vision.
+class VisionMilestone {
+  final String id;
+  final String text;
+  final bool done;
+
+  const VisionMilestone({
+    required this.id,
+    required this.text,
+    this.done = false,
+  });
+
+  factory VisionMilestone.fromJson(Map<String, dynamic> j) => VisionMilestone(
+        id: (j['id'] as String?) ??
+            DateTime.now().microsecondsSinceEpoch.toString(),
+        text: (j['text'] as String?) ?? '',
+        done: (j['done'] as bool?) ?? false,
+      );
+
+  Map<String, dynamic> toJson() => {'id': id, 'text': text, 'done': done};
+
+  VisionMilestone copyWith({String? text, bool? done}) => VisionMilestone(
+        id: id,
+        text: text ?? this.text,
+        done: done ?? this.done,
+      );
+}
+
+/// Life-area buckets used for grouping the board. Stored as the raw key
+/// (`growth`, `health`, etc.) — old items without a category land in `none`.
+enum VisionCategory {
+  none,
+  health,
+  family,
+  career,
+  growth,
+  freedom,
+  adventure,
+  service,
+  creativity,
+}
+
+VisionCategory _categoryFromString(String? s) {
+  if (s == null) return VisionCategory.none;
+  for (final c in VisionCategory.values) {
+    if (c.name == s) return c;
+  }
+  return VisionCategory.none;
+}
+
 class VisionItem {
   final String id;
   final String title;
   final String description;
   final String emoji; // stores icon key (e.g. 'guide') or legacy emoji
-  final String? imagePath; // optional local photo file path
+
+  // v2 fields — all optional, all backwards-compatible.
+  final List<String> imagePaths;
+  final VisionCategory category;
+  final DateTime? targetDate;
+  final List<VisionMilestone> milestones;
+  final String affirmation;
+  final String whyItMatters;
+  final bool pinned;
+  final bool achieved;
+  final DateTime? achievedDate;
+  final int? accentColor; // ARGB int, optional per-card tint
 
   const VisionItem({
     required this.id,
     required this.title,
     required this.description,
     required this.emoji,
-    this.imagePath,
+    this.imagePaths = const [],
+    this.category = VisionCategory.none,
+    this.targetDate,
+    this.milestones = const [],
+    this.affirmation = '',
+    this.whyItMatters = '',
+    this.pinned = false,
+    this.achieved = false,
+    this.achievedDate,
+    this.accentColor,
   });
 
-  factory VisionItem.fromJson(Map<String, dynamic> j) => VisionItem(
-        id: j['id'] as String,
-        title: j['title'] as String,
-        description: (j['description'] as String?) ?? '',
-        emoji: (j['emoji'] as String?) ?? 'guide',
-        imagePath: j['imagePath'] as String?,
-      );
+  /// Back-compat shim: old call sites still pass a single `imagePath`.
+  String? get imagePath => imagePaths.isEmpty ? null : imagePaths.first;
+
+  /// Milestone progress 0..1. Returns 0 for no milestones.
+  double get progress {
+    if (milestones.isEmpty) return 0.0;
+    final done = milestones.where((m) => m.done).length;
+    return done / milestones.length;
+  }
+
+  factory VisionItem.fromJson(Map<String, dynamic> j) {
+    // Migrate single legacy imagePath → imagePaths list.
+    final paths = <String>[];
+    final legacy = j['imagePath'] as String?;
+    if (legacy != null && legacy.isNotEmpty) paths.add(legacy);
+    final newList = j['imagePaths'] as List<dynamic>?;
+    if (newList != null) {
+      for (final p in newList) {
+        if (p is String && p.isNotEmpty && !paths.contains(p)) paths.add(p);
+      }
+    }
+
+    final milestoneJson = j['milestones'] as List<dynamic>?;
+    final milestones = <VisionMilestone>[];
+    if (milestoneJson != null) {
+      for (final m in milestoneJson) {
+        try {
+          milestones.add(VisionMilestone.fromJson(m as Map<String, dynamic>));
+        } catch (_) {}
+      }
+    }
+
+    return VisionItem(
+      id: j['id'] as String,
+      title: j['title'] as String,
+      description: (j['description'] as String?) ?? '',
+      emoji: (j['emoji'] as String?) ?? 'guide',
+      imagePaths: paths,
+      category: _categoryFromString(j['category'] as String?),
+      targetDate: _nullableParseDate(j['targetDate'] as String?),
+      milestones: milestones,
+      affirmation: (j['affirmation'] as String?) ?? '',
+      whyItMatters: (j['whyItMatters'] as String?) ?? '',
+      pinned: (j['pinned'] as bool?) ?? false,
+      achieved: (j['achieved'] as bool?) ?? false,
+      achievedDate: _nullableParseDate(j['achievedDate'] as String?),
+      accentColor: j['accentColor'] as int?,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
         'description': description,
         'emoji': emoji,
-        if (imagePath != null) 'imagePath': imagePath,
+        if (imagePaths.isNotEmpty) 'imagePaths': imagePaths,
+        if (category != VisionCategory.none) 'category': category.name,
+        if (targetDate != null) 'targetDate': targetDate!.toIso8601String(),
+        if (milestones.isNotEmpty)
+          'milestones': milestones.map((m) => m.toJson()).toList(),
+        if (affirmation.isNotEmpty) 'affirmation': affirmation,
+        if (whyItMatters.isNotEmpty) 'whyItMatters': whyItMatters,
+        if (pinned) 'pinned': true,
+        if (achieved) 'achieved': true,
+        if (achievedDate != null)
+          'achievedDate': achievedDate!.toIso8601String(),
+        if (accentColor != null) 'accentColor': accentColor,
       };
 
   VisionItem copyWith({
@@ -579,15 +707,38 @@ class VisionItem {
     String? title,
     String? description,
     String? emoji,
-    Object? imagePath = _sentinel,
+    List<String>? imagePaths,
+    VisionCategory? category,
+    Object? targetDate = _sentinel,
+    List<VisionMilestone>? milestones,
+    String? affirmation,
+    String? whyItMatters,
+    bool? pinned,
+    bool? achieved,
+    Object? achievedDate = _sentinel,
+    Object? accentColor = _sentinel,
   }) =>
       VisionItem(
         id: id ?? this.id,
         title: title ?? this.title,
         description: description ?? this.description,
         emoji: emoji ?? this.emoji,
-        imagePath:
-            imagePath == _sentinel ? this.imagePath : imagePath as String?,
+        imagePaths: imagePaths ?? this.imagePaths,
+        category: category ?? this.category,
+        targetDate: targetDate == _sentinel
+            ? this.targetDate
+            : targetDate as DateTime?,
+        milestones: milestones ?? this.milestones,
+        affirmation: affirmation ?? this.affirmation,
+        whyItMatters: whyItMatters ?? this.whyItMatters,
+        pinned: pinned ?? this.pinned,
+        achieved: achieved ?? this.achieved,
+        achievedDate: achievedDate == _sentinel
+            ? this.achievedDate
+            : achievedDate as DateTime?,
+        accentColor: accentColor == _sentinel
+            ? this.accentColor
+            : accentColor as int?,
       );
 }
 
@@ -629,11 +780,84 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
+
+  /// Toggle the pinned flag. Cap at 3 pinned dreams so the home "North Star"
+  /// card stays focused — extra pins are silently ignored.
+  Future<void> togglePinned(String id) async {
+    final current = state.valueOrNull ?? [];
+    final pinnedCount = current.where((e) => e.pinned).length;
+    final updated = current.map((e) {
+      if (e.id != id) return e;
+      if (!e.pinned && pinnedCount >= 3) return e; // cap reached
+      return e.copyWith(pinned: !e.pinned);
+    }).toList();
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  /// Flip the achieved flag. Stamps `achievedDate` on transition to true,
+  /// clears it on transition back to active.
+  Future<void> toggleAchieved(String id) async {
+    final current = state.valueOrNull ?? [];
+    final updated = current.map((e) {
+      if (e.id != id) return e;
+      final nowAchieved = !e.achieved;
+      return e.copyWith(
+        achieved: nowAchieved,
+        achievedDate: nowAchieved ? DateTime.now() : null,
+      );
+    }).toList();
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  /// Flip a single milestone done/undone.
+  Future<void> toggleMilestone(String itemId, String milestoneId) async {
+    final current = state.valueOrNull ?? [];
+    final updated = current.map((e) {
+      if (e.id != itemId) return e;
+      final newMilestones = e.milestones
+          .map((m) => m.id == milestoneId ? m.copyWith(done: !m.done) : m)
+          .toList();
+      return e.copyWith(milestones: newMilestones);
+    }).toList();
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  /// Persist a custom ordering (after drag-reorder on the board).
+  Future<void> reorder(List<String> orderedIds) async {
+    final current = state.valueOrNull ?? [];
+    final byId = {for (final e in current) e.id: e};
+    final updated = <VisionItem>[
+      for (final id in orderedIds)
+        if (byId.containsKey(id)) byId[id]!,
+      // Append anything missing from the order list so nothing is lost.
+      for (final e in current) if (!orderedIds.contains(e.id)) e,
+    ];
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
 }
 
 final visionBoardProvider =
     AsyncNotifierProvider<VisionBoardNotifier, List<VisionItem>>(
         VisionBoardNotifier.new);
+
+/// Convenience: just the pinned, active dreams. Used by the home "North Star"
+/// surface (v2.1) but exposed now so future wiring is trivial.
+final pinnedVisionsProvider = Provider<List<VisionItem>>((ref) {
+  final all = ref.watch(visionBoardProvider).valueOrNull ?? const [];
+  return all.where((v) => v.pinned && !v.achieved).toList();
+});
 
 // ─── Slip log ─────────────────────────────────────────────────────────────────
 

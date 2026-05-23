@@ -12,6 +12,8 @@ import '../utils/haptic_service.dart';
 import '../utils/voice_input.dart';
 import '../providers/app_providers.dart';
 import '../l10n/app_localizations.dart';
+import 'vision_board_shared.dart';
+import 'vision_detail_screen.dart';
 
 // ─── Zen quotes ───────────────────────────────────────────────────────────────
 
@@ -66,52 +68,8 @@ List<String> _buildDefaultAffirmations(AppLocalizations l10n) => [
       l10n.journalAffirm14,
     ];
 
-// ─── Vision Board icon palette ────────────────────────────────────────────────
-// 20 icons that mirror the Journey Forward Vision Icons SVG design system.
-// Each option stores a key (written to JSON), a Material icon, a label, and
-// its accent colour.  Legacy emoji strings are rendered as-is for existing data.
-
-class _VisionIconOption {
-  const _VisionIconOption({
-    required this.key,
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-  final String key;
-  final IconData icon;
-  final String label;
-  final Color color;
-}
-
-const _kVisionIcons = [
-  _VisionIconOption(key: 'guide',     icon: Icons.auto_awesome_rounded,          label: 'Guide',     color: AppColors.honey400),
-  _VisionIconOption(key: 'strength',  icon: Icons.fitness_center_rounded,         label: 'Strength',  color: AppColors.forest500),
-  _VisionIconOption(key: 'love',      icon: Icons.spa_rounded,               label: 'Love',      color: Color(0xFFD97272)),
-  _VisionIconOption(key: 'home',      icon: Icons.home_rounded,                   label: 'Home',      color: AppColors.forest600),
-  _VisionIconOption(key: 'family',    icon: Icons.group_rounded,                  label: 'Family',    color: AppColors.forest500),
-  _VisionIconOption(key: 'savings',   icon: Icons.account_balance_wallet_rounded, label: 'Savings',   color: AppColors.honey500),
-  _VisionIconOption(key: 'learn',     icon: Icons.school_rounded,                 label: 'Learn',     color: AppColors.forest600),
-  _VisionIconOption(key: 'growth',    icon: Icons.eco_rounded,                    label: 'Growth',    color: AppColors.forest500),
-  _VisionIconOption(key: 'journey',   icon: Icons.explore_rounded,                label: 'Journey',   color: AppColors.forest600),
-  _VisionIconOption(key: 'create',    icon: Icons.palette_rounded,                label: 'Create',    color: AppColors.honey400),
-  _VisionIconOption(key: 'move',      icon: Icons.directions_run_rounded,         label: 'Move',      color: AppColors.forest500),
-  _VisionIconOption(key: 'stillness', icon: Icons.self_improvement_rounded,       label: 'Stillness', color: AppColors.forest400),
-  _VisionIconOption(key: 'wisdom',    icon: Icons.menu_book_rounded,              label: 'Wisdom',    color: AppColors.honey500),
-  _VisionIconOption(key: 'aim',       icon: Icons.my_location_rounded,            label: 'Aim',       color: AppColors.forest600),
-  _VisionIconOption(key: 'hope',      icon: Icons.wb_twilight_rounded,            label: 'Hope',      color: AppColors.honey400),
-  _VisionIconOption(key: 'peace',     icon: Icons.spa_rounded,                    label: 'Peace',     color: AppColors.forest400),
-  _VisionIconOption(key: 'support',   icon: Icons.handshake_rounded,              label: 'Support',   color: AppColors.forest500),
-  _VisionIconOption(key: 'bloom',     icon: Icons.local_florist_rounded,          label: 'Bloom',     color: AppColors.honey400),
-  _VisionIconOption(key: 'milestone', icon: Icons.emoji_events_rounded,           label: 'Milestone', color: AppColors.honey500),
-  _VisionIconOption(key: 'spark',     icon: Icons.local_fire_department_rounded,  label: 'Spark',     color: AppColors.honey400),
-];
-
-/// Returns the icon option for a stored key.  Falls back to 'guide' when the
-/// stored value is a legacy emoji character that doesn't match any key.
-_VisionIconOption _optionFor(String key) =>
-    _kVisionIcons.firstWhere((o) => o.key == key,
-        orElse: () => _kVisionIcons.first);
+// Vision Board icon palette + category metadata live in vision_board_shared.dart
+// so the detail screen can share them without a circular import.
 
 // ─── Journal screen ───────────────────────────────────────────────────────────
 
@@ -1041,106 +999,143 @@ class _CustomAffirmRow extends StatelessWidget {
 // Tab 2 — Vision Board
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _VisionTab extends ConsumerWidget {
+/// Filter chips above the board.
+enum _VisionFilter { all, active, pinned, achieved }
+
+class _VisionTab extends ConsumerStatefulWidget {
   const _VisionTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final items = ref.watch(visionBoardProvider).valueOrNull ?? [];
+  ConsumerState<_VisionTab> createState() => _VisionTabState();
+}
+
+class _VisionTabState extends ConsumerState<_VisionTab> {
+  _VisionFilter _filter = _VisionFilter.all;
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
+    final items = ref.watch(visionBoardProvider).valueOrNull ?? const [];
+
+    // Filter pass — kept separate from grouping so counts can be computed
+    // independently for the chips below.
+    final filtered = items.where((e) {
+      switch (_filter) {
+        case _VisionFilter.all:
+          return true;
+        case _VisionFilter.active:
+          return !e.achieved;
+        case _VisionFilter.pinned:
+          return e.pinned && !e.achieved;
+        case _VisionFilter.achieved:
+          return e.achieved;
+      }
+    }).toList();
+
+    // Group by category for the section headers. Map preserves insertion order,
+    // which we set deliberately so 'Uncategorised' lands last.
+    final byCategory = <VisionCategory, List<VisionItem>>{};
+    for (final cat in VisionCategory.values) {
+      final hits = filtered.where((e) => e.category == cat).toList();
+      if (hits.isNotEmpty) byCategory[cat] = hits;
+    }
+
+    final pinnedCount = items.where((e) => e.pinned && !e.achieved).length;
+    final achievedCount = items.where((e) => e.achieved).length;
+    final activeCount = items.length - achievedCount;
 
     return Stack(
       children: [
         CustomScrollView(
           slivers: [
-            // ── Header banner ──────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [AppColors.mintChip, AppColors.forest50],
-                    ),
-                    borderRadius: AppRadius.luxury,
-                    border: Border.all(color: AppColors.softBorder),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: AppColors.forest100,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.auto_awesome_rounded,
-                            size: 22, color: AppColors.forest600),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Your Vision Board',
-                                style: AppTextStyles.titleSmall
-                                    .copyWith(color: AppColors.forest700)),
-                            Text(
-                              items.isEmpty
-                                  ? 'Visualise the life ahead of you'
-                                  : '${items.length} dream${items.length == 1 ? '' : 's'} to work toward',
-                              style: AppTextStyles.bodySmall
-                                  .copyWith(color: AppColors.stone500),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                child: _BoardHeader(
+                  total: items.length,
+                  pinnedCount: pinnedCount,
+                  achievedCount: achievedCount,
                 ),
               ),
             ),
+            if (items.isNotEmpty)
+              SliverToBoxAdapter(
+                child: _FilterRow(
+                  filter: _filter,
+                  allCount: items.length,
+                  activeCount: activeCount,
+                  pinnedCount: pinnedCount,
+                  achievedCount: achievedCount,
+                  onSelect: (f) {
+                    H.selection();
+                    setState(() => _filter = f);
+                  },
+                ),
+              ),
 
-            // ── Empty state ────────────────────────────────────────────────
+            // ── Empty state (no items at all OR filter has no matches) ──────
             if (items.isEmpty)
               SliverFillRemaining(
-                child: _EmptyState(
-                  icon: Icons.auto_awesome_rounded,
-                  title: 'Your vision board is empty',
-                  subtitle: 'Tap + to add a dream or goal',
+                hasScrollBody: false,
+                child: _VisionEmptyState(
+                  onSeed: (starter) =>
+                      _showEditSheet(context, ref, null, starter: starter),
+                  onBlank: () => _showEditSheet(context, ref, null),
                 ),
-              ),
-
-            // ── Grid of vision cards ────────────────────────────────────────
-            if (items.isNotEmpty)
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-                sliver: SliverGrid(
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 0.82,
+              )
+            else if (filtered.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
+                  child: _EmptyState(
+                    icon: Icons.filter_alt_off_outlined,
+                    title: 'Nothing here yet',
+                    subtitle: 'Try a different filter, or add a new dream.',
                   ),
-                  delegate: SliverChildBuilderDelegate(
-                    (_, i) => _VisionCard(
-                      item: items[i],
-                      onEdit: () => _showEditSheet(context, ref, items[i]),
-                      onDelete: () => ref
-                          .read(visionBoardProvider.notifier)
-                          .remove(items[i].id),
+                ),
+              )
+            else
+              // One sliver per category section.
+              ...byCategory.entries.expand((entry) {
+                final info = categoryInfoFor(entry.key);
+                final showHeader = byCategory.length > 1 ||
+                    entry.key != VisionCategory.none;
+                return [
+                  if (showHeader)
+                    SliverToBoxAdapter(
+                      child: _SectionHeader(info: info, count: entry.value.length),
                     ),
-                    childCount: items.length,
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        childAspectRatio: 0.82,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (_, i) => _VisionCard(
+                          item: entry.value[i],
+                          onTap: () =>
+                              _openDetail(context, ref, entry.value[i]),
+                          onEdit: () =>
+                              _showEditSheet(context, ref, entry.value[i]),
+                          onDelete: () => ref
+                              .read(visionBoardProvider.notifier)
+                              .remove(entry.value[i].id),
+                        ),
+                        childCount: entry.value.length,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                ];
+              }),
+            const SliverToBoxAdapter(child: SizedBox(height: 110)),
           ],
         ),
-
-        // ── FAB ─────────────────────────────────────────────────────────────
         Positioned(
           right: 20,
           bottom: 24,
@@ -1150,7 +1145,18 @@ class _VisionTab extends ConsumerWidget {
     );
   }
 
-  void _showEditSheet(BuildContext context, WidgetRef ref, VisionItem? item) {
+  void _openDetail(BuildContext context, WidgetRef ref, VisionItem item) {
+    H.selection();
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => VisionDetailScreen(
+        itemId: item.id,
+        onEdit: (live) => _showEditSheet(context, ref, live),
+      ),
+    ));
+  }
+
+  void _showEditSheet(BuildContext context, WidgetRef ref, VisionItem? item,
+      {VisionStarter? starter}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1162,6 +1168,7 @@ class _VisionTab extends ConsumerWidget {
             EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
         child: _VisionEditSheet(
           existingItem: item,
+          starter: starter,
           onSave: (updated) =>
               ref.read(visionBoardProvider.notifier).add(updated),
           onUpdate: (updated) =>
@@ -1176,128 +1183,467 @@ class _VisionTab extends ConsumerWidget {
   }
 }
 
+// ─── Board header banner ─────────────────────────────────────────────────────
+
+class _BoardHeader extends StatelessWidget {
+  const _BoardHeader({
+    required this.total,
+    required this.pinnedCount,
+    required this.achievedCount,
+  });
+  final int total;
+  final int pinnedCount;
+  final int achievedCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.mintChip, AppColors.forest50],
+        ),
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: AppColors.softBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              color: AppColors.forest100,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.auto_awesome_rounded,
+                size: 22, color: AppColors.forest600),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Your Vision Board',
+                    style: AppTextStyles.titleSmall
+                        .copyWith(color: AppColors.forest700)),
+                Text(
+                  total == 0
+                      ? 'Visualise the life ahead of you'
+                      : _subtitle(total, pinnedCount, achievedCount),
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.stone500),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _subtitle(int total, int pinned, int achieved) {
+    final parts = <String>[
+      '$total dream${total == 1 ? '' : 's'}',
+      if (pinned > 0) '$pinned pinned',
+      if (achieved > 0) '$achieved achieved',
+    ];
+    return parts.join(' · ');
+  }
+}
+
+// ─── Filter chips row ────────────────────────────────────────────────────────
+
+class _FilterRow extends StatelessWidget {
+  const _FilterRow({
+    required this.filter,
+    required this.allCount,
+    required this.activeCount,
+    required this.pinnedCount,
+    required this.achievedCount,
+    required this.onSelect,
+  });
+  final _VisionFilter filter;
+  final int allCount;
+  final int activeCount;
+  final int pinnedCount;
+  final int achievedCount;
+  final void Function(_VisionFilter) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _filterChip('All', allCount, _VisionFilter.all),
+            const SizedBox(width: 8),
+            _filterChip('Active', activeCount, _VisionFilter.active),
+            const SizedBox(width: 8),
+            _filterChip('Pinned', pinnedCount, _VisionFilter.pinned),
+            const SizedBox(width: 8),
+            _filterChip('Achieved', achievedCount, _VisionFilter.achieved),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _filterChip(String label, int count, _VisionFilter f) {
+    final selected = f == filter;
+    return GestureDetector(
+      onTap: () => onSelect(f),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.forest600 : AppColors.card,
+          borderRadius: AppRadius.sm,
+          border: Border.all(
+            color: selected ? AppColors.forest600 : AppColors.stone200,
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: selected ? Colors.white : AppColors.stone600,
+              ),
+            ),
+            if (count > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
+                  color: selected
+                      // ignore: deprecated_member_use
+                      ? Colors.white.withOpacity(0.20)
+                      : AppColors.stone100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$count',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: selected ? Colors.white : AppColors.stone600,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Category section header ─────────────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.info, required this.count});
+  final VisionCategoryInfo info;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      child: Row(
+        children: [
+          Icon(info.icon, size: 16, color: info.color),
+          const SizedBox(width: 8),
+          Text(
+            info.label.toUpperCase(),
+            style: AppTextStyles.overline.copyWith(
+              color: info.color,
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text('· $count',
+              style: AppTextStyles.bodySmall
+                  .copyWith(color: AppColors.stone400)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Empty state with starter prompts ────────────────────────────────────────
+
+class _VisionEmptyState extends StatelessWidget {
+  const _VisionEmptyState({required this.onSeed, required this.onBlank});
+  final void Function(VisionStarter) onSeed;
+  final VoidCallback onBlank;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                color: AppColors.forest50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.auto_awesome_rounded,
+                  size: 34, color: AppColors.forest500),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: Text(
+              'What does your life ahead look like?',
+              style: AppTextStyles.titleMedium
+                  .copyWith(color: AppColors.forest700),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Center(
+            child: Text(
+              'Start with one of these — or tap + for a blank canvas.',
+              style: AppTextStyles.bodySmall
+                  .copyWith(color: AppColors.stone500),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ...kStarterPrompts.map((s) {
+            final opt = visionOptionFor(s.iconKey);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: InkWell(
+                borderRadius: AppRadius.lg,
+                onTap: () {
+                  H.selection();
+                  onSeed(s);
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: AppRadius.lg,
+                    border: Border.all(color: AppColors.stone100),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
+                          color: opt.color.withOpacity(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(opt.icon, size: 18, color: opt.color),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          s.title,
+                          style: AppTextStyles.bodyMedium
+                              .copyWith(color: AppColors.stone800),
+                        ),
+                      ),
+                      const Icon(Icons.add_rounded,
+                          size: 18, color: AppColors.stone400),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 6),
+          Center(
+            child: TextButton.icon(
+              onPressed: onBlank,
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Start with a blank dream'),
+              style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Vision Card ─────────────────────────────────────────────────────────────
 
 class _VisionCard extends StatelessWidget {
   const _VisionCard({
     required this.item,
+    required this.onTap,
     required this.onEdit,
     required this.onDelete,
   });
   final VisionItem item;
+  final VoidCallback onTap; // open detail view
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final opt = _optionFor(item.emoji);
+    final accent = visionAccent(item);
+    final opt = visionOptionFor(item.emoji);
     final hasPhoto =
-        item.imagePath != null && File(item.imagePath!).existsSync();
+        item.imagePaths.isNotEmpty && File(item.imagePaths.first).existsSync();
+    final progress = item.progress;
+    final hasMilestones = item.milestones.isNotEmpty;
 
     return GestureDetector(
       onTap: () {
         H.selection();
-        onEdit();
+        onTap();
       },
       onLongPress: () {
         H.medium();
         _confirmDelete(context);
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: AppRadius.lg,
-          border: Border.all(
-            color: opt.color.withOpacity(0.18),
-            width: 1.2,
-          ),
-          boxShadow: AppShadows.luxury,
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Photo strip (if a photo was set) ──────────────────────────
-            if (hasPhoto)
-              SizedBox(
-                height: 90,
-                child: Image.file(
-                  File(item.imagePath!),
-                  fit: BoxFit.cover,
-                ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: AppRadius.lg,
+              border: Border.all(
+                color: item.achieved
+                    // ignore: deprecated_member_use
+                    ? AppColors.forest500.withOpacity(0.45)
+                    // ignore: deprecated_member_use
+                    : accent.withOpacity(0.18),
+                width: item.achieved ? 1.6 : 1.2,
               ),
-
-            // ── Icon + text content ───────────────────────────────────────
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Icon badge
-                    Container(
-                      width: hasPhoto ? 40 : 52,
-                      height: hasPhoto ? 40 : 52,
-                      decoration: BoxDecoration(
-                        // ignore: deprecated_member_use
-                        color: opt.color.withOpacity(0.10),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        opt.icon,
-                        size: hasPhoto ? 20 : 26,
-                        color: opt.color,
-                      ),
+              boxShadow: AppShadows.luxury,
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (hasPhoto)
+                  SizedBox(
+                    height: 90,
+                    child: Image.file(
+                      File(item.imagePaths.first),
+                      fit: BoxFit.cover,
                     ),
-                    SizedBox(height: hasPhoto ? 6 : 10),
+                  ),
 
-                    // Title
-                    Text(
-                      item.title,
-                      style: AppTextStyles.titleSmall
-                          .copyWith(color: AppColors.forest700, height: 1.25),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    // Description
-                    if (item.description.isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        item.description,
-                        style: AppTextStyles.bodySmall
-                            .copyWith(color: AppColors.stone400),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-
-                    const Spacer(),
-
-                    // "Tap to edit" hint
-                    Row(
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.edit_outlined,
-                            size: 11,
+                        Container(
+                          width: hasPhoto ? 40 : 52,
+                          height: hasPhoto ? 40 : 52,
+                          decoration: BoxDecoration(
                             // ignore: deprecated_member_use
-                            color: AppColors.stone300),
-                        const SizedBox(width: 3),
-                        Text('Edit',
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: AppColors.stone300,
-                                letterSpacing: 0.4)),
+                            color: accent.withOpacity(0.10),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(opt.icon,
+                              size: hasPhoto ? 20 : 26, color: accent),
+                        ),
+                        SizedBox(height: hasPhoto ? 6 : 10),
+
+                        Text(
+                          item.title,
+                          style: AppTextStyles.titleSmall.copyWith(
+                              color: AppColors.forest700, height: 1.25),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        if (item.description.isNotEmpty) ...[
+                          const SizedBox(height: 5),
+                          Text(
+                            item.description,
+                            style: AppTextStyles.bodySmall
+                                .copyWith(color: AppColors.stone400),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+
+                        const Spacer(),
+
+                        // Progress bar OR "tap to open" hint.
+                        if (hasMilestones)
+                          _MiniProgress(progress: progress, accent: accent)
+                        else
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.touch_app_outlined,
+                                  size: 11, color: AppColors.stone300),
+                              const SizedBox(width: 3),
+                              Text('Tap to open',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      color: AppColors.stone300,
+                                      letterSpacing: 0.4)),
+                            ],
+                          ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
+              ],
+            ),
+          ),
+
+          // Pinned indicator (top-left).
+          if (item.pinned)
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: AppColors.honey500,
+                  shape: BoxShape.circle,
+                  boxShadow: AppShadows.luxury,
+                ),
+                child: const Icon(Icons.push_pin,
+                    size: 12, color: Colors.white),
               ),
             ),
-          ],
-        ),
+
+          // Achieved overlay (top-right check + subtle tint).
+          if (item.achieved)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: AppColors.forest600,
+                  shape: BoxShape.circle,
+                  boxShadow: AppShadows.luxury,
+                ),
+                child: const Icon(Icons.check, size: 14, color: Colors.white),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -1335,6 +1681,38 @@ class _VisionCard extends StatelessWidget {
   }
 }
 
+class _MiniProgress extends StatelessWidget {
+  const _MiniProgress({required this.progress, required this.accent});
+  final double progress;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 4,
+            // ignore: deprecated_member_use
+            backgroundColor: accent.withOpacity(0.12),
+            valueColor: AlwaysStoppedAnimation(accent),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text('${(progress * 100).round()}%',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 10,
+                color: AppColors.stone500,
+                fontWeight: FontWeight.w600)),
+      ],
+    );
+  }
+}
+
 // ─── Vision Edit Sheet (add + edit) ──────────────────────────────────────────
 // The keyboard-inset Padding lives OUTSIDE this widget (in the bottom-sheet
 // builder) so the text fields never lose focus when the keyboard appears.
@@ -1344,9 +1722,11 @@ class _VisionEditSheet extends StatefulWidget {
     required this.onSave,
     required this.onUpdate,
     this.existingItem,
+    this.starter,
     this.onDelete,
   });
   final VisionItem? existingItem;
+  final VisionStarter? starter; // pre-fill from a tapped starter prompt
   final void Function(VisionItem) onSave;
   final void Function(VisionItem) onUpdate;
   final VoidCallback? onDelete;
@@ -1355,13 +1735,25 @@ class _VisionEditSheet extends StatefulWidget {
   State<_VisionEditSheet> createState() => _VisionEditSheetState();
 }
 
+enum _SheetTab { vision, photo, milestones, affirmation }
+
 class _VisionEditSheetState extends State<_VisionEditSheet> {
+  // ── Form controllers ─────────────────────────────────────────────────────
   late final TextEditingController _titleCtrl;
   late final TextEditingController _descCtrl;
+  late final TextEditingController _whyCtrl;
+  late final TextEditingController _affirmCtrl;
+  late final TextEditingController _milestoneCtrl;
   final _titleFocus = FocusNode();
-  final _descFocus = FocusNode();
+
+  // ── Form state ───────────────────────────────────────────────────────────
   late String _iconKey;
-  String? _imagePath;
+  late VisionCategory _category;
+  DateTime? _targetDate;
+  late List<String> _imagePaths;
+  late List<VisionMilestone> _milestones;
+
+  _SheetTab _tab = _SheetTab.vision;
 
   bool get _isEdit => widget.existingItem != null;
 
@@ -1369,33 +1761,90 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
   void initState() {
     super.initState();
     final ex = widget.existingItem;
-    _titleCtrl = TextEditingController(text: ex?.title ?? '');
+    final st = widget.starter;
+    _titleCtrl = TextEditingController(text: ex?.title ?? st?.title ?? '');
     _descCtrl = TextEditingController(text: ex?.description ?? '');
-    _iconKey = ex?.emoji ?? 'guide';
-    _imagePath = ex?.imagePath;
+    _whyCtrl = TextEditingController(text: ex?.whyItMatters ?? '');
+    _affirmCtrl = TextEditingController(
+        text: ex?.affirmation ?? st?.affirmation ?? '');
+    _milestoneCtrl = TextEditingController();
+    _iconKey = ex?.emoji ?? st?.iconKey ?? 'guide';
+    _category = ex?.category ?? st?.category ?? VisionCategory.none;
+    _targetDate = ex?.targetDate;
+    _imagePaths = List<String>.from(ex?.imagePaths ?? const []);
+    _milestones = List<VisionMilestone>.from(ex?.milestones ?? const []);
   }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
     _descCtrl.dispose();
+    _whyCtrl.dispose();
+    _affirmCtrl.dispose();
+    _milestoneCtrl.dispose();
     _titleFocus.dispose();
-    _descFocus.dispose();
     super.dispose();
   }
 
+  // ── Photo handling ───────────────────────────────────────────────────────
   Future<void> _pickImage() async {
+    if (_imagePaths.length >= 4) return; // cap at 4
     final picker = ImagePicker();
     final picked = await picker.pickImage(
         source: ImageSource.gallery, imageQuality: 85);
     if (picked != null && mounted) {
-      setState(() => _imagePath = picked.path);
+      setState(() => _imagePaths.add(picked.path));
     }
   }
 
+  // ── Milestone handling ───────────────────────────────────────────────────
+  void _addMilestone() {
+    final text = _milestoneCtrl.text.trim();
+    if (text.isEmpty) return;
+    setState(() {
+      _milestones.add(VisionMilestone(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        text: text,
+      ));
+      _milestoneCtrl.clear();
+    });
+    H.selection();
+  }
+
+  void _toggleMilestone(int i) {
+    setState(() {
+      _milestones[i] = _milestones[i].copyWith(done: !_milestones[i].done);
+    });
+  }
+
+  void _removeMilestone(int i) {
+    setState(() => _milestones.removeAt(i));
+  }
+
+  // ── Target date ──────────────────────────────────────────────────────────
+  Future<void> _pickTargetDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _targetDate ?? now.add(const Duration(days: 90)),
+      firstDate: now.subtract(const Duration(days: 30)),
+      lastDate: now.add(const Duration(days: 365 * 10)),
+    );
+    if (picked != null) setState(() => _targetDate = picked);
+  }
+
+  // ── Affirmation suggest ──────────────────────────────────────────────────
+  void _suggestAffirmation() {
+    final suggestion = suggestAffirmationForTitle(_titleCtrl.text);
+    setState(() => _affirmCtrl.text = suggestion);
+    H.light();
+  }
+
+  // ── Save ─────────────────────────────────────────────────────────────────
   void _save() {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
+      setState(() => _tab = _SheetTab.vision);
       _titleFocus.requestFocus();
       return;
     }
@@ -1404,14 +1853,24 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
             title: title,
             description: _descCtrl.text.trim(),
             emoji: _iconKey,
-            imagePath: _imagePath,
+            imagePaths: _imagePaths,
+            category: _category,
+            targetDate: _targetDate,
+            milestones: _milestones,
+            affirmation: _affirmCtrl.text.trim(),
+            whyItMatters: _whyCtrl.text.trim(),
           )
         : VisionItem(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             title: title,
             description: _descCtrl.text.trim(),
             emoji: _iconKey,
-            imagePath: _imagePath,
+            imagePaths: _imagePaths,
+            category: _category,
+            targetDate: _targetDate,
+            milestones: _milestones,
+            affirmation: _affirmCtrl.text.trim(),
+            whyItMatters: _whyCtrl.text.trim(),
           );
     if (_isEdit) {
       widget.onUpdate(item);
@@ -1424,22 +1883,22 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final opt = _optionFor(_iconKey);
-
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.92,
+      ),
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: AppRadius.xl,
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Sheet header ───────────────────────────────────────────────
-            Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ── Header ──────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 12, 10),
+            child: Row(
               children: [
                 Expanded(
                   child: Text(
@@ -1453,7 +1912,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                   child: Container(
                     width: 32,
                     height: 32,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppColors.stone100,
                       shape: BoxShape.circle,
                     ),
@@ -1461,212 +1920,492 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                         size: 17, color: AppColors.stone500),
                   ),
                 ),
+                const SizedBox(width: 8),
               ],
             ),
-            const SizedBox(height: 18),
+          ),
 
-            // ── Icon picker grid ───────────────────────────────────────────
-            Text('Choose your icon',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.stone500)),
-            const SizedBox(height: 10),
-            GridView.count(
-              crossAxisCount: 5,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 0.72,
-              children: _kVisionIcons.map((o) {
-                final selected = o.key == _iconKey;
-                return GestureDetector(
-                  onTap: () {
-                    H.selection();
-                    setState(() => _iconKey = o.key);
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        width: double.infinity,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          color: selected
-                              // ignore: deprecated_member_use
-                              ? o.color.withOpacity(0.14)
-                              : AppColors.stone50,
-                          borderRadius: AppRadius.md,
-                          border: Border.all(
-                            color: selected
-                                // ignore: deprecated_member_use
-                                ? o.color.withOpacity(0.6)
-                                : AppColors.stone100,
-                            width: selected ? 1.5 : 1.0,
-                          ),
-                        ),
-                        child: Icon(o.icon,
-                            size: 22,
-                            color: selected ? o.color : AppColors.stone400),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        o.label,
-                        style: TextStyle(
-                          fontSize: 9,
-                          color: selected
-                              ? opt.color
-                              : AppColors.stone400,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          letterSpacing: 0.1,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+          // ── Tabs ─────────────────────────────────────────────────────────
+          _SheetTabBar(
+            current: _tab,
+            onSelect: (t) {
+              H.selection();
+              setState(() => _tab = t);
+            },
+          ),
+
+          // ── Tab body ─────────────────────────────────────────────────────
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+              child: _buildTabBody(),
+            ),
+          ),
+
+          // ── Footer buttons ───────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 18),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _save,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.forest600,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.lg),
+                    ),
+                    child: Text(
+                      _isEdit ? 'Save Changes' : 'Add to Vision Board',
+                      style: AppTextStyles.labelLarge
+                          .copyWith(color: Colors.white),
+                    ),
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 18),
-
-            // ── Photo picker ───────────────────────────────────────────────
-            Text('Add a photo (optional)',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.stone500)),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: _imagePath != null ? 120 : 56,
-                decoration: BoxDecoration(
-                  color: AppColors.stone50,
-                  borderRadius: AppRadius.lg,
-                  border: Border.all(
-                      color: AppColors.stone100, style: BorderStyle.solid),
                 ),
-                clipBehavior: Clip.hardEdge,
-                child: _imagePath != null
-                    ? Stack(fit: StackFit.expand, children: [
-                        Image.file(File(_imagePath!), fit: BoxFit.cover),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: GestureDetector(
-                            onTap: () => setState(() => _imagePath = null),
-                            child: Container(
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                color: Colors.black54,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.close_rounded,
-                                  size: 16, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ])
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add_photo_alternate_outlined,
-                              size: 20, color: AppColors.stone400),
-                          const SizedBox(width: 8),
-                          Text('Choose from gallery',
-                              style: AppTextStyles.bodySmall
-                                  .copyWith(color: AppColors.stone400)),
-                        ],
+                if (_isEdit && widget.onDelete != null) ...[
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        widget.onDelete!();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: AppRadius.lg),
                       ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // ── Title field ────────────────────────────────────────────────
-            Text('Dream title',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.stone500)),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _titleCtrl,
-              focusNode: _titleFocus,
-              textInputAction: TextInputAction.next,
-              onSubmitted: (_) => _descFocus.requestFocus(),
-              style:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-              decoration: _fieldDecor(
-                  'e.g. Be more present for my family',
-                  Icons.title_rounded),
-            ),
-            const SizedBox(height: 12),
-
-            // ── Description field ──────────────────────────────────────────
-            Text('Short description (optional)',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.stone500)),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _descCtrl,
-              focusNode: _descFocus,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _save(),
-              maxLines: 2,
-              minLines: 1,
-              style:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-              decoration: _fieldDecor(
-                  'Why does this matter to you?',
-                  Icons.notes_rounded),
-            ),
-            const SizedBox(height: 20),
-
-            // ── Save button ────────────────────────────────────────────────
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _save,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.forest600,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
-                ),
-                child: Text(
-                  _isEdit ? 'Save Changes' : 'Add to Vision Board',
-                  style: AppTextStyles.labelLarge
-                      .copyWith(color: Colors.white),
-                ),
-              ),
-            ),
-
-            // ── Delete button (edit mode only) ─────────────────────────────
-            if (_isEdit && widget.onDelete != null) ...[
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    widget.onDelete!();
-                  },
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.lg),
+                      child: Text('Remove this dream',
+                          style: AppTextStyles.labelMedium
+                              .copyWith(color: AppColors.blush600)),
+                    ),
                   ),
-                  child: Text('Remove this dream',
-                      style: AppTextStyles.labelMedium
-                          .copyWith(color: AppColors.blush600)),
-                ),
-              ),
-            ],
-          ],
-        ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  // ── Tab body switcher ─────────────────────────────────────────────────────
+  Widget _buildTabBody() {
+    switch (_tab) {
+      case _SheetTab.vision:
+        return _buildVisionTab();
+      case _SheetTab.photo:
+        return _buildPhotoTab();
+      case _SheetTab.milestones:
+        return _buildMilestonesTab();
+      case _SheetTab.affirmation:
+        return _buildAffirmationTab();
+    }
+  }
+
+  // ── Tab: Vision (title, description, icon, category, date) ───────────────
+  Widget _buildVisionTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Dream title'),
+        const SizedBox(height: 6),
+        TextField(
+          controller: _titleCtrl,
+          focusNode: _titleFocus,
+          textInputAction: TextInputAction.next,
+          style:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          decoration: _fieldDecor(
+              'e.g. Be more present for my family', Icons.title_rounded),
+        ),
+        const SizedBox(height: 14),
+
+        _label('Notes (optional)'),
+        const SizedBox(height: 6),
+        TextField(
+          controller: _descCtrl,
+          textInputAction: TextInputAction.newline,
+          maxLines: 3,
+          minLines: 2,
+          style:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          decoration:
+              _fieldDecor('Anything to remember…', Icons.notes_rounded),
+        ),
+        const SizedBox(height: 14),
+
+        _label('Why this matters (optional)'),
+        const SizedBox(height: 6),
+        TextField(
+          controller: _whyCtrl,
+          textInputAction: TextInputAction.newline,
+          maxLines: 3,
+          minLines: 2,
+          style:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          decoration: _fieldDecor(
+              'When this matters most, why does it matter?',
+              Icons.psychology_outlined),
+        ),
+        const SizedBox(height: 18),
+
+        _label('Category'),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: kCategoryInfo.map((info) {
+            final selected = info.category == _category;
+            return GestureDetector(
+              onTap: () {
+                H.selection();
+                setState(() => _category = info.category);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
+                  color: selected
+                      // ignore: deprecated_member_use
+                      ? info.color.withOpacity(0.14)
+                      : AppColors.stone50,
+                  borderRadius: AppRadius.sm,
+                  border: Border.all(
+                    color: selected ? info.color : AppColors.stone100,
+                    width: selected ? 1.5 : 1.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(info.icon,
+                        size: 14,
+                        color:
+                            selected ? info.color : AppColors.stone400),
+                    const SizedBox(width: 6),
+                    Text(info.label,
+                        style: AppTextStyles.labelMedium.copyWith(
+                            color: selected
+                                ? info.color
+                                : AppColors.stone600)),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 18),
+
+        _label('Choose your icon'),
+        const SizedBox(height: 10),
+        GridView.count(
+          crossAxisCount: 5,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 0.72,
+          children: kVisionIcons.map((o) {
+            final selected = o.key == _iconKey;
+            return GestureDetector(
+              onTap: () {
+                H.selection();
+                setState(() => _iconKey = o.key);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: double.infinity,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      // ignore: deprecated_member_use
+                      color: selected
+                          // ignore: deprecated_member_use
+                          ? o.color.withOpacity(0.14)
+                          : AppColors.stone50,
+                      borderRadius: AppRadius.md,
+                      border: Border.all(
+                        color: selected
+                            // ignore: deprecated_member_use
+                            ? o.color.withOpacity(0.6)
+                            : AppColors.stone100,
+                        width: selected ? 1.5 : 1.0,
+                      ),
+                    ),
+                    child: Icon(o.icon,
+                        size: 22,
+                        color: selected ? o.color : AppColors.stone400),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    o.label,
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: selected ? o.color : AppColors.stone400,
+                      fontWeight: selected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                      letterSpacing: 0.1,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 18),
+
+        _label('Target date (optional)'),
+        const SizedBox(height: 6),
+        InkWell(
+          borderRadius: AppRadius.lg,
+          onTap: _pickTargetDate,
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppColors.stone50,
+              borderRadius: AppRadius.lg,
+              border: Border.all(color: AppColors.stone100),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.event_rounded,
+                    size: 18, color: AppColors.stone400),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    _targetDate == null
+                        ? 'Pick a date to work toward'
+                        : DateFormat.yMMMMd().format(_targetDate!),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                        color: _targetDate == null
+                            ? AppColors.stone400
+                            : AppColors.stone800),
+                  ),
+                ),
+                if (_targetDate != null)
+                  IconButton(
+                    icon: const Icon(Icons.clear_rounded,
+                        size: 18, color: AppColors.stone400),
+                    onPressed: () => setState(() => _targetDate = null),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Tab: Photos ──────────────────────────────────────────────────────────
+  Widget _buildPhotoTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Photos help you feel it (up to 4)'),
+        const SizedBox(height: 10),
+        if (_imagePaths.isNotEmpty)
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            children: [
+              for (var i = 0; i < _imagePaths.length; i++)
+                _PhotoTile(
+                  path: _imagePaths[i],
+                  onRemove: () =>
+                      setState(() => _imagePaths.removeAt(i)),
+                ),
+            ],
+          ),
+        if (_imagePaths.isNotEmpty) const SizedBox(height: 12),
+        if (_imagePaths.length < 4)
+          GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              height: 96,
+              decoration: BoxDecoration(
+                color: AppColors.stone50,
+                borderRadius: AppRadius.lg,
+                border: Border.all(color: AppColors.stone100),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.add_photo_alternate_outlined,
+                        size: 22, color: AppColors.stone400),
+                    const SizedBox(width: 10),
+                    Text(
+                      _imagePaths.isEmpty
+                          ? 'Add your first photo'
+                          : 'Add another (${_imagePaths.length}/4)',
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.stone500),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: 12),
+        Text(
+          'Photos are stored on this device only — they never leave your phone.',
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
+        ),
+      ],
+    );
+  }
+
+  // ── Tab: Milestones ──────────────────────────────────────────────────────
+  Widget _buildMilestonesTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Small concrete steps'),
+        const SizedBox(height: 6),
+        Text(
+          'Break the dream into 3–6 tiny wins. Check them off as life moves.',
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
+        ),
+        const SizedBox(height: 14),
+
+        if (_milestones.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text('No steps yet — add one below.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.stone400)),
+          )
+        else
+          ...List.generate(_milestones.length, (i) {
+            final m = _milestones[i];
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: AppColors.stone50,
+                borderRadius: AppRadius.md,
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      m.done
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color: m.done ? AppColors.forest600 : AppColors.stone400,
+                      size: 22,
+                    ),
+                    onPressed: () => _toggleMilestone(i),
+                  ),
+                  Expanded(
+                    child: Text(
+                      m.text,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: m.done
+                            ? AppColors.stone400
+                            : AppColors.stone800,
+                        decoration: m.done
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        size: 18, color: AppColors.stone400),
+                    onPressed: () => _removeMilestone(i),
+                  ),
+                ],
+              ),
+            );
+          }),
+
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _milestoneCtrl,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _addMilestone(),
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone800),
+                decoration: _fieldDecor(
+                    'e.g. Walk 20 minutes today', Icons.add_task_rounded),
+              ),
+            ),
+            const SizedBox(width: 8),
+            FilledButton(
+              onPressed: _addMilestone,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.forest600,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+              ),
+              child: const Icon(Icons.add_rounded,
+                  color: Colors.white, size: 18),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Tab: Affirmation ─────────────────────────────────────────────────────
+  Widget _buildAffirmationTab() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _label('Your present-tense reframe'),
+        const SizedBox(height: 6),
+        Text(
+          '"I am…" beats "I want to…" — the brain hears it as already real.',
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
+        ),
+        const SizedBox(height: 14),
+        TextField(
+          controller: _affirmCtrl,
+          maxLines: 4,
+          minLines: 3,
+          textInputAction: TextInputAction.newline,
+          style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.stone800, fontStyle: FontStyle.italic),
+          decoration: _fieldDecor(
+              'I am present, patient, and proud of how I show up.',
+              Icons.format_quote_rounded),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: _suggestAffirmation,
+            icon: const Icon(Icons.auto_awesome_rounded, size: 16),
+            label: const Text('Suggest from title'),
+            style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  Widget _label(String text) => Text(text,
+      style: AppTextStyles.labelMedium.copyWith(color: AppColors.stone500));
 
   InputDecoration _fieldDecor(String hint, IconData icon) => InputDecoration(
         hintText: hint,
@@ -1690,6 +2429,111 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         ),
         contentPadding: const EdgeInsets.all(14),
       );
+}
+
+// ─── Sheet tab bar ───────────────────────────────────────────────────────────
+
+class _SheetTabBar extends StatelessWidget {
+  const _SheetTabBar({required this.current, required this.onSelect});
+  final _SheetTab current;
+  final void Function(_SheetTab) onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    const tabs = <(_SheetTab, IconData, String)>[
+      (_SheetTab.vision, Icons.auto_awesome_rounded, 'Vision'),
+      (_SheetTab.photo, Icons.image_outlined, 'Photos'),
+      (_SheetTab.milestones, Icons.flag_outlined, 'Steps'),
+      (_SheetTab.affirmation, Icons.format_quote_rounded, 'Affirm'),
+    ];
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.stone50,
+        borderRadius: AppRadius.md,
+      ),
+      child: Row(
+        children: tabs.map((t) {
+          final selected = t.$1 == current;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onSelect(t.$1),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: selected ? AppColors.card : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: selected ? AppShadows.luxury : null,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(t.$2,
+                        size: 16,
+                        color: selected
+                            ? AppColors.forest600
+                            : AppColors.stone500),
+                    const SizedBox(height: 2),
+                    Text(
+                      t.$3,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight:
+                            selected ? FontWeight.w700 : FontWeight.w500,
+                        color: selected
+                            ? AppColors.forest700
+                            : AppColors.stone500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// ─── Photo tile (with remove button) ─────────────────────────────────────────
+
+class _PhotoTile extends StatelessWidget {
+  const _PhotoTile({required this.path, required this.onRemove});
+  final String path;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: AppRadius.md,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.file(File(path), fit: BoxFit.cover),
+          Positioned(
+            top: 6,
+            right: 6,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close_rounded,
+                    size: 14, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
