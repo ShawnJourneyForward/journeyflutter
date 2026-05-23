@@ -16,6 +16,7 @@ import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 import 'journal_shared.dart';
+// (H + JournalReauth used in echo navigation are already imported above.)
 
 class JournalDetailScreen extends ConsumerWidget {
   const JournalDetailScreen({
@@ -143,14 +144,39 @@ class JournalDetailScreen extends ConsumerWidget {
 
             // ── Body text ───────────────────────────────────────────────
             const SizedBox(height: 22),
-            SelectableText(
-              entry.text,
-              style: AppTextStyles.bodySerif.copyWith(
-                color: AppColors.stone800,
-                height: 1.6,
-                fontSize: 17,
+            if (entry.text.trim().isEmpty)
+              // Quick-mood entry without words. Invite the user to add some.
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.stone50,
+                  borderRadius: AppRadius.lg,
+                  border: Border.all(color: AppColors.stone100),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.edit_note_rounded,
+                        size: 18, color: AppColors.stone400),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'A quick mood check-in. Tap edit to add words when you\'re ready.',
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              SelectableText(
+                entry.text,
+                style: AppTextStyles.bodySerif.copyWith(
+                  color: AppColors.stone800,
+                  height: 1.6,
+                  fontSize: 17,
+                ),
               ),
-            ),
 
             // ── On-this-day echoes ──────────────────────────────────────
             if (onThisDay.isNotEmpty) ...[
@@ -160,7 +186,10 @@ class JournalDetailScreen extends ConsumerWidget {
                 label: 'On this day, earlier',
               ),
               const SizedBox(height: 10),
-              ...onThisDay.take(3).map((e) => _EchoCard(entry: e)),
+              ...onThisDay.take(3).map((e) => _EchoCard(
+                    entry: e,
+                    onTap: () => _openEcho(context, e),
+                  )),
             ],
           ],
         ),
@@ -199,6 +228,23 @@ class JournalDetailScreen extends ConsumerWidget {
     if (ok != true || !context.mounted) return;
     await ref.read(journalProvider.notifier).delete(entry.id);
     if (context.mounted) Navigator.of(context).pop();
+  }
+
+  /// Navigate to an older echo entry. If it's locked, prove identity first —
+  /// we don't want a stray tap to expose a sealed memory just because it's
+  /// nested under a more recent unlocked entry.
+  Future<void> _openEcho(BuildContext context, JournalEntry echo) async {
+    H.selection();
+    if (echo.locked) {
+      final ok =
+          await JournalReauth.require(context, reason: 'Open this entry');
+      if (!ok || !context.mounted) return;
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (_) =>
+          JournalDetailScreen(entryId: echo.id, onEdit: onEdit),
+    ));
   }
 
   String _relativeAgo(DateTime dt) {
@@ -337,50 +383,69 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _EchoCard extends StatelessWidget {
-  const _EchoCard({required this.entry});
+  const _EchoCard({required this.entry, required this.onTap});
   final JournalEntry entry;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final mood = moodFor(entry.mood);
     final years = DateTime.now().year - entry.date.year;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: AppRadius.lg,
-        border: Border.all(color: AppColors.softBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(mood.icon, size: 14, color: mood.color),
-              const SizedBox(width: 6),
-              Text(mood.label,
-                  style: AppTextStyles.labelSmall.copyWith(color: mood.color)),
-              const Spacer(),
-              Text(
-                years == 1 ? '1 year ago' : '$years years ago',
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone400),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            entry.locked ? 'Locked entry' : entry.text,
-            style: AppTextStyles.bodySmall.copyWith(
-              color:
-                  entry.locked ? AppColors.stone400 : AppColors.stone700,
-              fontStyle: entry.locked ? FontStyle.italic : FontStyle.normal,
+    return InkWell(
+      borderRadius: AppRadius.lg,
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.softBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(mood.icon, size: 14, color: mood.color),
+                const SizedBox(width: 6),
+                Text(mood.label,
+                    style:
+                        AppTextStyles.labelSmall.copyWith(color: mood.color)),
+                if (entry.locked) ...[
+                  const SizedBox(width: 6),
+                  const Icon(Icons.lock,
+                      size: 11, color: AppColors.honey500),
+                ],
+                const Spacer(),
+                Text(
+                  years == 1 ? '1 year ago' : '$years years ago',
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.stone400),
+                ),
+              ],
             ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              entry.locked
+                  ? 'Locked entry · tap to unlock'
+                  : entry.text.trim().isEmpty
+                      ? 'Mood check-in (no words)'
+                      : entry.text,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: (entry.locked || entry.text.trim().isEmpty)
+                    ? AppColors.stone400
+                    : AppColors.stone700,
+                fontStyle:
+                    (entry.locked || entry.text.trim().isEmpty)
+                        ? FontStyle.italic
+                        : FontStyle.normal,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }

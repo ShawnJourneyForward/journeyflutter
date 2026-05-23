@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -232,6 +233,13 @@ class _JournalTab extends ConsumerWidget {
         final echoes = ref.watch(onThisDayProvider);
         final filter = ref.watch(journalFilterProvider);
         final hasAny = allEntries.isNotEmpty;
+        // Quick-mood pill only shows on days where the user hasn't written
+        // anything yet — once they've checked in, the pill disappears.
+        final now = DateTime.now();
+        final hasEntryToday = allEntries.any((e) =>
+            e.date.year == now.year &&
+            e.date.month == now.month &&
+            e.date.day == now.day);
 
         return Stack(
           children: [
@@ -244,6 +252,32 @@ class _JournalTab extends ConsumerWidget {
                       streak: streak,
                       echoes: echoes,
                       onEchoTap: (entry) => _openDetail(context, ref, entry),
+                    ),
+                  ),
+
+                // ── Quick mood check-in (only when no entry yet today) ──
+                if (hasAny && !hasEntryToday)
+                  SliverToBoxAdapter(
+                    child: _QuickMoodPill(
+                      onPick: (moodKey) async {
+                        H.medium();
+                        await ref.read(journalProvider.notifier).add(
+                              '', // empty body — user can add words later
+                              moodKey,
+                            );
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Mood logged. Tap the card to add words.',
+                                style: AppTextStyles.bodySmall
+                                    .copyWith(color: Colors.white)),
+                            backgroundColor: AppColors.forest700,
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
                     ),
                   ),
 
@@ -295,25 +329,37 @@ class _JournalTab extends ConsumerWidget {
                     ),
                   )
                 else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 110),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, i) => _JournalCard(
-                          entry: filtered[i],
-                          onTap: () =>
-                              _openDetail(context, ref, filtered[i]),
-                          onTagTap: (tag) {
-                            H.selection();
-                            ref
-                                .read(journalFilterProvider.notifier)
-                                .state = filter.copyWith(tag: tag);
+                  () {
+                    // Group entries into date buckets and flatten into a list
+                    // of headers + entries. Done inline so the SliverList
+                    // builder stays a simple list lookup.
+                    final items = _bucketEntries(filtered);
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(24, 4, 24, 110),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) {
+                            final item = items[i];
+                            if (item is String) {
+                              return _DateBucketHeader(label: item);
+                            }
+                            final entry = item as JournalEntry;
+                            return _JournalCard(
+                              entry: entry,
+                              onTap: () => _openDetail(context, ref, entry),
+                              onTagTap: (tag) {
+                                H.selection();
+                                ref
+                                    .read(journalFilterProvider.notifier)
+                                    .state = filter.copyWith(tag: tag);
+                              },
+                            );
                           },
+                          childCount: items.length,
                         ),
-                        childCount: filtered.length,
                       ),
-                    ),
-                  ),
+                    );
+                  }(),
               ],
             ),
 
@@ -504,6 +550,73 @@ class _JournalTab extends ConsumerWidget {
   }
 }
 
+// ─── Date bucketing for the diary list ──────────────────────────────────────
+//
+// Returns a flat list where String items are section headers and
+// JournalEntry items are the cards under that header. Buckets:
+//   - Today        (current calendar day)
+//   - Yesterday    (day - 1)
+//   - This week    (last 7 days, excluding today/yesterday)
+//   - Last week    (8-14 days ago)
+//   - Earlier this month
+//   - Month + Year for everything older
+//
+// Designed to be cheap — a single linear pass.
+
+List<Object> _bucketEntries(List<JournalEntry> entries) {
+  if (entries.isEmpty) return const [];
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = today.subtract(const Duration(days: 1));
+  final sevenAgo = today.subtract(const Duration(days: 7));
+  final fourteenAgo = today.subtract(const Duration(days: 14));
+
+  String bucketFor(DateTime d) {
+    final day = DateTime(d.year, d.month, d.day);
+    if (day == today) return 'Today';
+    if (day == yesterday) return 'Yesterday';
+    if (day.isAfter(sevenAgo)) return 'This week';
+    if (day.isAfter(fourteenAgo)) return 'Last week';
+    if (d.year == now.year && d.month == now.month) {
+      return 'Earlier this month';
+    }
+    return DateFormat('MMMM y').format(d);
+  }
+
+  final out = <Object>[];
+  String? lastBucket;
+  for (final e in entries) {
+    final b = bucketFor(e.date);
+    if (b != lastBucket) {
+      out.add(b);
+      lastBucket = b;
+    }
+    out.add(e);
+  }
+  return out;
+}
+
+class _DateBucketHeader extends StatelessWidget {
+  const _DateBucketHeader({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 12, 2, 8),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTextStyles.overline.copyWith(
+          color: AppColors.stone500,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.4,
+          fontSize: 11,
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Crisis bottom-sheet action row ──────────────────────────────────────────
 
 class _CrisisAction extends StatelessWidget {
@@ -611,6 +724,62 @@ class _DiaryHeader extends StatelessWidget {
   }
 }
 
+// ─── Quick mood pill ─────────────────────────────────────────────────────────
+//
+// One-tap mood logging for days where typing feels like too much. Disappears
+// the moment any entry exists for today — including the very entry created
+// by tapping one of these emojis. So the surface area stays tiny and
+// non-nagging.
+
+class _QuickMoodPill extends StatelessWidget {
+  const _QuickMoodPill({required this.onPick});
+  final void Function(String moodKey) onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: AppRadius.md,
+          border: Border.all(color: AppColors.softBorder),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'How are you right now?',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.stone600),
+              ),
+            ),
+            ...kMoodOptions.map((m) => GestureDetector(
+                  onTap: () => onPick(m.key),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppColors.stone50,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.stone100),
+                      ),
+                      child: Text(m.emoji,
+                          style: const TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _OnThisDayCard extends StatelessWidget {
   const _OnThisDayCard({required this.echoes, required this.onTap});
   final List<JournalEntry> echoes;
@@ -663,10 +832,14 @@ class _OnThisDayCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    first.locked ? 'A locked entry' : first.text,
+                    first.locked
+                        ? 'A locked entry'
+                        : first.text.trim().isEmpty
+                            ? 'A mood check-in'
+                            : first.text,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.stone600,
-                      fontStyle: first.locked
+                      fontStyle: (first.locked || first.text.trim().isEmpty)
                           ? FontStyle.italic
                           : FontStyle.normal,
                     ),
@@ -1092,6 +1265,23 @@ class _JournalCard extends ConsumerWidget {
                     ),
                   ],
                 )
+              else if (entry.text.trim().isEmpty)
+                // Quick-mood entry (no body). Make the empty state explicit
+                // so the card doesn't look broken or accidentally blank.
+                Row(
+                  children: [
+                    const Icon(Icons.edit_note_rounded,
+                        size: 14, color: AppColors.stone400),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Mood check-in · tap to add words',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.stone500,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                )
               else
                 Text(
                   entry.text,
@@ -1190,7 +1380,17 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
   String _baseline = '';
   bool _promptPickerOpen = false;
 
+  // ── Draft autosave state ───────────────────────────────────────────────
+  // Only fresh entries autosave drafts. Editing an existing entry is its own
+  // protected flow — we don't want a half-finished edit to silently overwrite
+  // the original on next open.
+  JournalDraft? _availableDraft; // populated after async lookup on init
+  bool _draftDismissed = false; // user tapped Discard
+  bool _draftRestored = false; // user tapped Restore
+  Timer? _autosaveDebounce;
+
   bool get _isEdit => widget.existing != null;
+  bool get _shouldAutosave => !_isEdit;
 
   @override
   void initState() {
@@ -1211,10 +1411,86 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
       _ctrl.selection =
           TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
     }
+
+    // Wire autosave only for fresh entries — debounced 1.2s after the last
+    // keystroke so we don't hammer disk on every character.
+    if (_shouldAutosave) {
+      _ctrl.addListener(_scheduleAutosave);
+      // After first frame, look up any prior draft and offer to restore it.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+    }
+  }
+
+  Future<void> _loadDraft() async {
+    // Skip if we opened with a starter prompt or already typing — the user's
+    // current intent wins over a stale draft.
+    if (widget.seedPrompt != null) return;
+    if (_ctrl.text.trim().isNotEmpty) return;
+    final draft = await JournalDraftStore.read();
+    if (!mounted || draft == null) return;
+    setState(() => _availableDraft = draft);
+  }
+
+  void _restoreDraft() {
+    final d = _availableDraft;
+    if (d == null) return;
+    setState(() {
+      _ctrl.text = d.text;
+      _ctrl.selection =
+          TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
+      _mood = d.mood;
+      _subMood = d.subMood;
+      _tags = List<String>.from(d.tags);
+      _locked = d.locked;
+      _promptId = d.promptId;
+      _draftRestored = true;
+      _availableDraft = null;
+    });
+    H.medium();
+  }
+
+  Future<void> _discardDraft() async {
+    await JournalDraftStore.clear();
+    if (!mounted) return;
+    setState(() {
+      _availableDraft = null;
+      _draftDismissed = true;
+    });
+    H.selection();
+  }
+
+  void _scheduleAutosave() {
+    if (!_shouldAutosave) return;
+    _autosaveDebounce?.cancel();
+    _autosaveDebounce =
+        Timer(const Duration(milliseconds: 1200), _flushAutosave);
+  }
+
+  Future<void> _flushAutosave() async {
+    if (!_shouldAutosave) return;
+    final text = _ctrl.text;
+    // Don't save empty drafts — they just leave a stale prompt behind.
+    if (text.trim().isEmpty) {
+      await JournalDraftStore.clear();
+      return;
+    }
+    await JournalDraftStore.write(JournalDraft(
+      text: text,
+      mood: _mood,
+      subMood: _subMood,
+      tags: List.unmodifiable(_tags),
+      promptId: _promptId,
+      locked: _locked,
+      savedAt: DateTime.now(),
+    ));
   }
 
   @override
   void dispose() {
+    _autosaveDebounce?.cancel();
+    // One final flush — covers the case where the user swipes the sheet down
+    // less than 1.2s after their last keystroke.
+    if (_shouldAutosave) _flushAutosave();
     if (_listening) VoiceInput.instance.cancel();
     _ctrl.dispose();
     _newTagCtrl.dispose();
@@ -1264,6 +1540,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
     setState(() {
       _subMood = (_subMood == value) ? null : value;
     });
+    _scheduleAutosave();
   }
 
   // ── Tag handling ───────────────────────────────────────────────────────
@@ -1276,6 +1553,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
         _tags.add(tag);
       }
     });
+    _scheduleAutosave();
   }
 
   void _addNewTag() {
@@ -1283,6 +1561,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
     if (t.isEmpty) return;
     if (!_tags.contains(t)) {
       setState(() => _tags.add(t));
+      _scheduleAutosave();
     }
     _newTagCtrl.clear();
     H.selection();
@@ -1320,6 +1599,11 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
       promptId: _promptId,
       locked: _locked,
     );
+    // A successful save retires the draft — it has a permanent home now.
+    if (_shouldAutosave) {
+      _autosaveDebounce?.cancel();
+      JournalDraftStore.clear();
+    }
     Navigator.pop(context);
     H.medium();
   }
@@ -1374,6 +1658,17 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ── Draft restore banner (fresh entries only) ──────────
+                  if (_availableDraft != null && !_draftDismissed && !_draftRestored)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _DraftRestoreBanner(
+                        draft: _availableDraft!,
+                        onRestore: _restoreDraft,
+                        onDiscard: _discardDraft,
+                      ),
+                    ),
+
                   // ── Prompt strip ───────────────────────────────────────
                   _buildPromptStrip(),
 
@@ -1743,6 +2038,20 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
   // ── Prompt strip — collapsed by default, expand to pick ────────────────
   Widget _buildPromptStrip() {
     final activePrompt = _promptId == null ? null : promptById(_promptId!);
+    // Smart default: when the user hasn't picked a prompt yet, surface one
+    // appropriate to the time of day and their most recent mood.
+    final recent = ref.watch(journalProvider).valueOrNull ?? const [];
+    final mostRecent = recent.isEmpty ? null : recent.first;
+    final suggestedCategory = smartDefaultCategory(
+      now: DateTime.now(),
+      mostRecentMood: mostRecent?.mood,
+      sinceMostRecent: mostRecent == null
+          ? null
+          : DateTime.now().difference(mostRecent.date),
+    );
+    final suggestedPrompt = dailyPromptFor(suggestedCategory);
+    final headlineText = activePrompt?.text ??
+        'Suggested: ${suggestedPrompt.text}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1764,12 +2073,10 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    activePrompt?.text ?? 'Need a prompt?',
+                    headlineText,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.forest700,
-                      fontStyle: activePrompt == null
-                          ? FontStyle.normal
-                          : FontStyle.italic,
+                      fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 2,
@@ -1798,6 +2105,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: kPromptCategories.map((cat) {
                       final prompt = dailyPromptFor(cat);
+                      final isSuggested = cat.id == suggestedCategory.id;
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: InkWell(
@@ -1807,10 +2115,19 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             decoration: BoxDecoration(
-                              color: AppColors.stone50,
+                              // ignore: deprecated_member_use
+                              color: isSuggested
+                                  // ignore: deprecated_member_use
+                                  ? cat.color.withOpacity(0.06)
+                                  : AppColors.stone50,
                               borderRadius: AppRadius.sm,
-                              border:
-                                  Border.all(color: AppColors.stone100),
+                              border: Border.all(
+                                color: isSuggested
+                                    // ignore: deprecated_member_use
+                                    ? cat.color.withOpacity(0.4)
+                                    : AppColors.stone100,
+                                width: isSuggested ? 1.4 : 1.0,
+                              ),
                             ),
                             child: Row(
                               children: [
@@ -1831,15 +2148,33 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        cat.label.toUpperCase(),
-                                        style: AppTextStyles.overline
-                                            .copyWith(
-                                          color: cat.color,
-                                          fontSize: 9,
-                                          letterSpacing: 1.0,
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            cat.label.toUpperCase(),
+                                            style: AppTextStyles.overline
+                                                .copyWith(
+                                              color: cat.color,
+                                              fontSize: 9,
+                                              letterSpacing: 1.0,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          if (isSuggested) ...[
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '· suggested',
+                                              style: AppTextStyles.overline
+                                                  .copyWith(
+                                                color: AppColors.stone400,
+                                                fontSize: 9,
+                                                letterSpacing: 0.8,
+                                                fontWeight:
+                                                    FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                       const SizedBox(height: 1),
                                       Text(
@@ -1866,6 +2201,98 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
         ),
       ],
     );
+  }
+}
+
+// ─── Draft restore banner ────────────────────────────────────────────────────
+// Shown at the top of the entry sheet only when (a) we're creating a fresh
+// entry, (b) a non-stale draft exists in storage, and (c) the user hasn't
+// already chosen Restore or Discard. Compact on purpose — it shouldn't
+// dominate the sheet.
+
+class _DraftRestoreBanner extends StatelessWidget {
+  const _DraftRestoreBanner({
+    required this.draft,
+    required this.onRestore,
+    required this.onDiscard,
+  });
+  final JournalDraft draft;
+  final VoidCallback onRestore;
+  final VoidCallback onDiscard;
+
+  @override
+  Widget build(BuildContext context) {
+    final age = DateTime.now().difference(draft.savedAt);
+    final mood = moodFor(draft.mood);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+      decoration: BoxDecoration(
+        color: AppColors.honeySoft,
+        borderRadius: AppRadius.md,
+        border: Border.all(color: AppColors.honey100),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.history_edu_rounded,
+              size: 18, color: AppColors.honey600),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Unsaved draft from ${_ageLabel(age)}',
+                  style: AppTextStyles.labelMedium
+                      .copyWith(color: AppColors.stone700),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Icon(mood.icon, size: 12, color: mood.color),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        '${mood.label} · ${draft.text.length} chars',
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: onDiscard,
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.stone500,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('Discard'),
+          ),
+          TextButton(
+            onPressed: onRestore,
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.forest600,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('Restore'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _ageLabel(Duration age) {
+    if (age.inMinutes < 1) return 'a moment ago';
+    if (age.inMinutes < 60) return '${age.inMinutes}m ago';
+    if (age.inHours < 24) return '${age.inHours}h ago';
+    return 'yesterday';
   }
 }
 

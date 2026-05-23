@@ -7,11 +7,13 @@
 // keep tuning.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_theme.dart';
 import '../utils/pin_hash.dart';
@@ -307,6 +309,148 @@ JournalPrompt dailyPromptFor(JournalPromptCategory category) {
   final now = DateTime.now();
   final dayOfYear = now.difference(DateTime(now.year)).inDays;
   return category.prompts[dayOfYear % category.prompts.length];
+}
+
+/// Picks the *suggested* category to open the prompt strip with, given
+/// time-of-day and recent emotional history. Quiet intelligence — the user
+/// still has full control to pick any category, but the default has a chance
+/// of matching where they actually are.
+///
+/// Logic:
+///   • If the most recent entry (within ~36h) was 'crisis' → suggest a hard
+///     prompt. The user is still in the wake of it; meet them there.
+///   • If the most recent entry (within ~36h) was 'hard' → suggest a hard
+///     prompt for the same reason.
+///   • If the most recent entry was 'great'/'good' → suggest a gratitude
+///     prompt to capture and savour the momentum.
+///   • Otherwise time-of-day: morning (5-11) reflection, midday (11-17)
+///     reflection, evening (17-23) gratitude, night (23-5) reflection.
+JournalPromptCategory smartDefaultCategory({
+  required DateTime now,
+  required String? mostRecentMood,
+  required Duration? sinceMostRecent,
+}) {
+  // Mood-driven first (only honour if recent — old moods aren't relevant).
+  if (mostRecentMood != null &&
+      sinceMostRecent != null &&
+      sinceMostRecent <= const Duration(hours: 36)) {
+    if (mostRecentMood == 'crisis' || mostRecentMood == 'hard') {
+      return kPromptCategories.firstWhere((c) => c.id == 'hard');
+    }
+    if (mostRecentMood == 'great' || mostRecentMood == 'good') {
+      return kPromptCategories.firstWhere((c) => c.id == 'gratitude');
+    }
+  }
+  // Time-of-day fallback.
+  final h = now.hour;
+  if (h >= 17 && h < 23) {
+    return kPromptCategories.firstWhere((c) => c.id == 'gratitude');
+  }
+  return kPromptCategories.firstWhere((c) => c.id == 'reflection');
+}
+
+// ─── Draft autosave ──────────────────────────────────────────────────────────
+//
+// Holds the user's in-progress entry between sheet closures. Stored to
+// SharedPreferences as JSON so an OS kill, accidental swipe-down, or a phone
+// call that closes the keyboard doesn't lose 200 words of raw emotion the
+// user just typed.
+//
+// Drafts older than 48 hours are considered stale and dropped on read — the
+// user almost certainly moved on, and surfacing day-old text would feel
+// uncanny rather than helpful.
+
+class JournalDraft {
+  const JournalDraft({
+    required this.text,
+    required this.mood,
+    required this.subMood,
+    required this.tags,
+    required this.promptId,
+    required this.locked,
+    required this.savedAt,
+  });
+
+  final String text;
+  final String mood;
+  final String? subMood;
+  final List<String> tags;
+  final String? promptId;
+  final bool locked;
+  final DateTime savedAt;
+
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'mood': mood,
+        if (subMood != null) 'subMood': subMood,
+        if (tags.isNotEmpty) 'tags': tags,
+        if (promptId != null) 'promptId': promptId,
+        if (locked) 'locked': true,
+        'savedAt': savedAt.toIso8601String(),
+      };
+
+  static JournalDraft? fromJson(Map<String, dynamic> j) {
+    try {
+      return JournalDraft(
+        text: j['text'] as String? ?? '',
+        mood: j['mood'] as String? ?? 'okay',
+        subMood: j['subMood'] as String?,
+        tags: ((j['tags'] as List?) ?? const [])
+            .whereType<String>()
+            .toList(),
+        promptId: j['promptId'] as String?,
+        locked: (j['locked'] as bool?) ?? false,
+        savedAt: DateTime.tryParse(j['savedAt'] as String? ?? '') ??
+            DateTime.now(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+class JournalDraftStore {
+  JournalDraftStore._();
+
+  static const _key = 'journal_draft_v1';
+  static const _staleAfter = Duration(hours: 48);
+
+  /// Reads the draft if one exists and isn't stale. Returns null otherwise.
+  /// Stale drafts are cleared on read so the next open is fresh.
+  static Future<JournalDraft?> read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_key);
+    if (raw == null) return null;
+    try {
+      final draft = JournalDraft.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      if (draft == null) return null;
+      if (DateTime.now().difference(draft.savedAt) > _staleAfter) {
+        await prefs.remove(_key);
+        return null;
+      }
+      // Treat empty drafts as no-draft.
+      if (draft.text.trim().isEmpty) {
+        await prefs.remove(_key);
+        return null;
+      }
+      return draft;
+    } catch (_) {
+      await prefs.remove(_key);
+      return null;
+    }
+  }
+
+  /// Write — debounced by the sheet, never by this store. Safe to call often.
+  static Future<void> write(JournalDraft draft) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, jsonEncode(draft.toJson()));
+  }
+
+  /// Clear after a successful save.
+  static Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+  }
 }
 
 // ─── Re-auth helper (per-entry lock) ─────────────────────────────────────────
