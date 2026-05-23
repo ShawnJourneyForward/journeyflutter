@@ -269,7 +269,7 @@ class _RecoveryProgress {
   static const _milestoneBodies = [
     'Your body begins adjusting. Hydration and rest are your allies right now.',
     'Heart rate and sleep patterns may begin to shift as your body finds its rhythm.',
-    'A significant window — be gentle with yourself. Seek support if anything feels unsafe.',
+    'A significant window — be patient with yourself. Seek support if anything feels unsafe.',
     'The most intense early adjustment may begin to ease. A small window of calm can emerge.',
     'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.',
     'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.',
@@ -3116,7 +3116,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   double _minutes = 30; // slider value — used for non-distance activities
   final _minutesCtrl = TextEditingController(text: '30'); // exact entry
   final _distanceCtrl = TextEditingController(); // km
-  String _effort = 'Gentle';
+  String _effort = 'Light';
   String _outcome = 'Calmer';
   final _notesCtrl = TextEditingController();
   bool _saving = false;
@@ -3396,7 +3396,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
             const _SheetSectionLabel('How much effort did it take?'),
             const SizedBox(height: 10),
             _ChoiceWrap(
-              options: const ['Gentle', 'Moderate', 'Strong'],
+              options: const ['Light', 'Moderate', 'Strong'],
               isSelected: (option) => _effort == option,
               onTap: (option) {
                 H.selection();

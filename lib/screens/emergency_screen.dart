@@ -575,7 +575,7 @@ class _BreathingTabState extends State<_BreathingTab>
                 style: AppTextStyles.greetingSerif
                     .copyWith(fontSize: 32, color: AppColors.forestDark)),
             const SizedBox(height: 4),
-            Text('A gentle rhythm for this moment.',
+            Text('A steady rhythm for this moment.',
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500)),
             const SizedBox(height: 20),

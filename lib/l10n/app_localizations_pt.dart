@@ -278,7 +278,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get onbNotifEveningLabel => 'Evening check-in';
 
   @override
-  String get onbNotifEveningSub => 'A gentle reminder to reflect';
+  String get onbNotifEveningSub => 'An evening reminder to reflect';
 
   @override
   String get onbNotifMilestonesLabel => 'Milestone alerts';
@@ -682,7 +682,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeTriggerTired => 'Tired';
 
   @override
-  String get homeEffortGentle => 'Gentle';
+  String get homeEffortGentle => 'Light';
 
   @override
   String get homeEffortModerate => 'Moderate';
@@ -779,7 +779,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get homeQuote10 =>
-      'You have survived hard days before. Today can be held gently too.';
+      'You have survived hard days before. Today is another step forward.';
 
   @override
   String get homeQuote11 =>
@@ -866,8 +866,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeQuote35 => 'You are allowed to need support.';
 
   @override
-  String get homeQuote36 =>
-      'The path forward can be gentle and still be powerful.';
+  String get homeQuote36 => 'The path forward is yours — one step at a time.';
 
   @override
   String get homeQuote37 => 'Your progress is not erased by a hard moment.';
@@ -910,7 +909,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeQuote48 => 'There is still time to become someone new.';
 
   @override
-  String get homeQuote49 => 'Keep going gently. That still counts.';
+  String get homeQuote49 => 'Keep going. Every step still counts.';
 
   @override
   String get homeMission0 => 'Drink a full glass of water slowly.';
@@ -1014,7 +1013,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeMission32 => 'Write a short note to your future self.';
 
   @override
-  String get homeMission33 => 'Take a gentle shower or bath.';
+  String get homeMission33 => 'Take a warm shower or bath.';
 
   @override
   String get homeMission34 => 'Breathe through a craving without judging it.';
@@ -1099,7 +1098,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeMission58 => 'End the day by naming one quiet victory.';
 
   @override
-  String get homeMission59 => 'Remind yourself: progress can be gentle.';
+  String get homeMission59 => 'Remind yourself: small steps still count.';
 
   @override
   String get journalTitle => 'My Journal';
@@ -1259,7 +1258,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get zenQuote14 =>
-      'Be gentle with yourself. You are a child of the universe.';
+      'Be patient with yourself. You are a child of the universe.';
 
   @override
   String get zenQuoteAuthor14 => 'Max Ehrmann';
@@ -2324,7 +2323,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get cbtEducation =>
-      'CBT works by gently examining the thoughts that drive distress — not to dismiss them, but to understand them more clearly.';
+      'CBT works by carefully examining the thoughts that drive distress — not to dismiss them, but to understand them more clearly.';
 
   @override
   String get cbtStep1Title => 'Spot the pattern';

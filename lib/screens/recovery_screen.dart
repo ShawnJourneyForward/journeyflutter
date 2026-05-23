@@ -76,7 +76,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         experience:
             'Restlessness and strong urges are common here. You might feel “wired” or on edge.',
         tip:
-            'Be exceptionally gentle with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.',
+            'Be especially patient with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.',
       ),
       _Milestone(
         minutes: 4320,

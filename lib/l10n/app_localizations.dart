@@ -581,7 +581,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbNotifEveningSub.
   ///
   /// In en, this message translates to:
-  /// **'A gentle reminder to reflect'**
+  /// **'An evening reminder to reflect'**
   String get onbNotifEveningSub;
 
   /// No description provided for @onbNotifMilestonesLabel.
@@ -1301,7 +1301,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeEffortGentle.
   ///
   /// In en, this message translates to:
-  /// **'Gentle'**
+  /// **'Light'**
   String get homeEffortGentle;
 
   /// No description provided for @homeEffortModerate.
@@ -1487,7 +1487,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeQuote10.
   ///
   /// In en, this message translates to:
-  /// **'You have survived hard days before. Today can be held gently too.'**
+  /// **'You have survived hard days before. Today is another step forward.'**
   String get homeQuote10;
 
   /// No description provided for @homeQuote11.
@@ -1643,7 +1643,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeQuote36.
   ///
   /// In en, this message translates to:
-  /// **'The path forward can be gentle and still be powerful.'**
+  /// **'The path forward is yours — one step at a time.'**
   String get homeQuote36;
 
   /// No description provided for @homeQuote37.
@@ -1721,7 +1721,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeQuote49.
   ///
   /// In en, this message translates to:
-  /// **'Keep going gently. That still counts.'**
+  /// **'Keep going. Every step still counts.'**
   String get homeQuote49;
 
   /// No description provided for @homeMission0.
@@ -1925,7 +1925,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeMission33.
   ///
   /// In en, this message translates to:
-  /// **'Take a gentle shower or bath.'**
+  /// **'Take a warm shower or bath.'**
   String get homeMission33;
 
   /// No description provided for @homeMission34.
@@ -2081,7 +2081,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeMission59.
   ///
   /// In en, this message translates to:
-  /// **'Remind yourself: progress can be gentle.'**
+  /// **'Remind yourself: small steps still count.'**
   String get homeMission59;
 
   /// No description provided for @journalTitle.
@@ -2375,7 +2375,7 @@ abstract class AppLocalizations {
   /// No description provided for @zenQuote14.
   ///
   /// In en, this message translates to:
-  /// **'Be gentle with yourself. You are a child of the universe.'**
+  /// **'Be patient with yourself. You are a child of the universe.'**
   String get zenQuote14;
 
   /// No description provided for @zenQuoteAuthor14.
@@ -4325,7 +4325,7 @@ abstract class AppLocalizations {
   /// No description provided for @cbtEducation.
   ///
   /// In en, this message translates to:
-  /// **'CBT works by gently examining the thoughts that drive distress — not to dismiss them, but to understand them more clearly.'**
+  /// **'CBT works by carefully examining the thoughts that drive distress — not to dismiss them, but to understand them more clearly.'**
   String get cbtEducation;
 
   /// No description provided for @cbtStep1Title.

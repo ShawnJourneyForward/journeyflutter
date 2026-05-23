@@ -2257,7 +2257,7 @@ class _AboutCardState extends State<_AboutCard> {
       'Recovery and personal growth are rarely a straight line. Having walked a difficult road myself, I know how heavy some days can feel — and how exhausting it can be to use tools filled with noise, pressure, and distraction.\n\n'
       'When you are trying to heal or rebuild, the last thing you need is advertising, attention-grabbing notifications, or the worry that your deeply personal reflections are being harvested.\n\n'
       'Your recovery is not a data product.\n\n'
-      'I built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and gentle progress.\n\n'
+      'I built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and steady progress.\n\n'
       'Because Journey Forward has no accounts, analytics, tracking, or cloud sync, I have no way of seeing how you experience the app, what feels confusing, or what features might help you most. If something is not working, or if you have an idea for a future improvement, you are welcome to contact me directly.\n\n'
       'This app is not here to shame you, score you, or punish you for difficult moments. It is here to help you return — to your reason, your routines, your breath, and the next small step forward.\n\n'
       'I am also working toward language support, including Zulu and Afrikaans, so Journey Forward can become more welcoming while keeping its privacy-first foundation.\n\n'
