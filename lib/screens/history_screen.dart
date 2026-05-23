@@ -613,7 +613,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       spacing: 6,
                       children: [
                         Icon(
-                          Icons.favorite_rounded,
+                          Icons.spa_rounded,
                           size: 13,
                           color: AppColors.honey500,
                         ),
@@ -1119,7 +1119,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       'exercise' => (Icons.directions_walk_rounded, 'exercise'),
       'sleep' => (Icons.bedtime_outlined, 'sleep'),
       'journal' => (Icons.edit_note_rounded, 'journal entries'),
-      'gratitude' => (Icons.favorite_outline_rounded, 'gratitude notes'),
+      'gratitude' => (Icons.spa_outlined, 'gratitude notes'),
       'slips' => (Icons.timeline_rounded, 'slips'),
       _ => (Icons.history_rounded, 'entries'),
     };
@@ -1249,7 +1249,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     label: 'Journal this week',
                   ),
                   _buildStatChip(
-                    icon: Icons.favorite_rounded,
+                    icon: Icons.spa_rounded,
                     value: gratitudeThisWeek.toString(),
                     label: 'Gratitude this week',
                   ),

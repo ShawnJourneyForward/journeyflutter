@@ -91,7 +91,7 @@ const _groups = [
         'Runs through local churches. Welcoming to anyone dealing with addiction '
         'or life struggles.',
     approach: '12-step · Christian · Faith-based',
-    icon: Icons.favorite_outline_rounded,
+    icon: Icons.spa_outlined,
     accentColor: AppColors.honey500,
     website: 'https://www.celebraterecovery.com',
     regions: 'Worldwide · Many SA churches',

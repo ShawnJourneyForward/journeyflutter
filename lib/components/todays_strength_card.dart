@@ -93,7 +93,7 @@ class TodaysStrengthCard extends ConsumerWidget {
             _StrengthRow(
               icon: markedToday
                   ? Icons.check_circle_outline_rounded
-                  : Icons.favorite_border_rounded,
+                  : Icons.spa_outlined,
               colour: markedToday ? AppColors.forest600 : AppColors.honey600,
               bg: markedToday ? AppColors.forest50 : AppColors.honey50,
               title: markedToday

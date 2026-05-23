@@ -459,7 +459,7 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _StatCell(
-                    icon: Icons.favorite_outline_rounded,
+                    icon: Icons.spa_outlined,
                     label: 'Most used',
                     value: mostUsed,
                     isText: true,

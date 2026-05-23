@@ -1715,7 +1715,7 @@ class _MyReasonCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.favorite_rounded,
+            const Icon(Icons.spa_rounded,
                 size: 14, color: AppColors.forest600),
             const SizedBox(width: 6),
             Text('My Reason',
@@ -2038,7 +2038,7 @@ class _GratitudeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _EditorialInputCard(
       title: 'DAILY GRATITUDE',
-      chipIcon: Icons.favorite_border_rounded,
+      chipIcon: Icons.spa_outlined,
       chipColor: AppColors.honey,
       chipBackground: AppColors.honeySoft,
       borderColor: AppColors.honey100,

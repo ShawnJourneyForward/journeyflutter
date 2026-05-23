@@ -634,7 +634,7 @@ const _strengths = [
   ('Patience', Icons.hourglass_empty_outlined),
   ('Honesty', Icons.verified_outlined),
   ('Resilience', Icons.autorenew_rounded),
-  ('Gratitude', Icons.favorite_outline_rounded),
+  ('Gratitude', Icons.spa_outlined),
   ('Hope', Icons.wb_sunny_outlined),
   ('Connection', Icons.people_outline_rounded),
   ('Purpose', Icons.flag_outlined),

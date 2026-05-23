@@ -52,7 +52,7 @@ const _kToolkitExercises = [
   _ToolkitExercise(
     label: 'Affirmations',
     sub: 'Read a personal affirmation',
-    icon: Icons.favorite_outline_rounded,
+    icon: Icons.spa_outlined,
     color: AppColors.honey500,
     route: '/journal',
   ),

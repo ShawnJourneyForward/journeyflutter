@@ -55,7 +55,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         label: l10n.recoveryM2Label,
         title: l10n.recoveryM2Title,
         body: l10n.recoveryM2Body,
-        icon: Icons.favorite_outline_rounded,
+        icon: Icons.spa_outlined,
         system: l10n.recoveryM2System,
         mind:
             'Your brain\'s reward circuitry is noticing the absence of its usual chemical trigger, which can cause irritability or a low mood.',
@@ -166,7 +166,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         label: l10n.recoveryM10Label,
         title: l10n.recoveryM10Title,
         body: l10n.recoveryM10Body,
-        icon: Icons.favorite_rounded,
+        icon: Icons.spa_rounded,
         system: l10n.recoveryM10System,
         mind:
             'You have lived through many seasons, routines, and emotional moments with more awareness and care.',

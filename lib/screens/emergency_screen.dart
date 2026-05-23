@@ -245,9 +245,9 @@ class _HomeTab extends ConsumerWidget {
         _Tab.meditation
       ),
       (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt),
-      (Icons.favorite_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons),
+      (Icons.spa_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons),
       (
-        Icons.favorite_border_rounded,
+        Icons.spa_outlined,
         'H.A.L.T.',
         AppColors.honey500,
         _Tab.halt
@@ -2186,7 +2186,7 @@ class _PlayTapeTab extends StatelessWidget {
                     Row(
                       children: [
                         _ActionButton(
-                          icon: Icons.favorite_rounded,
+                          icon: Icons.spa_rounded,
                           label: 'Read my reason',
                           onTap: () => onNav(_Tab.reasons),
                         ),

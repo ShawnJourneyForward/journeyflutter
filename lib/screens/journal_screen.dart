@@ -87,7 +87,7 @@ class _VisionIconOption {
 const _kVisionIcons = [
   _VisionIconOption(key: 'guide',     icon: Icons.auto_awesome_rounded,          label: 'Guide',     color: AppColors.honey400),
   _VisionIconOption(key: 'strength',  icon: Icons.fitness_center_rounded,         label: 'Strength',  color: AppColors.forest500),
-  _VisionIconOption(key: 'love',      icon: Icons.favorite_rounded,               label: 'Love',      color: Color(0xFFD97272)),
+  _VisionIconOption(key: 'love',      icon: Icons.spa_rounded,               label: 'Love',      color: Color(0xFFD97272)),
   _VisionIconOption(key: 'home',      icon: Icons.home_rounded,                   label: 'Home',      color: AppColors.forest600),
   _VisionIconOption(key: 'family',    icon: Icons.group_rounded,                  label: 'Family',    color: AppColors.forest500),
   _VisionIconOption(key: 'savings',   icon: Icons.account_balance_wallet_rounded, label: 'Savings',   color: AppColors.honey500),
@@ -986,8 +986,8 @@ class _AffirmCard extends StatelessWidget {
                   },
                   child: Icon(
                     isFavourite
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
+                        ? Icons.spa_rounded
+                        : Icons.spa_outlined,
                     size: 22,
                     color:
                         isFavourite ? AppColors.honey500 : AppColors.stone300,
@@ -1782,7 +1782,7 @@ class _ZenTab extends StatelessWidget {
           // Gratitude section
           _ZenSection(
             title: 'Three Good Things',
-            icon: Icons.favorite_outline_rounded,
+            icon: Icons.spa_outlined,
             color: AppColors.honey500,
             child: const _ThreeGoodThings(),
           ),

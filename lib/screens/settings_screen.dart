@@ -670,7 +670,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                 child: _MotivationSection(
-                  icon: Icons.favorite_outline_rounded,
+                  icon: Icons.spa_outlined,
                   title: 'My Reasons to Quit',
                   placeholder: 'e.g. To be healthier',
                   items: profile.myReasons,
