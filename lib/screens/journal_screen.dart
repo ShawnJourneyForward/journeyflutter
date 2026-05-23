@@ -14,6 +14,8 @@ import '../providers/app_providers.dart';
 import '../l10n/app_localizations.dart';
 import 'vision_board_shared.dart';
 import 'vision_detail_screen.dart';
+import 'journal_shared.dart';
+import 'journal_detail_screen.dart';
 
 // ─── Zen quotes ───────────────────────────────────────────────────────────────
 
@@ -224,69 +226,755 @@ class _JournalTab extends ConsumerWidget {
       loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.forest600)),
       error: (e, _) => Center(child: Text('Error: $e')),
-      data: (list) => Stack(
-        children: [
-          if (list.isEmpty)
-            _EmptyState(
-              icon: Icons.book_outlined,
-              title: 'Your journal is empty',
-              subtitle: 'Tap + to write your first entry',
-            )
-          else
-            ListView.builder(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
-              itemCount: list.length,
-              itemBuilder: (_, i) => _JournalCard(entry: list[i]),
+      data: (allEntries) {
+        final filtered = ref.watch(filteredJournalProvider);
+        final streak = ref.watch(journalStreakProvider);
+        final echoes = ref.watch(onThisDayProvider);
+        final filter = ref.watch(journalFilterProvider);
+        final hasAny = allEntries.isNotEmpty;
+
+        return Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                // ── Streak + on-this-day peek (only when there's data) ──
+                if (hasAny)
+                  SliverToBoxAdapter(
+                    child: _DiaryHeader(
+                      streak: streak,
+                      echoes: echoes,
+                      onEchoTap: (entry) => _openDetail(context, ref, entry),
+                    ),
+                  ),
+
+                // ── Filter chips + search (only when there's data) ─────
+                if (hasAny)
+                  SliverToBoxAdapter(
+                    child: _DiaryFilterBar(
+                      filter: filter,
+                      counts: _countsFor(allEntries),
+                      onModeChanged: (m) {
+                        H.selection();
+                        ref.read(journalFilterProvider.notifier).state =
+                            filter.copyWith(mode: m);
+                      },
+                      onQueryChanged: (q) {
+                        ref.read(journalFilterProvider.notifier).state =
+                            filter.copyWith(query: q);
+                      },
+                      onClearTag: filter.tag == null
+                          ? null
+                          : () {
+                              ref.read(journalFilterProvider.notifier).state =
+                                  filter.copyWith(tag: null);
+                            },
+                    ),
+                  ),
+
+                // ── Empty state ─────────────────────────────────────────
+                if (!hasAny)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _DiaryEmptyState(
+                      onSeed: (prompt) =>
+                          _showEntrySheet(context, ref, prompt: prompt),
+                      onBlank: () => _showEntrySheet(context, ref),
+                    ),
+                  )
+                else if (filtered.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: _EmptyState(
+                        icon: Icons.filter_alt_off_outlined,
+                        title: 'Nothing matches',
+                        subtitle:
+                            'Try a different filter or clear the search.',
+                      ),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 110),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, i) => _JournalCard(
+                          entry: filtered[i],
+                          onTap: () =>
+                              _openDetail(context, ref, filtered[i]),
+                          onTagTap: (tag) {
+                            H.selection();
+                            ref
+                                .read(journalFilterProvider.notifier)
+                                .state = filter.copyWith(tag: tag);
+                          },
+                        ),
+                        childCount: filtered.length,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          Positioned(
-            right: 20,
-            bottom: 24,
-            child: _FAB(
-              onTap: () => _showEntrySheet(context, ref),
+
+            // FAB
+            Positioned(
+              right: 20,
+              bottom: 24,
+              child: _FAB(onTap: () => _showEntrySheet(context, ref)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ── Counts shown next to filter chips ─────────────────────────────────
+  Map<JournalFilterMode, int> _countsFor(List<JournalEntry> all) {
+    final now = DateTime.now();
+    final todayKey = DateTime(now.year, now.month, now.day);
+    var today = 0, hard = 0, wins = 0, locked = 0;
+    for (final e in all) {
+      final d = DateTime(e.date.year, e.date.month, e.date.day);
+      if (d == todayKey) today++;
+      if (e.mood == 'hard' || e.mood == 'crisis') hard++;
+      if (e.mood == 'great' || e.mood == 'good') wins++;
+      if (e.locked) locked++;
+    }
+    return {
+      JournalFilterMode.all: all.length,
+      JournalFilterMode.today: today,
+      JournalFilterMode.hard: hard,
+      JournalFilterMode.wins: wins,
+      JournalFilterMode.locked: locked,
+    };
+  }
+
+  // ── Open detail (gated by re-auth if locked) ──────────────────────────
+  Future<void> _openDetail(
+      BuildContext context, WidgetRef ref, JournalEntry entry) async {
+    H.selection();
+    if (entry.locked) {
+      final ok = await JournalReauth.require(context,
+          reason: 'View this entry');
+      if (!ok || !context.mounted) return;
+    }
+    if (!context.mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => JournalDetailScreen(
+        entryId: entry.id,
+        onEdit: (live) => _showEntrySheet(context, ref, existing: live),
+      ),
+    ));
+  }
+
+  // ── Open the entry sheet for add / edit / prompt-seeded ───────────────
+  void _showEntrySheet(
+    BuildContext context,
+    WidgetRef ref, {
+    JournalEntry? existing,
+    JournalPrompt? prompt,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _JournalEntrySheet(
+        existing: existing,
+        seedPrompt: prompt,
+        onSave: ({
+          required String text,
+          required String mood,
+          String? subMood,
+          required List<String> tags,
+          String? promptId,
+          required bool locked,
+        }) async {
+          if (existing == null) {
+            await ref.read(journalProvider.notifier).add(
+                  text,
+                  mood,
+                  subMood: subMood,
+                  tags: tags,
+                  promptId: promptId,
+                  locked: locked,
+                );
+          } else {
+            await ref.read(journalProvider.notifier).editEntry(
+                  existing.id,
+                  text: text,
+                  mood: mood,
+                  subMood: subMood,
+                  tags: tags,
+                  locked: locked,
+                );
+          }
+          // Crisis routing: only on fresh entries (not edits) so we don't
+          // re-prompt the same calm path when the user just fixes a typo.
+          if (existing == null && context.mounted) {
+            _maybeOfferCrisisPath(context, mood);
+          }
+        },
+      ),
+    );
+  }
+
+  // ── After a fresh entry, route hard/crisis moods to existing support ──
+  void _maybeOfferCrisisPath(BuildContext context, String mood) {
+    if (mood != 'hard' && mood != 'crisis') return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 18, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: AppColors.stone200,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                mood == 'crisis'
+                    ? 'I see you. Want a hand?'
+                    : 'That sounds heavy.',
+                style: AppTextStyles.titleLarge
+                    .copyWith(color: AppColors.forest700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                mood == 'crisis'
+                    ? 'Saving your entry helped. A short calm exercise can take it from here.'
+                    : 'You wrote it down — that already counts. A 60-second thought record can help if you want it.',
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone600),
+              ),
+              const SizedBox(height: 18),
+              if (mood == 'crisis')
+                _CrisisAction(
+                  icon: Icons.self_improvement_rounded,
+                  label: 'Open the calm room',
+                  detail: 'Breath work, grounding, and one safe action.',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    context.go('/emergency');
+                  },
+                )
+              else
+                _CrisisAction(
+                  icon: Icons.psychology_outlined,
+                  label: 'Try a thought record',
+                  detail:
+                      'Name the thought, weigh the evidence, reframe it.',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    context.go('/cbt');
+                  },
+                ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Text(
+                    "I'm okay for now",
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: AppColors.stone500),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─── Crisis bottom-sheet action row ──────────────────────────────────────────
+
+class _CrisisAction extends StatelessWidget {
+  const _CrisisAction({
+    required this.icon,
+    required this.label,
+    required this.detail,
+    required this.onTap,
+  });
+  final IconData icon;
+  final String label;
+  final String detail;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: AppRadius.lg,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.forest50,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.forest100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: AppColors.forest100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 20, color: AppColors.forest700),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: AppTextStyles.titleSmall
+                          .copyWith(color: AppColors.forest700)),
+                  const SizedBox(height: 2),
+                  Text(detail,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone500)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_rounded,
+                size: 18, color: AppColors.forest500),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Header: streak ribbon + on-this-day peek ────────────────────────────────
+
+class _DiaryHeader extends StatelessWidget {
+  const _DiaryHeader({
+    required this.streak,
+    required this.echoes,
+    required this.onEchoTap,
+  });
+  final int streak;
+  final List<JournalEntry> echoes;
+  final void Function(JournalEntry) onEchoTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasEcho = echoes.isNotEmpty;
+    if (streak == 0 && !hasEcho) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (streak > 0)
+            Row(
+              children: [
+                const Icon(Icons.local_fire_department_rounded,
+                    size: 16, color: AppColors.honey500),
+                const SizedBox(width: 6),
+                Text(
+                  streak == 1
+                      ? '1 day writing'
+                      : '$streak day writing streak',
+                  style: AppTextStyles.labelMedium
+                      .copyWith(color: AppColors.forest700),
+                ),
+              ],
+            ),
+          if (hasEcho) ...[
+            const SizedBox(height: 10),
+            _OnThisDayCard(echoes: echoes, onTap: onEchoTap),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _OnThisDayCard extends StatelessWidget {
+  const _OnThisDayCard({required this.echoes, required this.onTap});
+  final List<JournalEntry> echoes;
+  final void Function(JournalEntry) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final first = echoes.first;
+    final years = DateTime.now().year - first.date.year;
+    final mood = moodFor(first.mood);
+    return InkWell(
+      borderRadius: AppRadius.lg,
+      onTap: () => onTap(first),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.mintChip, AppColors.forest50],
+          ),
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.forest100),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                // ignore: deprecated_member_use
+                color: mood.color.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.history_rounded,
+                  size: 18, color: AppColors.forest600),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    years == 1
+                        ? 'On this day, 1 year ago'
+                        : 'On this day, $years years ago',
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: AppColors.forest700),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    first.locked ? 'A locked entry' : first.text,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.stone600,
+                      fontStyle: first.locked
+                          ? FontStyle.italic
+                          : FontStyle.normal,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (echoes.length > 1) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '+${echoes.length - 1} more from this day',
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone400),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Filter chip row + search field ──────────────────────────────────────────
+
+class _DiaryFilterBar extends StatefulWidget {
+  const _DiaryFilterBar({
+    required this.filter,
+    required this.counts,
+    required this.onModeChanged,
+    required this.onQueryChanged,
+    required this.onClearTag,
+  });
+  final JournalFilter filter;
+  final Map<JournalFilterMode, int> counts;
+  final void Function(JournalFilterMode) onModeChanged;
+  final void Function(String) onQueryChanged;
+  final VoidCallback? onClearTag;
+
+  @override
+  State<_DiaryFilterBar> createState() => _DiaryFilterBarState();
+}
+
+class _DiaryFilterBarState extends State<_DiaryFilterBar> {
+  late final TextEditingController _searchCtrl;
+  bool _searchOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl = TextEditingController(text: widget.filter.query);
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _chip(JournalFilterMode.all, 'All'),
+                      const SizedBox(width: 6),
+                      _chip(JournalFilterMode.today, 'Today'),
+                      const SizedBox(width: 6),
+                      _chip(JournalFilterMode.hard, 'Hard'),
+                      const SizedBox(width: 6),
+                      _chip(JournalFilterMode.wins, 'Wins'),
+                      const SizedBox(width: 6),
+                      _chip(JournalFilterMode.locked, 'Locked'),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  _searchOpen ? Icons.close_rounded : Icons.search_rounded,
+                  size: 20,
+                  color: AppColors.stone600,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _searchOpen = !_searchOpen;
+                    if (!_searchOpen && _searchCtrl.text.isNotEmpty) {
+                      _searchCtrl.clear();
+                      widget.onQueryChanged('');
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_searchOpen) ...[
+            const SizedBox(height: 8),
+            TextField(
+              controller: _searchCtrl,
+              autofocus: true,
+              style: AppTextStyles.bodyMedium
+                  .copyWith(color: AppColors.stone800),
+              decoration: InputDecoration(
+                hintText: 'Search your entries…',
+                hintStyle: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone300),
+                prefixIcon: const Icon(Icons.search_rounded,
+                    size: 18, color: AppColors.stone400),
+                filled: true,
+                fillColor: AppColors.card,
+                isDense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: AppRadius.md,
+                  borderSide: const BorderSide(color: AppColors.stone100),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.md,
+                  borderSide: const BorderSide(color: AppColors.stone100),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.md,
+                  borderSide: const BorderSide(
+                      color: AppColors.forest400, width: 1.5),
+                ),
+              ),
+              onChanged: widget.onQueryChanged,
+            ),
+          ],
+          if (widget.filter.tag != null) ...[
+            const SizedBox(height: 8),
+            InputChip(
+              label: Text('#${widget.filter.tag!}'),
+              labelStyle: AppTextStyles.labelSmall
+                  .copyWith(color: AppColors.forest700),
+              backgroundColor: AppColors.mintChip,
+              side: const BorderSide(color: AppColors.forest100),
+              deleteIconColor: AppColors.forest500,
+              onDeleted: widget.onClearTag,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(JournalFilterMode mode, String label) {
+    final selected = widget.filter.mode == mode;
+    final count = widget.counts[mode] ?? 0;
+    return GestureDetector(
+      onTap: () => widget.onModeChanged(mode),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.forest600 : AppColors.card,
+          borderRadius: AppRadius.sm,
+          border: Border.all(
+            color: selected ? AppColors.forest600 : AppColors.stone200,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label,
+                style: AppTextStyles.labelMedium.copyWith(
+                    color:
+                        selected ? Colors.white : AppColors.stone600)),
+            if (count > 0) ...[
+              const SizedBox(width: 5),
+              Text('$count',
+                  style: AppTextStyles.labelSmall.copyWith(
+                      // ignore: deprecated_member_use
+                      color: selected
+                          // ignore: deprecated_member_use
+                          ? Colors.white.withOpacity(0.7)
+                          : AppColors.stone400)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Empty state with three starter prompts ──────────────────────────────────
+
+class _DiaryEmptyState extends StatelessWidget {
+  const _DiaryEmptyState({required this.onSeed, required this.onBlank});
+  final void Function(JournalPrompt) onSeed;
+  final VoidCallback onBlank;
+
+  @override
+  Widget build(BuildContext context) {
+    final starters = starterPromptsForEmptyState();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              width: 72,
+              height: 72,
+              decoration: const BoxDecoration(
+                color: AppColors.forest50,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.menu_book_rounded,
+                  size: 34, color: AppColors.forest500),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: Text(
+              'A place for the unfiltered you',
+              style: AppTextStyles.titleMedium
+                  .copyWith(color: AppColors.forest700),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Center(
+            child: Text(
+              'Pick a door — or tap + to start with a blank page.',
+              style: AppTextStyles.bodySmall
+                  .copyWith(color: AppColors.stone500),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 22),
+          ...starters.map((p) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: InkWell(
+                  borderRadius: AppRadius.lg,
+                  onTap: () {
+                    H.selection();
+                    onSeed(p);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: AppRadius.lg,
+                      border: Border.all(color: AppColors.stone100),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.format_quote_rounded,
+                            size: 18, color: AppColors.forest400),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            p.text,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.stone700,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_rounded,
+                            size: 16, color: AppColors.stone400),
+                      ],
+                    ),
+                  ),
+                ),
+              )),
+          const SizedBox(height: 6),
+          Center(
+            child: TextButton.icon(
+              onPressed: onBlank,
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Start with a blank page'),
+              style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
             ),
           ),
         ],
       ),
     );
   }
-
-  void _showEntrySheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _JournalEntrySheet(
-        onSave: (text, mood) =>
-            ref.read(journalProvider.notifier).add(text, mood),
-      ),
-    );
-  }
 }
 
 class _JournalCard extends ConsumerWidget {
-  const _JournalCard({required this.entry});
+  const _JournalCard({
+    required this.entry,
+    required this.onTap,
+    required this.onTagTap,
+  });
   final JournalEntry entry;
-
-  static const _moodData = {
-    'great': (
-      Icons.sentiment_very_satisfied_rounded,
-      AppColors.forest600,
-      'Great'
-    ),
-    'good': (Icons.sentiment_satisfied_rounded, AppColors.forest400, 'Good'),
-    'okay': (Icons.sentiment_neutral_rounded, AppColors.honey500, 'Okay'),
-    'hard': (Icons.sentiment_dissatisfied_rounded, AppColors.honey500, 'Hard'),
-    'crisis': (
-      Icons.sentiment_very_dissatisfied_rounded,
-      AppColors.forest600,
-      'Crisis'
-    ),
-  };
+  final VoidCallback onTap;
+  final void Function(String tag) onTagTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (icon, color, label) = _moodData[entry.mood] ??
-        (Icons.sentiment_neutral_rounded, AppColors.stone400, 'Okay');
+    final mood = moodFor(entry.mood);
 
     return Dismissible(
       key: Key(entry.id),
@@ -299,8 +987,8 @@ class _JournalCard extends ConsumerWidget {
           color: AppColors.honeySoft,
           borderRadius: AppRadius.lg,
         ),
-        child:
-            const Icon(Icons.delete_outline_rounded, color: AppColors.honey500),
+        child: const Icon(Icons.delete_outline_rounded,
+            color: AppColors.honey500),
       ),
       confirmDismiss: (_) async {
         return await showDialog<bool>(
@@ -330,41 +1018,119 @@ class _JournalCard extends ConsumerWidget {
         );
       },
       onDismissed: (_) => ref.read(journalProvider.notifier).delete(entry.id),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: AppRadius.xxl,
-          border: Border.all(color: AppColors.softBorder),
-          boxShadow: AppShadows.luxury,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 18, color: color),
-                const SizedBox(width: 6),
-                Text(label,
-                    style: AppTextStyles.labelSmall.copyWith(color: color)),
-                const Spacer(),
+      child: InkWell(
+        borderRadius: AppRadius.xxl,
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.card,
+            borderRadius: AppRadius.xxl,
+            border: Border.all(color: AppColors.softBorder),
+            boxShadow: AppShadows.luxury,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── Mood + sub-mood + lock + date ───────────────────────
+              Row(
+                children: [
+                  Icon(mood.icon, size: 18, color: mood.color),
+                  const SizedBox(width: 6),
+                  Text(mood.label,
+                      style: AppTextStyles.labelSmall
+                          .copyWith(color: mood.color)),
+                  if (entry.subMood != null && entry.subMood!.isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      width: 3,
+                      height: 3,
+                      decoration: const BoxDecoration(
+                        color: AppColors.stone300,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        entry.subMood!,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: AppColors.stone500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                  if (entry.locked) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.lock,
+                        size: 12, color: AppColors.honey500),
+                  ],
+                  const Spacer(),
+                  Text(
+                    _formatDate(entry.date),
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.stone400),
+                  ),
+                ],
+              ),
+
+              // ── Body preview (hidden if locked) ─────────────────────
+              const SizedBox(height: 10),
+              if (entry.locked)
+                Row(
+                  children: [
+                    const Icon(Icons.lock_outline,
+                        size: 14, color: AppColors.stone400),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Locked entry · tap to unlock',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.stone500,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                )
+              else
                 Text(
-                  _formatDate(entry.date),
-                  style: AppTextStyles.bodySmall
-                      .copyWith(color: AppColors.stone400),
+                  entry.text,
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.stone700),
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+              // ── Tag chips ───────────────────────────────────────────
+              if (entry.tags.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: entry.tags.map((t) {
+                    return GestureDetector(
+                      onTap: () => onTagTap(t),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.forest50,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.forest100),
+                        ),
+                        child: Text(
+                          '#$t',
+                          style: AppTextStyles.labelSmall.copyWith(
+                              color: AppColors.forest600,
+                              letterSpacing: 0.2),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              entry.text,
-              style:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone700),
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -385,32 +1151,73 @@ class _JournalCard extends ConsumerWidget {
   }
 }
 
-class _JournalEntrySheet extends StatefulWidget {
-  const _JournalEntrySheet({required this.onSave});
-  final void Function(String text, String mood) onSave;
+/// Callback shape the entry sheet uses to hand back its work. The named
+/// args mirror the persisted fields one-to-one so the parent doesn't have
+/// to remember positional argument order.
+typedef JournalSaveCallback = Future<void> Function({
+  required String text,
+  required String mood,
+  String? subMood,
+  required List<String> tags,
+  String? promptId,
+  required bool locked,
+});
+
+class _JournalEntrySheet extends ConsumerStatefulWidget {
+  const _JournalEntrySheet({
+    required this.onSave,
+    this.existing,
+    this.seedPrompt,
+  });
+  final JournalSaveCallback onSave;
+  final JournalEntry? existing; // edit mode
+  final JournalPrompt? seedPrompt; // empty-state starter
 
   @override
-  State<_JournalEntrySheet> createState() => _JournalEntrySheetState();
+  ConsumerState<_JournalEntrySheet> createState() =>
+      _JournalEntrySheetState();
 }
 
-class _JournalEntrySheetState extends State<_JournalEntrySheet> {
-  final _ctrl = TextEditingController();
-  String _mood = 'okay';
+class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
+  late final TextEditingController _ctrl;
+  late final TextEditingController _newTagCtrl;
+  late String _mood;
+  late String? _subMood;
+  late List<String> _tags;
+  late bool _locked;
+  String? _promptId; // null until user picks a prompt or seedPrompt set
   bool _listening = false;
-  String _baseline = ''; // text already typed before mic was tapped
+  String _baseline = '';
+  bool _promptPickerOpen = false;
 
-  static const _moods = [
-    ('great', '😄', 'Great'),
-    ('good', '🙂', 'Good'),
-    ('okay', '😐', 'Okay'),
-    ('hard', '😔', 'Hard'),
-    ('crisis', '😰', 'Crisis'),
-  ];
+  bool get _isEdit => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final ex = widget.existing;
+    final seed = widget.seedPrompt;
+    _ctrl = TextEditingController(text: ex?.text ?? '');
+    _newTagCtrl = TextEditingController();
+    _mood = ex?.mood ?? 'okay';
+    _subMood = ex?.subMood;
+    _tags = List<String>.from(ex?.tags ?? const []);
+    _locked = ex?.locked ?? false;
+    _promptId = ex?.promptId ?? seed?.id;
+    // If we were opened from a starter prompt, drop a soft header into the
+    // text field so the user sees what they're answering.
+    if (seed != null && _ctrl.text.isEmpty) {
+      _ctrl.text = '${seed.text}\n\n';
+      _ctrl.selection =
+          TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
+    }
+  }
 
   @override
   void dispose() {
     if (_listening) VoiceInput.instance.cancel();
     _ctrl.dispose();
+    _newTagCtrl.dispose();
     super.dispose();
   }
 
@@ -451,175 +1258,613 @@ class _JournalEntrySheetState extends State<_JournalEntrySheet> {
     );
   }
 
+  // ── Sub-mood selection ─────────────────────────────────────────────────
+  void _toggleSubMood(String value) {
+    H.selection();
+    setState(() {
+      _subMood = (_subMood == value) ? null : value;
+    });
+  }
+
+  // ── Tag handling ───────────────────────────────────────────────────────
+  void _toggleTag(String tag) {
+    H.selection();
+    setState(() {
+      if (_tags.contains(tag)) {
+        _tags.remove(tag);
+      } else {
+        _tags.add(tag);
+      }
+    });
+  }
+
+  void _addNewTag() {
+    final t = _newTagCtrl.text.trim().toLowerCase().replaceAll('#', '');
+    if (t.isEmpty) return;
+    if (!_tags.contains(t)) {
+      setState(() => _tags.add(t));
+    }
+    _newTagCtrl.clear();
+    H.selection();
+  }
+
+  void _pickPrompt(JournalPrompt p) {
+    setState(() {
+      _promptId = p.id;
+      _promptPickerOpen = false;
+      // Soft-prepend to the text field so the user sees what they're answering.
+      if (_ctrl.text.trim().isEmpty) {
+        _ctrl.text = '${p.text}\n\n';
+        _ctrl.selection = TextSelection.fromPosition(
+            TextPosition(offset: _ctrl.text.length));
+      }
+    });
+    H.selection();
+  }
+
+  void _save() {
+    final text = _ctrl.text.trim();
+    if (text.isEmpty) return;
+    // Drop sub-mood if it no longer applies to the chosen primary mood
+    // (user could have toggled great → okay after picking a sub-mood).
+    final allowedSub = subMoodsFor(_mood);
+    final finalSub =
+        (allowedSub == null || _subMood == null || !allowedSub.contains(_subMood))
+            ? null
+            : _subMood;
+    widget.onSave(
+      text: text,
+      mood: _mood,
+      subMood: finalSub,
+      tags: List.unmodifiable(_tags),
+      promptId: _promptId,
+      locked: _locked,
+    );
+    Navigator.pop(context);
+    H.medium();
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final usedTags = ref.watch(allJournalTagsProvider);
+    final suggestedTags = <String>{
+      ..._tags, // current selection always visible
+      ...usedTags.take(8),
+      ...kSuggestedTags,
+    }.toList();
+    final subVocab = subMoodsFor(_mood);
+
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottom),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.90,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: AppRadius.xl,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text("Today's Entry",
+          // ── Header ─────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 12, 4),
+            child: Row(
+              children: [
+                Text(
+                  _isEdit ? 'Edit Entry' : "Today's Entry",
                   style: AppTextStyles.titleLarge
-                      .copyWith(color: AppColors.forest700)),
-              const Spacer(),
-              IconButton(
-                icon:
-                    const Icon(Icons.close_rounded, color: AppColors.stone400),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Mood selector
-          Text('How are you feeling?',
-              style: AppTextStyles.labelMedium
-                  .copyWith(color: AppColors.stone500)),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _moods.map((m) {
-              final (value, emoji, label) = m;
-              final selected = _mood == value;
-              return GestureDetector(
-                onTap: () {
-                  H.selection();
-                  setState(() => _mood = value);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: selected ? AppColors.forest50 : Colors.transparent,
-                    borderRadius: AppRadius.md,
-                    border: Border.all(
-                      color:
-                          selected ? AppColors.forest200 : AppColors.stone100,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(emoji, style: const TextStyle(fontSize: 20)),
-                      const SizedBox(height: 2),
-                      Text(label,
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: selected
-                                ? AppColors.forest700
-                                : AppColors.stone400,
-                          )),
-                    ],
-                  ),
+                      .copyWith(color: AppColors.forest700),
                 ),
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Text('What\'s on your mind?',
-                  style: AppTextStyles.labelMedium
-                      .copyWith(color: AppColors.stone500)),
-              const Spacer(),
-              GestureDetector(
-                onTap: _toggleListening,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _listening
-                        ? AppColors.blush500
-                        : AppColors.forest50,
-                    borderRadius: AppRadius.pill,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        _listening
-                            ? Icons.stop_rounded
-                            : Icons.mic_none_rounded,
-                        size: 14,
-                        color: _listening
-                            ? Colors.white
-                            : AppColors.forest700,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        _listening ? 'Stop' : 'Speak',
-                        style: AppTextStyles.labelSmall.copyWith(
-                            color: _listening
-                                ? Colors.white
-                                : AppColors.forest700),
-                      ),
-                    ],
-                  ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded,
+                      color: AppColors.stone400),
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _ctrl,
-            maxLines: 6,
-            minLines: 4,
-            autofocus: true,
-            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-            decoration: InputDecoration(
-              hintText: 'Write freely — no one else will see this...',
-              hintStyle:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
-              filled: true,
-              fillColor: AppColors.stone50,
-              border: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: AppRadius.lg,
-                borderSide:
-                    const BorderSide(color: AppColors.forest400, width: 1.5),
-              ),
-              contentPadding: const EdgeInsets.all(14),
+              ],
             ),
           ),
 
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                final text = _ctrl.text.trim();
-                if (text.isEmpty) return;
-                widget.onSave(text, _mood);
-                Navigator.pop(context);
-                H.medium();
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.forest600,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+          // ── Scrollable body ────────────────────────────────────────────
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 12 + bottom),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Prompt strip ───────────────────────────────────────
+                  _buildPromptStrip(),
+
+                  const SizedBox(height: 14),
+
+                  // ── Primary mood ───────────────────────────────────────
+                  Text('How are you feeling?',
+                      style: AppTextStyles.labelMedium
+                          .copyWith(color: AppColors.stone500)),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: kMoodOptions.map((m) {
+                      final selected = _mood == m.key;
+                      return GestureDetector(
+                        onTap: () {
+                          H.selection();
+                          setState(() {
+                            _mood = m.key;
+                            // Reset sub-mood if no longer relevant.
+                            if (subMoodsFor(_mood) == null) _subMood = null;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: selected
+                                // ignore: deprecated_member_use
+                                ? m.color.withOpacity(0.12)
+                                : Colors.transparent,
+                            borderRadius: AppRadius.md,
+                            border: Border.all(
+                              color: selected
+                                  // ignore: deprecated_member_use
+                                  ? m.color.withOpacity(0.4)
+                                  : AppColors.stone100,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(m.emoji,
+                                  style: const TextStyle(fontSize: 20)),
+                              const SizedBox(height: 2),
+                              Text(m.label,
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    color: selected
+                                        ? m.color
+                                        : AppColors.stone400,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  // ── Sub-mood slide-in (only when relevant) ─────────────
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    child: subVocab == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _mood == 'great'
+                                      ? 'A little more specific?'
+                                      : 'What\'s underneath?',
+                                  style: AppTextStyles.labelMedium
+                                      .copyWith(color: AppColors.stone500),
+                                ),
+                                const SizedBox(height: 8),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: subVocab.map((s) {
+                                    final selected = _subMood == s;
+                                    return GestureDetector(
+                                      onTap: () => _toggleSubMood(s),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(
+                                            milliseconds: 120),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 11, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: selected
+                                              ? AppColors.forest600
+                                              : AppColors.stone50,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: selected
+                                                ? AppColors.forest600
+                                                : AppColors.stone200,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          s,
+                                          style: AppTextStyles.labelSmall
+                                              .copyWith(
+                                            color: selected
+                                                ? Colors.white
+                                                : AppColors.stone600,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // ── Text field + voice ─────────────────────────────────
+                  Row(
+                    children: [
+                      Text("What's on your mind?",
+                          style: AppTextStyles.labelMedium
+                              .copyWith(color: AppColors.stone500)),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: _toggleListening,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _listening
+                                ? AppColors.blush500
+                                : AppColors.forest50,
+                            borderRadius: AppRadius.pill,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                _listening
+                                    ? Icons.stop_rounded
+                                    : Icons.mic_none_rounded,
+                                size: 14,
+                                color: _listening
+                                    ? Colors.white
+                                    : AppColors.forest700,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _listening ? 'Stop' : 'Speak',
+                                style: AppTextStyles.labelSmall.copyWith(
+                                    color: _listening
+                                        ? Colors.white
+                                        : AppColors.forest700),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _ctrl,
+                    maxLines: 8,
+                    minLines: 5,
+                    autofocus: !_isEdit,
+                    style: AppTextStyles.bodyMedium
+                        .copyWith(color: AppColors.stone800, height: 1.5),
+                    decoration: InputDecoration(
+                      hintText:
+                          'Write freely — no one else will see this...',
+                      hintStyle: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.stone300),
+                      filled: true,
+                      fillColor: AppColors.stone50,
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.lg,
+                        borderSide: const BorderSide(color: AppColors.stone100),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.lg,
+                        borderSide: const BorderSide(color: AppColors.stone100),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.lg,
+                        borderSide: const BorderSide(
+                            color: AppColors.forest400, width: 1.5),
+                      ),
+                      contentPadding: const EdgeInsets.all(14),
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // ── Tags ───────────────────────────────────────────────
+                  Text('Tags',
+                      style: AppTextStyles.labelMedium
+                          .copyWith(color: AppColors.stone500)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: suggestedTags.map((t) {
+                      final selected = _tags.contains(t);
+                      return GestureDetector(
+                        onTap: () => _toggleTag(t),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 120),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? AppColors.forest600
+                                : AppColors.stone50,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: selected
+                                  ? AppColors.forest600
+                                  : AppColors.stone200,
+                            ),
+                          ),
+                          child: Text(
+                            '#$t',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: selected
+                                  ? Colors.white
+                                  : AppColors.stone600,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _newTagCtrl,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) => _addNewTag(),
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone800),
+                          decoration: InputDecoration(
+                            hintText: 'Add a tag…',
+                            isDense: true,
+                            hintStyle: AppTextStyles.bodySmall
+                                .copyWith(color: AppColors.stone300),
+                            prefixIcon: const Icon(Icons.tag_rounded,
+                                size: 16, color: AppColors.stone400),
+                            filled: true,
+                            fillColor: AppColors.stone50,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            border: OutlineInputBorder(
+                              borderRadius: AppRadius.sm,
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: AppRadius.sm,
+                              borderSide:
+                                  const BorderSide(color: AppColors.stone100),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      TextButton(
+                        onPressed: _addNewTag,
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  ),
+
+                  // ── Lock toggle ────────────────────────────────────────
+                  const SizedBox(height: 8),
+                  InkWell(
+                    borderRadius: AppRadius.md,
+                    onTap: () {
+                      H.selection();
+                      setState(() => _locked = !_locked);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 6),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _locked
+                                ? Icons.lock
+                                : Icons.lock_open_outlined,
+                            size: 18,
+                            color: _locked
+                                ? AppColors.honey500
+                                : AppColors.stone400,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _locked
+                                      ? 'Locked entry'
+                                      : 'Lock this entry',
+                                  style: AppTextStyles.labelMedium.copyWith(
+                                      color: AppColors.stone700),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Hidden from the list. Re-auth required to view.',
+                                  style: AppTextStyles.bodySmall
+                                      .copyWith(color: AppColors.stone400),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch.adaptive(
+                            value: _locked,
+                            activeColor: AppColors.forest600,
+                            onChanged: (v) {
+                              H.selection();
+                              setState(() => _locked = v);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text('Save Entry',
-                  style:
-                      AppTextStyles.labelLarge.copyWith(color: Colors.white)),
+            ),
+          ),
+
+          // ── Save button (sticks to bottom of sheet) ────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 18),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _save,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.forest600,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.lg),
+                ),
+                child: Text(
+                  _isEdit ? 'Save Changes' : 'Save Entry',
+                  style: AppTextStyles.labelLarge
+                      .copyWith(color: Colors.white),
+                ),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // ── Prompt strip — collapsed by default, expand to pick ────────────────
+  Widget _buildPromptStrip() {
+    final activePrompt = _promptId == null ? null : promptById(_promptId!);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          borderRadius: AppRadius.md,
+          onTap: () => setState(() => _promptPickerOpen = !_promptPickerOpen),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.mintChip,
+              borderRadius: AppRadius.md,
+              border: Border.all(color: AppColors.forest100),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.format_quote_rounded,
+                    size: 16, color: AppColors.forest500),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    activePrompt?.text ?? 'Need a prompt?',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.forest700,
+                      fontStyle: activePrompt == null
+                          ? FontStyle.normal
+                          : FontStyle.italic,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(
+                  _promptPickerOpen
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  size: 18,
+                  color: AppColors.forest500,
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          child: !_promptPickerOpen
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: kPromptCategories.map((cat) {
+                      final prompt = dailyPromptFor(cat);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: InkWell(
+                          borderRadius: AppRadius.sm,
+                          onTap: () => _pickPrompt(prompt),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.stone50,
+                              borderRadius: AppRadius.sm,
+                              border:
+                                  Border.all(color: AppColors.stone100),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    // ignore: deprecated_member_use
+                                    color: cat.color.withOpacity(0.12),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(cat.icon,
+                                      size: 14, color: cat.color),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        cat.label.toUpperCase(),
+                                        style: AppTextStyles.overline
+                                            .copyWith(
+                                          color: cat.color,
+                                          fontSize: 9,
+                                          letterSpacing: 1.0,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 1),
+                                      Text(
+                                        prompt.text,
+                                        style: AppTextStyles.bodySmall
+                                            .copyWith(
+                                          color: AppColors.stone700,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }

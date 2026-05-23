@@ -433,26 +433,93 @@ class JournalEntry {
   final String text;
   final String mood; // 'great' | 'good' | 'okay' | 'hard' | 'crisis'
 
+  // v2 fields — all optional, all backwards-compatible. Old JSON loads cleanly
+  // and picks up the safe defaults below.
+  final String? subMood; // refined feeling: 'ashamed', 'proud', 'grieving', …
+  final List<String> tags; // user-defined themes: 'work', 'family', 'ex', …
+  final String? promptId; // which seed prompt the user picked, if any
+  final bool locked; // requires re-auth to view; hide preview in list
+  final DateTime? editedAt; // null until the user edits the original entry
+  final List<String> attachments; // reserved for v2.1 (photos / audio paths)
+
   const JournalEntry({
     required this.id,
     required this.date,
     required this.text,
     required this.mood,
+    this.subMood,
+    this.tags = const [],
+    this.promptId,
+    this.locked = false,
+    this.editedAt,
+    this.attachments = const [],
   });
 
-  factory JournalEntry.fromJson(Map<String, dynamic> j) => JournalEntry(
-        id: j['id'] as String,
-        date: _safeParseDate(j['date'] as String?),
-        text: j['text'] as String,
-        mood: (j['mood'] as String?) ?? 'okay',
-      );
+  factory JournalEntry.fromJson(Map<String, dynamic> j) {
+    final tagList = <String>[];
+    final rawTags = j['tags'];
+    if (rawTags is List) {
+      for (final t in rawTags) {
+        if (t is String && t.trim().isNotEmpty) tagList.add(t);
+      }
+    }
+    final attachList = <String>[];
+    final rawAttach = j['attachments'];
+    if (rawAttach is List) {
+      for (final a in rawAttach) {
+        if (a is String && a.isNotEmpty) attachList.add(a);
+      }
+    }
+    return JournalEntry(
+      id: j['id'] as String,
+      date: _safeParseDate(j['date'] as String?),
+      text: j['text'] as String,
+      mood: (j['mood'] as String?) ?? 'okay',
+      subMood: j['subMood'] as String?,
+      tags: tagList,
+      promptId: j['promptId'] as String?,
+      locked: (j['locked'] as bool?) ?? false,
+      editedAt: _nullableParseDate(j['editedAt'] as String?),
+      attachments: attachList,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'date': date.toIso8601String(),
         'text': text,
         'mood': mood,
+        if (subMood != null) 'subMood': subMood,
+        if (tags.isNotEmpty) 'tags': tags,
+        if (promptId != null) 'promptId': promptId,
+        if (locked) 'locked': true,
+        if (editedAt != null) 'editedAt': editedAt!.toIso8601String(),
+        if (attachments.isNotEmpty) 'attachments': attachments,
       };
+
+  JournalEntry copyWith({
+    String? text,
+    String? mood,
+    Object? subMood = _sentinel,
+    List<String>? tags,
+    Object? promptId = _sentinel,
+    bool? locked,
+    Object? editedAt = _sentinel,
+    List<String>? attachments,
+  }) =>
+      JournalEntry(
+        id: id,
+        date: date,
+        text: text ?? this.text,
+        mood: mood ?? this.mood,
+        subMood: subMood == _sentinel ? this.subMood : subMood as String?,
+        tags: tags ?? this.tags,
+        promptId: promptId == _sentinel ? this.promptId : promptId as String?,
+        locked: locked ?? this.locked,
+        editedAt:
+            editedAt == _sentinel ? this.editedAt : editedAt as DateTime?,
+        attachments: attachments ?? this.attachments,
+      );
 }
 
 class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
@@ -470,16 +537,80 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
   // `state.valueOrNull` snapshot and overwrite each other.
   Future<void> _writeLock = Future.value();
 
-  Future<void> add(String text, String mood) =>
+  /// Add a new entry. The optional v2 args let the new entry sheet supply
+  /// the richer fields without changing the old call-sites that just pass
+  /// (text, mood).
+  Future<void> add(
+    String text,
+    String mood, {
+    String? subMood,
+    List<String> tags = const [],
+    String? promptId,
+    bool locked = false,
+  }) =>
       _writeLock = _writeLock.then((_) async {
         final entry = JournalEntry(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           date: DateTime.now(),
           text: text,
           mood: mood,
+          subMood: subMood,
+          tags: tags,
+          promptId: promptId,
+          locked: locked,
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
+        final prefs = await ref.read(prefsProvider.future);
+        await prefs.setString(
+          _key,
+          jsonEncode(updated.map((e) => e.toJson()).toList()),
+        );
+        state = AsyncData(updated);
+      });
+
+  /// Edit an existing entry. Stamps `editedAt` so the UI can show that a
+  /// historical entry has been revised — important transparency for a diary.
+  /// (Named `editEntry` rather than `update` because AsyncNotifier already
+  /// has an inherited `update` for transforming state.)
+  Future<void> editEntry(
+    String id, {
+    String? text,
+    String? mood,
+    Object? subMood = _sentinel,
+    List<String>? tags,
+    bool? locked,
+  }) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.map((e) {
+          if (e.id != id) return e;
+          return e.copyWith(
+            text: text,
+            mood: mood,
+            subMood: subMood,
+            tags: tags,
+            locked: locked,
+            editedAt: DateTime.now(),
+          );
+        }).toList();
+        final prefs = await ref.read(prefsProvider.future);
+        await prefs.setString(
+          _key,
+          jsonEncode(updated.map((e) => e.toJson()).toList()),
+        );
+        state = AsyncData(updated);
+      });
+
+  /// Flip the locked flag without touching `editedAt` — locking isn't an
+  /// edit to the content itself.
+  Future<void> toggleLocked(String id) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.map((e) {
+          if (e.id != id) return e;
+          return e.copyWith(locked: !e.locked);
+        }).toList();
         final prefs = await ref.read(prefsProvider.future);
         await prefs.setString(
           _key,
@@ -503,6 +634,135 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
 final journalProvider =
     AsyncNotifierProvider<JournalNotifier, List<JournalEntry>>(
         JournalNotifier.new);
+
+// ─── Derived diary providers (search, streak, on-this-day) ───────────────────
+
+/// Filter state shared by the diary board. Plain class so a single
+/// `copyWith` keeps the board's `setState` calls cheap.
+class JournalFilter {
+  const JournalFilter({
+    this.query = '',
+    this.mode = JournalFilterMode.all,
+    this.tag,
+  });
+  final String query;
+  final JournalFilterMode mode;
+  final String? tag;
+
+  JournalFilter copyWith({
+    String? query,
+    JournalFilterMode? mode,
+    Object? tag = _sentinel,
+  }) =>
+      JournalFilter(
+        query: query ?? this.query,
+        mode: mode ?? this.mode,
+        tag: tag == _sentinel ? this.tag : tag as String?,
+      );
+
+  bool get isEmpty =>
+      query.isEmpty && mode == JournalFilterMode.all && tag == null;
+}
+
+enum JournalFilterMode { all, today, hard, wins, locked }
+
+final journalFilterProvider =
+    StateProvider<JournalFilter>((_) => const JournalFilter());
+
+/// Returns the entries that match the current filter, already sorted newest
+/// first (the underlying notifier guarantees that ordering).
+final filteredJournalProvider = Provider<List<JournalEntry>>((ref) {
+  final all = ref.watch(journalProvider).valueOrNull ?? const [];
+  final f = ref.watch(journalFilterProvider);
+  if (f.isEmpty) return all;
+
+  final q = f.query.trim().toLowerCase();
+  final now = DateTime.now();
+  final todayKey = DateTime(now.year, now.month, now.day);
+
+  return all.where((e) {
+    // Mode gate first — it's cheaper than the text search.
+    switch (f.mode) {
+      case JournalFilterMode.all:
+        break;
+      case JournalFilterMode.today:
+        final d = DateTime(e.date.year, e.date.month, e.date.day);
+        if (d != todayKey) return false;
+        break;
+      case JournalFilterMode.hard:
+        if (e.mood != 'hard' && e.mood != 'crisis') return false;
+        break;
+      case JournalFilterMode.wins:
+        if (e.mood != 'great' && e.mood != 'good') return false;
+        break;
+      case JournalFilterMode.locked:
+        if (!e.locked) return false;
+        break;
+    }
+    if (f.tag != null && !e.tags.contains(f.tag)) return false;
+    if (q.isEmpty) return true;
+    // Locked entries are intentionally NOT searched by body text — even
+    // surfacing a match would leak the contents.
+    if (e.locked) {
+      return e.tags.any((t) => t.toLowerCase().contains(q));
+    }
+    return e.text.toLowerCase().contains(q) ||
+        e.tags.any((t) => t.toLowerCase().contains(q));
+  }).toList();
+});
+
+/// Set of every tag the user has ever used. Drives the suggested-tag chips
+/// in the entry sheet so the user reuses their own vocabulary.
+final allJournalTagsProvider = Provider<List<String>>((ref) {
+  final all = ref.watch(journalProvider).valueOrNull ?? const [];
+  final seen = <String>{};
+  for (final e in all) {
+    seen.addAll(e.tags);
+  }
+  final list = seen.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  return list;
+});
+
+/// Consecutive days (ending today or yesterday) that contain at least one
+/// journal entry. Used for the gentle streak ribbon above the list.
+///
+/// "Today or yesterday" matters — if the user hasn't written yet today their
+/// streak shouldn't break visually until midnight tomorrow.
+final journalStreakProvider = Provider<int>((ref) {
+  final all = ref.watch(journalProvider).valueOrNull ?? const [];
+  if (all.isEmpty) return 0;
+  final days = <DateTime>{};
+  for (final e in all) {
+    days.add(DateTime(e.date.year, e.date.month, e.date.day));
+  }
+  final now = DateTime.now();
+  var cursor = DateTime(now.year, now.month, now.day);
+  // Grace: if no entry yet today, start counting from yesterday.
+  if (!days.contains(cursor)) {
+    cursor = cursor.subtract(const Duration(days: 1));
+    if (!days.contains(cursor)) return 0;
+  }
+  var count = 0;
+  while (days.contains(cursor)) {
+    count++;
+    cursor = cursor.subtract(const Duration(days: 1));
+  }
+  return count;
+});
+
+/// Entries written on the same calendar day (month/day) in prior years. The
+/// "on this day" peek card uses this — recovery anniversaries hit hard.
+final onThisDayProvider = Provider<List<JournalEntry>>((ref) {
+  final all = ref.watch(journalProvider).valueOrNull ?? const [];
+  final now = DateTime.now();
+  return all
+      .where((e) =>
+          e.date.month == now.month &&
+          e.date.day == now.day &&
+          e.date.year != now.year)
+      .toList()
+    ..sort((a, b) => b.date.compareTo(a.date)); // most recent year first
+});
 
 // ─── Custom affirmations ──────────────────────────────────────────────────────
 
