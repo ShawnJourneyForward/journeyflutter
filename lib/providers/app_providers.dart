@@ -10,6 +10,17 @@ import '../models/thought_record.dart';
 import '../models/user_profile.dart';
 import '../utils/encrypted_store.dart';
 
+// ─── Secure storage helper ───────────────────────────────────────────────────
+//
+// All sensitive collections (journal, cravings, thoughts, slips, etc.) are
+// stored in EncryptedStore (Android Keystore–backed EncryptedSharedPreferences)
+// rather than plain SharedPreferences. A one-shot startup migration
+// (StorageMigration.migrateAll) moves any existing plain entries across on
+// first launch; subsequent reads/writes go straight to EncryptedStore.
+//
+// SharedPreferences is still used for non-sensitive state: lock method flag,
+// profile presence sentinel, notification prefs, goal toggles, etc.
+
 // ─── Safe JSON list parsing ───────────────────────────────────────────────────
 // Single source of truth for "decode a stored JSON list, tolerate malformed
 // entries". A single bad entry must NEVER cause the whole collection to be
@@ -245,8 +256,7 @@ class GratitudeNotifier extends AsyncNotifier<String?> {
 
   @override
   Future<String?> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     if (raw == null) return null;
     try {
       final list = (jsonDecode(raw) as List<dynamic>);
@@ -268,8 +278,7 @@ class GratitudeNotifier extends AsyncNotifier<String?> {
   }
 
   Future<void> add(String text) async {
-    final prefs = await ref.read(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     final list = raw != null
         ? (jsonDecode(raw) as List<dynamic>).cast<Map<String, dynamic>>()
         : <Map<String, dynamic>>[];
@@ -279,7 +288,7 @@ class GratitudeNotifier extends AsyncNotifier<String?> {
       'date': _today(),
       'text': text,
     });
-    await prefs.setString(_key, jsonEncode(list));
+    await EncryptedStore.write(_key, jsonEncode(list));
     state = AsyncData(text);
   }
 
@@ -311,10 +320,9 @@ class GratitudeEntry {
 }
 
 final allGratitudeProvider = FutureProvider<List<GratitudeEntry>>((ref) async {
-  final prefs = await ref.watch(prefsProvider.future);
   // Re-run when today's gratitude changes
   ref.watch(gratitudeProvider);
-  final raw = prefs.getString('gratitude');
+  final raw = await EncryptedStore.read('gratitude');
   if (raw == null) return [];
   final list = (jsonDecode(raw) as List<dynamic>);
   return list
@@ -527,8 +535,7 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
 
   @override
   Future<List<JournalEntry>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, JournalEntry.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -561,8 +568,7 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
           _key,
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
@@ -594,8 +600,7 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
             editedAt: DateTime.now(),
           );
         }).toList();
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
           _key,
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
@@ -611,8 +616,7 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
           if (e.id != id) return e;
           return e.copyWith(locked: !e.locked);
         }).toList();
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
           _key,
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
@@ -622,8 +626,7 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
   Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         final updated = current.where((e) => e.id != id).toList();
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
           _key,
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
@@ -771,8 +774,7 @@ class AffirmationNotifier extends AsyncNotifier<List<String>> {
 
   @override
   Future<List<String>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     if (raw == null) return [];
     try {
       // Skip non-string entries instead of wiping the whole list.
@@ -788,16 +790,14 @@ class AffirmationNotifier extends AsyncNotifier<List<String>> {
     final current = state.valueOrNull ?? [];
     if (current.contains(text)) return;
     final updated = [text, ...current];
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(_key, jsonEncode(updated));
+    await EncryptedStore.write(_key, jsonEncode(updated));
     state = AsyncData(updated);
   }
 
   Future<void> remove(String text) async {
     final current = state.valueOrNull ?? [];
     final updated = current.where((e) => e != text).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(_key, jsonEncode(updated));
+    await EncryptedStore.write(_key, jsonEncode(updated));
     state = AsyncData(updated);
   }
 }
@@ -1009,16 +1009,13 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
 
   @override
   Future<List<VisionItem>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
-    return _safeParseList(raw, VisionItem.fromJson);
+    return _safeParseList(await EncryptedStore.read(_key), VisionItem.fromJson);
   }
 
   Future<void> add(VisionItem item) async {
     final current = state.valueOrNull ?? [];
     final updated = [...current, item];
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1026,8 +1023,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
   Future<void> saveItem(VisionItem item) async {
     final current = state.valueOrNull ?? [];
     final updated = current.map((e) => e.id == item.id ? item : e).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1035,8 +1031,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
   Future<void> remove(String id) async {
     final current = state.valueOrNull ?? [];
     final updated = current.where((e) => e.id != id).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1051,8 +1046,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
       if (!e.pinned && pinnedCount >= 3) return e; // cap reached
       return e.copyWith(pinned: !e.pinned);
     }).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1069,8 +1063,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
         achievedDate: nowAchieved ? DateTime.now() : null,
       );
     }).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1085,8 +1078,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
           .toList();
       return e.copyWith(milestones: newMilestones);
     }).toList();
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1101,8 +1093,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
       // Append anything missing from the order list so nothing is lost.
       for (final e in current) if (!orderedIds.contains(e.id)) e,
     ];
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
@@ -1158,8 +1149,7 @@ class SlipNotifier extends AsyncNotifier<List<Slip>> {
 
   @override
   Future<List<Slip>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, Slip.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -1174,17 +1164,16 @@ class SlipNotifier extends AsyncNotifier<List<Slip>> {
       note: note,
     );
 
-    final prefs = await ref.read(prefsProvider.future);
     final existing = state.valueOrNull ?? [];
     final updated = [slip, ...existing];
-    final priorSlipJson = prefs.getString(_key); // for rollback
+    final priorSlipJson = await EncryptedStore.read(_key); // for rollback
 
     // ── Atomic two-step write ────────────────────────────────────────────────
     // Step 1: persist the slip log. Step 2: reset the profile streak. If
     // step 2 throws, roll step 1 back so the slip log can never show a
     // recorded slip while the profile still claims an active streak.
     try {
-      await prefs.setString(
+      await EncryptedStore.write(
         _key,
         jsonEncode(updated.map((e) => e.toJson()).toList()),
       );
@@ -1202,9 +1191,9 @@ class SlipNotifier extends AsyncNotifier<List<Slip>> {
     } catch (e) {
       // Roll back the slip log write so it stays consistent with the profile.
       if (priorSlipJson == null) {
-        await prefs.remove(_key);
+        await EncryptedStore.delete(_key);
       } else {
-        await prefs.setString(_key, priorSlipJson);
+        await EncryptedStore.write(_key, priorSlipJson);
       }
       // Re-throw so the calling UI can surface the failure to the user.
       rethrow;
@@ -1295,8 +1284,7 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
 
   @override
   Future<List<CravingEntry>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, CravingEntry.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -1336,8 +1324,7 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1395,8 +1382,7 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
 
   @override
   Future<List<DailyIntention>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    return _safeParseList(prefs.getString(_key), DailyIntention.fromJson)
+    return _safeParseList(await EncryptedStore.read(_key), DailyIntention.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
@@ -1430,8 +1416,7 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
         } else {
           updated.insert(0, entry);
         }
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1454,8 +1439,7 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
           outcome: outcome,
           reviewedAt: now,
         );
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1541,8 +1525,7 @@ class RecoveryCapitalNotifier
 
   @override
   Future<List<RecoveryCapitalWeek>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    return _safeParseList(prefs.getString(_key), RecoveryCapitalWeek.fromJson)
+    return _safeParseList(await EncryptedStore.read(_key), RecoveryCapitalWeek.fromJson)
       ..sort((a, b) => b.weekStart.compareTo(a.weekStart));
   }
 
@@ -1585,8 +1568,7 @@ class RecoveryCapitalNotifier
         } else {
           updated.insert(0, entry);
         }
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1663,8 +1645,7 @@ class ThoughtNotifier extends AsyncNotifier<List<ThoughtEntry>> {
 
   @override
   Future<List<ThoughtEntry>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, ThoughtEntry.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -1693,8 +1674,7 @@ class ThoughtNotifier extends AsyncNotifier<List<ThoughtEntry>> {
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1758,8 +1738,7 @@ class ActivityNotifier extends AsyncNotifier<List<ActivityEntry>> {
 
   @override
   Future<List<ActivityEntry>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, ActivityEntry.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -1787,8 +1766,7 @@ class ActivityNotifier extends AsyncNotifier<List<ActivityEntry>> {
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1843,8 +1821,7 @@ class SleepNotifier extends AsyncNotifier<List<SleepEntry>> {
 
   @override
   Future<List<SleepEntry>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, SleepEntry.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
@@ -1869,8 +1846,7 @@ class SleepNotifier extends AsyncNotifier<List<SleepEntry>> {
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
-        final prefs = await ref.read(prefsProvider.future);
-        await prefs.setString(
+        await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
       });
@@ -1948,15 +1924,13 @@ class MeetingsNotifier extends AsyncNotifier<List<Meeting>> {
 
   @override
   Future<List<Meeting>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, Meeting.fromJson)
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
   Future<void> _persist(List<Meeting> list) async {
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(list.map((e) => e.toJson()).toList()));
     state = AsyncData(list);
   }
@@ -1997,15 +1971,13 @@ class FutureLetterNotifier extends AsyncNotifier<List<FutureLetter>> {
 
   @override
   Future<List<FutureLetter>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, FutureLetter.fromJson)
       ..sort((a, b) => a.unlockAt.compareTo(b.unlockAt));
   }
 
   Future<void> _persist(List<FutureLetter> list) async {
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(list.map((e) => e.toJson()).toList()));
     state = AsyncData(list);
   }
@@ -2041,15 +2013,13 @@ class HardDayNotifier extends AsyncNotifier<List<HardDay>> {
 
   @override
   Future<List<HardDay>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, HardDay.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   Future<void> _persist(List<HardDay> list) async {
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(list.map((e) => e.toJson()).toList()));
     state = AsyncData(list);
   }
@@ -2102,15 +2072,13 @@ class ThoughtRecordNotifier extends AsyncNotifier<List<ThoughtRecord>> {
 
   @override
   Future<List<ThoughtRecord>> build() async {
-    final prefs = await ref.watch(prefsProvider.future);
-    final raw = prefs.getString(_key);
+    final raw = await EncryptedStore.read(_key);
     return _safeParseList(raw, ThoughtRecord.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   Future<void> _persist(List<ThoughtRecord> list) async {
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(list.map((e) => e.toJson()).toList()));
     state = AsyncData(list);
   }

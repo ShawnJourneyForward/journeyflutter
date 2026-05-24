@@ -36,6 +36,9 @@ const _exportKeys = [
   'hard_days',
   'thought_records',
   'meetings',
+  // v5.9 clinical features
+  'daily_intentions',
+  'recovery_capital',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
@@ -66,17 +69,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
     setState(() => _exporting = true);
     try {
-      final prefs = await SharedPreferences.getInstance();
       final data = <String, String>{};
 
-      // Profile lives in encrypted storage, not plain SharedPreferences.
-      final profileJson = await EncryptedStore.read('profile');
-      if (profileJson != null) data['profile'] = profileJson;
-
-      // All other export keys live in plain SharedPreferences.
+      // All sensitive data now lives in EncryptedStore (migrated at startup).
+      // Plain SharedPreferences no longer holds any personal content.
       for (final key in _exportKeys) {
-        if (key == 'profile') continue; // already handled above
-        final val = prefs.getString(key);
+        final val = await EncryptedStore.read(key);
         if (val != null) data[key] = val;
       }
 
@@ -311,18 +309,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final data = parsed['data'] as Map<String, dynamic>;
       final prefs = await SharedPreferences.getInstance();
 
-      // Restore non-profile keys to plain SharedPreferences.
+      // All data now lives in EncryptedStore — restore everything there.
       for (final entry in data.entries) {
         if (entry.key == 'lockMethod') continue; // never restore lock state
         if (entry.key == 'profile') continue;    // handled separately below
-        await prefs.setString(entry.key, entry.value as String);
+        await EncryptedStore.write(entry.key, entry.value as String);
       }
 
-      // Profile lives in encrypted storage — restore it there, not in prefs.
+      // Profile: reset lockMethod before restoring. The PIN hash is not backed
+      // up, so restoring a locked profile would leave the user locked out.
       final profileRaw = data['profile'] as String?;
       if (profileRaw != null) {
-        // Reset lockMethod inside the blob: the PIN hash is not backed up,
-        // so restoring a locked profile would leave the user locked out.
         String safeProfile = profileRaw;
         try {
           final profileMap =
@@ -344,7 +341,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         }
       }
 
-      // Ensure no legacy plaintext profile or stale lockMethod in prefs.
+      // Remove any legacy plaintext data and stale lockMethod from prefs.
       await prefs.remove('profile');
       await prefs.remove('lockMethod');
 

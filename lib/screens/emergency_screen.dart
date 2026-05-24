@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../components/glass_card.dart';
@@ -1334,11 +1335,62 @@ class _MeditationTab extends StatefulWidget {
   State<_MeditationTab> createState() => _MeditationTabState();
 }
 
-class _MeditationTabState extends State<_MeditationTab> {
+class _MeditationTabState extends State<_MeditationTab>
+    with TickerProviderStateMixin {
   int _selected = 0;
   int _step = 0;
 
+  // ── Urge Surfing audio player ──────────────────────────────────────────────
+  final _player = AudioPlayer();
+  bool _audioReady = false;
+  bool _audioError = false;
+
+  // Pulse animation for the waveform rings when playing
+  late final AnimationController _pulseCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1800),
+  );
+  late final Animation<double> _pulse = Tween<double>(begin: 0.85, end: 1.15)
+      .animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+
   _MeditationGuide get _guide => _meditations[_selected];
+
+  @override
+  void initState() {
+    super.initState();
+    _initAudio();
+    _player.playingStream.listen((playing) {
+      if (!mounted) return;
+      if (playing) {
+        _pulseCtrl.repeat(reverse: true);
+      } else {
+        _pulseCtrl.stop();
+        _pulseCtrl.animateTo(0);
+      }
+    });
+  }
+
+  Future<void> _initAudio() async {
+    try {
+      await _player.setAsset('assets/audio/urge_surfing.mp3');
+      if (mounted) setState(() => _audioReady = true);
+    } catch (_) {
+      if (mounted) setState(() => _audioError = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    _player.dispose();
+    super.dispose();
+  }
+
+  String _formatDur(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1349,7 +1401,267 @@ class _MeditationTabState extends State<_MeditationTab> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
             children: [
-              // Guide selector
+
+              // ── Urge Surfing audio card ────────────────────────────────────
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.forest900, Color(0xFF1A3D2B)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: AppRadius.xl,
+                  border: Border.all(
+                    // ignore: deprecated_member_use
+                    color: AppColors.honey400.withOpacity(0.35),
+                  ),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
+                            color: AppColors.honey400.withOpacity(0.18),
+                            borderRadius: AppRadius.pill,
+                            border: Border.all(
+                              // ignore: deprecated_member_use
+                              color: AppColors.honey400.withOpacity(0.45),
+                            ),
+                          ),
+                          child: Text('GUIDED AUDIO',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.honey300,
+                                letterSpacing: 1.2,
+                                fontSize: 10,
+                              )),
+                        ),
+                        const Spacer(),
+                        StreamBuilder<Duration>(
+                          stream: _player.durationStream
+                              .where((d) => d != null)
+                              .map((d) => d!),
+                          builder: (_, snap) {
+                            final total = snap.data ?? Duration.zero;
+                            return Text(
+                              _formatDur(total),
+                              style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.stone400, fontSize: 11),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Title
+                    Text('Urge Surfing',
+                        style: AppTextStyles.titleLarge.copyWith(
+                          color: Colors.white,
+                          fontFamily: 'Fraunces',
+                          height: 1.1,
+                        )),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Ride the wave — urges peak and pass.',
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone400),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Waveform rings + play button
+                    Center(
+                      child: ScaleTransition(
+                        scale: _pulse,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Outer ring
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  // ignore: deprecated_member_use
+                                  color: AppColors.honey400.withOpacity(0.18),
+                                  width: 12,
+                                ),
+                              ),
+                            ),
+                            // Play/pause button
+                            GestureDetector(
+                              onTap: _audioReady
+                                  ? () async {
+                                      H.medium();
+                                      if (_player.playing) {
+                                        await _player.pause();
+                                      } else {
+                                        // If at end, restart from beginning
+                                        if ((_player.position) >=
+                                            (_player.duration ??
+                                                Duration.zero)) {
+                                          await _player.seek(Duration.zero);
+                                        }
+                                        await _player.play();
+                                      }
+                                    }
+                                  : null,
+                              child: Container(
+                                width: 56,
+                                height: 56,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.honey400,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: _audioError
+                                    ? const Icon(Icons.error_outline,
+                                        color: Colors.white, size: 22)
+                                    : !_audioReady
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2),
+                                          )
+                                        : StreamBuilder<bool>(
+                                            stream: _player.playingStream,
+                                            builder: (_, snap) {
+                                              final playing =
+                                                  snap.data ?? false;
+                                              return Icon(
+                                                playing
+                                                    ? Icons.pause_rounded
+                                                    : Icons.play_arrow_rounded,
+                                                color: Colors.white,
+                                                size: 28,
+                                              );
+                                            },
+                                          ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Progress bar + time
+                    StreamBuilder<Duration>(
+                      stream: _player.positionStream,
+                      builder: (_, snap) {
+                        final pos = snap.data ?? Duration.zero;
+                        final total = _player.duration ?? Duration.zero;
+                        final frac =
+                            total.inMilliseconds > 0
+                                ? (pos.inMilliseconds /
+                                        total.inMilliseconds)
+                                    .clamp(0.0, 1.0)
+                                : 0.0;
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onHorizontalDragUpdate: _audioReady
+                                  ? (d) {
+                                      final box = context.findRenderObject()
+                                          as RenderBox?;
+                                      if (box == null) return;
+                                      final w = box.size.width - 40;
+                                      final dx = (d.localPosition.dx / w)
+                                          .clamp(0.0, 1.0);
+                                      final seekMs =
+                                          (dx * total.inMilliseconds).round();
+                                      _player.seek(Duration(
+                                          milliseconds: seekMs));
+                                    }
+                                  : null,
+                              child: ClipRRect(
+                                borderRadius: AppRadius.pill,
+                                child: LinearProgressIndicator(
+                                  value: frac,
+                                  minHeight: 4,
+                                  backgroundColor:
+                                      // ignore: deprecated_member_use
+                                      Colors.white.withOpacity(0.12),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation(
+                                          AppColors.honey400),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(_formatDur(pos),
+                                    style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.stone500,
+                                        fontSize: 10)),
+                                Text(_formatDur(total),
+                                    style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.stone500,
+                                        fontSize: 10)),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
+                    // What is urge surfing?
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
+                        color: Colors.white.withOpacity(0.06),
+                        borderRadius: AppRadius.md,
+                      ),
+                      child: Text(
+                        'Urge surfing: instead of fighting a craving, you '
+                        'observe it like a wave — it rises, peaks, and falls '
+                        'on its own. This guided session teaches you to ride '
+                        'the wave without acting on it.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.stone400,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ── Divider ────────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(children: [
+                  const Expanded(child: Divider(color: AppColors.stone100)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('Guided scripts',
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.stone400)),
+                  ),
+                  const Expanded(child: Divider(color: AppColors.stone100)),
+                ]),
+              ),
+
+              const SizedBox(height: 8),
+
+              // ── Text meditation guides ─────────────────────────────────────
               ...List.generate(_meditations.length, (i) {
                 final g = _meditations[i];
                 final selected = i == _selected;

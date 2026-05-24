@@ -14,6 +14,7 @@ import 'theme/app_theme.dart';
 import 'utils/haptic_service.dart';
 import 'utils/notification_service.dart';
 import 'utils/secure_window.dart';
+import 'utils/storage_migration.dart';
 // ─── Screen imports ───────────────────────────────────────────────────────────
 import 'screens/backup_screen.dart';
 import 'screens/crisis_screen.dart';
@@ -127,6 +128,11 @@ void main() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     _prefsCache = prefs;
+
+    // One-shot migration: move all sensitive collections from plain
+    // SharedPreferences into EncryptedStore (Android Keystore-backed).
+    // Idempotent — already-migrated keys are no-ops.
+    await StorageMigration.migrateAll(prefs);
 
     // hasProfile uses the 'has_profile' presence sentinel for current installs
     // and falls back to the legacy 'profile' key (which used to hold the JSON

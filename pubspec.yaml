@@ -93,6 +93,7 @@ flutter:
     - assets/images/growth_stages/
     - assets/icons/
     - assets/lottie/        # optional: celebration animations
+    - assets/audio/         # bundled meditation audio (urge surfing)
 
   # ── Bundled fonts (offline, no network round-trip) ──────────────────────────
   # Both files are variable fonts (SIL Open Font License). Flutter handles all
