@@ -71,3 +71,6 @@ Plant Video/
 android/keystore/
 upload-keystore.jks
 release-key.jks
+
+# Website lives in its own repo: ShawnJourneyForward/journeywebsiteA
+website/
