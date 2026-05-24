@@ -666,7 +666,22 @@ class _AchievementCard extends StatelessWidget {
 }
 
 // ─── Share card ───────────────────────────────────────────────────────────────
-
+//
+// Premium dark-forest share card. 16:9 so it embeds cleanly on Instagram /
+// X / WhatsApp without being cropped by their previewers. Layout:
+//
+//   ┌── thin honey border ─────────────────────────────────────────┐
+//   │  🌱 JOURNEY FORWARD                                          │
+//   │                                                              │
+//   │   1   day                            ╲   ⟍ branch          │
+//   │       sober                              ⟍ illustration     │
+//   │   ─── honey rule ───                                         │
+//   │   (🌱) One Day                                               │
+//   │                                                              │
+//   │  ⊙ Shawn   │   journeyforward.app  🌿                        │
+//   └──────────────────────────────────────────────────────────────┘
+//
+// Everything driven by the live profile.username + selected milestone.
 class _ShareCard extends StatelessWidget {
   const _ShareCard({
     required this.milestone,
@@ -679,141 +694,281 @@ class _ShareCard extends StatelessWidget {
   final int days;
   final bool achieved;
 
+  // Big number shown on the card (the milestone target, not the live count,
+  // so a "One Year" share card always shows "365" even if the user is on day
+  // 400). Unachieved fallback is "?" hidden behind the lock overlay anyway.
+  String get _heroNumber {
+    if (!achieved) return '?';
+    // 365 → "1", 730 → "2", 1095 → "3" (years read better as small numbers
+    // when paired with the "One Year / Two Years" subtitle).
+    const yearMap = {365: '1', 730: '2', 1095: '3'};
+    return yearMap[milestone.days] ?? '${milestone.days}';
+  }
+
+  // First-name display: keep the share card clean even if the user typed a
+  // full name in onboarding. Falls back to "Friend" when no name is set.
+  String get _displayName {
+    final trimmed = username.trim();
+    if (trimmed.isEmpty) return 'Friend';
+    return trimmed.split(' ').first;
+  }
+
+  // Unit word under the hero number. Years milestones invert: the 365-day
+  // card reads "1 / year / sober" rather than "365 / day / sober".
+  ({String top, String bottom}) get _unitLines {
+    if (!achieved) return (top: 'days', bottom: 'sober');
+    if (milestone.days >= 365) {
+      final years = milestone.days ~/ 365;
+      return (top: years == 1 ? 'year' : 'years', bottom: 'sober');
+    }
+    return (top: milestone.days == 1 ? 'day' : 'days', bottom: 'sober');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: const BoxDecoration(
-        color: AppColors.forest800,
-        borderRadius: AppRadius.xxl,
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Stack(
-        children: [
-          // Botanical watermark top-right
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Opacity(
-              opacity: 0.10,
-              child: SizedBox(
-                width: 200,
-                height: 150,
+    final units = _unitLines;
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(
+        decoration: const BoxDecoration(
+          // Deep forest — almost black-green, matches the reference exactly.
+          color: AppColors.forest900,
+          borderRadius: AppRadius.xxl,
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Stack(
+          children: [
+            // ── Right-side branch illustration (subtle relief) ────────────
+            Positioned(
+              right: -18,
+              top: -8,
+              bottom: -8,
+              width: 220,
+              child: Opacity(
+                opacity: 0.18,
                 child: CustomPaint(painter: _BotanicalPainter()),
               ),
             ),
-          ),
-          // Honey accent bar — left edge
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(width: 4, color: AppColors.honey400),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top: app name
-                Text(
-                  'JOURNEY FORWARD',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    color: AppColors.forest300,
-                    letterSpacing: 2.0,
-                  ),
-                ),
-                const Spacer(),
-                // Middle: day count + milestone label
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      achieved ? '${milestone.days}' : '?',
-                      style: AppTextStyles.heroNumber.copyWith(
-                        color: Colors.white,
-                        fontSize: 64,
-                        height: 0.9,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            achieved
-                                ? (milestone.days == 1 ? 'day' : 'days')
-                                : 'days',
-                            style: AppTextStyles.titleSmall
-                                .copyWith(color: AppColors.forest200),
-                          ),
-                          Text(
-                            'sober',
-                            style: AppTextStyles.titleSmall
-                                .copyWith(color: AppColors.forest200),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${milestone.emoji}  ${milestone.label}',
-                  style: AppTextStyles.headlineSerif.copyWith(
-                    color: AppColors.honey300,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const Spacer(),
-                // Bottom: username
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      username.isNotEmpty ? username : 'One day at a time',
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.forest300),
-                    ),
-                    Text(
-                      'journeyforward.app',
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.forest400),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Lock overlay for unachieved milestones
-          if (!achieved)
+
+            // ── Inset honey border ────────────────────────────────────────
             Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.forest900.withValues(alpha: 0.55),
-                  borderRadius: AppRadius.xxl,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.lock_outline_rounded,
-                        color: AppColors.forest300, size: 28),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${milestone.days - days} more ${milestone.days - days == 1 ? 'day' : 'days'} to unlock',
-                      style: AppTextStyles.labelMedium
-                          .copyWith(color: AppColors.forest200),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      // ignore: deprecated_member_use
+                      color: AppColors.honey400.withOpacity(0.55),
+                      width: 1.0,
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-        ],
+
+            // ── Content ───────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 18, 24, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Brand row ───────────────────────────────────────────
+                  Row(
+                    children: [
+                      Icon(Icons.eco_rounded,
+                          size: 13,
+                          // ignore: deprecated_member_use
+                          color: AppColors.honey300.withOpacity(0.85)),
+                      const SizedBox(width: 6),
+                      Text(
+                        'JOURNEY FORWARD',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.forest200,
+                          letterSpacing: 2.4,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(),
+
+                  // ── Hero number + day/sober stack ───────────────────────
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _heroNumber,
+                        style: AppTextStyles.headlineSerif.copyWith(
+                          color: AppColors.cream,
+                          fontSize: 84,
+                          height: 0.95,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              units.top,
+                              style: AppTextStyles.headlineSerif.copyWith(
+                                color: AppColors.cream,
+                                fontSize: 22,
+                                height: 1.1,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Text(
+                              units.bottom,
+                              style: AppTextStyles.headlineSerif.copyWith(
+                                color: AppColors.cream,
+                                fontSize: 22,
+                                height: 1.1,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // ── Honey rule under the hero block ─────────────────────
+                  Container(
+                    width: 140,
+                    height: 0.8,
+                    // ignore: deprecated_member_use
+                    color: AppColors.honey400.withOpacity(0.55),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // ── Sprout chip + serif milestone label ─────────────────
+                  Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            // ignore: deprecated_member_use
+                            color: AppColors.honey400.withOpacity(0.55),
+                            width: 0.9,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.eco_rounded,
+                            size: 16, color: AppColors.forest400),
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: Text(
+                          milestone.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.headlineSerif.copyWith(
+                            color: AppColors.honey300,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w500,
+                            height: 1.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const Spacer(),
+
+                  // ── Footer: user · journeyforward.app ───────────────────
+                  Row(
+                    children: [
+                      Icon(Icons.account_circle_outlined,
+                          size: 14,
+                          // ignore: deprecated_member_use
+                          color: AppColors.honey300.withOpacity(0.85)),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          _displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.honey300,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Container(
+                        width: 1,
+                        height: 14,
+                        // ignore: deprecated_member_use
+                        color: AppColors.honey400.withOpacity(0.45),
+                      ),
+                      const SizedBox(width: 14),
+                      Text(
+                        'journeyforward.app',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.honey300,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            // ignore: deprecated_member_use
+                            color: AppColors.honey400.withOpacity(0.55),
+                            width: 0.8,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.energy_savings_leaf_outlined,
+                            size: 11, color: AppColors.honey300),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Lock overlay for unachieved milestones ────────────────────
+            if (!achieved)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
+                    color: AppColors.forest900.withOpacity(0.62),
+                    borderRadius: AppRadius.xxl,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.lock_outline_rounded,
+                          color: AppColors.honey300, size: 28),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${milestone.days - days} more ${milestone.days - days == 1 ? 'day' : 'days'} to unlock',
+                        style: AppTextStyles.labelMedium
+                            .copyWith(color: AppColors.honey200),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

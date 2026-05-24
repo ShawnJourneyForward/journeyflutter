@@ -2067,7 +2067,56 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 14),
+
+          // ── Diagnostic: fire a test notification right now ───────────────
+          // Lets the user verify the OS pipeline is actually live without
+          // waiting until 08:00. If nothing pops up after pressing this,
+          // the cause is almost always (a) POST_NOTIFICATIONS denied,
+          // (b) Journey Forward muted in system notification settings, or
+          // (c) an aggressive battery manager (Xiaomi/Samsung/Huawei)
+          // killing background alarms.
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.forest700,
+                side: const BorderSide(color: AppColors.forest300),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+              ),
+              onPressed: () async {
+                H.selection();
+                // Make sure permission is granted before firing — otherwise
+                // the show() call silently succeeds but the OS drops the post.
+                final granted =
+                    await NotificationService.requestPermission();
+                final ok = granted
+                    ? await NotificationService.sendTestNotification()
+                    : false;
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    content: Text(
+                      ok
+                          ? 'Test sent — check your notification shade.'
+                          : 'Test failed. Open system Settings → Apps → '
+                              'Journey Forward → Notifications and enable them.',
+                    ),
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.notifications_active_outlined, size: 18),
+              label: Text(
+                'Send test notification',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.forest700),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
 
           SizedBox(
             width: double.infinity,

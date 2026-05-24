@@ -1688,8 +1688,11 @@ class _OnboardingPlantFrame extends StatelessWidget {
             ),
 
             // ── Plant (radial-fade fill) ────────────────────────────────
+            // Symmetric padding + explicit center alignment so the plant sits
+            // visually centred inside the arch on screens 1 & 7 (previously
+            // the asymmetric bottom padding nudged it off-axis).
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 18),
+              padding: const EdgeInsets.all(14),
               child: ShaderMask(
                 shaderCallback: (rect) => const RadialGradient(
                   center: Alignment.center,
@@ -1698,10 +1701,13 @@ class _OnboardingPlantFrame extends StatelessWidget {
                   stops: [0.0, 0.60, 1.0],
                 ).createShader(rect),
                 blendMode: BlendMode.dstIn,
-                child: Image.asset(
-                  PlantLogic.getPlantAsset(days),
-                  fit: BoxFit.contain,
-                  semanticLabel: PlantLogic.getStageLabel(days),
+                child: Center(
+                  child: Image.asset(
+                    PlantLogic.getPlantAsset(days),
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                    semanticLabel: PlantLogic.getStageLabel(days),
+                  ),
                 ),
               ),
             ),

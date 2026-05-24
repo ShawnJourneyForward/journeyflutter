@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -368,6 +369,70 @@ class NotificationService {
       await _plugin.cancel(meetingNotificationId(meetingId));
     } catch (e) {
       debugPrint('[NotificationService] cancelMeetingReminder error: $e');
+    }
+  }
+
+  // ── Travel / DST: re-detect device timezone and re-schedule ──────────────
+  //
+  // Background:
+  //   tz.local is set ONCE from main() at app startup. If the user travels
+  //   across timezones (or the OS adjusts the zone for any reason) without
+  //   killing the app, the previously-scheduled morning/evening reminders
+  //   keep firing at the old wall-clock time. `matchDateTimeComponents.time`
+  //   anchors the *original* tz, not the device's current one.
+  //
+  // Fix:
+  //   Call this on AppLifecycleState.resumed. If the detected IANA zone
+  //   differs from tz.local.name, switch tz.local and re-run scheduleFromPrefs
+  //   so the next 08:00 / 20:00 fires at the new location's wall-clock time.
+  //   No-op when the zone hasn't changed, so it's cheap to call on every
+  //   resume.
+  static Future<void> refreshTimezoneAndReschedule() async {
+    try {
+      final detected = await FlutterTimezone.getLocalTimezone();
+      if (detected.isEmpty) return;
+      if (detected == tz.local.name) return; // nothing changed
+      tz.setLocalLocation(tz.getLocation(detected));
+      debugPrint(
+          '[NotificationService] timezone changed → $detected, re-scheduling');
+      await scheduleFromPrefs();
+    } catch (e) {
+      debugPrint('[NotificationService] refreshTimezone error: $e');
+    }
+  }
+
+  // ── Diagnostic: fire a test notification right now ───────────────────────
+  //
+  // Exposed via Settings → Notifications so the user can verify the whole
+  // pipeline (permission → channel → OS scheduler) without waiting until
+  // 08:00. Returns false if the OS rejected the post — usually permission
+  // denied or the channel is muted at the system level.
+  static Future<bool> sendTestNotification() async {
+    try {
+      await _plugin.show(
+        99, // dedicated test ID — won't collide with any scheduled range
+        'Journey Forward',
+        'Test notification — your reminders are working.',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            _channelId,
+            _channelName,
+            channelDescription: _channelDesc,
+            importance: Importance.high,
+            priority: Priority.high,
+            playSound: true,
+            enableVibration: true,
+            icon: '@drawable/ic_stat_notify',
+            color: const Color(0xFF2D6A4F),
+          ),
+          iOS: const DarwinNotificationDetails(
+              presentAlert: true, presentSound: true),
+        ),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[NotificationService] sendTestNotification error: $e');
+      return false;
     }
   }
 

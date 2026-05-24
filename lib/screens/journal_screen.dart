@@ -17,6 +17,7 @@ import 'vision_board_shared.dart';
 import 'vision_detail_screen.dart';
 import 'journal_shared.dart';
 import 'journal_detail_screen.dart';
+import 'journal_template_screen.dart';
 
 // ─── Zen quotes ───────────────────────────────────────────────────────────────
 
@@ -367,7 +368,7 @@ class _JournalTab extends ConsumerWidget {
             Positioned(
               right: 20,
               bottom: 24,
-              child: _FAB(onTap: () => _showEntrySheet(context, ref)),
+              child: _FAB(onTap: () => _chooseEntryKind(context, ref)),
             ),
           ],
         );
@@ -462,6 +463,84 @@ class _JournalTab extends ConsumerWidget {
           }
         },
       ),
+    );
+  }
+
+  // ── FAB chooser: blank page vs guided daily reflection ───────────────
+  // Two paths into the diary so the page-paralysis user has a structured
+  // option while the journaller-by-habit can still hit a blank page fast.
+  void _chooseEntryKind(BuildContext context, WidgetRef ref) {
+    H.medium();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      color: AppColors.stone200,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Text('New entry',
+                    style: AppTextStyles.titleLarge
+                        .copyWith(color: AppColors.forest700)),
+                const SizedBox(height: 4),
+                Text('Pick how you want to write today.',
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.stone500)),
+                const SizedBox(height: 18),
+
+                _EntryKindCard(
+                  icon: Icons.edit_note_rounded,
+                  tint: AppColors.mintChip,
+                  border: AppColors.forest100,
+                  accent: AppColors.forest600,
+                  title: 'Plain entry',
+                  subtitle:
+                      'A blank page for your thoughts. Mood, tags, optional prompt.',
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _showEntrySheet(context, ref);
+                  },
+                ),
+                const SizedBox(height: 12),
+                _EntryKindCard(
+                  icon: Icons.auto_stories_rounded,
+                  tint: AppColors.honey50,
+                  border: AppColors.honey100,
+                  accent: AppColors.honey600,
+                  title: 'Daily reflection',
+                  subtitle:
+                      'A guided page: gratitude, anchors, wins, cravings, intention.',
+                  badge: 'New',
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const JournalTemplateScreen(),
+                    ));
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -4694,6 +4773,102 @@ class _FAB extends StatelessWidget {
           boxShadow: AppShadows.button,
         ),
         child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      ),
+    );
+  }
+}
+
+// Card used in the new-entry chooser sheet. Two of these stack: plain vs
+// guided. Kept inline (not a separate file) because it's only used here.
+class _EntryKindCard extends StatelessWidget {
+  const _EntryKindCard({
+    required this.icon,
+    required this.tint,
+    required this.border,
+    required this.accent,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.badge,
+  });
+  final IconData icon;
+  final Color tint;
+  final Color border;
+  final Color accent;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: AppRadius.lg,
+      onTap: () {
+        H.selection();
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: tint,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                shape: BoxShape.circle,
+                border: Border.all(color: border),
+              ),
+              child: Icon(icon, color: accent, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(title,
+                          style: AppTextStyles.titleSmall
+                              .copyWith(color: AppColors.stone800)),
+                      if (badge != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: accent,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(badge!,
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: Colors.white,
+                                fontSize: 10,
+                                letterSpacing: 0.4,
+                              )),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(subtitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone500, height: 1.4)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Icon(Icons.chevron_right_rounded,
+                color: AppColors.stone400, size: 22),
+          ],
+        ),
       ),
     );
   }

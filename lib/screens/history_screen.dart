@@ -482,26 +482,33 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Heading row — labelled "Journal entry" so this card
+                      // tells the user what they're looking at at a glance,
+                      // matching how the gratitude / sleep / activity cards
+                      // already announce themselves.
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Row(
-                              spacing: 6,
-                              children: [
-                                Icon(
-                                  Icons.edit_note_rounded,
-                                  size: 14,
-                                  color: AppColors.stone400,
-                                ),
-                                Text(
-                                  DateFormat('h:mm a').format(entry.date),
-                                  style: AppTextStyles.caption,
-                                ),
-                              ],
+                          Icon(
+                            Icons.edit_note_rounded,
+                            size: 14,
+                            color: moodColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Journal entry',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: moodColor,
+                              letterSpacing: 0.5,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          // Mood chip
+                          const Spacer(),
+                          Text(
+                            DateFormat('h:mm a').format(entry.date),
+                            style: AppTextStyles.caption,
+                          ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -717,14 +724,25 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Heading row — labelled "Craving" so the entry type is
+                    // obvious at a glance instead of inferred from the icon.
                     Row(
                       children: [
-                        const Icon(Icons.spa_outlined,
-                            size: 14, color: AppColors.stone400),
+                        Icon(Icons.local_fire_department_rounded,
+                            size: 14, color: barColor),
                         const SizedBox(width: 6),
+                        Text(
+                          'Craving',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: chipText,
+                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
                         Text(DateFormat('h:mm a').format(e.date),
                             style: AppTextStyles.caption),
-                        const Spacer(),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 3),
@@ -800,14 +818,26 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Heading row — labelled "Thought" so this card mirrors
+                    // the journal / craving / gratitude cards in announcing
+                    // its type at the top.
                     Row(
                       children: [
-                        const Icon(Icons.chat_bubble_outline_rounded,
-                            size: 14, color: AppColors.stone400),
+                        Icon(Icons.lightbulb_outline_rounded,
+                            size: 14, color: typeColor),
                         const SizedBox(width: 6),
+                        Text(
+                          'Thought',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: typeColor,
+                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
                         Text(DateFormat('h:mm a').format(e.date),
                             style: AppTextStyles.caption),
-                        const Spacer(),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 3),
@@ -815,9 +845,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             color: typeBg,
                             borderRadius: AppRadius.pill,
                           ),
-                          child: Text(e.type,
-                              style: AppTextStyles.labelSmall
-                                  .copyWith(color: typeColor)),
+                          child: Text(
+                            // Capitalise the type chip so "positive" / "negative"
+                            // read as labels rather than raw enum values.
+                            e.type.isNotEmpty
+                                ? '${e.type[0].toUpperCase()}${e.type.substring(1)}'
+                                : e.type,
+                            style: AppTextStyles.labelSmall
+                                .copyWith(color: typeColor),
+                          ),
                         ),
                       ],
                     ),

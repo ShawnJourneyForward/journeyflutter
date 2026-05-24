@@ -215,6 +215,15 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         break;
 
       case AppLifecycleState.resumed:
+        // Travel / timezone refresh — the user may have crossed time zones
+        // (or the OS may have updated its zone) while we were backgrounded.
+        // tz.local was only set once at app start, so without this call the
+        // 08:00 / 20:00 reminders would keep firing at the *previous*
+        // location's wall-clock time. The call is a cheap no-op when the
+        // zone hasn't changed.
+        // Fire-and-forget — we don't want to block the resume path on it.
+        NotificationService.refreshTimezoneAndReschedule();
+
         // Re-lock if (a) the user has a lock configured, (b) we were
         // actually backgrounded (not just inactive for a system dialog),
         // and (c) we exceeded the grace window. This closes the gap where
