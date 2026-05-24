@@ -119,8 +119,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     final prefs = await SharedPreferences.getInstance();
-    // Side-band data the restore body would write through to prefs.
-    await prefs.setString(
+    // Side-band data the restore body now writes through to EncryptedStore
+    // (post-migration). Journal entries — like cravings, slips, thoughts,
+    // gratitude — live in secure storage, not plain SharedPreferences.
+    await EncryptedStore.write(
       'journal_entries',
       '[{"id":"1","date":"2026-01-02T10:00:00.000","text":"hi","mood":"good"}]',
     );

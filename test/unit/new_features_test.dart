@@ -78,6 +78,7 @@ void main() {
   group('CravingPattern detection', () {
     test('returns null when fewer than 5 cravings exist', () async {
       // Seed 4 cravings, all in the same window — still under threshold.
+      // Cravings now live in EncryptedStore; seed via seedSecureStorage().
       final cravings = List.generate(
         4,
         (i) => {
@@ -86,9 +87,8 @@ void main() {
           'intensity': 5,
         },
       );
-      SharedPreferences.setMockInitialValues({
-        'cravings': jsonEncode(cravings),
-      });
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'cravings': jsonEncode(cravings)});
       final container = ProviderContainer();
       addTearDown(container.dispose);
       await container.read(cravingProvider.future);
@@ -119,9 +119,8 @@ void main() {
           'intensity': 3,
         },
       ];
-      SharedPreferences.setMockInitialValues({
-        'cravings': jsonEncode(cravings),
-      });
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'cravings': jsonEncode(cravings)});
       final container = ProviderContainer();
       addTearDown(container.dispose);
       await container.read(cravingProvider.future);

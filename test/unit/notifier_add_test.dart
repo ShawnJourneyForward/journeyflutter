@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/test_harness.dart';
+
 void main() {
   // ─── Journal ───────────────────────────────────────────────────────────────
 
@@ -385,10 +387,15 @@ void main() {
   });
 
   // ─── Corrupt data recovery ─────────────────────────────────────────────────
-
+  //
+  // After the EncryptedStore migration the corrupt-JSON fixture lives in the
+  // secure-storage mock, not in SharedPreferences. The behaviour under test
+  // is unchanged — the notifier's build() must catch the FormatException and
+  // surface an empty list instead of crashing — but the seed location moved.
   group('Corrupt stored data recovery', () {
     test('corrupt craving JSON returns empty list', () async {
-      SharedPreferences.setMockInitialValues({'cravings': '{bad json'});
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'cravings': '{bad json'});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -396,7 +403,8 @@ void main() {
     });
 
     test('corrupt thought JSON returns empty list', () async {
-      SharedPreferences.setMockInitialValues({'thoughts': '{bad json'});
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'thoughts': '{bad json'});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -404,7 +412,8 @@ void main() {
     });
 
     test('corrupt activity JSON returns empty list', () async {
-      SharedPreferences.setMockInitialValues({'activities': '{bad json'});
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'activities': '{bad json'});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -412,7 +421,8 @@ void main() {
     });
 
     test('corrupt sleep JSON returns empty list', () async {
-      SharedPreferences.setMockInitialValues({'sleep_logs': '{bad json'});
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({'sleep_logs': '{bad json'});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 

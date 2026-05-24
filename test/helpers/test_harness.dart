@@ -27,6 +27,13 @@ final Map<String, String?> _secureStorage = <String, String?>{};
 
 void resetSecureStorageMock() => _secureStorage.clear();
 
+/// Pre-seed the secure-storage mock with one or more key/value pairs.
+/// Useful for "corrupt stored data recovery" tests that need a known-bad
+/// payload sitting in EncryptedStore before the notifier first reads it.
+void seedSecureStorage(Map<String, String> entries) {
+  _secureStorage.addAll(entries);
+}
+
 void installSecureStorageMock() {
   const channel =
       MethodChannel('plugins.it_nomads.com/flutter_secure_storage');

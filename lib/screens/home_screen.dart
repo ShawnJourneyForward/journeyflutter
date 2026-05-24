@@ -936,34 +936,6 @@ class _HeroCardHeader extends StatelessWidget {
   }
 }
 
-// ─── Diamond divider — line ─ small rotated square ─ line ───────────────────
-class _DiamondDivider extends StatelessWidget {
-  const _DiamondDivider();
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 84,
-      height: 8,
-      child: Row(
-        children: [
-          Expanded(child: Container(height: 1, color: AppColors.forest100)),
-          const SizedBox(width: 5),
-          Transform.rotate(
-            angle: 0.7854, // 45°
-            child: Container(
-              width: 4,
-              height: 4,
-              color: AppColors.forest300,
-            ),
-          ),
-          const SizedBox(width: 5),
-          Expanded(child: Container(height: 1, color: AppColors.forest100)),
-        ],
-      ),
-    );
-  }
-}
-
 // ─── "TIME SOBER" caption with leaf flourishes ──────────────────────────────
 class _TimeSoberLabel extends StatelessWidget {
   const _TimeSoberLabel();

@@ -1,5 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -134,16 +137,68 @@ class NotificationService {
   }
 
   // ── Permission request ───────────────────────────────────────────────────
-
+  //
+  // On Android 13+ (API 33+) POST_NOTIFICATIONS is a runtime permission and
+  // requestNotificationsPermission() returns true/false based on the user's
+  // response.
+  //
+  // On Android 12 and below the permission doesn't exist — the plugin call
+  // returns null. Treating null as "denied" was the root cause of the
+  // launch-blocker: the Settings "Send test notification" button gated the
+  // actual show() call on this return value, so older devices got a permanent
+  // "Test failed" toast even though their notifications would have fired fine.
+  // Fix: a null result means "no permission needed", which is effectively
+  // granted. Return true in that case so callers don't short-circuit.
   static Future<bool> requestPermission() async {
     try {
       final android = _plugin.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
-      final granted = await android?.requestNotificationsPermission();
-      return granted ?? false;
+      if (android == null) return true; // iOS or no platform impl
+      final granted = await android.requestNotificationsPermission();
+      // null = pre-Android-13, no runtime permission required
+      return granted ?? true;
     } catch (e) {
       debugPrint('[NotificationService] requestPermission error: $e');
       return false;
+    }
+  }
+
+  // ── Permission status (non-prompting check) ──────────────────────────────
+  //
+  // Surfaces the actual OS-level enabled state so Settings can display a
+  // truthful "Enabled / Blocked" indicator without re-prompting the user.
+  // Returns true on iOS / unknown platforms (assume best-case so the UI
+  // doesn't show false alarms).
+  static Future<bool> areNotificationsEnabled() async {
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return true;
+      final enabled = await android.areNotificationsEnabled();
+      return enabled ?? true;
+    } catch (e) {
+      debugPrint('[NotificationService] areNotificationsEnabled error: $e');
+      return false;
+    }
+  }
+
+  // ── Deep-link to system app-notification settings ────────────────────────
+  //
+  // Used when permission is denied — Android 13+ won't re-prompt after the
+  // first denial, so the only recovery path is for the user to flip the
+  // toggle in system settings. The MethodChannel is implemented in
+  // MainActivity.kt; if the bridge fails (e.g. iOS), we silently no-op.
+  static const _settingsChannel =
+      MethodChannel('com.journeyforward/app_settings');
+  static Future<void> openSystemNotificationSettings() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await _settingsChannel.invokeMethod('openNotificationSettings');
+    } on PlatformException catch (e) {
+      debugPrint(
+          '[NotificationService] openNotificationSettings error: ${e.message}');
+    } catch (e) {
+      debugPrint('[NotificationService] openNotificationSettings error: $e');
     }
   }
 

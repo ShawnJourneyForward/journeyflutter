@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/test_harness.dart';
+
 // Critical flow #11: the daily reset behaviour must clear stale state
 // silently — it must NOT crash, and it must NOT carry yesterday's data
 // forward as if it were today's.
@@ -75,8 +77,11 @@ void main() {
   });
 
   group('Gratitude daily lookup', () {
+    // Gratitude now reads from EncryptedStore (Android Keystore-backed)
+    // rather than plain SharedPreferences — seed via seedSecureStorage().
     test('returns today\'s entry when one exists', () async {
-      SharedPreferences.setMockInitialValues({
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({
         'gratitude': jsonEncode([
           {'id': '1', 'date': _yesterday(), 'text': 'yesterday'},
           {'id': '2', 'date': _today(), 'text': 'today'},
@@ -88,7 +93,8 @@ void main() {
     });
 
     test('returns null when no entry exists for today', () async {
-      SharedPreferences.setMockInitialValues({
+      SharedPreferences.setMockInitialValues({});
+      seedSecureStorage({
         'gratitude': jsonEncode([
           {'id': '1', 'date': _yesterday(), 'text': 'yesterday'},
         ]),

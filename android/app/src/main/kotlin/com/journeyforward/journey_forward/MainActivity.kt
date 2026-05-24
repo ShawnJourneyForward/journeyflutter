@@ -1,5 +1,9 @@
 package com.journeyforward.journey_forward
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -8,6 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterFragmentActivity() {
 
     private val secureWindowChannel = "com.journeyforward/secure_window"
+    private val appSettingsChannel = "com.journeyforward/app_settings"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -28,6 +33,40 @@ class MainActivity : FlutterFragmentActivity() {
                     "disable" -> {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                         result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+
+        // App-settings bridge — see lib/utils/notification_service.dart.
+        // Lets the Notifications sheet jump the user straight to system
+        // settings when POST_NOTIFICATIONS has been denied. Without this,
+        // a denied user has no in-app recovery path — Android 13+ will not
+        // re-show the runtime prompt after the first denial.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, appSettingsChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "openNotificationSettings" -> {
+                        try {
+                            val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                // O+ (API 26+) supports the dedicated
+                                // per-app notification settings screen.
+                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                    putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            } else {
+                                // Fallback: open the per-app details screen.
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.parse("package:$packageName")
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            }
+                            startActivity(intent)
+                            result.success(null)
+                        } catch (e: Exception) {
+                            result.error("OPEN_SETTINGS_FAILED", e.message, null)
+                        }
                     }
                     else -> result.notImplemented()
                 }

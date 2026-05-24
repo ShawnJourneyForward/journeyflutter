@@ -918,6 +918,11 @@ class _MiniHeatmap extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Decorative band: line ─ circled leaf ─ line
+          //   (mirrors the _HeroCardHeader used on home-screen cards so the
+          //    progress card visually belongs to the same family).
+          const _CravingsCardBand(),
+          const SizedBox(height: 12),
           // ── Header
           Row(
             children: [
@@ -1034,6 +1039,54 @@ class _MiniHeatmap extends ConsumerWidget {
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone400, fontSize: 9)),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Decorative band — line ─ circled leaf ─ line ───────────────────────────
+//
+// Same visual language as _HeroCardHeader on the home-screen Serenity card.
+// Sits at the top of the Cravings Heatmap card so the progress surface
+// visually echoes the home cards (consistent Stillwater motif: a single line
+// broken by a small circled botanical glyph).
+class _CravingsCardBand extends StatelessWidget {
+  const _CravingsCardBand();
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 28,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 26),
+              color: AppColors.forest200,
+            ),
+          ),
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.forest300, width: 1),
+            ),
+            child: const Icon(
+              Icons.spa_outlined,
+              size: 14,
+              color: AppColors.forest600,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 26),
+              color: AppColors.forest200,
+            ),
           ),
         ],
       ),

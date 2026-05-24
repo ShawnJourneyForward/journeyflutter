@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/models/user_profile.dart';
 import 'package:journey_forward/providers/app_providers.dart';
+import 'package:journey_forward/utils/encrypted_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/test_harness.dart';
@@ -86,11 +87,13 @@ void main() {
 
       final slips = await container.read(slipProvider.future);
       final updatedProfile = await container.read(profileProvider.future);
-      final prefs = await SharedPreferences.getInstance();
+      // Slip log now lives in encrypted storage (Android Keystore-backed)
+      // rather than plain SharedPreferences, so assert against EncryptedStore.
+      final storedSlipJson = await EncryptedStore.read('slip_log');
 
       expect(slips, hasLength(1));
       expect(slips.first.note, 'Difficult night');
-      expect(prefs.getString('slip_log'), isNotNull);
+      expect(storedSlipJson, isNotNull);
       expect(updatedProfile?.firedMilestoneDays, isEmpty);
       expect(updatedProfile?.firedSavingsTiers, isEmpty);
     });

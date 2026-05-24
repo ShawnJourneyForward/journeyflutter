@@ -447,25 +447,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     // Re-request POST_NOTIFICATIONS before scheduling. On Android 13+ the
     // system prompt is only shown the first time; subsequent calls return
-    // the current grant state without re-prompting. Surfacing the result
-    // tells the user whether reminders will actually appear — otherwise a
-    // silent "saved" snack would lie when permission is revoked.
+    // the current grant state without re-prompting. We then ask the OS for
+    // the *actual* enabled state via areNotificationsEnabled() — this is the
+    // truthful check (covers system-level mute as well as denied permission).
     final wantAny = (result['motivation'] as bool) ||
         (result['reminders'] as bool) ||
         (result['milestones'] as bool);
-    final granted =
-        wantAny ? await NotificationService.requestPermission() : true;
+    if (wantAny) {
+      await NotificationService.requestPermission();
+    }
+    final enabled = await NotificationService.areNotificationsEnabled();
 
-    // Schedule regardless — if permission was granted in a previous session
-    // and the request channel returns false (some OEMs do), schedules still
-    // post correctly.
+    // Schedule regardless — even if the OS reports "blocked" right now, the
+    // schedules sit dormant and start firing the moment the user re-enables
+    // notifications in system settings.
     await NotificationService.scheduleFromPrefs();
 
     if (!mounted) return;
-    if (wantAny && !granted) {
-      _showSnack(
-          'Saved — but notifications are blocked in system settings. '
-          'Enable them under Settings → Apps → Journey Forward → Notifications.');
+    if (wantAny && !enabled) {
+      // Permission is denied — offer a one-tap deep link to system settings,
+      // since on Android 13+ the in-app prompt won't re-show after the first
+      // denial.
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 6),
+        content: const Text(
+            'Saved — but notifications are blocked in system settings.'),
+        action: SnackBarAction(
+          label: 'OPEN SETTINGS',
+          onPressed: NotificationService.openSystemNotificationSettings,
+        ),
+      ));
     } else {
       _showSnack('Notification settings saved');
     }
@@ -1765,8 +1777,41 @@ class _NotificationsCard extends ConsumerStatefulWidget {
   ConsumerState<_NotificationsCard> createState() => _NotificationsCardState();
 }
 
-class _NotificationsCardState extends ConsumerState<_NotificationsCard> {
+class _NotificationsCardState extends ConsumerState<_NotificationsCard>
+    with WidgetsBindingObserver {
   bool _expanded = false;
+
+  // Tri-state: null = not yet checked, true = OS reports enabled,
+  // false = OS reports blocked. Refreshed when the card expands and when
+  // the app comes back to the foreground (covers the user toggling the
+  // system switch and returning).
+  bool? _notificationsEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshNotificationStatus();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshNotificationStatus();
+    }
+  }
+
+  Future<void> _refreshNotificationStatus() async {
+    final enabled = await NotificationService.areNotificationsEnabled();
+    if (!mounted) return;
+    setState(() => _notificationsEnabled = enabled);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1819,6 +1864,90 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard> {
             firstChild: Column(
               children: [
                 const Divider(height: 1, color: AppColors.stone100),
+                // ── Live status indicator ─────────────────────────────────
+                // Shows the OS-level enabled state at a glance so the user
+                // doesn't have to fire a test notification to find out their
+                // reminders are blocked. Tapping the "Fix it" pill deep-links
+                // straight to system → app → notifications.
+                if (_notificationsEnabled != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: AppColors.stone100, width: 1)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: _notificationsEnabled!
+                                ? AppColors.forest50
+                                : const Color(0xFFFFEDED),
+                            borderRadius: AppRadius.sm,
+                          ),
+                          child: Icon(
+                            _notificationsEnabled!
+                                ? Icons.check_circle_outline_rounded
+                                : Icons.notifications_off_outlined,
+                            size: 18,
+                            color: _notificationsEnabled!
+                                ? AppColors.forest700
+                                : const Color(0xFFB91C1C),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _notificationsEnabled!
+                                    ? 'System notifications enabled'
+                                    : 'System notifications blocked',
+                                style: AppTextStyles.bodyMedium,
+                              ),
+                              Text(
+                                _notificationsEnabled!
+                                    ? 'Your reminders will appear on time.'
+                                    : 'Reminders will not appear until '
+                                        'enabled in system settings.',
+                                style: AppTextStyles.caption
+                                    .copyWith(color: AppColors.stone500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!_notificationsEnabled!) ...[
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () async {
+                              H.selection();
+                              await NotificationService
+                                  .openSystemNotificationSettings();
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.forest700,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: AppRadius.lg),
+                              backgroundColor: AppColors.forest50,
+                            ),
+                            child: Text(
+                              'Fix it',
+                              style: AppTextStyles.labelMedium.copyWith(
+                                  color: AppColors.forest700,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 _SettingsRow(
                   icon: Icons.notifications_outlined,
                   label: 'Check-in & reminders',
@@ -2087,26 +2216,46 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
               ),
               onPressed: () async {
                 H.selection();
-                // Make sure permission is granted before firing — otherwise
-                // the show() call silently succeeds but the OS drops the post.
-                final granted =
-                    await NotificationService.requestPermission();
-                final ok = granted
-                    ? await NotificationService.sendTestNotification()
-                    : false;
+                // Prompt for POST_NOTIFICATIONS first (Android 13+). On older
+                // Android versions this is a no-op that returns true. We then
+                // ALWAYS attempt show() — never gate on the prompt result,
+                // because OEMs occasionally return false even when the post
+                // succeeds, and the pre-Android-13 plugin returns null which
+                // historically caused this button to never fire on legacy
+                // devices.
+                await NotificationService.requestPermission();
+                final ok = await NotificationService.sendTestNotification();
+                // The truthful permission state — used to decide whether to
+                // offer the "Open Settings" recovery action when the test
+                // doesn't appear.
+                final enabled =
+                    await NotificationService.areNotificationsEnabled();
                 if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    behavior: SnackBarBehavior.floating,
-                    content: Text(
-                      ok
-                          ? 'Test sent — check your notification shade.'
-                          : 'Test failed. Open system Settings → Apps → '
-                              'Journey Forward → Notifications and enable them.',
+                if (ok && enabled) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: Text(
+                          'Test sent — check your notification shade.'),
+                      duration: Duration(seconds: 4),
                     ),
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 6),
+                      content: const Text(
+                          'Test could not post. Notifications appear to be '
+                          'blocked for Journey Forward.'),
+                      action: SnackBarAction(
+                        label: 'OPEN SETTINGS',
+                        onPressed:
+                            NotificationService.openSystemNotificationSettings,
+                      ),
+                    ),
+                  );
+                }
               },
               icon: const Icon(Icons.notifications_active_outlined, size: 18),
               label: Text(
