@@ -245,6 +245,10 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         if (currentLocation == '/lock' || currentLocation == '/onboarding') {
           return;
         }
+        // Set the route-level gate BEFORE navigating so any in-flight
+        // navigation (deep link, back gesture) is also caught by the
+        // redirect, not only this go() call.
+        LockGate.locked = true;
         _router.go('/lock');
         break;
 
@@ -279,6 +283,26 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
       routerConfig: _router,
     );
   }
+}
+
+// ─── Global lock gate ────────────────────────────────────────────────────────
+//
+// A single bit of "are we currently locked?" state shared between the
+// lifecycle handler (which sets it true on resume after the grace window),
+// the lock screen (which clears it on successful auth), and the GoRouter
+// redirect (which uses it to enforce route-level protection).
+//
+// Without this, nothing stops a deep link / external intent from landing
+// the user inside the app while the lock screen was supposed to be active.
+// /emergency is intentionally allowlisted — in the worst moment of a user's
+// week we don't want auth friction between them and a crisis line.
+class LockGate {
+  LockGate._();
+  static bool locked = false;
+
+  static const _crisisAllowedWhenLocked = {'/lock', '/emergency'};
+  static bool isAllowedWhileLocked(String location) =>
+      _crisisAllowedWhenLocked.contains(location);
 }
 
 // ─── Router ───────────────────────────────────────────────────────────────────
@@ -318,6 +342,14 @@ GoRouter _buildRouter({
 
       // Profile exists — never let the user land back on /onboarding.
       if (loc == '/onboarding') return '/home';
+
+      // Global lock guard — when the lifecycle observer has flagged the app
+      // as locked, allow only the lock screen + the crisis screen. /emergency
+      // is intentionally available even while locked because withholding
+      // crisis numbers behind biometric auth is the wrong call ethically.
+      if (LockGate.locked && !LockGate.isAllowedWhileLocked(loc)) {
+        return '/lock';
+      }
 
       return null;
     },

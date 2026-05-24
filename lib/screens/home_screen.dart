@@ -11,8 +11,10 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/craving_insights.dart';
 import '../utils/haptic_service.dart';
 import '../utils/notification_service.dart';
+import 'daily_practice_sheets.dart';
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
@@ -587,6 +589,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             },
                           ),
                         ),
+                        const SizedBox(height: 14),
+
+                        // ── Daily Intention (morning ↔ evening pairing) ──
+                        // Sits between Pledge and Gratitude so the daily
+                        // rhythm reads top-to-bottom: I commit (pledge),
+                        // I aim (intention), I notice (gratitude).
+                        const RepaintBoundary(child: _IntentionCard()),
                         const SizedBox(height: 14),
 
                         // ── Daily Gratitude ───────────────────────────────────
@@ -2019,6 +2028,136 @@ class _PledgeCard extends StatelessWidget {
   }
 }
 
+// ─── Daily Intention card ───────────────────────────────────────────────────
+//
+// Three visual states driven by todaysIntentionProvider:
+//   1. No intention set yet → invite to set today's intention.
+//   2. Intention set, not reviewed, before 16:00 → show the intention.
+//   3. Intention set, after 16:00, not reviewed → prompt the evening review.
+//   4. Intention set + reviewed → show the outcome with a quiet confirmation.
+// Tapping anywhere opens IntentionSheet which knows which pane to show.
+class _IntentionCard extends ConsumerWidget {
+  const _IntentionCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final today = ref.watch(todaysIntentionProvider);
+    final now = DateTime.now();
+    final readyForReview =
+        today != null && today.outcome == null && now.hour >= 16;
+
+    return GestureDetector(
+      onTap: () {
+        H.selection();
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const IntentionSheet(),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: AppRadius.xl,
+          border: Border.all(color: AppColors.softBorder),
+          boxShadow: AppShadows.card,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: readyForReview
+                    ? AppColors.honey50
+                    : AppColors.mintChip,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                readyForReview
+                    ? Icons.wb_twilight_rounded
+                    : Icons.wb_sunny_outlined,
+                color: readyForReview
+                    ? AppColors.honey600
+                    : AppColors.forest600,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: today == null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Today\'s intention',
+                          style: AppTextStyles.titleSmall
+                              .copyWith(color: AppColors.forest700),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'One small thing for your recovery today.',
+                          style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.stone500, height: 1.4),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          readyForReview
+                              ? 'How did today go?'
+                              : 'Today\'s intention',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: readyForReview
+                                ? AppColors.honey600
+                                : AppColors.forest500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '"${today.text}"',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.stone800,
+                            fontStyle: FontStyle.italic,
+                            height: 1.35,
+                          ),
+                        ),
+                        if (today.outcome != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            _outcomeBlurb(today.outcome!),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.forest600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppColors.stone400, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _outcomeBlurb(String o) => switch (o) {
+        'did' => '✓ You did it.',
+        'partly' => '~ Partly — that still counts.',
+        'not_yet' => '… Not yet — tomorrow is a new day.',
+        _ => '',
+      };
+}
+
 class _GratitudeCard extends StatelessWidget {
   const _GratitudeCard({
     required this.todayEntry,
@@ -2798,6 +2937,16 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
   final _notesCtrl = TextEditingController();
   bool _saving = false;
 
+  // ── v2 clinical fields ──────────────────────────────────────────────────
+  // HALT pre-check: which underlying states were present. We pre-render
+  // these chips at the TOP of the sheet so the user names the state
+  // before they get to the slider — that interrupt is the whole point.
+  final Set<String> _halt = {};
+  // Functional-analysis: what did you do, and how did it turn out? These
+  // feed the "what worked last time" engine on every future craving.
+  String? _response;
+  String? _outcome;
+
   @override
   void dispose() {
     _notesCtrl.dispose();
@@ -2814,6 +2963,9 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
             triggers: _triggers.toList(),
             durationMinutes: _duration.round(),
             notes: _notesCtrl.text,
+            halt: _halt.toList(),
+            responseChosen: _response,
+            outcome: _outcome,
           );
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
@@ -2822,108 +2974,367 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheetShell(
-        context: context,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SheetHeader(
-              icon: Icons.spa_outlined,
-              title: 'Log a craving',
-              subtitle:
-                  'Noticing the shape of a craving helps you understand the pattern without obeying it.',
-            ),
-            const SizedBox(height: 22),
-            const _SheetSectionLabel('How strong was the craving?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: _severityOptions,
-              isSelected: (option) => _severity == option,
-              onTap: (option) {
-                H.selection();
-                setState(() => _severity = option);
-              },
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const _SheetSectionLabel('Intensity'),
-                const Spacer(),
-                Text(
-                  '${_intensity.round()} / 10',
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest600),
+  Widget build(BuildContext context) {
+    // ── Personal "last time" hint ─────────────────────────────────────────
+    // Pulled live from the user's own craving history, filtered to entries
+    // at roughly this intensity (±2) that have a recorded response + outcome.
+    // No prompt, no model — just the user's own pattern, surfaced when they
+    // most need it.
+    final all = ref.watch(cravingProvider).valueOrNull ?? const [];
+    final similar = lastSimilar(all, _intensity.round());
+
+    return _sheetShell(
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SheetHeader(
+            icon: Icons.spa_outlined,
+            title: 'Log a craving',
+            subtitle:
+                'Noticing the shape of a craving helps you understand the pattern without obeying it.',
+          ),
+          const SizedBox(height: 22),
+
+          // ── HALT pre-check (placed first deliberately) ──────────────────
+          const _SheetSectionLabel('Right now, are you any of these?'),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: kHaltOptions.map((opt) {
+              final selected = _halt.contains(opt.$1);
+              return GestureDetector(
+                onTap: () {
+                  H.selection();
+                  setState(() {
+                    if (selected) {
+                      _halt.remove(opt.$1);
+                    } else {
+                      _halt.add(opt.$1);
+                    }
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
+                    color: selected
+                        ? AppColors.honey500.withOpacity(0.15)
+                        : AppColors.stone50,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.honey500
+                          : AppColors.stone200,
+                      width: selected ? 1.4 : 1.0,
+                    ),
+                  ),
+                  child: Text(
+                    opt.$2,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: selected
+                          ? AppColors.honey600
+                          : AppColors.stone600,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            Slider(
-              value: _intensity,
-              min: 1,
-              max: 10,
-              divisions: 9,
-              onChanged: (v) {
-                H.selection();
-                setState(() => _intensity = v);
-              },
-              activeColor: AppColors.forest600,
-              inactiveColor: AppColors.stone100,
-            ),
-            const SizedBox(height: 10),
-            const _SheetSectionLabel('What triggered it?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: _commonTriggers,
-              isSelected: _triggers.contains,
-              onTap: (option) {
-                H.selection();
-                setState(() {
-                  if (_triggers.contains(option)) {
-                    _triggers.remove(option);
-                  } else {
-                    _triggers.add(option);
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const _SheetSectionLabel('How long did it last?'),
-                const Spacer(),
-                Text(
-                  '${_duration.round()} minutes',
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest600),
-                ),
-              ],
-            ),
-            Slider(
-              value: _duration,
-              min: 1,
-              max: 60,
-              divisions: 59,
-              onChanged: (v) {
-                H.selection();
-                setState(() => _duration = v);
-              },
-              activeColor: AppColors.forest600,
-              inactiveColor: AppColors.stone100,
-            ),
-            const SizedBox(height: 12),
-            _NotesField(
-              controller: _notesCtrl,
-              hintText:
-                  'Notes (optional) - e.g., passed a bar on the way home.',
-            ),
-            const SizedBox(height: 18),
-            _saveButton(
-              saving: _saving,
-              onPressed: _save,
-              label: 'Save craving',
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Naming it slows the wave down — H.A.L.T.',
+            style: AppTextStyles.bodySmall
+                .copyWith(color: AppColors.stone400, fontSize: 11),
+          ),
+          const SizedBox(height: 18),
+
+          const _SheetSectionLabel('How strong was the craving?'),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: _severityOptions,
+            isSelected: (option) => _severity == option,
+            onTap: (option) {
+              H.selection();
+              setState(() => _severity = option);
+            },
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              const _SheetSectionLabel('Intensity'),
+              const Spacer(),
+              Text(
+                '${_intensity.round()} / 10',
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest600),
+              ),
+            ],
+          ),
+          Slider(
+            value: _intensity,
+            min: 1,
+            max: 10,
+            divisions: 9,
+            onChanged: (v) {
+              H.selection();
+              setState(() => _intensity = v);
+            },
+            activeColor: AppColors.forest600,
+            inactiveColor: AppColors.stone100,
+          ),
+
+          // ── Personal "last time" hint ─────────────────────────────────
+          if (similar != null) ...[
+            const SizedBox(height: 4),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.mintChip,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.forest100),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.history_rounded,
+                      size: 14, color: AppColors.forest500),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _lastTimeBlurb(similar),
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.forest700, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
+
+          const SizedBox(height: 14),
+          const _SheetSectionLabel('What triggered it?'),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: _commonTriggers,
+            isSelected: _triggers.contains,
+            onTap: (option) {
+              H.selection();
+              setState(() {
+                if (_triggers.contains(option)) {
+                  _triggers.remove(option);
+                } else {
+                  _triggers.add(option);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              const _SheetSectionLabel('How long did it last?'),
+              const Spacer(),
+              Text(
+                '${_duration.round()} minutes',
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest600),
+              ),
+            ],
+          ),
+          Slider(
+            value: _duration,
+            min: 1,
+            max: 60,
+            divisions: 59,
+            onChanged: (v) {
+              H.selection();
+              setState(() => _duration = v);
+            },
+            activeColor: AppColors.forest600,
+            inactiveColor: AppColors.stone100,
+          ),
+
+          // ── Response chosen (the A → B in ABC analysis) ───────────────
+          const SizedBox(height: 14),
+          const _SheetSectionLabel('What did you do?'),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: kCravingResponses.map((r) {
+              final selected = _response == r.slug;
+              return GestureDetector(
+                onTap: () {
+                  H.selection();
+                  setState(() => _response = selected ? null : r.slug);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
+                    color: selected
+                        ? AppColors.forest600.withOpacity(0.12)
+                        : AppColors.stone50,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.forest600
+                          : AppColors.stone200,
+                      width: selected ? 1.4 : 1.0,
+                    ),
+                  ),
+                  child: Text(
+                    r.label,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: selected
+                          ? AppColors.forest700
+                          : AppColors.stone600,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+          // ── Outcome (the C in ABC) ────────────────────────────────────
+          const SizedBox(height: 18),
+          const _SheetSectionLabel('How did it turn out?'),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _OutcomePill(
+                slug: 'stayed_sober',
+                label: 'Stayed sober',
+                icon: Icons.eco_rounded,
+                color: AppColors.forest600,
+                selected: _outcome == 'stayed_sober',
+                onTap: () {
+                  H.selection();
+                  setState(() => _outcome =
+                      _outcome == 'stayed_sober' ? null : 'stayed_sober');
+                },
+              ),
+              const SizedBox(width: 8),
+              _OutcomePill(
+                slug: 'unclear',
+                label: 'Unclear',
+                icon: Icons.help_outline_rounded,
+                color: AppColors.stone500,
+                selected: _outcome == 'unclear',
+                onTap: () {
+                  H.selection();
+                  setState(() =>
+                      _outcome = _outcome == 'unclear' ? null : 'unclear');
+                },
+              ),
+              const SizedBox(width: 8),
+              _OutcomePill(
+                slug: 'slipped',
+                label: 'Slipped',
+                icon: Icons.water_drop_outlined,
+                color: AppColors.blush500,
+                selected: _outcome == 'slipped',
+                onTap: () {
+                  H.selection();
+                  setState(() =>
+                      _outcome = _outcome == 'slipped' ? null : 'slipped');
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
+          _NotesField(
+            controller: _notesCtrl,
+            hintText:
+                'Notes (optional) — e.g., passed a bar on the way home.',
+          ),
+          const SizedBox(height: 18),
+          _saveButton(
+            saving: _saving,
+            onPressed: _save,
+            label: 'Save craving',
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Compose a calm one-liner referencing the user's own most-recent
+  /// similar-intensity craving. We deliberately avoid prescriptive phrasing
+  /// ("you should…") — it's a memory, not a lecture.
+  String _lastTimeBlurb(CravingEntry e) {
+    final responseLabel = kCravingResponses
+        .firstWhere((r) => r.slug == e.responseChosen,
+            orElse: () => CravingResponse(e.responseChosen!, e.responseChosen!))
+        .label
+        .toLowerCase();
+    final outcomePart = e.outcome == 'stayed_sober'
+        ? 'and you stayed sober'
+        : e.outcome == 'slipped'
+            ? 'and you slipped — useful to know'
+            : '';
+    final duration = e.durationMinutes != null
+        ? ' (passed in ${e.durationMinutes} min)'
+        : '';
+    return 'Last time around this level you $responseLabel$duration $outcomePart.';
+  }
+}
+
+// Outcome chip used by _CravingSheet for stayed-sober / unclear / slipped.
+class _OutcomePill extends StatelessWidget {
+  const _OutcomePill({
+    required this.slug,
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+  final String slug;
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            // ignore: deprecated_member_use
+            color: selected ? color.withOpacity(0.14) : AppColors.stone50,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: selected ? color : AppColors.stone200,
+              width: selected ? 1.4 : 1.0,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(icon,
+                  size: 18,
+                  color: selected ? color : AppColors.stone400),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: selected ? color : AppColors.stone500,
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 // ?? Thought sheet ????????????????????????????????????????????????????????????

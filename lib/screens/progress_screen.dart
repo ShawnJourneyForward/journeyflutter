@@ -8,6 +8,7 @@ import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import 'daily_practice_sheets.dart';
 
 // ─── Milestone definitions ─────────────────────────────────────────────────
 
@@ -395,30 +396,16 @@ class _InsightsTab extends ConsumerWidget {
     final activity = ref.watch(_activity14Provider);
     final thoughts = ref.watch(_thoughts14Provider);
 
-    String cravingTrendSub(String t) => t == 'Easing'
-        ? 'Urges are easing'
-        : t == 'Rising'
-            ? 'Urges are rising'
-            : 'Urges are stable';
-    String sleepTrendSub(String t) => t == 'Easing'
-        ? 'Sleep decreasing'
-        : t == 'Rising'
-            ? 'Sleep improving'
-            : 'Sleep is steady';
-    String activityTrendSub(String t) => t == 'Easing'
-        ? 'Activity slowing'
-        : t == 'Rising'
-            ? 'Activity rising'
-            : 'Activity steady';
-    String thoughtsTrendSub(String t) => t == 'Easing'
-        ? 'Fewer reflections'
-        : t == 'Rising'
-            ? 'More reflections'
-            : 'Reflections steady';
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
+        // ── Recovery capital weekly card — Kelly/White framework ────────
+        // Shows the user's score (0-5) for this week, or invites them to
+        // do the 30-second check if they haven't. Always sits at the top
+        // because the multi-dimensional picture frames everything below.
+        const _RecoveryCapitalCard(),
+        const SizedBox(height: 14),
+
         _InsightTile(
           title: 'Craving Support',
           subtitle: 'Every log is a brave step toward healing.',
@@ -426,7 +413,6 @@ class _InsightsTab extends ConsumerWidget {
           barColor: AppColors.honey500,
           yLabel: 'Logs',
           window: window,
-          trendSub: cravingTrendSub(cravings.trend),
           quote:
               'Logging a craving is a sign of strength.\nYou\'re choosing awareness and support.',
         ),
@@ -438,7 +424,6 @@ class _InsightsTab extends ConsumerWidget {
           barColor: AppColors.forest400,
           yLabel: 'Hrs',
           window: window,
-          trendSub: sleepTrendSub(sleep.trend),
           quote:
               'Rest is part of recovery.\nEvery hour of sleep supports your healing.',
         ),
@@ -450,7 +435,6 @@ class _InsightsTab extends ConsumerWidget {
           barColor: AppColors.leafGreen,
           yLabel: 'Min',
           window: window,
-          trendSub: activityTrendSub(activity.trend),
           quote: 'Movement lifts the spirit.\nEvery active minute counts.',
         ),
         const SizedBox(height: 14),
@@ -461,7 +445,6 @@ class _InsightsTab extends ConsumerWidget {
           barColor: AppColors.stone400,
           yLabel: 'Logs',
           window: window,
-          trendSub: thoughtsTrendSub(thoughts.trend),
           quote:
               'Reflection builds resilience.\nYour thoughts are your inner compass.',
         ),
@@ -585,7 +568,6 @@ class _InsightTile extends StatelessWidget {
     required this.barColor,
     required this.yLabel,
     required this.window,
-    required this.trendSub,
     required this.quote,
   });
   final String title;
@@ -594,22 +576,10 @@ class _InsightTile extends StatelessWidget {
   final Color barColor;
   final String yLabel;
   final List<DateTime> window;
-  final String trendSub;
   final String quote;
 
   @override
   Widget build(BuildContext context) {
-    final trendIcon = data.trend == 'Easing'
-        ? '↓'
-        : data.trend == 'Rising'
-            ? '↑'
-            : '→';
-    final trendColor = data.trend == 'Easing'
-        ? AppColors.forest600
-        : data.trend == 'Rising'
-            ? AppColors.honey500
-            : AppColors.stone400;
-
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,44 +597,21 @@ class _InsightTile extends StatelessWidget {
                   .copyWith(fontStyle: FontStyle.italic)),
           const SizedBox(height: 14),
 
-          // ── Summary row
+          // ── Summary row — trend column removed; this/last week now share
+          // the row evenly so the card stays balanced.
           IntrinsicHeight(
             child: Row(
               children: [
                 _SummaryCol(
                     label: 'This week',
                     value: _fmtNum(data.thisWeek),
-                    valueColor: trendColor),
+                    valueColor: barColor),
                 const VerticalDivider(
                     thickness: 1, width: 1, color: AppColors.stone100),
                 _SummaryCol(
                     label: 'Last week',
                     value: _fmtNum(data.lastWeek),
                     valueColor: AppColors.stone500),
-                const VerticalDivider(
-                    thickness: 1, width: 1, color: AppColors.stone100),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Trend',
-                            style: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400)),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${data.trend} $trendIcon',
-                          style: AppTextStyles.labelLarge
-                              .copyWith(color: trendColor, fontSize: 16),
-                        ),
-                        Text(trendSub,
-                            style: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400)),
-                      ],
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -1090,6 +1037,174 @@ class _MiniHeatmap extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Recovery Capital weekly card ──────────────────────────────────────────
+//
+// Sits at the top of the Insights tab. Two visual states:
+//   • Filled this week → a 5-dot row showing which dimensions the user
+//     ticked, plus the score (e.g. "4 of 5 this week").
+//   • Not filled yet → an invitation card asking for a 30-second check.
+// Either tap opens RecoveryCapitalSheet so the user can edit / fill in.
+class _RecoveryCapitalCard extends ConsumerWidget {
+  const _RecoveryCapitalCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final week = ref.watch(thisWeekCapitalProvider);
+
+    return GestureDetector(
+      onTap: () {
+        H.selection();
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => const RecoveryCapitalSheet(),
+        );
+      },
+      child: SolidCard(
+        borderRadius: AppRadius.xl,
+        child: week == null
+            ? _CapitalEmptyContent()
+            : _CapitalFilledContent(week: week),
+      ),
+    );
+  }
+}
+
+class _CapitalEmptyContent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.mintChip,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(Icons.auto_graph_rounded,
+              color: AppColors.forest600, size: 22),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Recovery capital — this week',
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest700),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'A 30-second check across five things that protect recovery.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.stone500, height: 1.4),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 4),
+        const Icon(Icons.chevron_right_rounded,
+            color: AppColors.stone400, size: 22),
+      ],
+    );
+  }
+}
+
+class _CapitalFilledContent extends StatelessWidget {
+  const _CapitalFilledContent({required this.week});
+  final RecoveryCapitalWeek week;
+
+  @override
+  Widget build(BuildContext context) {
+    final dots = [
+      (week.connected, Icons.people_outline_rounded),
+      (week.physical, Icons.directions_walk_rounded),
+      (week.slept, Icons.bedtime_outlined),
+      (week.helpfulPlace, Icons.park_outlined),
+      (week.meaningful, Icons.auto_awesome_outlined),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Recovery capital — this week',
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest700),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.mintChip,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.forest100),
+              ),
+              child: Text(
+                '${week.score} of 5',
+                style: AppTextStyles.labelSmall
+                    .copyWith(color: AppColors.forest700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: dots.map((d) {
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
+                  color: d.$1
+                      ? AppColors.forest600.withOpacity(0.12)
+                      : AppColors.stone50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: d.$1
+                        ? AppColors.forest400
+                        : AppColors.stone100,
+                  ),
+                ),
+                child: Icon(
+                  d.$2,
+                  size: 18,
+                  color:
+                      d.$1 ? AppColors.forest600 : AppColors.stone300,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        if (week.note != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            '"${week.note}"',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.stone600,
+              fontStyle: FontStyle.italic,
+              height: 1.4,
+            ),
+          ),
+        ],
+        const SizedBox(height: 6),
+        Text(
+          'Tap to edit',
+          style: AppTextStyles.caption
+              .copyWith(color: AppColors.stone400, fontSize: 11),
+        ),
+      ],
     );
   }
 }

@@ -1227,6 +1227,19 @@ class CravingEntry {
   final int? durationMinutes;
   final String? notes;
 
+  // ── v2 clinical fields ──────────────────────────────────────────────────
+  // HALT pre-check: which underlying states were present when the urge hit.
+  // Naming the underlying state is one of the highest-evidence craving-
+  // interrupt heuristics in addiction medicine (Marlatt). Optional — old
+  // records and quick-logs leave it empty.
+  final List<String> halt; // any of: 'hungry','angry','lonely','tired'
+
+  // ABC functional analysis — what the user did in response, and what
+  // happened. Aggregated across logs to surface "what worked last time"
+  // and to auto-update the personal relapse-prevention plan.
+  final String? responseChosen; // e.g. 'walked', 'called', 'breathed'
+  final String? outcome; // 'stayed_sober' | 'slipped' | 'unclear'
+
   const CravingEntry({
     required this.id,
     required this.date,
@@ -1236,6 +1249,9 @@ class CravingEntry {
     this.triggers = const [],
     this.durationMinutes,
     this.notes,
+    this.halt = const [],
+    this.responseChosen,
+    this.outcome,
   });
 
   factory CravingEntry.fromJson(Map<String, dynamic> j) => CravingEntry(
@@ -1252,6 +1268,11 @@ class CravingEntry {
             .toList(),
         durationMinutes: (j['durationMinutes'] as num?)?.toInt(),
         notes: j['notes'] as String?,
+        halt: ((j['halt'] as List<dynamic>?) ?? const <dynamic>[])
+            .map((e) => e.toString())
+            .toList(),
+        responseChosen: j['responseChosen'] as String?,
+        outcome: j['outcome'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -1263,6 +1284,9 @@ class CravingEntry {
         if (triggers.isNotEmpty) 'triggers': triggers,
         if (durationMinutes != null) 'durationMinutes': durationMinutes,
         if (notes != null) 'notes': notes,
+        if (halt.isNotEmpty) 'halt': halt,
+        if (responseChosen != null) 'responseChosen': responseChosen,
+        if (outcome != null) 'outcome': outcome,
       };
 }
 
@@ -1286,6 +1310,9 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
     List<String> triggers = const [],
     int? durationMinutes,
     String? notes,
+    List<String> halt = const [],
+    String? responseChosen,
+    String? outcome,
   }) =>
       _writeLock = _writeLock.then((_) async {
         final cleanTriggers =
@@ -1303,6 +1330,9 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
           triggers: cleanTriggers,
           durationMinutes: durationMinutes,
           notes: notes?.trim().isEmpty == true ? null : notes?.trim(),
+          halt: halt,
+          responseChosen: responseChosen,
+          outcome: outcome,
         );
         final current = state.valueOrNull ?? [];
         final updated = [entry, ...current];
@@ -1316,6 +1346,269 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
 final cravingProvider =
     AsyncNotifierProvider<CravingNotifier, List<CravingEntry>>(
         CravingNotifier.new);
+
+// ─── Daily Intention (morning ↔ evening pairing) ─────────────────────────────
+//
+// Behavior-change research (BJ Fogg, Wendy Wood) consistently shows that
+// pairing an explicit morning intention with an evening review is one of the
+// strongest single behavioral practices for habit formation. We store one
+// intention per local-calendar day, and let the user mark it `did`, `partly`,
+// or `not_yet` later in the day. `not_yet` is intentional (not "failed") —
+// the user might still get to it before sleep.
+
+class DailyIntention {
+  final String id;
+  final DateTime date; // local-day key — use only y/m/d when comparing
+  final String text;
+  final String? outcome; // null | 'did' | 'partly' | 'not_yet'
+  final DateTime? reviewedAt;
+
+  const DailyIntention({
+    required this.id,
+    required this.date,
+    required this.text,
+    this.outcome,
+    this.reviewedAt,
+  });
+
+  factory DailyIntention.fromJson(Map<String, dynamic> j) => DailyIntention(
+        id: j['id'] as String,
+        date: _safeParseDate(j['date'] as String?),
+        text: (j['text'] as String?) ?? '',
+        outcome: j['outcome'] as String?,
+        reviewedAt: j['reviewedAt'] != null
+            ? _safeParseDate(j['reviewedAt'] as String?)
+            : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date.toIso8601String(),
+        'text': text,
+        if (outcome != null) 'outcome': outcome,
+        if (reviewedAt != null) 'reviewedAt': reviewedAt!.toIso8601String(),
+      };
+}
+
+class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
+  static const _key = 'daily_intentions';
+
+  @override
+  Future<List<DailyIntention>> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    return _safeParseList(prefs.getString(_key), DailyIntention.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  /// Set (or replace) today's morning intention. There's only ever one per
+  /// local day — editing pre-evening replaces the text in place.
+  Future<void> setToday(String text) =>
+      _writeLock = _writeLock.then((_) async {
+        final trimmed = text.trim();
+        if (trimmed.isEmpty) return;
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final current = state.valueOrNull ?? [];
+        final existing = current.indexWhere((e) =>
+            e.date.year == today.year &&
+            e.date.month == today.month &&
+            e.date.day == today.day);
+        final entry = DailyIntention(
+          id: existing >= 0
+              ? current[existing].id
+              : now.millisecondsSinceEpoch.toString(),
+          date: today,
+          text: trimmed,
+          outcome: existing >= 0 ? current[existing].outcome : null,
+          reviewedAt: existing >= 0 ? current[existing].reviewedAt : null,
+        );
+        final updated = [...current];
+        if (existing >= 0) {
+          updated[existing] = entry;
+        } else {
+          updated.insert(0, entry);
+        }
+        final prefs = await ref.read(prefsProvider.future);
+        await prefs.setString(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      });
+
+  /// Stamp the evening review on today's intention.
+  Future<void> reviewToday(String outcome) =>
+      _writeLock = _writeLock.then((_) async {
+        final now = DateTime.now();
+        final current = state.valueOrNull ?? [];
+        final idx = current.indexWhere((e) =>
+            e.date.year == now.year &&
+            e.date.month == now.month &&
+            e.date.day == now.day);
+        if (idx < 0) return; // can't review what wasn't set
+        final updated = [...current];
+        updated[idx] = DailyIntention(
+          id: current[idx].id,
+          date: current[idx].date,
+          text: current[idx].text,
+          outcome: outcome,
+          reviewedAt: now,
+        );
+        final prefs = await ref.read(prefsProvider.future);
+        await prefs.setString(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      });
+}
+
+final intentionProvider =
+    AsyncNotifierProvider<IntentionNotifier, List<DailyIntention>>(
+        IntentionNotifier.new);
+
+/// Today's intention, or null if none set yet. Watched by Home so the
+/// morning prompt or evening review surfaces at the right time.
+final todaysIntentionProvider = Provider<DailyIntention?>((ref) {
+  final list = ref.watch(intentionProvider).valueOrNull ?? const [];
+  final now = DateTime.now();
+  for (final e in list) {
+    if (e.date.year == now.year &&
+        e.date.month == now.month &&
+        e.date.day == now.day) return e;
+  }
+  return null;
+});
+
+// ─── Recovery Capital (weekly check) ──────────────────────────────────────────
+//
+// William White & John Kelly's research frames recovery as accumulation of
+// "recovery capital" — relationships, meaning, health, environment. Tracking
+// these signals weekly (not daily — that would feel like another chore)
+// produces a multi-dimensional picture of growth that pure sober-day counts
+// miss. We store one entry per ISO week.
+
+class RecoveryCapitalWeek {
+  final String id;
+  final DateTime weekStart; // Monday of the week, local
+  final bool connected; // talked to a supportive person
+  final bool physical; // moved my body
+  final bool slept; // slept enough most nights
+  final bool helpfulPlace; // spent time somewhere good for me
+  final bool meaningful; // did something I find meaningful
+  final String? note;
+
+  const RecoveryCapitalWeek({
+    required this.id,
+    required this.weekStart,
+    required this.connected,
+    required this.physical,
+    required this.slept,
+    required this.helpfulPlace,
+    required this.meaningful,
+    this.note,
+  });
+
+  int get score => [connected, physical, slept, helpfulPlace, meaningful]
+      .where((b) => b)
+      .length;
+
+  factory RecoveryCapitalWeek.fromJson(Map<String, dynamic> j) =>
+      RecoveryCapitalWeek(
+        id: j['id'] as String,
+        weekStart: _safeParseDate(j['weekStart'] as String?),
+        connected: (j['connected'] as bool?) ?? false,
+        physical: (j['physical'] as bool?) ?? false,
+        slept: (j['slept'] as bool?) ?? false,
+        helpfulPlace: (j['helpfulPlace'] as bool?) ?? false,
+        meaningful: (j['meaningful'] as bool?) ?? false,
+        note: j['note'] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'weekStart': weekStart.toIso8601String(),
+        'connected': connected,
+        'physical': physical,
+        'slept': slept,
+        'helpfulPlace': helpfulPlace,
+        'meaningful': meaningful,
+        if (note != null) 'note': note,
+      };
+}
+
+class RecoveryCapitalNotifier
+    extends AsyncNotifier<List<RecoveryCapitalWeek>> {
+  static const _key = 'recovery_capital';
+
+  @override
+  Future<List<RecoveryCapitalWeek>> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    return _safeParseList(prefs.getString(_key), RecoveryCapitalWeek.fromJson)
+      ..sort((a, b) => b.weekStart.compareTo(a.weekStart));
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  /// Set / replace the current ISO week's check.
+  Future<void> setCurrentWeek({
+    required bool connected,
+    required bool physical,
+    required bool slept,
+    required bool helpfulPlace,
+    required bool meaningful,
+    String? note,
+  }) =>
+      _writeLock = _writeLock.then((_) async {
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        // Monday-of-week, local. weekday=1 → Mon, 7 → Sun.
+        final weekStart = today.subtract(Duration(days: today.weekday - 1));
+        final current = state.valueOrNull ?? [];
+        final idx = current.indexWhere((e) =>
+            e.weekStart.year == weekStart.year &&
+            e.weekStart.month == weekStart.month &&
+            e.weekStart.day == weekStart.day);
+        final entry = RecoveryCapitalWeek(
+          id: idx >= 0
+              ? current[idx].id
+              : now.millisecondsSinceEpoch.toString(),
+          weekStart: weekStart,
+          connected: connected,
+          physical: physical,
+          slept: slept,
+          helpfulPlace: helpfulPlace,
+          meaningful: meaningful,
+          note: note?.trim().isEmpty == true ? null : note?.trim(),
+        );
+        final updated = [...current];
+        if (idx >= 0) {
+          updated[idx] = entry;
+        } else {
+          updated.insert(0, entry);
+        }
+        final prefs = await ref.read(prefsProvider.future);
+        await prefs.setString(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      });
+}
+
+final recoveryCapitalProvider =
+    AsyncNotifierProvider<RecoveryCapitalNotifier, List<RecoveryCapitalWeek>>(
+        RecoveryCapitalNotifier.new);
+
+/// Current ISO-week's recovery capital entry, or null if not filled yet.
+final thisWeekCapitalProvider = Provider<RecoveryCapitalWeek?>((ref) {
+  final list = ref.watch(recoveryCapitalProvider).valueOrNull ?? const [];
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final weekStart = today.subtract(Duration(days: today.weekday - 1));
+  for (final e in list) {
+    if (e.weekStart.year == weekStart.year &&
+        e.weekStart.month == weekStart.month &&
+        e.weekStart.day == weekStart.day) return e;
+  }
+  return null;
+});
 
 // ─── Thought log ──────────────────────────────────────────────────────────────
 

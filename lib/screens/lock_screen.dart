@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
+import '../main.dart' show LockGate;
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 import '../utils/pin_hash.dart';
@@ -134,6 +135,9 @@ class _LockScreenState extends State<LockScreen>
   void _fallbackToPin() => setState(() => _lockMethod = 'pin');
 
   void _unlock() {
+    // Clear the global gate so the GoRouter redirect stops bouncing
+    // protected routes back to /lock.
+    LockGate.locked = false;
     if (mounted) context.go('/home');
   }
 
@@ -226,6 +230,40 @@ class _LockScreenState extends State<LockScreen>
                     onDelete: _onDelete,
                     onBiometric: null, // shown only if biometric also enrolled
                   ),
+
+            // ── Crisis escape hatch ─────────────────────────────────────
+            // Available WITHOUT unlocking. The router's LockGate allowlist
+            // permits /emergency while locked precisely so a person in a
+            // crisis moment isn't blocked by biometric/PIN friction before
+            // reaching the crisis-line numbers. Journal/profile data stays
+            // locked — only the emergency screen is reachable.
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 12,
+              child: Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    H.medium();
+                    context.go('/emergency');
+                  },
+                  icon: const Icon(Icons.support_rounded,
+                      size: 16, color: AppColors.blush600),
+                  label: Text(
+                    'Need help right now?',
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: AppColors.blush600),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    backgroundColor: AppColors.blush50,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
