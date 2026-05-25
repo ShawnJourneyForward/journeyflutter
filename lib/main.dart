@@ -83,15 +83,14 @@ void main() async {
     debugPrint('[main] timezone init failed: $e');
   }
 
-  // Initialise notification channel and schedule daily reminders.
-  // Both calls already swallow their own errors, but wrap as belt-and-braces.
+  // Initialise notification channel and re-schedule any already-saved
+  // reminders. We DO NOT request POST_NOTIFICATIONS here — that prompt is
+  // raised inside the onboarding "notifications" step (after the user has
+  // chosen what they want reminded about) and inside Settings when the
+  // user toggles a reminder on. Asking at cold-start surprises the user
+  // and is the kind of permission ask Play reviewers flag.
   try {
     await NotificationService.init();
-    // Re-request the POST_NOTIFICATIONS permission on every launch.
-    // On Android 13+ the permission can be reset when the APK is replaced
-    // (fresh install over existing). requestPermission() is a no-op when
-    // the permission is already granted, so this is safe to call every time.
-    await NotificationService.requestPermission();
     await NotificationService.scheduleFromPrefs();
   } catch (e) {
     debugPrint('[main] notification setup failed: $e');

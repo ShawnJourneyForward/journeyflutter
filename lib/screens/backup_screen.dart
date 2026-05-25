@@ -309,48 +309,95 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final data = parsed['data'] as Map<String, dynamic>;
       final prefs = await SharedPreferences.getInstance();
 
-      // True replace semantics. We promise the user "restore", not "merge" —
-      // so we first wipe every restorable key from secure storage, then write
-      // whatever the backup carried. Without this, keys the user deliberately
-      // deleted before exporting would silently resurrect (or, worse, a
-      // restore onto a different device's data would leave a hybrid state).
-      // 'profile' and 'lockMethod' are excluded from the wipe and handled
-      // explicitly below.
-      for (final key in _exportKeys) {
-        if (key == 'profile') continue;
-        await EncryptedStore.delete(key);
-      }
+      // ── Transactional restore ───────────────────────────────────────────
+      // Trust matters more than throughput on this path. If any single
+      // EncryptedStore write fails midway, the user must end the operation
+      // in the SAME state they started — either fully restored, or fully
+      // unchanged. Never half-restored.
+      //
+      // Algorithm:
+      //   1. Snapshot every current value of every restorable key.
+      //   2. Stage the incoming writes in memory (sanitised profile etc.).
+      //   3. Apply all writes. If any throws, restore every key from the
+      //      snapshot and surface the error — no data loss.
+      //   4. Only after every write has succeeded, delete the keys that
+      //      were present pre-restore but absent from the backup. This
+      //      gives the user the "true replace" semantics they expect
+      //      without risking the half-restored failure mode.
 
-      // All data now lives in EncryptedStore — restore everything there.
+      // 1. Snapshot
+      final snapshot = <String, String?>{};
+      for (final key in _exportKeys) {
+        snapshot[key] = await EncryptedStore.read(key);
+      }
+      final priorHasProfile = prefs.getString('has_profile');
+
+      // 2. Stage
+      final writes = <String, String>{};
       for (final entry in data.entries) {
         if (entry.key == 'lockMethod') continue; // never restore lock state
-        if (entry.key == 'profile') continue;    // handled separately below
-        await EncryptedStore.write(entry.key, entry.value as String);
+        if (entry.key == 'profile') continue;    // sanitised below
+        if (entry.value is String) {
+          writes[entry.key] = entry.value as String;
+        }
       }
 
-      // Profile: reset lockMethod before restoring. The PIN hash is not backed
-      // up, so restoring a locked profile would leave the user locked out.
       final profileRaw = data['profile'] as String?;
       if (profileRaw != null) {
+        // Force lockMethod=none in the incoming profile blob — the PIN hash
+        // never travels in a backup, so restoring a locked profile would
+        // leave the user locked out with no way back in.
         String safeProfile = profileRaw;
         try {
-          final profileMap =
-              jsonDecode(profileRaw) as Map<String, dynamic>;
+          final profileMap = jsonDecode(profileRaw) as Map<String, dynamic>;
           profileMap['lockMethod'] = 'none';
           safeProfile = jsonEncode(profileMap);
         } catch (_) {
           // Corrupt blob — write as-is; ProfileNotifier handles it on load.
         }
-        try {
-          await EncryptedStore.write('profile', safeProfile);
+        writes['profile'] = safeProfile;
+      }
+
+      // 3. Apply, with rollback on any failure
+      try {
+        for (final entry in writes.entries) {
+          await EncryptedStore.write(entry.key, entry.value);
+        }
+        if (writes.containsKey('profile')) {
           // Update the router sentinel so the app routes to /home on restart.
           await prefs.setString('has_profile', '1');
-        } catch (e) {
-          if (mounted) {
-            _showSnack(l10n.backupRestoreFailed, error: true);
-          }
-          return;
         }
+      } catch (e) {
+        debugPrint('[backup] restore failed mid-write, rolling back: $e');
+        for (final entry in snapshot.entries) {
+          try {
+            if (entry.value == null) {
+              await EncryptedStore.delete(entry.key);
+            } else {
+              await EncryptedStore.write(entry.key, entry.value!);
+            }
+          } catch (_) {
+            // Best-effort rollback. If it fails too, we've at most lost the
+            // single key whose write failed — never a whole-device wipe.
+          }
+        }
+        if (priorHasProfile == null) {
+          await prefs.remove('has_profile');
+        } else {
+          await prefs.setString('has_profile', priorHasProfile);
+        }
+        if (mounted) _showSnack(l10n.backupRestoreFailed, error: true);
+        return;
+      }
+
+      // 4. All writes succeeded — now apply true-replace semantics by
+      // deleting keys that existed before but weren't in the backup. Safe
+      // to do last: if this step somehow fails, the user still has the
+      // restored data plus a few stale extras (not a loss).
+      final restoredKeys = writes.keys.toSet();
+      for (final key in _exportKeys) {
+        if (restoredKeys.contains(key)) continue;
+        await EncryptedStore.delete(key);
       }
 
       // Remove any legacy plaintext data and stale lockMethod from prefs.

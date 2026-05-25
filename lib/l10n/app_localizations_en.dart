@@ -472,10 +472,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRecoveryBannerSub2 => 'Your brain chemistry is shifting';
 
   @override
-  String get homeRecoveryBannerSub3 => 'Your liver has begun repairing itself';
+  String get homeRecoveryBannerSub3 =>
+      'Your body has had a real break from the load';
 
   @override
-  String get homeRecoveryBannerSub4 => 'Your risk of disease is dropping';
+  String get homeRecoveryBannerSub4 => 'You are building real momentum';
 
   @override
   String get homeEditProfile => 'Edit Profile';
@@ -1426,7 +1427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneOneDayBenefit =>
-      'Alcohol is clearing from your bloodstream. Many people see blood pressure begin to normalise as the body starts its repair work. Tonight\'s sleep — though possibly restless — is the first night of genuine, sober healing.';
+      'One full day. Alcohol typically clears from the body within this window. For many people, tonight\'s sleep — though sometimes restless — feels different from the nights that came before.';
 
   @override
   String get milestoneThreeDays => 'Three Days';
@@ -1446,7 +1447,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneOneWeekBenefit =>
-      'One full week. For many people, liver enzymes start to trend lower around this stage. Some notice sharper thinking, better skin hydration, and more natural energy as the brain\'s dopamine system begins to recover.';
+      'One full week. Many people start to notice sharper thinking, more natural energy, and better hydration around this stage. Your body has had a meaningful stretch of recovery time.';
 
   @override
   String get milestoneTwoWeeks => 'Two Weeks';
@@ -1456,7 +1457,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneTwoWeeksBenefit =>
-      'Two weeks of healing. For many people, fatty deposits in the liver start to reduce and blood pressure trends downward. Anxiety often begins to stabilise, and many sleep more deeply than they have in a long time.';
+      'Two weeks. For many people, anxiety begins to stabilise and sleep deepens. The early-recovery storm often starts to soften here, though every person\'s timeline is different.';
 
   @override
   String get milestoneOneMonth => 'One Month';
@@ -1466,7 +1467,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneOneMonthBenefit =>
-      'One month. Many people see meaningful improvements in liver function and immune response around this stage. Mental clarity and emotional stability often feel noticeably better, and cravings can become easier to observe without acting on them.';
+      'One month. Many people describe meaningful gains in clarity and emotional steadiness at this point. Cravings can become easier to observe without acting on them.';
 
   @override
   String get milestoneTwoMonths => 'Two Months';
@@ -1486,7 +1487,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneThreeMonthsBenefit =>
-      'Three months of genuine healing. Skin is clearer, sleep is deeper, and cognitive function continues to improve. Research shows immune function is measurably stronger. You have built real momentum.';
+      'Three months. Skin can look clearer, sleep can feel deeper, and concentration often continues to sharpen. You have built real momentum.';
 
   @override
   String get milestoneSixMonths => 'Six Months';
@@ -1496,7 +1497,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneSixMonthsBenefit =>
-      'Six months. For many people, the liver has made substantial progress in reversing alcohol-related damage and blood pressure is meaningfully lower. Many report that at this point, sobriety has begun to feel like their identity — not their goal.';
+      'Six months. Many people report that around this point, sobriety has begun to feel like part of who they are — not just a goal they\'re chasing.';
 
   @override
   String get milestoneOneYear => 'One Year';
@@ -1506,7 +1507,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get milestoneOneYearBenefit =>
-      'One year. Research suggests the risk of coronary heart disease may drop substantially compared with continuing drinkers, and for many people the liver has largely repaired itself. This is a profound milestone — one that can change the trajectory of your life.';
+      'One year. This is a profound milestone. Many people describe genuine, lasting changes in how they feel and how they relate to themselves. The cumulative gains of a year without alcohol are real — and they are yours.';
 
   @override
   String get recoveryTitle => 'The Healing Timeline';
@@ -1555,7 +1556,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recoveryM2Body =>
-      'For many people, heart rate, blood pressure, hydration, and sleep patterns begin to shift as the body adjusts. This can feel calming for some and uncomfortable for others.';
+      'For many people, the body\'s basic rhythms — heart rate, hydration, sleep — start to shift as it adjusts. This can feel calming for some and uncomfortable for others.';
 
   @override
   String get recoveryM2System => 'Cardiovascular System';
@@ -1620,7 +1621,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recoveryM7Body =>
-      'Your liver and vital organs may be experiencing meaningful relief from the strain of alcohol. Many people notice steadier energy, clearer thinking, and improved sleep around this stage.';
+      'Your body has had a meaningful stretch of relief from the strain of alcohol. Many people notice steadier energy, clearer thinking, and improved sleep around this stage.';
 
   @override
   String get recoveryM7System => 'Liver & Vital Organs';
@@ -1659,7 +1660,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recoveryM10Body =>
-      'For many people, the long-term strain on the heart, liver, sleep, mood, and daily energy is meaningfully reduced after a year without alcohol.';
+      'For many people, the long-term load on energy, sleep, and mood is meaningfully lighter after a year without alcohol.';
 
   @override
   String get recoveryM10System => 'Whole Body';
