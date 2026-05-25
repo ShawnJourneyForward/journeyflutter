@@ -364,6 +364,53 @@ class _HomeTab extends ConsumerWidget {
             );
           },
         ),
+        const SizedBox(height: 14),
+        GestureDetector(
+          onTap: () {
+            H.light();
+            context.push('/weekly-care-summary');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: AppRadius.luxury,
+              border: Border.all(color: AppColors.softBorder),
+              boxShadow: AppShadows.luxury,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.mintChip,
+                    borderRadius: AppRadius.md,
+                  ),
+                  child: const Icon(Icons.article_outlined,
+                      size: 22, color: AppColors.forest700),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Weekly Care Summary',
+                          style: AppTextStyles.titleSmall),
+                      Text(
+                          'Prepare a gentle report for therapy, support, or reflection.',
+                          style: AppTextStyles.bodySmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded,
+                    size: 20, color: AppColors.stone300),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

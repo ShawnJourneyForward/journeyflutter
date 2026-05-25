@@ -82,6 +82,34 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                 .copyWith(color: AppColors.forest600),
                           ),
                         ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          H.light();
+                          context.push('/weekly-care-summary');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.forest700,
+                            borderRadius: AppRadius.pill,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.article_outlined,
+                                  size: 14, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Summary',
+                                style: AppTextStyles.labelLarge.copyWith(
+                                    color: Colors.white, fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

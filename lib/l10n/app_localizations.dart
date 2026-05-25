@@ -5161,6 +5161,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If this privacy policy changes, the update will be included in a new app version. Since we collect no data, changes will only reflect improvements in transparency or new features added to the app.'**
   String get privacyPolicyUpdatesBody;
+
+  /// No description provided for @weeklySummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Care Summary'**
+  String get weeklySummaryTitle;
+
+  /// No description provided for @weeklySummarySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A private summary to share with someone you trust.'**
+  String get weeklySummarySubtitle;
+
+  /// No description provided for @weeklySummaryThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get weeklySummaryThisWeek;
+
+  /// No description provided for @weeklySummaryLastWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get weeklySummaryLastWeek;
+
+  /// No description provided for @weeklySummaryCustomRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom range'**
+  String get weeklySummaryCustomRange;
+
+  /// No description provided for @weeklySummaryCareRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Care recorded'**
+  String get weeklySummaryCareRecorded;
+
+  /// No description provided for @weeklySummaryJournalEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entries'**
+  String get weeklySummaryJournalEntries;
+
+  /// No description provided for @weeklySummaryCravingSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving support used'**
+  String get weeklySummaryCravingSupport;
+
+  /// No description provided for @weeklySummaryThoughtExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought exercises'**
+  String get weeklySummaryThoughtExercises;
+
+  /// No description provided for @weeklySummaryMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement / activity'**
+  String get weeklySummaryMovement;
+
+  /// No description provided for @weeklySummarySleepLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep logs'**
+  String get weeklySummarySleepLogs;
+
+  /// No description provided for @weeklySummaryDailyGratitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily gratitude'**
+  String get weeklySummaryDailyGratitude;
+
+  /// No description provided for @weeklySummaryDailyPledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily pledge'**
+  String get weeklySummaryDailyPledge;
+
+  /// No description provided for @weeklySummaryReflection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection'**
+  String get weeklySummaryReflection;
+
+  /// No description provided for @weeklySummaryPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy note'**
+  String get weeklySummaryPrivacyNote;
+
+  /// No description provided for @weeklySummaryPrivacyNoteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This summary was created on your device and shared only because you chose to share it.'**
+  String get weeklySummaryPrivacyNoteBody;
+
+  /// No description provided for @weeklySummaryShareWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This summary may contain personal recovery information. Only share it with someone you trust.'**
+  String get weeklySummaryShareWarning;
+
+  /// No description provided for @weeklySummarySharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share PDF'**
+  String get weeklySummarySharePdf;
+
+  /// No description provided for @weeklySummaryEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get weeklySummaryEdit;
+
+  /// No description provided for @weeklySummaryPdfError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create the PDF right now. Please try again.'**
+  String get weeklySummaryPdfError;
+
+  /// No description provided for @weeklySummaryNoActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No care entries were recorded for this period. A quiet week still counts.'**
+  String get weeklySummaryNoActivity;
+
+  /// No description provided for @weeklySummaryCareDays.
+  ///
+  /// In en, this message translates to:
+  /// **'You returned to your care practices on {count} {count, plural, =1{day} other{days}} this week.'**
+  String weeklySummaryCareDays(int count);
+
+  /// No description provided for @weeklySummaryMostUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Most used support: {support}'**
+  String weeklySummaryMostUsed(String support);
+
+  /// No description provided for @weeklySummaryQuietWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet week of showing up still counts.'**
+  String get weeklySummaryQuietWeek;
+
+  /// No description provided for @weeklySummaryAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward'**
+  String get weeklySummaryAppName;
 }
 
 class _AppLocalizationsDelegate

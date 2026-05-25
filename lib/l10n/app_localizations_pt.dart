@@ -2801,4 +2801,95 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get privacyPolicyUpdatesBody =>
       'If this privacy policy changes, the update will be included in a new app version. Since we collect no data, changes will only reflect improvements in transparency or new features added to the app.';
+
+  @override
+  String get weeklySummaryTitle => 'Weekly Care Summary';
+
+  @override
+  String get weeklySummarySubtitle =>
+      'A private summary to share with someone you trust.';
+
+  @override
+  String get weeklySummaryThisWeek => 'This week';
+
+  @override
+  String get weeklySummaryLastWeek => 'Last week';
+
+  @override
+  String get weeklySummaryCustomRange => 'Custom range';
+
+  @override
+  String get weeklySummaryCareRecorded => 'Care recorded';
+
+  @override
+  String get weeklySummaryJournalEntries => 'Journal entries';
+
+  @override
+  String get weeklySummaryCravingSupport => 'Craving support used';
+
+  @override
+  String get weeklySummaryThoughtExercises => 'Thought exercises';
+
+  @override
+  String get weeklySummaryMovement => 'Movement / activity';
+
+  @override
+  String get weeklySummarySleepLogs => 'Sleep logs';
+
+  @override
+  String get weeklySummaryDailyGratitude => 'Daily gratitude';
+
+  @override
+  String get weeklySummaryDailyPledge => 'Daily pledge';
+
+  @override
+  String get weeklySummaryReflection => 'Reflection';
+
+  @override
+  String get weeklySummaryPrivacyNote => 'Privacy note';
+
+  @override
+  String get weeklySummaryPrivacyNoteBody =>
+      'This summary was created on your device and shared only because you chose to share it.';
+
+  @override
+  String get weeklySummaryShareWarning =>
+      'This summary may contain personal recovery information. Only share it with someone you trust.';
+
+  @override
+  String get weeklySummarySharePdf => 'Share PDF';
+
+  @override
+  String get weeklySummaryEdit => 'Edit';
+
+  @override
+  String get weeklySummaryPdfError =>
+      'Couldn\'t create the PDF right now. Please try again.';
+
+  @override
+  String get weeklySummaryNoActivity =>
+      'No care entries were recorded for this period. A quiet week still counts.';
+
+  @override
+  String weeklySummaryCareDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'days',
+      one: 'day',
+    );
+    return 'You returned to your care practices on $count $_temp0 this week.';
+  }
+
+  @override
+  String weeklySummaryMostUsed(String support) {
+    return 'Most used support: $support';
+  }
+
+  @override
+  String get weeklySummaryQuietWeek =>
+      'A quiet week of showing up still counts.';
+
+  @override
+  String get weeklySummaryAppName => 'Journey Forward';
 }

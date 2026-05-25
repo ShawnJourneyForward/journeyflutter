@@ -39,6 +39,8 @@ dependencies:
 
   # ── Sharing / export ──────────────────────────────────────────────────────────
   share_plus: ^10.0.0             # milestone card share sheet + backup export
+  pdf: ^3.10.8                    # weekly care summary PDF generation
+  path_provider: ^2.1.4           # temp directory for PDF export
 
   # ── Media ─────────────────────────────────────────────────────────────────────
   image_picker: ^1.1.2            # vision board — camera + gallery

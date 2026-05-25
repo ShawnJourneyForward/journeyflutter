@@ -1694,6 +1694,13 @@ class _MoreCard extends ConsumerWidget {
                 icon: Icons.emoji_events_outlined,
                 label: 'Milestone cards',
                 onTap: () => context.push('/milestone'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.article_outlined,
+                label: 'Weekly Care Summary',
+                value: 'Create a private summary to share with someone you trust.',
+                onTap: () => context.push('/weekly-care-summary'),
               ),
             ],
           ),
