@@ -309,6 +309,18 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final data = parsed['data'] as Map<String, dynamic>;
       final prefs = await SharedPreferences.getInstance();
 
+      // True replace semantics. We promise the user "restore", not "merge" —
+      // so we first wipe every restorable key from secure storage, then write
+      // whatever the backup carried. Without this, keys the user deliberately
+      // deleted before exporting would silently resurrect (or, worse, a
+      // restore onto a different device's data would leave a hybrid state).
+      // 'profile' and 'lockMethod' are excluded from the wipe and handled
+      // explicitly below.
+      for (final key in _exportKeys) {
+        if (key == 'profile') continue;
+        await EncryptedStore.delete(key);
+      }
+
       // All data now lives in EncryptedStore — restore everything there.
       for (final entry in data.entries) {
         if (entry.key == 'lockMethod') continue; // never restore lock state

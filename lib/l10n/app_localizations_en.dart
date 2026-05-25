@@ -2706,7 +2706,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupPrivacyWarning =>
-      'Encrypted backups (.jfwbk) require your passphrase to open. Plain JSON backups are unencrypted — store them somewhere only you can access.';
+      'Encrypted backups (.jfwbk) require your passphrase to open. Plain JSON backups are unencrypted — store them somewhere only you can access. Restore fully replaces the data in this app — any entries you\'ve made since the backup will be overwritten. Vision-board photos themselves aren\'t bundled into the backup file (only the references); if you restore on a new device, you may need to re-attach those images.';
 
   @override
   String get backupConfirmTitle => 'Restore backup?';

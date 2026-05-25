@@ -16,6 +16,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_theme.dart';
+import '../utils/encrypted_store.dart';
 import '../utils/pin_hash.dart';
 
 // ─── Primary moods ───────────────────────────────────────────────────────────
@@ -351,10 +352,15 @@ JournalPromptCategory smartDefaultCategory({
 
 // ─── Draft autosave ──────────────────────────────────────────────────────────
 //
-// Holds the user's in-progress entry between sheet closures. Stored to
-// SharedPreferences as JSON so an OS kill, accidental swipe-down, or a phone
-// call that closes the keyboard doesn't lose 200 words of raw emotion the
-// user just typed.
+// Holds the user's in-progress entry between sheet closures. Stored in the
+// Android Keystore-backed EncryptedStore (same protection as saved journal
+// entries) so an OS kill, accidental swipe-down, or a phone call that closes
+// the keyboard doesn't lose 200 words of raw emotion the user just typed —
+// and the draft itself is encrypted at rest, matching the privacy policy.
+//
+// Migration note: v5.7 and earlier stored this in plaintext SharedPreferences
+// under the same key. On read we first check secure storage, then fall back
+// to prefs (one-shot migration → copy into secure → wipe plain). Idempotent.
 //
 // Drafts older than 48 hours are considered stale and dropped on read — the
 // user almost certainly moved on, and surfacing day-old text would feel
@@ -417,37 +423,59 @@ class JournalDraftStore {
 
   /// Reads the draft if one exists and isn't stale. Returns null otherwise.
   /// Stale drafts are cleared on read so the next open is fresh.
+  ///
+  /// Reads from EncryptedStore first; if absent, migrates any legacy
+  /// plaintext draft from SharedPreferences (one-shot copy then delete).
   static Future<JournalDraft?> read() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_key);
+    String? raw = await EncryptedStore.read(_key);
+    if (raw == null) {
+      // One-shot migration from the v5.7 plaintext location.
+      final prefs = await SharedPreferences.getInstance();
+      final legacy = prefs.getString(_key);
+      if (legacy != null) {
+        await EncryptedStore.write(_key, legacy);
+        await prefs.remove(_key);
+        raw = legacy;
+      }
+    }
     if (raw == null) return null;
     try {
       final draft = JournalDraft.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-      if (draft == null) return null;
+      if (draft == null) {
+        await EncryptedStore.delete(_key);
+        return null;
+      }
       if (DateTime.now().difference(draft.savedAt) > _staleAfter) {
-        await prefs.remove(_key);
+        await EncryptedStore.delete(_key);
         return null;
       }
       // Treat empty drafts as no-draft.
       if (draft.text.trim().isEmpty) {
-        await prefs.remove(_key);
+        await EncryptedStore.delete(_key);
         return null;
       }
       return draft;
     } catch (_) {
-      await prefs.remove(_key);
+      await EncryptedStore.delete(_key);
       return null;
     }
   }
 
   /// Write — debounced by the sheet, never by this store. Safe to call often.
   static Future<void> write(JournalDraft draft) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, jsonEncode(draft.toJson()));
+    try {
+      await EncryptedStore.write(_key, jsonEncode(draft.toJson()));
+    } on EncryptedStoreException {
+      // Secure write failed (extremely rare — Keystore broken or full).
+      // Swallow rather than crash the journal sheet; the user's text remains
+      // safe in the in-memory controller until they save the entry.
+    }
   }
 
   /// Clear after a successful save.
   static Future<void> clear() async {
+    await EncryptedStore.delete(_key);
+    // Best-effort cleanup of any legacy plaintext copy.
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
   }

@@ -306,7 +306,11 @@ class LockGate {
   LockGate._();
   static bool locked = false;
 
-  static const _crisisAllowedWhenLocked = {'/lock', '/emergency'};
+  // /emergency hosts the warmline list; /crisis hosts the immediate-danger
+  // phone numbers (988, SAMHSA, local lines). Both must be reachable while
+  // the app is locked — withholding either behind biometric auth is the
+  // wrong call ethically.
+  static const _crisisAllowedWhenLocked = {'/lock', '/emergency', '/crisis'};
   static bool isAllowedWhileLocked(String location) =>
       _crisisAllowedWhenLocked.contains(location);
 }

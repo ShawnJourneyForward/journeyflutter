@@ -275,11 +275,11 @@ class _RecoveryProgress {
     'The most intense early adjustment may begin to ease. A small window of calm can emerge.',
     'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.',
     'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.',
-    'Your liver and vital organs may be experiencing meaningful relief.',
-    'Dopamine pathways are gradually adjusting. Satisfaction in daily life may begin to return.',
+    'Many people describe a sense of physical relief settling in around this point.',
+    'Day-to-day satisfaction may slowly start to feel more accessible again.',
     'Many people notice a steadier baseline. Urges may become less frequent and easier to move through.',
-    'The long-term strain on heart, liver, sleep, and mood is meaningfully reduced for many people.',
-    'The benefits of reduced alcohol strain can continue to deepen over time.',
+    'For many people, the long-term load on sleep, energy, and mood begins to ease at this point.',
+    'The space you have created can continue to deepen over time — one ordinary day at a time.',
   ];
 
   static _RecoveryProgress compute(Duration elapsed) {
@@ -289,7 +289,7 @@ class _RecoveryProgress {
       final frac = (mins / _milestoneMinutes.first).clamp(0.0, 1.0);
       return _RecoveryProgress(
         currentLabel: 'Just Starting',
-        currentBody: 'Your body begins healing the moment you stop.',
+        currentBody: 'The decision you made today already matters. Be gentle with yourself.',
         progress: frac,
         nextLabel: _milestoneLabels.first,
         nextIn: _formatRemaining(_milestoneMinutes.first - mins),

@@ -100,7 +100,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         icon: Icons.bedtime_outlined,
         system: l10n.recoveryM5System,
         mind:
-            'You may notice unusually vivid dreams — this can be a sign that your brain is adjusting to the deep neurological rest it has been missing.',
+            'You may notice unusually vivid dreams — some people experience this as their sleep pattern settles into a new rhythm.',
         experience:
             'Improved clarity, though your mood may still naturally swing up and down.',
         tip:
@@ -114,7 +114,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         icon: Icons.directions_run_outlined,
         system: l10n.recoveryM6System,
         mind:
-            'Concentration and short-term memory begin to sharpen. You are actively building new, healthier neural pathways.',
+            'Concentration and short-term memory often start to feel sharper. Each healthier choice you repeat helps lay down new patterns.',
         experience:
             'You might start feeling surprisingly well, though random moments of emptiness are still normal.',
         tip:
@@ -142,7 +142,7 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         icon: Icons.psychology_outlined,
         system: l10n.recoveryM8System,
         mind:
-            'Dopamine pathways are gradually adjusting. The ability to find genuine satisfaction in simple, everyday activities may begin to return.',
+            'For many people, the ability to find genuine satisfaction in simple, everyday activities slowly returns at this stage.',
         experience:
             'Many people describe feeling more like themselves again. Motivation may feel more available, though it can still rise and fall.',
         tip:

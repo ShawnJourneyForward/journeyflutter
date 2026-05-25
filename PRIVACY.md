@@ -3,7 +3,7 @@
 **Effective date:** 24 May 2026
 **App:** Journey Forward (Android)
 **Developer:** Shawn Fourie / Stillwater Studios
-**Contact:** shawnfourie1981@gmail.com
+**Contact:** shawn@journeyforward.app
 
 ---
 
@@ -173,7 +173,7 @@ If this privacy policy changes, the update will be included in a new app version
 Questions about this policy?
 
 **Shawn Fourie / Stillwater Studios**
-Email: shawnfourie1981@gmail.com
+Email: shawn@journeyforward.app
 
 ---
 

@@ -243,5 +243,35 @@ $notif.Dispose()
 $notifKb = [math]::Round((Get-Item $notifPath).Length / 1KB, 1)
 Write-Host "  OK: $notifPath ($notifKb KB)"
 
+# --- 4. ADAPTIVE LAUNCHER FOREGROUND - 1024x1024 (transparent) ------------
+# Source asset for `flutter pub run flutter_launcher_icons`. The plugin reads
+# this file from assets/icons/launcher_foreground.png and produces:
+#   - mipmap-anydpi-v26/ic_launcher.xml (adaptive icon descriptor)
+#   - mipmap-*/ic_launcher_foreground.png at every density bucket
+#   - monochrome variant for Android 13+ themed icons
+# The foreground glyph must occupy the SAFE ZONE — the inner ~66% of the
+# 1024px canvas — because adaptive icons get cropped to either a circle or
+# squircle depending on the launcher. We render the leaf at ~52% of the
+# canvas to stay safely inside the mask on every OEM launcher.
+Write-Host "Rendering assets/icons/launcher_foreground.png"
+$assetIconsDir = Join-Path $projectRoot "assets\icons"
+if (-not (Test-Path $assetIconsDir)) { New-Item -ItemType Directory -Force $assetIconsDir | Out-Null }
+$fg = New-Object System.Drawing.Bitmap(1024, 1024)
+$g = [System.Drawing.Graphics]::FromImage($fg)
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.Clear([System.Drawing.Color]::FromArgb(0, 0, 0, 0))
+# Leaf at canvas centre, ~520px tall — inside the adaptive-icon safe zone.
+Draw-LeafGlyph $g 512 512 540 $white
+$g.Dispose()
+$fgPath = Join-Path $assetIconsDir "launcher_foreground.png"
+$fg.Save($fgPath, [System.Drawing.Imaging.ImageFormat]::Png)
+$fg.Dispose()
+$fgKb = [math]::Round((Get-Item $fgPath).Length / 1KB, 1)
+Write-Host "  OK: $fgPath ($fgKb KB)"
+
 Write-Host ""
 Write-Host "All assets generated under: $scriptDir"
+Write-Host "  + adaptive foreground at: $assetIconsDir\launcher_foreground.png"
+Write-Host ""
+Write-Host "Next step (regenerate Android launcher icons from this source):"
+Write-Host "  flutter pub run flutter_launcher_icons"
