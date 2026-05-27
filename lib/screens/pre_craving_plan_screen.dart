@@ -274,8 +274,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: AppRadius.lg,
                                     borderSide: const BorderSide(
-                                        color: AppColors.forest600,
-                                        width: 1.5),
+                                        color: AppColors.forest600, width: 1.5),
                                   ),
                                 ),
                               ),
@@ -300,16 +299,13 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(
-                                          Icons.add_link_rounded,
-                                          size: 15,
-                                          color: AppColors.forest400),
+                                      const Icon(Icons.add_link_rounded,
+                                          size: 15, color: AppColors.forest400),
                                       const SizedBox(width: 5),
                                       Text('Link a Toolkit exercise',
                                           style: AppTextStyles.labelSmall
                                               .copyWith(
-                                                  color:
-                                                      AppColors.forest500)),
+                                                  color: AppColors.forest500)),
                                     ],
                                   ),
                                 ),
@@ -358,12 +354,12 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                   disabledBackgroundColor: AppColors.stone200,
                   disabledForegroundColor: AppColors.stone500,
                   minimumSize: const Size.fromHeight(52),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape:
+                      const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(_dirty ? 'Save plan' : 'Saved',
-                    style: AppTextStyles.labelLarge
-                        .copyWith(color: Colors.white)),
+                    style:
+                        AppTextStyles.labelLarge.copyWith(color: Colors.white)),
               ),
             ),
           ],
@@ -376,8 +372,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
 // ─── Exercise link chip ───────────────────────────────────────────────────────
 
 class _ExerciseLinkChip extends StatelessWidget {
-  const _ExerciseLinkChip(
-      {required this.exercise, required this.onRemove});
+  const _ExerciseLinkChip({required this.exercise, required this.onRemove});
   final _ToolkitExercise exercise;
   final VoidCallback onRemove;
 
@@ -387,8 +382,7 @@ class _ExerciseLinkChip extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             // ignore: deprecated_member_use
             color: exercise.color.withOpacity(0.08),
@@ -463,8 +457,8 @@ class _ExercisePickerSheet extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text('Tap to add a one-tap link to this exercise in your plan.',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone400)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone400)),
           const SizedBox(height: 16),
           ..._kToolkitExercises.map((ex) => _ExerciseRow(exercise: ex)),
         ],
@@ -520,8 +514,7 @@ class _ExerciseRow extends StatelessWidget {
             ),
             if (exercise.route.isNotEmpty)
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.forest50,
                   borderRadius: AppRadius.full,
@@ -602,8 +595,8 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 4),
           Text('Run through these before logging. Breathe between each one.',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone500)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
           const SizedBox(height: 16),
           ...List.generate(widget.steps.length, (i) {
             final step = widget.steps[i].trim();
@@ -612,9 +605,9 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
             final link = i < widget.links.length ? widget.links[i] : '';
             // Find the matching toolkit exercise for its icon/colour
             final exercise = link.isNotEmpty
-                ? _kToolkitExercises.cast<_ToolkitExercise?>()
-                    .firstWhere((e) => e?.route == link,
-                        orElse: () => null)
+                ? _kToolkitExercises
+                    .cast<_ToolkitExercise?>()
+                    .firstWhere((e) => e?.route == link, orElse: () => null)
                 : null;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -625,15 +618,12 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                     borderRadius: AppRadius.lg,
                     onTap: () {
                       H.selection();
-                      setState(() =>
-                          checked ? _done.remove(i) : _done.add(i));
+                      setState(() => checked ? _done.remove(i) : _done.add(i));
                     },
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: checked
-                            ? AppColors.forest50
-                            : AppColors.stone50,
+                        color: checked ? AppColors.forest50 : AppColors.stone50,
                         borderRadius: AppRadius.lg,
                         border: Border.all(
                           color: checked
@@ -659,9 +649,8 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                                 color: checked
                                     ? AppColors.forest800
                                     : AppColors.stone700,
-                                decoration: checked
-                                    ? TextDecoration.lineThrough
-                                    : null,
+                                decoration:
+                                    checked ? TextDecoration.lineThrough : null,
                               ),
                             ),
                           ),
@@ -680,8 +669,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                           final router = GoRouter.of(context);
                           Navigator.pop(context, false);
                           // Navigate after the sheet closes
-                          Future.microtask(
-                              () => router.push(exercise.route));
+                          Future.microtask(() => router.push(exercise.route));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

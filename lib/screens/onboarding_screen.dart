@@ -255,7 +255,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       // ── Step 5: Schedule daily notifications ─────────────────────────────────
       if (_notifMotivation || _notifReminders) {
-        await NotificationService.scheduleFromPrefs();
+        final scheduleResult = await NotificationService.scheduleFromPrefs();
+        if (!scheduleResult.success) {
+          debugPrint(
+            '[Onboarding] notification scheduling failed: ${scheduleResult.error}',
+          );
+        }
       }
 
       // ── Step 6: Navigate to home ─────────────────────────────────────────────
@@ -360,7 +365,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
 
                 // ── Bottom CTA ─────────────────────────────────────────────────
-                if (_step != _Step.welcome && _step != _Step.pin && _step != _Step.finish)
+                if (_step != _Step.welcome &&
+                    _step != _Step.pin &&
+                    _step != _Step.finish)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                     child: SizedBox(
@@ -441,6 +448,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 }
 
 // ─── Step 1: Welcome ──────────────────────────────────────────────────────────
+// Single-screen design — no scrolling. Plant card sits in soft warm radial
+// halo so the image dissolves into the cream surface rather than reading as a
+// pasted-on rectangle. Vertical rhythm flexes via Spacers so the layout holds
+// up on phones from ~640dp to large devices.
 
 class _WelcomeStep extends StatelessWidget {
   const _WelcomeStep({required this.onBegin});
@@ -448,160 +459,223 @@ class _WelcomeStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Plant hero with botanical arch frame
-          Center(child: _OnboardingPlantFrame(days: 0, height: 220)),
-          const SizedBox(height: 28),
+    final l10n = AppLocalizations.of(context);
+    return LayoutBuilder(
+      builder: (context, c) {
+        final tight = c.maxHeight < 720;
+        final plantSize = (c.maxHeight * (tight ? 0.34 : 0.38))
+            .clamp(220.0, 320.0);
 
-          Text(AppLocalizations.of(context).onbWelcomeTitle,
-              style: AppTextStyles.displayMedium.copyWith(height: 1.15)),
-          const SizedBox(height: 14),
-          Text(
-            AppLocalizations.of(context).onbWelcomeBody,
-            style: AppTextStyles.bodyLarge
-                .copyWith(color: AppColors.stone600, height: 1.6),
-          ),
-          const SizedBox(height: 28),
+        // Wrap in a scroll view that only kicks in if the content does not
+        // fit (very small viewports / accessibility text scaling). On a
+        // normal phone (720dp+) the ConstrainedBox forces the Column to the
+        // exact viewport height so the Spacers expand and the layout still
+        // reads as a centred, non-scrolling welcome screen.
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: c.maxHeight),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                    24, tight ? 4 : 10, 24, tight ? 14 : 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Spacer(flex: 1),
 
-          // Privacy badges
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.mintChip,
-              borderRadius: AppRadius.luxury,
-              border: Border.all(color: AppColors.softBorder),
-            ),
-            child: Column(
-              children: [
-                _PrivacyBadge(
-                  icon: Icons.phone_android_rounded,
-                  label: AppLocalizations.of(context).onbPrivacy100OnDevice,
-                  sub: AppLocalizations.of(context).onbPrivacy100OnDeviceSub,
-                ),
-                const _Divider(),
-                _PrivacyBadge(
-                  icon: Icons.person_off_outlined,
-                  label: AppLocalizations.of(context).onbPrivacyNoAccount,
-                  sub: AppLocalizations.of(context).onbPrivacyNoAccountSub,
-                ),
-                const _Divider(),
-                _PrivacyBadge(
-                  icon: Icons.visibility_off_outlined,
-                  label: AppLocalizations.of(context).onbPrivacyZeroTracking,
-                  sub: AppLocalizations.of(context).onbPrivacyZeroTrackingSub,
-                ),
-                const _Divider(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          color: AppColors.forest100,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.info_outline_rounded,
-                            size: 18, color: AppColors.forest700),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Not Medical Advice',
-                                style: AppTextStyles.titleSmall
-                                    .copyWith(color: AppColors.forest700)),
-                            Text(
-                              'This app supports your journey but is not a substitute for medical or clinical advice. Always consult a healthcare professional for medical concerns.',
-                              style: AppTextStyles.bodySmall
-                                  .copyWith(color: AppColors.forest600),
-                            ),
-                          ],
+                    // ── Plant hero card ────────────────────────────────────
+                    Center(
+                      child: _OnboardingPlantCard(days: 0, size: plantSize),
+                    ),
+
+                    SizedBox(height: tight ? 22 : 30),
+
+                    // ── Eyebrow ────────────────────────────────────────────
+                    Center(
+                      child: Text(
+                        'DAY ONE  ·  A WELCOME',
+                        style: AppTextStyles.overline.copyWith(
+                          color: AppColors.forest700,
+                          fontSize: 11,
+                          letterSpacing: 2.8,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
+                    ),
+                    const SizedBox(height: 14),
 
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: onBegin,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.forest600,
-                minimumSize: const Size.fromHeight(54),
-                shape: const RoundedRectangleBorder(borderRadius: AppRadius.xl),
-                textStyle: AppTextStyles.labelLarge,
+                    // ── Headline (serif) ───────────────────────────────────
+                    Text(
+                      'A new chapter,\nquietly begun.',
+                      style: AppTextStyles.displayMedium.copyWith(
+                        fontSize: tight ? 30 : 34,
+                        fontWeight: FontWeight.w600,
+                        height: 1.08,
+                        letterSpacing: -0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // ── Subtitle ───────────────────────────────────────────
+                    Text(
+                      l10n.onbWelcomeBody,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.stone600,
+                        height: 1.5,
+                        fontSize: 14.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    // ── Feature pills ──────────────────────────────────────
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: _FeaturePill(
+                            icon: Icons.wifi_off_rounded,
+                            title: l10n.onbPrivacy100OnDevice.toUpperCase(),
+                            sub: 'Works without\nthe internet',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: _FeaturePill(
+                            icon: Icons.lock_outline_rounded,
+                            title: 'NO ACCOUNT',
+                            sub: 'No login or\nprofile upload',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: _FeaturePill(
+                            icon: Icons.shield_outlined,
+                            title: 'ZERO TRACKING',
+                            sub: 'Your data stays\non device',
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: tight ? 16 : 22),
+
+                    // ── Primary CTA ────────────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: onBegin,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.forest700,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(58),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.xl),
+                          textStyle: AppTextStyles.titleMedium.copyWith(
+                            fontSize: 17,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text('Begin'),
+                      ),
+                    ),
+
+                    SizedBox(height: tight ? 8 : 12),
+
+                    // ── Disclaimer ─────────────────────────────────────────
+                    Center(
+                      child: Text(
+                        'Not medical advice — a companion, not a clinician.',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.stone500,
+                          fontSize: 11.5,
+                          letterSpacing: 0.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(AppLocalizations.of(context).onbLetsBegin),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
-class _PrivacyBadge extends StatelessWidget {
-  const _PrivacyBadge({
+// ─── Feature pill (small icon-card) ──────────────────────────────────────────
+
+class _FeaturePill extends StatelessWidget {
+  const _FeaturePill({
     required this.icon,
-    required this.label,
+    required this.title,
     required this.sub,
   });
   final IconData icon;
-  final String label, sub;
+  final String title, sub;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: AppRadius.lg,
+        border: Border.all(color: AppColors.forest100, width: 0.8),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F1F4D38),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 26,
+            height: 26,
             decoration: const BoxDecoration(
-              color: AppColors.forest100,
+              color: AppColors.mintChip,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 18, color: AppColors.forest700),
+            alignment: Alignment.center,
+            child: Icon(icon, size: 14, color: AppColors.forest700),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: AppTextStyles.titleSmall
-                        .copyWith(color: AppColors.forest700)),
-                Text(sub,
-                    style: AppTextStyles.bodySmall
-                        .copyWith(color: AppColors.forest600)),
-              ],
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.forest700,
+              fontSize: 10,
+              letterSpacing: 0.9,
+              height: 1.2,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            sub,
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.stone600,
+              fontSize: 11,
+              height: 1.25,
+              letterSpacing: 0,
             ),
           ),
         ],
       ),
     );
   }
-}
-
-class _Divider extends StatelessWidget {
-  const _Divider();
-  @override
-  Widget build(BuildContext context) =>
-      const Divider(color: AppColors.forest100, height: 1);
 }
 
 // ─── Step 2: Name ─────────────────────────────────────────────────────────────
@@ -678,14 +752,16 @@ class _DateStepState extends State<_DateStep> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
       helpText: AppLocalizations.of(context).onbDatePickerHelp,
-      builder: (ctx, child) =>
-          Theme(data: _pickerTheme(ctx), child: child!),
+      builder: (ctx, child) => Theme(data: _pickerTheme(ctx), child: child!),
     );
     if (picked != null) {
       // Preserve existing time component
       widget.onChanged(DateTime(
-        picked.year, picked.month, picked.day,
-        widget.date.hour, widget.date.minute,
+        picked.year,
+        picked.month,
+        picked.day,
+        widget.date.hour,
+        widget.date.minute,
       ));
     }
   }
@@ -695,13 +771,15 @@ class _DateStepState extends State<_DateStep> {
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: d.hour, minute: d.minute),
-      builder: (ctx, child) =>
-          Theme(data: _pickerTheme(ctx), child: child!),
+      builder: (ctx, child) => Theme(data: _pickerTheme(ctx), child: child!),
     );
     if (picked != null) {
       widget.onChanged(DateTime(
-        d.year, d.month, d.day,
-        picked.hour, picked.minute,
+        d.year,
+        d.month,
+        d.day,
+        picked.hour,
+        picked.minute,
       ));
     }
   }
@@ -710,8 +788,8 @@ class _DateStepState extends State<_DateStep> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final date = widget.date;
-    final timeLabel = TimeOfDay(hour: date.hour, minute: date.minute)
-        .format(context);
+    final timeLabel =
+        TimeOfDay(hour: date.hour, minute: date.minute).format(context);
 
     return _StepShell(
       headline: l10n.onbDateHeadline,
@@ -1065,8 +1143,8 @@ class _SecurityStep extends StatelessWidget {
                       selected == 'pin'
                           ? 'If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.'
                           : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
-                      style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.honey500, height: 1.4),
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.honey500, height: 1.4),
                     ),
                   ),
                 ],
@@ -1557,9 +1635,11 @@ class _FinishStep extends StatefulWidget {
 class _FinishStepState extends State<_FinishStep>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 600));
-  late final Animation<double> _scale =
-      CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
+      vsync: this, duration: const Duration(milliseconds: 700));
+  late final Animation<double> _scale = CurvedAnimation(
+      parent: _ctrl, curve: const Interval(0.0, 0.85, curve: Curves.easeOutBack));
+  late final Animation<double> _fade =
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.2, 1.0));
 
   @override
   void initState() {
@@ -1579,77 +1659,311 @@ class _FinishStepState extends State<_FinishStep>
     final days =
         DateTime.now().difference(widget.soberDate).inDays.clamp(0, 99999);
     final name = widget.username.trim();
+    final headline = name.isNotEmpty
+        ? 'You\'re ready,\n$name.'
+        : 'You\'re ready\nfor this.';
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
-      child: Column(
-        children: [
-          // Animated plant with botanical arch frame
-          ScaleTransition(
-            scale: _scale,
-            child: _OnboardingPlantFrame(days: days, height: 200),
-          ),
-          const SizedBox(height: 24),
+    return LayoutBuilder(
+      builder: (context, c) {
+        final tight = c.maxHeight < 720;
+        final plantSize = (c.maxHeight * (tight ? 0.34 : 0.38))
+            .clamp(220.0, 320.0);
 
-          Text(
-            name.isNotEmpty
-                ? l10n.onbFinishReadyWithName(name)
-                : l10n.onbFinishReady,
-            style: AppTextStyles.displaySmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            days > 0 ? l10n.onbFinishBodyDays(days) : l10n.onbFinishBodyToday,
-            style: AppTextStyles.bodyLarge
-                .copyWith(color: AppColors.stone600, height: 1.6),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
+        // Same overflow-safe wrapping as _WelcomeStep — normal phones get
+        // the no-scroll centred layout via the ConstrainedBox; very small
+        // viewports / large text scaling get a silent fallback to scroll
+        // instead of a RenderFlex overflow.
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: c.maxHeight),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                    24, tight ? 4 : 10, 24, tight ? 14 : 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Spacer(flex: 1),
 
-          // Privacy final confirmation
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.forest50,
-              borderRadius: AppRadius.xl,
-              border: Border.all(color: AppColors.forest100),
+                    // ── Animated plant card ────────────────────────────────
+                    Center(
+                      child: ScaleTransition(
+                        scale: _scale,
+                        child: _OnboardingPlantCard(
+                            days: days, size: plantSize),
+                      ),
+                    ),
+
+                    SizedBox(height: tight ? 22 : 30),
+
+                    // ── Eyebrow ────────────────────────────────────────────
+                    FadeTransition(
+                      opacity: _fade,
+                      child: Center(
+                        child: Text(
+                          days > 0
+                              ? 'DAY ${days + 1}  ·  THE PATH CONTINUES'
+                              : 'DAY ONE  ·  THE JOURNEY BEGINS',
+                          style: AppTextStyles.overline.copyWith(
+                            color: AppColors.forest700,
+                            fontSize: 11,
+                            letterSpacing: 2.8,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // ── Headline ───────────────────────────────────────────
+                    FadeTransition(
+                      opacity: _fade,
+                      child: Text(
+                        headline,
+                        style: AppTextStyles.displayMedium.copyWith(
+                          fontSize: tight ? 30 : 34,
+                          fontWeight: FontWeight.w600,
+                          height: 1.08,
+                          letterSpacing: -0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // ── Subtitle ───────────────────────────────────────────
+                    FadeTransition(
+                      opacity: _fade,
+                      child: Text(
+                        days > 0
+                            ? l10n.onbFinishBodyDays(days)
+                            : l10n.onbFinishBodyToday,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.stone600,
+                          height: 1.5,
+                          fontSize: 14.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    // ── Privacy confirmation chip ──────────────────────────
+                    FadeTransition(
+                      opacity: _fade,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.forest50,
+                          borderRadius: AppRadius.xl,
+                          border: Border.all(color: AppColors.forest100),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.verified_user_outlined,
+                                color: AppColors.forest600, size: 20),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                l10n.onbFinishPrivacyNote,
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.forest700,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: tight ? 14 : 18),
+
+                    // ── Primary CTA ────────────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: widget.saving ? null : widget.onFinish,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.forest700,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(58),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: AppRadius.xl),
+                          textStyle: AppTextStyles.titleMedium.copyWith(
+                            fontSize: 17,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          elevation: 0,
+                        ),
+                        child: widget.saving
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2),
+                              )
+                            : Text(l10n.onbBeginMyJourney),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.verified_user_outlined,
-                    color: AppColors.forest600, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n.onbFinishPrivacyNote,
-                    style: AppTextStyles.bodySmall
-                        .copyWith(color: AppColors.forest700),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─── Plant hero card — onboarding screens 1 & 7 ──────────────────────────────
+// Designed so the plant feels painted-into the surface, not pasted-on:
+//   1. A warm radial halo (off-white → cream → dusty stone) sits behind the
+//      plant. The halo center is biased slightly above the visual middle so
+//      it reads like sunlight catching the leaves from above-front.
+//   2. The plant image itself is masked with an EXTENDED radial fade
+//      (60% solid → 100% transparent at the edge) so its native background
+//      dissolves into the halo rather than terminating at a hard rectangle.
+//   3. A soft elliptical "ground shadow" anchors the plant to the card.
+//   4. Four minimal L-bracket corner marks reference the brand's botanical
+//      framing without the previous lotus/diamond/leaf clutter.
+
+class _OnboardingPlantCard extends StatelessWidget {
+  const _OnboardingPlantCard({required this.days, required this.size});
+  final int days;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // ── Card surface: warm radial halo ─────────────────────────────
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.xxl,
+                border: Border.fromBorderSide(
+                  BorderSide(color: Color(0xA8DCE8DC), width: 1),
+                ),
+                gradient: RadialGradient(
+                  center: Alignment(0, -0.18),
+                  radius: 1.05,
+                  colors: [
+                    Color(0xFFFCF8EE), // bright sun-warm centre
+                    Color(0xFFF7F1E1), // soft cream mid
+                    Color(0xFFEDE5D1), // dustier outer edge
+                  ],
+                  stops: [0.0, 0.55, 1.0],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x141F4D38),
+                    blurRadius: 30,
+                    offset: Offset(0, 14),
+                    spreadRadius: -8,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── Inner ambient glow (mimics light wrap on leaves) ───────────
+          const Positioned.fill(
+            child: IgnorePointer(
+              child: ClipRRect(
+                borderRadius: AppRadius.xxl,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(0, -0.35),
+                      radius: 0.6,
+                      colors: [
+                        Color(0x40FFFFFF),
+                        Color(0x00FFFFFF),
+                      ],
+                      stops: [0.0, 1.0],
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-          const SizedBox(height: 28),
 
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: widget.saving ? null : widget.onFinish,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.forest600,
-                minimumSize: const Size.fromHeight(56),
-                shape: const RoundedRectangleBorder(borderRadius: AppRadius.xl),
-                textStyle: AppTextStyles.labelLarge.copyWith(fontSize: 16),
+          // ── Ground shadow (soft elliptical anchor) ─────────────────────
+          Positioned(
+            left: size * 0.18,
+            right: size * 0.18,
+            bottom: size * 0.12,
+            height: size * 0.08,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.elliptical(
+                      size * 0.32, size * 0.04)),
+                  gradient: const RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.7,
+                    colors: [
+                      Color(0x252E5844),
+                      Color(0x002E5844),
+                    ],
+                  ),
+                ),
               ),
-              child: widget.saving
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2))
-                  : Text(l10n.onbBeginMyJourney),
             ),
+          ),
+
+          // ── Plant image with extended soft fade ───────────────────────
+          Positioned.fill(
+            child: Padding(
+              padding: EdgeInsets.all(size * 0.09),
+              child: ShaderMask(
+                shaderCallback: (rect) => const RadialGradient(
+                  center: Alignment.center,
+                  radius: 0.92,
+                  colors: [
+                    Colors.white,
+                    Colors.white,
+                    Color(0x00FFFFFF),
+                  ],
+                  stops: [0.0, 0.68, 1.0],
+                ).createShader(rect),
+                blendMode: BlendMode.dstIn,
+                child: Image.asset(
+                  PlantLogic.getPlantAsset(days),
+                  fit: BoxFit.contain,
+                  alignment: Alignment.center,
+                  semanticLabel: PlantLogic.getStageLabel(days),
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            ),
+          ),
+
+          // ── Corner brackets (minimal botanical reference) ─────────────
+          const Positioned(
+            top: 14, left: 14,
+            child: _CornerBracket(corner: _BracketCorner.tl),
+          ),
+          const Positioned(
+            top: 14, right: 14,
+            child: _CornerBracket(corner: _BracketCorner.tr),
+          ),
+          const Positioned(
+            bottom: 14, left: 14,
+            child: _CornerBracket(corner: _BracketCorner.bl),
+          ),
+          const Positioned(
+            bottom: 14, right: 14,
+            child: _CornerBracket(corner: _BracketCorner.br),
           ),
         ],
       ),
@@ -1657,259 +1971,57 @@ class _FinishStepState extends State<_FinishStep>
   }
 }
 
-// ─── Botanical arch frame — onboarding screens 1 & 7 ────────────────────────
-// Double-line tombstone border (outer forest300 / inner forest100) with lotus
-// badge, side diamonds, corner leaf ornaments, and bottom dot trio.
+enum _BracketCorner { tl, tr, bl, br }
 
-class _OnboardingPlantFrame extends StatelessWidget {
-  const _OnboardingPlantFrame({required this.days, required this.height});
-  final int days;
-  final double height;
+class _CornerBracket extends StatelessWidget {
+  const _CornerBracket({required this.corner});
+  final _BracketCorner corner;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: height,
-      height: height,
-      child: LayoutBuilder(builder: (context, constraints) {
-        final w = constraints.maxWidth;
-        final h = constraints.maxHeight;
-        final archR = w * 0.48;
-        final sideMidY = archR + (h - archR) * 0.5;
-
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // ── Double arch border ──────────────────────────────────────
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _OnbFramePainter(archRadius: archR),
-              ),
-            ),
-
-            // ── Plant (radial-fade fill) ────────────────────────────────
-            // Symmetric padding + explicit center alignment so the plant sits
-            // visually centred inside the arch on screens 1 & 7 (previously
-            // the asymmetric bottom padding nudged it off-axis).
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: ShaderMask(
-                shaderCallback: (rect) => const RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.72,
-                  colors: [Colors.white, Colors.white, Colors.transparent],
-                  stops: [0.0, 0.60, 1.0],
-                ).createShader(rect),
-                blendMode: BlendMode.dstIn,
-                child: Center(
-                  child: Image.asset(
-                    PlantLogic.getPlantAsset(days),
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                    semanticLabel: PlantLogic.getStageLabel(days),
-                  ),
-                ),
-              ),
-            ),
-
-            // ── Top lotus badge ─────────────────────────────────────────
-            Positioned(
-              top: -13,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: AppColors.cream,
-                    shape: BoxShape.circle,
-                    border:
-                        Border.all(color: AppColors.forest300, width: 1.0),
-                    boxShadow: [
-                      BoxShadow(
-                        // ignore: deprecated_member_use
-                        color: AppColors.forest100.withOpacity(0.7),
-                        blurRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.spa_outlined,
-                      size: 14, color: AppColors.forest500),
-                ),
-              ),
-            ),
-
-            // ── Left side diamond ────────────────────────────────────────
-            Positioned(
-              left: -5,
-              top: sideMidY - 5,
-              child: Transform.rotate(
-                angle: 0.7854,
-                child: Container(width: 9, height: 9,
-                    color: AppColors.forest300),
-              ),
-            ),
-
-            // ── Right side diamond ───────────────────────────────────────
-            Positioned(
-              right: -5,
-              top: sideMidY - 5,
-              child: Transform.rotate(
-                angle: 0.7854,
-                child: Container(width: 9, height: 9,
-                    color: AppColors.forest300),
-              ),
-            ),
-
-            // ── Bottom-left leaf ornament ────────────────────────────────
-            const Positioned(
-              left: 10,
-              bottom: 10,
-              child: _OnbLeafOrnament(mirrored: false),
-            ),
-
-            // ── Bottom-right leaf ornament ───────────────────────────────
-            const Positioned(
-              right: 10,
-              bottom: 10,
-              child: _OnbLeafOrnament(mirrored: true),
-            ),
-
-            // ── Bottom dot trio ──────────────────────────────────────────
-            Positioned(
-              bottom: -6,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Transform.rotate(
-                        angle: 0.7854,
-                        child: Container(
-                            width: 4, height: 4,
-                            color: AppColors.forest300)),
-                    const SizedBox(width: 5),
-                    Transform.rotate(
-                        angle: 0.7854,
-                        child: Container(
-                            width: 7, height: 7,
-                            color: AppColors.forest400)),
-                    const SizedBox(width: 5),
-                    Transform.rotate(
-                        angle: 0.7854,
-                        child: Container(
-                            width: 4, height: 4,
-                            color: AppColors.forest300)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
+    return CustomPaint(
+      size: const Size(16, 16),
+      painter: _CornerBracketPainter(corner: corner),
     );
   }
 }
 
-class _OnbFramePainter extends CustomPainter {
-  const _OnbFramePainter({required this.archRadius});
-  final double archRadius;
+class _CornerBracketPainter extends CustomPainter {
+  const _CornerBracketPainter({required this.corner});
+  final _BracketCorner corner;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.forest300
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
     final w = size.width;
     final h = size.height;
-    final r = archRadius;
-    const cr = 6.0;
-
-    // ── Outer border: forest300, 1.0 px ────────────────────────────────
-    final outerPaint = Paint()
-      ..color = AppColors.forest300
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final outerPath = Path()
-      ..moveTo(cr, h)
-      ..lineTo(w - cr, h)
-      ..quadraticBezierTo(w, h, w, h - cr)
-      ..lineTo(w, r)
-      ..arcToPoint(Offset(0, r),
-          radius: Radius.circular(r), clockwise: false)
-      ..lineTo(0, h - cr)
-      ..quadraticBezierTo(0, h, cr, h);
-    canvas.drawPath(outerPath, outerPaint);
-
-    // ── Inner border: forest100, 0.8 px, inset 5.5 px ──────────────────
-    const inset = 5.5;
-    final ir = (r - inset).clamp(0.0, double.infinity);
-    const icr = 4.0;
-
-    final innerPaint = Paint()
-      ..color = AppColors.forest100
-      ..strokeWidth = 0.8
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final innerPath = Path()
-      ..moveTo(inset + icr, h - inset)
-      ..lineTo(w - inset - icr, h - inset)
-      ..quadraticBezierTo(
-          w - inset, h - inset, w - inset, h - inset - icr)
-      ..lineTo(w - inset, ir)
-      ..arcToPoint(Offset(inset, ir),
-          radius: Radius.circular(ir), clockwise: false)
-      ..lineTo(inset, h - inset - icr)
-      ..quadraticBezierTo(
-          inset, h - inset, inset + icr, h - inset);
-    canvas.drawPath(innerPath, innerPaint);
+    switch (corner) {
+      case _BracketCorner.tl:
+        canvas.drawLine(const Offset(0, 0), Offset(w, 0), paint);
+        canvas.drawLine(const Offset(0, 0), Offset(0, h), paint);
+        break;
+      case _BracketCorner.tr:
+        canvas.drawLine(const Offset(0, 0), Offset(w, 0), paint);
+        canvas.drawLine(Offset(w, 0), Offset(w, h), paint);
+        break;
+      case _BracketCorner.bl:
+        canvas.drawLine(Offset(0, h), Offset(w, h), paint);
+        canvas.drawLine(const Offset(0, 0), Offset(0, h), paint);
+        break;
+      case _BracketCorner.br:
+        canvas.drawLine(Offset(0, h), Offset(w, h), paint);
+        canvas.drawLine(Offset(w, 0), Offset(w, h), paint);
+        break;
+    }
   }
 
   @override
-  bool shouldRepaint(covariant _OnbFramePainter old) =>
-      old.archRadius != archRadius;
-}
-
-class _OnbLeafOrnament extends StatelessWidget {
-  const _OnbLeafOrnament({required this.mirrored});
-  final bool mirrored;
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.scale(
-      scaleX: mirrored ? -1.0 : 1.0,
-      child: SizedBox(
-        width: 34,
-        height: 28,
-        child: Stack(
-          children: [
-            Positioned(
-              bottom: 0,
-              left: 0,
-              child: Transform.rotate(
-                angle: -0.4,
-                child: const Icon(Icons.energy_savings_leaf_outlined,
-                    size: 18, color: AppColors.forest200),
-              ),
-            ),
-            Positioned(
-              top: 0,
-              right: 2,
-              child: Transform.rotate(
-                angle: 0.9,
-                child: const Icon(Icons.energy_savings_leaf_outlined,
-                    size: 14, color: AppColors.forest200),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  bool shouldRepaint(covariant _CornerBracketPainter old) =>
+      old.corner != corner;
 }
 
 // ─── Shared shell for steps ───────────────────────────────────────────────────

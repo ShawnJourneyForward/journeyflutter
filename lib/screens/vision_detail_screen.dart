@@ -40,8 +40,8 @@ class VisionDetailScreen extends ConsumerWidget {
     final item = items.firstWhere(
       (e) => e.id == itemId,
       // If the item was just deleted (e.g. from the edit sheet) bail out.
-      orElse: () => const VisionItem(
-          id: '', title: '', description: '', emoji: 'guide'),
+      orElse: () =>
+          const VisionItem(id: '', title: '', description: '', emoji: 'guide'),
     );
     if (item.id.isEmpty) {
       // Pop on next frame — we can't pop synchronously inside build.
@@ -222,8 +222,8 @@ class _DetailAppBar extends StatelessWidget {
             opacity: collapsed ? 1 : 0,
             child: Text(
               item.title,
-              style: AppTextStyles.titleMedium
-                  .copyWith(color: AppColors.stone800),
+              style:
+                  AppTextStyles.titleMedium.copyWith(color: AppColors.stone800),
               overflow: TextOverflow.ellipsis,
             ),
           );
@@ -334,8 +334,8 @@ class _AchievedBanner extends StatelessWidget {
               date == null
                   ? 'You achieved this. Beautiful.'
                   : 'Achieved on ${DateFormat.yMMMMd().format(date!)}',
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.forest700),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.forest700),
             ),
           ),
         ],
@@ -446,8 +446,7 @@ class _AffirmationCard extends StatelessWidget {
               Icon(Icons.format_quote_rounded, size: 18, color: accent),
               const SizedBox(width: 6),
               Text('Affirmation',
-                  style:
-                      AppTextStyles.overline.copyWith(color: accent)),
+                  style: AppTextStyles.overline.copyWith(color: accent)),
             ],
           ),
           const SizedBox(height: 8),
@@ -586,9 +585,8 @@ class _MilestoneRow extends StatelessWidget {
               child: Text(
                 milestone.text,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: milestone.done
-                      ? AppColors.stone400
-                      : AppColors.stone800,
+                  color:
+                      milestone.done ? AppColors.stone400 : AppColors.stone800,
                   decoration: milestone.done
                       ? TextDecoration.lineThrough
                       : TextDecoration.none,

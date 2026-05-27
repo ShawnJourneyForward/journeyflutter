@@ -156,8 +156,8 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
         foregroundColor: AppColors.stone800,
         elevation: 0,
         title: Text('Daily Reflection',
-            style: AppTextStyles.titleMedium
-                .copyWith(color: AppColors.forest700)),
+            style:
+                AppTextStyles.titleMedium.copyWith(color: AppColors.forest700)),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -172,8 +172,8 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                     borderRadius: BorderRadius.circular(20)),
               ),
               child: Text(_saving ? 'Saving…' : 'Save',
-                  style: AppTextStyles.labelMedium
-                      .copyWith(color: Colors.white)),
+                  style:
+                      AppTextStyles.labelMedium.copyWith(color: Colors.white)),
             ),
           ),
         ],
@@ -186,8 +186,8 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             Center(
               child: Text(
                 DateFormat('EEEE, MMMM d').format(DateTime.now()),
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone500),
+                style:
+                    AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
               ),
             ),
             const SizedBox(height: 14),
@@ -218,9 +218,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                             : AppColors.cream,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: selected
-                              ? m.color
-                              : AppColors.forest100,
+                          color: selected ? m.color : AppColors.forest100,
                           width: selected ? 1.4 : 1.0,
                         ),
                       ),
@@ -455,22 +453,21 @@ class _NumberedField extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: Text('$n',
-              style: AppTextStyles.labelSmall
-                  .copyWith(color: AppColors.honey600)),
+              style:
+                  AppTextStyles.labelSmall.copyWith(color: AppColors.honey600)),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: TextField(
             controller: controller,
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone800),
+            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
               isDense: true,
               filled: true,
               fillColor: AppColors.cream,
               hintText: '…',
-              hintStyle: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone400),
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               border: OutlineInputBorder(
@@ -507,8 +504,8 @@ class _TallField extends StatelessWidget {
       controller: controller,
       minLines: 3,
       maxLines: 6,
-      style:
-          AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800, height: 1.5),
+      style: AppTextStyles.bodyMedium
+          .copyWith(color: AppColors.stone800, height: 1.5),
       decoration: InputDecoration(
         filled: true,
         fillColor: AppColors.cream,
@@ -519,18 +516,15 @@ class _TallField extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.forest100, width: 1),
+          borderSide: const BorderSide(color: AppColors.forest100, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.forest100, width: 1),
+          borderSide: const BorderSide(color: AppColors.forest100, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide:
-              const BorderSide(color: AppColors.forest400, width: 1.2),
+          borderSide: const BorderSide(color: AppColors.forest400, width: 1.2),
         ),
       ),
     );

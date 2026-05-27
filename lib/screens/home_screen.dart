@@ -289,7 +289,8 @@ class _RecoveryProgress {
       final frac = (mins / _milestoneMinutes.first).clamp(0.0, 1.0);
       return _RecoveryProgress(
         currentLabel: 'Just Starting',
-        currentBody: 'The decision you made today already matters. Be gentle with yourself.',
+        currentBody:
+            'The decision you made today already matters. Be gentle with yourself.',
         progress: frac,
         nextLabel: _milestoneLabels.first,
         nextIn: _formatRemaining(_milestoneMinutes.first - mins),
@@ -529,151 +530,128 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
 
         final pledgedToday = profile.lastPledgeDate == _today();
+
+        // Build the card list once so the SliverList delegate can index it.
+        // Each entry is wrapped in a RepaintBoundary → its own compositor
+        // layer → scroll becomes a pure GPU translation. SliverList culls
+        // entries outside cacheExtent, so off-screen cards skip layout
+        // entirely instead of all rendering eagerly in a single sliver.
+        final cards = <Widget>[
+          RepaintBoundary(child: _SerenityCard(profile: profile)),
+          if (profile.dailySpend > 0)
+            RepaintBoundary(child: _MoneyCard(profile: profile)),
+          RepaintBoundary(
+            child: _JourneyCard(
+              days: stats?.days ?? 0,
+              onTap: () => context.push('/milestone'),
+            ),
+          ),
+          RepaintBoundary(
+            child: _PledgeCard(
+              pledgedToday: pledgedToday && !_editingPledge,
+              pledgeText: profile.lastPledgeText,
+              controller: _pledgeController,
+              saving: _pledgeSaving,
+              onSave: () => _savePledge(profile),
+              onEdit: () {
+                _pledgeController.text = profile.lastPledgeText ?? '';
+                setState(() => _editingPledge = true);
+              },
+            ),
+          ),
+          const RepaintBoundary(child: _IntentionCard()),
+          RepaintBoundary(
+            child: _GratitudeCard(
+              todayEntry: _editingGratitude ? null : todayGratitude,
+              controller: _gratitudeController,
+              saving: _gratitudeSaving,
+              onSave: _saveGratitude,
+              onEdit: () {
+                _gratitudeController.text = todayGratitude ?? '';
+                setState(() => _editingGratitude = true);
+              },
+            ),
+          ),
+          RepaintBoundary(child: _MyReasonCard(profile: profile)),
+          if (profile.weeklyGoals.isNotEmpty)
+            RepaintBoundary(
+              child: _WeeklyGoalsCard(
+                goals: profile.weeklyGoals,
+                toggles: goalToggles,
+                onToggle: (i) {
+                  ref.read(weeklyGoalTogglesProvider.notifier).toggle(i);
+                  H.selection();
+                },
+              ),
+            ),
+          RepaintBoundary(
+            child: _DailyMissionsCard(
+              missions: missions,
+              toggles: missionToggles,
+              onToggle: (i) {
+                ref.read(missionTogglesProvider.notifier).toggle(i);
+                H.selection();
+              },
+            ),
+          ),
+          RepaintBoundary(
+            child: _CheckInCard(
+              onCraving: () => _showCravingSheet(context, ref),
+              onThought: () => _showThoughtSheet(context, ref),
+              onActivity: () => _showActivitySheet(context, ref),
+              onSleep: () => _showSleepSheet(context, ref),
+            ),
+          ),
+          RepaintBoundary(
+            child: _TodaysReminderCard(quote: _dailyQuote(l10n)),
+          ),
+          RepaintBoundary(
+            child: _RecoveryBanner(
+              elapsed: stats?.elapsed ?? Duration.zero,
+              onTap: () => context.push('/recovery'),
+            ),
+          ),
+        ];
+
         return Scaffold(
           backgroundColor: AppColors.stone50,
           body: SafeArea(
             child: CustomScrollView(
               physics: const ClampingScrollPhysics(),
-              cacheExtent: 500,
+              // Generous cache so the hero card stays warm when scrolled past.
+              cacheExtent: 800,
               slivers: [
+                // Header pins in its own sliver so the avatar tap target is
+                // always cheap to hit-test and the header never participates
+                // in card list re-layout.
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ── Header ──────────────────────────────────────────
-                        _HomeHeader(
-                          username: profile.username,
-                          isFirstLaunch: _isFirstLaunch,
-                          onAvatarTap: () {
-                            H.light();
-                            context.go('/settings');
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // ── Serenity Card (hero) ─────────────────────────────
-                        RepaintBoundary(child: _SerenityCard(profile: profile)),
-                        const SizedBox(height: 14),
-
-                        // ── Money + My Reason ────────────────────────────────
-                        if (profile.dailySpend > 0) ...[
-                          RepaintBoundary(child: _MoneyCard(profile: profile)),
-                          const SizedBox(height: 14),
-                        ],
-
-                        // ── Journey milestone nodes ──────────────────────────
-                        RepaintBoundary(child: _JourneyCard(
-                          days: stats?.days ?? 0,
-                          onTap: () => context.push('/milestone'),
-                        )),
-                        const SizedBox(height: 14),
-
-                        // ── Daily Pledge ──────────────────────────────────────
-                        // Each card wrapped in RepaintBoundary so it lives on
-                        // its own compositor layer. Scroll becomes a pure GPU
-                        // translation — no shadow/decoration repaints, no
-                        // jitter when 1-sec/10-sec timers tick on the hero.
-                        RepaintBoundary(
-                          child: _PledgeCard(
-                            pledgedToday: pledgedToday && !_editingPledge,
-                            pledgeText: profile.lastPledgeText,
-                            controller: _pledgeController,
-                            saving: _pledgeSaving,
-                            onSave: () => _savePledge(profile),
-                            onEdit: () {
-                              _pledgeController.text =
-                                  profile.lastPledgeText ?? '';
-                              setState(() => _editingPledge = true);
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-
-                        // ── Daily Intention (morning ↔ evening pairing) ──
-                        // Sits between Pledge and Gratitude so the daily
-                        // rhythm reads top-to-bottom: I commit (pledge),
-                        // I aim (intention), I notice (gratitude).
-                        const RepaintBoundary(child: _IntentionCard()),
-                        const SizedBox(height: 14),
-
-                        // ── Daily Gratitude ───────────────────────────────────
-                        RepaintBoundary(
-                          child: _GratitudeCard(
-                            todayEntry:
-                                _editingGratitude ? null : todayGratitude,
-                            controller: _gratitudeController,
-                            saving: _gratitudeSaving,
-                            onSave: _saveGratitude,
-                            onEdit: () {
-                              _gratitudeController.text = todayGratitude ?? '';
-                              setState(() => _editingGratitude = true);
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        RepaintBoundary(child: _MyReasonCard(profile: profile)),
-                        const SizedBox(height: 14),
-
-                        // ── Weekly Goals ─────────────────────────────────────
-                        if (profile.weeklyGoals.isNotEmpty) ...[
-                          RepaintBoundary(
-                            child: _WeeklyGoalsCard(
-                              goals: profile.weeklyGoals,
-                              toggles: goalToggles,
-                              onToggle: (i) {
-                                ref
-                                    .read(weeklyGoalTogglesProvider.notifier)
-                                    .toggle(i);
-                                H.selection();
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                        ],
-
-                        // ── Daily Missions ───────────────────────────────────
-                        RepaintBoundary(
-                          child: _DailyMissionsCard(
-                            missions: missions,
-                            toggles: missionToggles,
-                            onToggle: (i) {
-                              ref
-                                  .read(missionTogglesProvider.notifier)
-                                  .toggle(i);
-                              H.selection();
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-
-                        // ── Daily Check-In ───────────────────────────────────
-                        RepaintBoundary(
-                          child: _CheckInCard(
-                            onCraving: () => _showCravingSheet(context, ref),
-                            onThought: () => _showThoughtSheet(context, ref),
-                            onActivity: () => _showActivitySheet(context, ref),
-                            onSleep: () => _showSleepSheet(context, ref),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-
-                        // ── Today's Reminder ─────────────────────────────────
-                        RepaintBoundary(
-                          child: _TodaysReminderCard(quote: _dailyQuote(l10n)),
-                        ),
-                        const SizedBox(height: 14),
-
-                        // ── Recovery Timeline Banner ─────────────────────────
-                        RepaintBoundary(
-                          child: _RecoveryBanner(
-                            elapsed: stats?.elapsed ?? Duration.zero,
-                            onTap: () => context.push('/recovery'),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                      ],
+                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
+                    child: _HomeHeader(
+                      username: profile.username,
+                      isFirstLaunch: _isFirstLaunch,
+                      onAvatarTap: () {
+                        H.light();
+                        context.go('/settings');
+                      },
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, i) => Padding(
+                        padding: EdgeInsets.only(
+                            bottom: i == cards.length - 1 ? 0 : 14),
+                        child: cards[i],
+                      ),
+                      childCount: cards.length,
+                      // We already wrap every card in a RepaintBoundary above.
+                      addRepaintBoundaries: false,
+                      // Default semantic indexes are fine; turning them off
+                      // saves a tiny per-item cost during scroll.
+                      addSemanticIndexes: false,
                     ),
                   ),
                 ),
@@ -1385,102 +1363,101 @@ class _MoneyCard extends ConsumerWidget {
         : null;
 
     return LuxuryCard(
-        padding: EdgeInsets.zero,
-        clip: true,
-        child: Stack(
-          children: [
-            Padding(
-              // Extra 42 px bottom so content clears the _BottomFlourish band.
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 42),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header: icon + label
+      padding: EdgeInsets.zero,
+      clip: true,
+      child: Stack(
+        children: [
+          Padding(
+            // Extra 42 px bottom so content clears the _BottomFlourish band.
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 42),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: icon + label
+                Row(
+                  children: [
+                    const IconChip(
+                        icon: Icons.account_balance_wallet_outlined, size: 46),
+                    const SizedBox(width: 14),
+                    Text(
+                      l10n.homeMoneyReclaimed,
+                      style: AppTextStyles.overline.copyWith(fontSize: 12),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // Real-time counter \u2014 ticks every second via soberStatsProvider
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    formatted,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: AppTextStyles.moneyNumber.copyWith(fontSize: 46),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.homeMoneyAllTime,
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.mistGrey),
+                ),
+                const SizedBox(height: 14),
+                const SoftDivider(),
+                const SizedBox(height: 14),
+                Text(
+                  l10n.homeMoneyInvesting,
+                  style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
+                ),
+                // Savings goal progress bar (hidden when no goal is set)
+                if (progressFraction != null) ...[
+                  const SizedBox(height: 16),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: progressFraction,
+                      backgroundColor: AppColors.mintChip,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.forest),
+                      minHeight: 8,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      const IconChip(
-                          icon: Icons.account_balance_wallet_outlined,
-                          size: 46),
-                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(
+                          l10n.homeMoneyGoalSavedOf(
+                              formatted, _formatMoney(currency, goal!)),
+                          style: AppTextStyles.bodySmall,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       Text(
-                        l10n.homeMoneyReclaimed,
-                        style: AppTextStyles.overline.copyWith(fontSize: 12),
+                        l10n.homeMoneyGoalPercent(
+                            (progressFraction * 100).round()),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.forest,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  // Real-time counter \u2014 ticks every second via soberStatsProvider
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      formatted,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: AppTextStyles.moneyNumber.copyWith(fontSize: 46),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.homeMoneyAllTime,
-                    style: AppTextStyles.bodyMedium
-                        .copyWith(color: AppColors.mistGrey),
-                  ),
-                  const SizedBox(height: 14),
-                  const SoftDivider(),
-                  const SizedBox(height: 14),
-                  Text(
-                    l10n.homeMoneyInvesting,
-                    style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
-                  ),
-                  // Savings goal progress bar (hidden when no goal is set)
-                  if (progressFraction != null) ...[
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LinearProgressIndicator(
-                        value: progressFraction,
-                        backgroundColor: AppColors.mintChip,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.forest),
-                        minHeight: 8,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            l10n.homeMoneyGoalSavedOf(
-                                formatted, _formatMoney(currency, goal!)),
-                            style: AppTextStyles.bodySmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.homeMoneyGoalPercent(
-                              (progressFraction * 100).round()),
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.forest,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
-            const Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _BottomFlourish(),
-            ),
-          ],
-        ),
+          ),
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _BottomFlourish(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1696,8 +1673,7 @@ class _MyReasonCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.spa_rounded,
-                size: 14, color: AppColors.forest600),
+            const Icon(Icons.spa_rounded, size: 14, color: AppColors.forest600),
             const SizedBox(width: 6),
             Text('My Reason',
                 style: AppTextStyles.titleSmall
@@ -1766,83 +1742,87 @@ class _JourneyCard extends StatelessWidget {
               // Extra bottom clears the _BottomFlourish band.
               padding: const EdgeInsets.fromLTRB(18, 18, 18, 40),
               child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.homeYourJourney,
-                style: AppTextStyles.overline.copyWith(fontSize: 12)),
-            const SizedBox(height: 6),
-            Text(l10n.homeJourneySubtitle, style: AppTextStyles.bodyLarge),
-            const SizedBox(height: 18),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(milestones.length * 2 - 1, (i) {
-                if (i.isOdd) {
-                  final achieved = days >= milestones[i ~/ 2].days;
-                  return Expanded(
-                    child: Container(
-                      height: 2,
-                      color:
-                          achieved ? AppColors.leafGreen : AppColors.softBorder,
-                    ),
-                  );
-                }
-                final index = i ~/ 2;
-                final node = milestones[index];
-                final achieved = days >= node.days;
-                final current = achieved &&
-                    (index == milestones.length - 1 ||
-                        days < milestones[index + 1].days);
-                return _MilestoneNodeWidget(
-                    node: node, achieved: achieved, isCurrent: current);
-              }),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: milestones.map((node) {
-                final achieved = days >= node.days;
-                final String timing;
-                if (achieved) {
-                  timing = node.days == 0 ? 'start' : 'done';
-                } else if (node.days < 365) {
-                  timing = 'Day ${node.days}';
-                } else {
-                  timing =
-                      node.days == 365 ? '1 year' : '${node.days ~/ 365} yr';
-                }
-                return Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        node.label,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color:
-                              achieved ? AppColors.forest : AppColors.stoneText,
-                          fontSize: 11,
-                          height: 1.25,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        timing,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.caption.copyWith(
-                          color: achieved
-                              ? AppColors.leafGreen
-                              : AppColors.mistGrey,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.homeYourJourney,
+                      style: AppTextStyles.overline.copyWith(fontSize: 12)),
+                  const SizedBox(height: 6),
+                  Text(l10n.homeJourneySubtitle,
+                      style: AppTextStyles.bodyLarge),
+                  const SizedBox(height: 18),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(milestones.length * 2 - 1, (i) {
+                      if (i.isOdd) {
+                        final achieved = days >= milestones[i ~/ 2].days;
+                        return Expanded(
+                          child: Container(
+                            height: 2,
+                            color: achieved
+                                ? AppColors.leafGreen
+                                : AppColors.softBorder,
+                          ),
+                        );
+                      }
+                      final index = i ~/ 2;
+                      final node = milestones[index];
+                      final achieved = days >= node.days;
+                      final current = achieved &&
+                          (index == milestones.length - 1 ||
+                              days < milestones[index + 1].days);
+                      return _MilestoneNodeWidget(
+                          node: node, achieved: achieved, isCurrent: current);
+                    }),
                   ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 14),
-            _JourneyProgressBar(days: days, milestones: milestones),
-          ],
-        ),
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: milestones.map((node) {
+                      final achieved = days >= node.days;
+                      final String timing;
+                      if (achieved) {
+                        timing = node.days == 0 ? 'start' : 'done';
+                      } else if (node.days < 365) {
+                        timing = 'Day ${node.days}';
+                      } else {
+                        timing = node.days == 365
+                            ? '1 year'
+                            : '${node.days ~/ 365} yr';
+                      }
+                      return Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              node.label,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: achieved
+                                    ? AppColors.forest
+                                    : AppColors.stoneText,
+                                fontSize: 11,
+                                height: 1.25,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              timing,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.caption.copyWith(
+                                color: achieved
+                                    ? AppColors.leafGreen
+                                    : AppColors.mistGrey,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 14),
+                  _JourneyProgressBar(days: days, milestones: milestones),
+                ],
+              ),
             ),
             const Positioned(
               left: 0,
@@ -2042,18 +2022,15 @@ class _IntentionCard extends ConsumerWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: readyForReview
-                    ? AppColors.honey50
-                    : AppColors.mintChip,
+                color: readyForReview ? AppColors.honey50 : AppColors.mintChip,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 readyForReview
                     ? Icons.wb_twilight_rounded
                     : Icons.wb_sunny_outlined,
-                color: readyForReview
-                    ? AppColors.honey600
-                    : AppColors.forest600,
+                color:
+                    readyForReview ? AppColors.honey600 : AppColors.forest600,
                 size: 22,
               ),
             ),
@@ -2071,8 +2048,8 @@ class _IntentionCard extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Text(
                           'One small thing for your recovery today.',
-                          style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.stone500, height: 1.4),
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone500, height: 1.4),
                         ),
                       ],
                     )
@@ -2402,68 +2379,69 @@ class _DailyMissionsCard extends StatelessWidget {
             // Extra bottom clears the _BottomFlourish band.
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
             child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.homeDailyMissions, style: AppTextStyles.overline),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                  child: Text(l10n.homeMissionsSubtitle,
-                      style: AppTextStyles.bodyMedium)),
-              Text(l10n.homeMissionsProgress(done, missions.length),
-                  style: AppTextStyles.caption
-                      .copyWith(color: AppColors.mistGrey)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...missions.asMap().entries.map((e) {
-            final isDone = toggles.contains(e.key);
-            return GestureDetector(
-              onTap: () => onToggle(e.key),
-              behavior: HitTestBehavior.opaque,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 44),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: isDone ? AppColors.mintChip : Colors.white,
-                          border: Border.all(
-                            color: isDone
-                                ? AppColors.leafGreen
-                                : AppColors.softBorder,
-                            width: 1.5,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: isDone
-                            ? const Icon(Icons.check_rounded,
-                                size: 14, color: AppColors.leafGreen)
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(e.value,
-                            style: AppTextStyles.bodyMedium.copyWith(
-                                color: isDone
-                                    ? AppColors.stone400
-                                    : AppColors.stone700)),
-                      ),
-                    ],
-                  ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.homeDailyMissions, style: AppTextStyles.overline),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Expanded(
+                        child: Text(l10n.homeMissionsSubtitle,
+                            style: AppTextStyles.bodyMedium)),
+                    Text(l10n.homeMissionsProgress(done, missions.length),
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.mistGrey)),
+                  ],
                 ),
-              ),
-            );
-          }),
-        ],
-      ),
+                const SizedBox(height: 12),
+                ...missions.asMap().entries.map((e) {
+                  final isDone = toggles.contains(e.key);
+                  return GestureDetector(
+                    onTap: () => onToggle(e.key),
+                    behavior: HitTestBehavior.opaque,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 44),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color:
+                                    isDone ? AppColors.mintChip : Colors.white,
+                                border: Border.all(
+                                  color: isDone
+                                      ? AppColors.leafGreen
+                                      : AppColors.softBorder,
+                                  width: 1.5,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: isDone
+                                  ? const Icon(Icons.check_rounded,
+                                      size: 14, color: AppColors.leafGreen)
+                                  : null,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(e.value,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                      color: isDone
+                                          ? AppColors.stone400
+                                          : AppColors.stone700)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
           const Positioned(
             left: 0,
@@ -2988,8 +2966,8 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
                     color: selected
@@ -2997,18 +2975,14 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                         : AppColors.stone50,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: selected
-                          ? AppColors.honey500
-                          : AppColors.stone200,
+                      color: selected ? AppColors.honey500 : AppColors.stone200,
                       width: selected ? 1.4 : 1.0,
                     ),
                   ),
                   child: Text(
                     opt.$2,
                     style: AppTextStyles.labelMedium.copyWith(
-                      color: selected
-                          ? AppColors.honey600
-                          : AppColors.stone600,
+                      color: selected ? AppColors.honey600 : AppColors.stone600,
                     ),
                   ),
                 ),
@@ -3062,8 +3036,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           if (similar != null) ...[
             const SizedBox(height: 4),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.mintChip,
                 borderRadius: BorderRadius.circular(10),
@@ -3143,8 +3116,8 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                   setState(() => _response = selected ? null : r.slug);
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 7),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
                     color: selected
@@ -3152,18 +3125,16 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                         : AppColors.stone50,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: selected
-                          ? AppColors.forest600
-                          : AppColors.stone200,
+                      color:
+                          selected ? AppColors.forest600 : AppColors.stone200,
                       width: selected ? 1.4 : 1.0,
                     ),
                   ),
                   child: Text(
                     r.label,
                     style: AppTextStyles.labelMedium.copyWith(
-                      color: selected
-                          ? AppColors.forest700
-                          : AppColors.stone600,
+                      color:
+                          selected ? AppColors.forest700 : AppColors.stone600,
                     ),
                   ),
                 ),
@@ -3221,8 +3192,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           const SizedBox(height: 14),
           _NotesField(
             controller: _notesCtrl,
-            hintText:
-                'Notes (optional) — e.g., passed a bar on the way home.',
+            hintText: 'Notes (optional) — e.g., passed a bar on the way home.',
           ),
           const SizedBox(height: 18),
           _saveButton(
@@ -3292,8 +3262,7 @@ class _OutcomePill extends StatelessWidget {
           child: Column(
             children: [
               Icon(icon,
-                  size: 18,
-                  color: selected ? color : AppColors.stone400),
+                  size: 18, color: selected ? color : AppColors.stone400),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -3625,197 +3594,197 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
     final distanceUnit = useImperial ? 'miles' : 'km';
 
     return _sheetShell(
-        context: context,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SheetHeader(
-              icon: Icons.directions_run_rounded,
-              title: 'Log activity',
-              subtitle:
-                  'Movement can shift the nervous system. Capture enough detail to see what truly helps.',
-            ),
-            const SizedBox(height: 22),
-            const _SheetSectionLabel('What did you do?'),
-            const SizedBox(height: 10),
-            _typeGrid(context),
-            const SizedBox(height: 18),
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SheetHeader(
+            icon: Icons.directions_run_rounded,
+            title: 'Log activity',
+            subtitle:
+                'Movement can shift the nervous system. Capture enough detail to see what truly helps.',
+          ),
+          const SizedBox(height: 22),
+          const _SheetSectionLabel('What did you do?'),
+          const SizedBox(height: 10),
+          _typeGrid(context),
+          const SizedBox(height: 18),
 
-            // ── Duration + Distance ──────────────────────────────────────────
-            if (_needsDistance) ...[
-              const _SheetSectionLabel('Time & distance'),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  // Exact time in minutes
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Duration (min)',
-                            style: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400)),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _minutesCtrl,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.titleSmall
-                              .copyWith(color: AppColors.forest700),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.stone50,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide:
-                                  const BorderSide(color: AppColors.stone100),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide:
-                                  const BorderSide(color: AppColors.stone100),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide: const BorderSide(
-                                  color: AppColors.forest300, width: 1.5),
-                            ),
-                            suffixText: 'min',
-                            suffixStyle: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400),
+          // ── Duration + Distance ──────────────────────────────────────────
+          if (_needsDistance) ...[
+            const _SheetSectionLabel('Time & distance'),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                // Exact time in minutes
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Duration (min)',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.stone400)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: _minutesCtrl,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.titleSmall
+                            .copyWith(color: AppColors.forest700),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.stone50,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide:
+                                const BorderSide(color: AppColors.stone100),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Distance field — unit label reflects imperial/metric setting
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Distance ($distanceUnit)',
-                            style: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400)),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _distanceCtrl,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.titleSmall
-                              .copyWith(color: AppColors.forest700),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.stone50,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide:
-                                  const BorderSide(color: AppColors.stone100),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide:
-                                  const BorderSide(color: AppColors.stone100),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: AppRadius.lg,
-                              borderSide: const BorderSide(
-                                  color: AppColors.forest300, width: 1.5),
-                            ),
-                            hintText: '0.0',
-                            hintStyle: AppTextStyles.titleSmall
-                                .copyWith(color: AppColors.stone200),
-                            suffixText: distanceUnit,
-                            suffixStyle: AppTextStyles.caption
-                                .copyWith(color: AppColors.stone400),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide:
+                                const BorderSide(color: AppColors.stone100),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide: const BorderSide(
+                                color: AppColors.forest300, width: 1.5),
+                          ),
+                          suffixText: 'min',
+                          suffixStyle: AppTextStyles.caption
+                              .copyWith(color: AppColors.stone400),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ] else ...[
-              const _SheetSectionLabel('Duration'),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _minutesCtrl,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.titleSmall
-                    .copyWith(color: AppColors.forest700),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: AppColors.stone50,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(
-                        color: AppColors.forest300, width: 1.5),
-                  ),
-                  suffixText: 'min',
-                  suffixStyle: AppTextStyles.caption
-                      .copyWith(color: AppColors.stone400),
                 ),
+                const SizedBox(width: 12),
+                // Distance field — unit label reflects imperial/metric setting
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Distance ($distanceUnit)',
+                          style: AppTextStyles.caption
+                              .copyWith(color: AppColors.stone400)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: _distanceCtrl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.titleSmall
+                            .copyWith(color: AppColors.forest700),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.stone50,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide:
+                                const BorderSide(color: AppColors.stone100),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide:
+                                const BorderSide(color: AppColors.stone100),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: AppRadius.lg,
+                            borderSide: const BorderSide(
+                                color: AppColors.forest300, width: 1.5),
+                          ),
+                          hintText: '0.0',
+                          hintStyle: AppTextStyles.titleSmall
+                              .copyWith(color: AppColors.stone200),
+                          suffixText: distanceUnit,
+                          suffixStyle: AppTextStyles.caption
+                              .copyWith(color: AppColors.stone400),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            const _SheetSectionLabel('Duration'),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _minutesCtrl,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              style:
+                  AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: AppColors.stone50,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: AppRadius.lg,
+                  borderSide: const BorderSide(color: AppColors.stone100),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.lg,
+                  borderSide: const BorderSide(color: AppColors.stone100),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.lg,
+                  borderSide:
+                      const BorderSide(color: AppColors.forest300, width: 1.5),
+                ),
+                suffixText: 'min',
+                suffixStyle:
+                    AppTextStyles.caption.copyWith(color: AppColors.stone400),
               ),
-            ],
-            const SizedBox(height: 18),
-
-            // ── Effort ───────────────────────────────────────────────────────
-            const _SheetSectionLabel('How much effort did it take?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: const ['Light', 'Moderate', 'Strong'],
-              isSelected: (option) => _effort == option,
-              onTap: (option) {
-                H.selection();
-                setState(() => _effort = option);
-              },
-            ),
-            const SizedBox(height: 18),
-
-            // ── Outcome ──────────────────────────────────────────────────────
-            const _SheetSectionLabel('How did you feel after?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: const ['Calmer', 'Clearer', 'Energized', 'Same'],
-              isSelected: (option) => _outcome == option,
-              onTap: (option) {
-                H.selection();
-                setState(() => _outcome = option);
-              },
-            ),
-            const SizedBox(height: 18),
-
-            // ── Notes + save ─────────────────────────────────────────────────
-            _NotesField(
-              controller: _notesCtrl,
-              hintText:
-                  'Notes (optional) — e.g., walked after dinner and felt steadier.',
-            ),
-            const SizedBox(height: 18),
-            _saveButton(
-              saving: _saving,
-              onPressed: _save,
-              label: 'Save activity',
             ),
           ],
-        ),
-      );
+          const SizedBox(height: 18),
+
+          // ── Effort ───────────────────────────────────────────────────────
+          const _SheetSectionLabel('How much effort did it take?'),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: const ['Light', 'Moderate', 'Strong'],
+            isSelected: (option) => _effort == option,
+            onTap: (option) {
+              H.selection();
+              setState(() => _effort = option);
+            },
+          ),
+          const SizedBox(height: 18),
+
+          // ── Outcome ──────────────────────────────────────────────────────
+          const _SheetSectionLabel('How did you feel after?'),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: const ['Calmer', 'Clearer', 'Energized', 'Same'],
+            isSelected: (option) => _outcome == option,
+            onTap: (option) {
+              H.selection();
+              setState(() => _outcome = option);
+            },
+          ),
+          const SizedBox(height: 18),
+
+          // ── Notes + save ─────────────────────────────────────────────────
+          _NotesField(
+            controller: _notesCtrl,
+            hintText:
+                'Notes (optional) — e.g., walked after dinner and felt steadier.',
+          ),
+          const SizedBox(height: 18),
+          _saveButton(
+            saving: _saving,
+            onPressed: _save,
+            label: 'Save activity',
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -3987,5 +3956,3 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
         ),
       );
 }
-
-

@@ -35,8 +35,7 @@ void seedSecureStorage(Map<String, String> entries) {
 }
 
 void installSecureStorageMock() {
-  const channel =
-      MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
+  const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(channel, (call) async {
     final args = (call.arguments as Map?) ?? const {};

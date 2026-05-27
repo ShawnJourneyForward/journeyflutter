@@ -54,15 +54,16 @@ class TodaysStrengthCard extends ConsumerWidget {
               const Spacer(),
               if (markedCount > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.honey50,
                     borderRadius: AppRadius.pill,
                   ),
-                  child: Text('$markedCount hard ${markedCount == 1 ? 'day' : 'days'}',
-                      style: AppTextStyles.caption.copyWith(
-                          color: AppColors.honey600, fontSize: 10)),
+                  child: Text(
+                      '$markedCount hard ${markedCount == 1 ? 'day' : 'days'}',
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.honey600, fontSize: 10)),
                 ),
             ],
           ),

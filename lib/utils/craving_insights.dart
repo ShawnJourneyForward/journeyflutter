@@ -72,8 +72,7 @@ List<ResponseStat> bestResponses(
   final out = <ResponseStat>[];
   for (final entry in byResponse.entries) {
     if (entry.value.length < minUses) continue;
-    final sober =
-        entry.value.where((e) => e.outcome == 'stayed_sober').length;
+    final sober = entry.value.where((e) => e.outcome == 'stayed_sober').length;
     final label = kCravingResponses
         .firstWhere((r) => r.slug == entry.key,
             orElse: () => CravingResponse(entry.key, entry.key))

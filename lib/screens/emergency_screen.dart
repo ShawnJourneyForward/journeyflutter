@@ -247,12 +247,7 @@ class _HomeTab extends ConsumerWidget {
       ),
       (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt),
       (Icons.spa_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons),
-      (
-        Icons.spa_outlined,
-        'H.A.L.T.',
-        AppColors.honey500,
-        _Tab.halt
-      ),
+      (Icons.spa_outlined, 'H.A.L.T.', AppColors.honey500, _Tab.halt),
       (Icons.timer_outlined, 'Urge Timer', AppColors.forest400, _Tab.urgeTimer),
       (
         Icons.play_circle_outline,
@@ -1238,8 +1233,7 @@ class _LibraryCard extends StatelessWidget {
                   maxLines: 1,
                   softWrap: false,
                   style: AppTextStyles.caption.copyWith(
-                      color: AppColors.forest600,
-                      fontWeight: FontWeight.w600),
+                      color: AppColors.forest600, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -1448,7 +1442,6 @@ class _MeditationTabState extends State<_MeditationTab>
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
             children: [
-
               // ── Urge Surfing audio card ────────────────────────────────────
               Container(
                 decoration: BoxDecoration(
@@ -1608,12 +1601,10 @@ class _MeditationTabState extends State<_MeditationTab>
                       builder: (_, snap) {
                         final pos = snap.data ?? Duration.zero;
                         final total = _player.duration ?? Duration.zero;
-                        final frac =
-                            total.inMilliseconds > 0
-                                ? (pos.inMilliseconds /
-                                        total.inMilliseconds)
-                                    .clamp(0.0, 1.0)
-                                : 0.0;
+                        final frac = total.inMilliseconds > 0
+                            ? (pos.inMilliseconds / total.inMilliseconds)
+                                .clamp(0.0, 1.0)
+                            : 0.0;
                         return Column(
                           children: [
                             GestureDetector(
@@ -1627,8 +1618,8 @@ class _MeditationTabState extends State<_MeditationTab>
                                           .clamp(0.0, 1.0);
                                       final seekMs =
                                           (dx * total.inMilliseconds).round();
-                                      _player.seek(Duration(
-                                          milliseconds: seekMs));
+                                      _player
+                                          .seek(Duration(milliseconds: seekMs));
                                     }
                                   : null,
                               child: ClipRRect(
@@ -1639,16 +1630,14 @@ class _MeditationTabState extends State<_MeditationTab>
                                   backgroundColor:
                                       // ignore: deprecated_member_use
                                       Colors.white.withOpacity(0.12),
-                                  valueColor:
-                                      const AlwaysStoppedAnimation(
-                                          AppColors.honey400),
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      AppColors.honey400),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 6),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(_formatDur(pos),
                                     style: AppTextStyles.caption.copyWith(
@@ -2415,7 +2404,8 @@ class _PlayTapeTab extends StatelessWidget {
               Text(
                 'An urge can feel urgent, but it is temporary. Before you act, '
                 'walk yourself through the next few moments, tonight, and tomorrow morning.',
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600),
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone600),
               ),
               const SizedBox(height: 20),
 
@@ -2646,9 +2636,11 @@ class _TapeCard extends StatelessWidget {
             final isLast = e.key == rows.length - 1;
             return Column(
               children: [
-                const Divider(height: 1, thickness: 1, color: Color(0x1A000000)),
+                const Divider(
+                    height: 1, thickness: 1, color: Color(0x1A000000)),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -40,8 +40,8 @@ class JournalDetailScreen extends ConsumerWidget {
       (e) => e.id == entryId,
       // If the entry was just deleted, return a sentinel and pop on the next
       // frame — we can't pop synchronously inside build().
-      orElse: () => JournalEntry(
-          id: '', date: DateTime(1970), text: '', mood: 'okay'),
+      orElse: () =>
+          JournalEntry(id: '', date: DateTime(1970), text: '', mood: 'okay'),
     );
     if (entry.id.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -51,9 +51,8 @@ class JournalDetailScreen extends ConsumerWidget {
     }
 
     final mood = moodFor(entry.mood);
-    final onThisDay = ref.watch(onThisDayProvider)
-        .where((e) => e.id != entry.id)
-        .toList();
+    final onThisDay =
+        ref.watch(onThisDayProvider).where((e) => e.id != entry.id).toList();
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -76,9 +75,7 @@ class JournalDetailScreen extends ConsumerWidget {
                 if (!ok || !context.mounted) return;
               }
               H.medium();
-              await ref
-                  .read(journalProvider.notifier)
-                  .toggleLocked(entry.id);
+              await ref.read(journalProvider.notifier).toggleLocked(entry.id);
             },
           ),
           IconButton(
@@ -105,20 +102,21 @@ class JournalDetailScreen extends ConsumerWidget {
             // ── Date + edited stamp ─────────────────────────────────────
             Text(
               DateFormat('EEEE, MMMM d, y').format(entry.date),
-              style: AppTextStyles.titleSmall
-                  .copyWith(color: AppColors.stone500),
+              style:
+                  AppTextStyles.titleSmall.copyWith(color: AppColors.stone500),
             ),
             const SizedBox(height: 2),
             Text(
               DateFormat('h:mm a').format(entry.date),
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
             ),
             if (entry.editedAt != null) ...[
               const SizedBox(height: 4),
               Text(
                 'Edited ${_relativeAgo(entry.editedAt!)}',
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone400, fontStyle: FontStyle.italic),
+                style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.stone400, fontStyle: FontStyle.italic),
               ),
             ],
             const SizedBox(height: 18),
@@ -204,11 +202,10 @@ class JournalDetailScreen extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         title: Text('Delete this entry?',
-            style: AppTextStyles.titleMedium
-                .copyWith(color: AppColors.stone800)),
+            style:
+                AppTextStyles.titleMedium.copyWith(color: AppColors.stone800)),
         content: Text('This cannot be undone.',
-            style: AppTextStyles.bodySmall
-                .copyWith(color: AppColors.stone500)),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -242,8 +239,7 @@ class JournalDetailScreen extends ConsumerWidget {
     }
     if (!context.mounted) return;
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (_) =>
-          JournalDetailScreen(entryId: echo.id, onEdit: onEdit),
+      builder: (_) => JournalDetailScreen(entryId: echo.id, onEdit: onEdit),
     ));
   }
 
@@ -414,8 +410,7 @@ class _EchoCard extends StatelessWidget {
                         AppTextStyles.labelSmall.copyWith(color: mood.color)),
                 if (entry.locked) ...[
                   const SizedBox(width: 6),
-                  const Icon(Icons.lock,
-                      size: 11, color: AppColors.honey500),
+                  const Icon(Icons.lock, size: 11, color: AppColors.honey500),
                 ],
                 const Spacer(),
                 Text(
@@ -436,10 +431,9 @@ class _EchoCard extends StatelessWidget {
                 color: (entry.locked || entry.text.trim().isEmpty)
                     ? AppColors.stone400
                     : AppColors.stone700,
-                fontStyle:
-                    (entry.locked || entry.text.trim().isEmpty)
-                        ? FontStyle.italic
-                        : FontStyle.normal,
+                fontStyle: (entry.locked || entry.text.trim().isEmpty)
+                    ? FontStyle.italic
+                    : FontStyle.normal,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,

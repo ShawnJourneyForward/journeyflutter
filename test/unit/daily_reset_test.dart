@@ -26,8 +26,10 @@ void main() {
     test('does not surface yesterday\'s completions as today\'s', () async {
       // Seed a stale "yesterday" mission_toggles record.
       SharedPreferences.setMockInitialValues({
-        'mission_toggles':
-            jsonEncode({'date': _yesterday(), 'done': [0, 1, 2]}),
+        'mission_toggles': jsonEncode({
+          'date': _yesterday(),
+          'done': [0, 1, 2]
+        }),
       });
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -50,7 +52,10 @@ void main() {
     test('today\'s completions are retained across container restart',
         () async {
       SharedPreferences.setMockInitialValues({
-        'mission_toggles': jsonEncode({'date': _today(), 'done': [1, 2]}),
+        'mission_toggles': jsonEncode({
+          'date': _today(),
+          'done': [1, 2]
+        }),
       });
       final container = ProviderContainer();
       addTearDown(container.dispose);

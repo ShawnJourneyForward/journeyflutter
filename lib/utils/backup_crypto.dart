@@ -129,8 +129,8 @@ class BackupCrypto {
   /// CTR-mode stream cipher PRF, one for the HMAC integrity tag. Splitting
   /// prevents key reuse across primitives.
   static (List<int>, List<int>) _deriveKeys(String passphrase, List<int> salt) {
-    final dk = _pbkdf2(utf8.encode(passphrase), salt,
-        _iterations, _keyLen + _macKeyLen);
+    final dk = _pbkdf2(
+        utf8.encode(passphrase), salt, _iterations, _keyLen + _macKeyLen);
     return (dk.sublist(0, _keyLen), dk.sublist(_keyLen));
   }
 
@@ -169,8 +169,7 @@ class BackupCrypto {
   /// XOR into plaintext. Reuses HMAC as a PRF — secure as long as
   /// (key, nonce) is unique per ciphertext, which we guarantee with a fresh
   /// 96-bit random nonce per encrypt() call.
-  static Uint8List _ctrXor(
-      List<int> key, List<int> nonce, Uint8List data) {
+  static Uint8List _ctrXor(List<int> key, List<int> nonce, Uint8List data) {
     final out = Uint8List(data.length);
     final hmac = Hmac(sha256, key);
     var counter = 0;

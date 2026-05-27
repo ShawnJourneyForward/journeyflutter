@@ -194,20 +194,17 @@ class _RecordCard extends StatelessWidget {
               const Spacer(),
               if (delta != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: delta >= 0
-                        ? AppColors.forest50
-                        : AppColors.honey50,
+                    color: delta >= 0 ? AppColors.forest50 : AppColors.honey50,
                     borderRadius: AppRadius.pill,
                   ),
                   child: Text(
                     delta >= 0 ? '+$delta mood' : '$delta mood',
                     style: AppTextStyles.caption.copyWith(
-                      color: delta >= 0
-                          ? AppColors.forest700
-                          : AppColors.honey600,
+                      color:
+                          delta >= 0 ? AppColors.forest700 : AppColors.honey600,
                       fontSize: 10,
                     ),
                   ),
@@ -230,8 +227,7 @@ class _RecordCard extends StatelessWidget {
           _MiniLabel('Automatic thought'),
           Text('"${record.automaticThought}"',
               style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.stone800,
-                  fontStyle: FontStyle.italic)),
+                  color: AppColors.stone800, fontStyle: FontStyle.italic)),
           if (record.distortions.isNotEmpty) ...[
             const SizedBox(height: 10),
             Wrap(
@@ -419,10 +415,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2.4),
                           )
-                        : Text(
-                            _step == _stepCount - 1
-                                ? 'Save record'
-                                : 'Next',
+                        : Text(_step == _stepCount - 1 ? 'Save record' : 'Next',
                             style: AppTextStyles.labelLarge
                                 .copyWith(color: Colors.white)),
                   ),
@@ -501,12 +494,12 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(d.description,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.stone700)),
+                              style: AppTextStyles.bodyMedium
+                                  .copyWith(color: AppColors.stone700)),
                           const SizedBox(height: 12),
                           Text('Try asking:',
-                              style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.stone500)),
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.stone500)),
                           const SizedBox(height: 4),
                           Text(d.reframePrompt,
                               style: AppTextStyles.bodyMedium.copyWith(
@@ -524,15 +517,13 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: sel ? AppColors.forest700 : AppColors.card,
                     borderRadius: AppRadius.pill,
                     border: Border.all(
-                      color: sel
-                          ? AppColors.forest700
-                          : AppColors.stone200,
+                      color: sel ? AppColors.forest700 : AppColors.stone200,
                     ),
                   ),
                   child: Text(d.name,
@@ -546,7 +537,8 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
       case 3:
         return _StepBlock(
           title: 'Weigh the evidence',
-          subtitle: 'Like a courtroom — what supports the thought, what doesn\'t?',
+          subtitle:
+              'Like a courtroom — what supports the thought, what doesn\'t?',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -569,7 +561,8 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
       case 4:
         return _StepBlock(
           title: 'Land somewhere truer',
-          subtitle: 'Not "positive thinking" — a fairer, more accurate version.',
+          subtitle:
+              'Not "positive thinking" — a fairer, more accurate version.',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -604,7 +597,8 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
         style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+          hintStyle:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
           filled: true,
           fillColor: AppColors.stone50,
           contentPadding: const EdgeInsets.all(12),
@@ -642,8 +636,7 @@ class _StepBlock extends StatelessWidget {
                 .copyWith(color: AppColors.forest700, fontSize: 22)),
         const SizedBox(height: 4),
         Text(subtitle,
-            style: AppTextStyles.bodySmall
-                .copyWith(color: AppColors.stone500)),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
         const SizedBox(height: 14),
         child,
       ],

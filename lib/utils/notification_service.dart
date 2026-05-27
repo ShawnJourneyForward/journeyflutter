@@ -8,6 +8,22 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+class NotifScheduleResult {
+  final bool success;
+  final String? error;
+
+  const NotifScheduleResult._({
+    required this.success,
+    this.error,
+  });
+
+  factory NotifScheduleResult.ok() =>
+      const NotifScheduleResult._(success: true);
+
+  factory NotifScheduleResult.failed(String e) =>
+      NotifScheduleResult._(success: false, error: e);
+}
+
 /// Centralised notification helper for Journey Forward.
 ///
 /// Notification ID space (disjoint ranges — must never overlap):
@@ -53,7 +69,8 @@ class NotificationService {
     60: '60 Days Sober. Two months. Every single day has mattered.',
     90: '90 Days Sober. Three months. Keep going at your own pace.',
     180: '180 Days Sober. Half a year. That\'s a lot of days showing up.',
-    365: '1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.',
+    365:
+        '1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.',
     730: '2 Years Sober. Two years of choosing yourself, over and over again.',
     1095: '3 Years Sober. Three years. Your path forward is your own.',
   };
@@ -86,8 +103,7 @@ class NotificationService {
   /// the next successful init.
   static Future<void> init() async {
     try {
-      const androidInit =
-          AndroidInitializationSettings('@drawable/ic_stat_notify');
+      const androidInit = AndroidInitializationSettings('ic_stat_notify');
       const iosInit = DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
@@ -190,6 +206,9 @@ class NotificationService {
   // MainActivity.kt; if the bridge fails (e.g. iOS), we silently no-op.
   static const _settingsChannel =
       MethodChannel('com.journeyforward/app_settings');
+  static const _batteryChannel =
+      MethodChannel('com.journeyforward/battery_opt');
+
   static Future<void> openSystemNotificationSettings() async {
     if (!Platform.isAndroid) return;
     try {
@@ -205,16 +224,40 @@ class NotificationService {
   // ── Schedule daily reminders ─────────────────────────────────────────────
 
   /// Read saved preferences and (re-)schedule all daily reminders.
-  /// Safe to call on every app launch — it cancels then re-creates.
-  static Future<void> scheduleFromPrefs() async {
+  /// Safe to call on every app launch ? it cancels then re-creates.
+  static Future<NotifScheduleResult> scheduleFromPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+
+      // Timezone guard: if main() failed to set tz.local, recover here before
+      // scheduling. A silent UTC fallback is worse than no reminder because it
+      // fires at the wrong wall-clock time and looks random to the user.
+      final localName = localTimezoneNameIfAvailable();
+      if (localName == null || localName == 'UTC') {
+        try {
+          final detected = await FlutterTimezone.getLocalTimezone();
+          if (detected.isNotEmpty && detected != 'UTC') {
+            tz.setLocalLocation(tz.getLocation(detected));
+          }
+        } catch (e) {
+          return NotifScheduleResult.failed(
+            'Timezone recovery failed. Still UTC. Error: $e',
+          );
+        }
+
+        final recoveredName = localTimezoneNameIfAvailable();
+        if (recoveredName == null || recoveredName == 'UTC') {
+          return NotifScheduleResult.failed(
+            'Timezone is still UTC after recovery attempt.',
+          );
+        }
+      }
 
       final morningStr = prefs.getString('notif_morning') ?? '08:00';
       final eveningStr = prefs.getString('notif_evening') ?? '20:00';
       final wantMotiv = prefs.getBool('notif_motivation') ?? true;
       final wantRemind = prefs.getBool('notif_reminders') ?? true;
-      // Milestones toggle — read here so the Settings pref actually does something.
+      // Milestones toggle ? read here so the Settings pref actually does something.
       // fireDayMilestone / fireSavingsMilestone check this before posting.
       _milestonesEnabled = prefs.getBool('notif_milestones') ?? true;
 
@@ -222,7 +265,9 @@ class NotificationService {
       await _plugin.cancel(1);
       await _plugin.cancel(2);
 
-      if (!wantMotiv && !wantRemind) return; // nothing to schedule
+      if (!wantMotiv && !wantRemind) {
+        return NotifScheduleResult.ok(); // nothing to schedule
+      }
 
       final morningTime = _parseTime(morningStr);
       final eveningTime = _parseTime(eveningStr);
@@ -244,7 +289,7 @@ class NotificationService {
           priority: Priority.high,
           playSound: true,
           enableVibration: true,
-          icon: '@drawable/ic_stat_notify',
+          icon: 'ic_stat_notify',
           color: const Color(0xFF2D6A4F),
         ),
         iOS: const DarwinNotificationDetails(
@@ -256,36 +301,45 @@ class NotificationService {
 
       final scheduleMode = await _bestScheduleMode();
 
-      // Morning notification (ID 1)
-      await _plugin.zonedSchedule(
-        1,
-        'Journey Forward',
-        morningBody,
-        _nextInstanceOf(morningTime.hour, morningTime.minute),
-        details,
-        androidScheduleMode: scheduleMode,
-        matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
+      if (wantMotiv) {
+        // Morning motivation notification (ID 1)
+        await _plugin.zonedSchedule(
+          1,
+          'Journey Forward',
+          morningBody,
+          _nextInstanceOf(morningTime.hour, morningTime.minute),
+          details,
+          androidScheduleMode: scheduleMode,
+          matchDateTimeComponents: DateTimeComponents.time,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
 
-      // Evening notification (ID 2)
-      await _plugin.zonedSchedule(
-        2,
-        'Journey Forward',
-        eveningBody,
-        _nextInstanceOf(eveningTime.hour, eveningTime.minute),
-        details,
-        androidScheduleMode: scheduleMode,
-        matchDateTimeComponents: DateTimeComponents.time,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-      );
+      if (wantRemind) {
+        // Evening reminder notification (ID 2)
+        await _plugin.zonedSchedule(
+          2,
+          'Journey Forward',
+          eveningBody,
+          _nextInstanceOf(eveningTime.hour, eveningTime.minute),
+          details,
+          androidScheduleMode: scheduleMode,
+          matchDateTimeComponents: DateTimeComponents.time,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+        );
+      }
 
       debugPrint(
-          '[NotificationService] Scheduled morning @ $morningStr, evening @ $eveningStr');
-    } catch (e) {
+        '[NotificationService] Scheduled ${wantMotiv ? 'morning @ $morningStr' : 'morning off'}, '
+        '${wantRemind ? 'evening @ $eveningStr' : 'evening off'}',
+      );
+      return NotifScheduleResult.ok();
+    } catch (e, st) {
       debugPrint('[NotificationService] scheduleFromPrefs error: $e');
+      debugPrint('$st');
+      return NotifScheduleResult.failed(e.toString());
     }
   }
 
@@ -311,7 +365,7 @@ class NotificationService {
             priority: Priority.high,
             playSound: true,
             enableVibration: true,
-            icon: '@drawable/ic_stat_notify',
+            icon: 'ic_stat_notify',
             color: const Color(0xFF2D6A4F),
           ),
           iOS: const DarwinNotificationDetails(
@@ -344,7 +398,7 @@ class NotificationService {
             priority: Priority.high,
             playSound: true,
             enableVibration: true,
-            icon: '@drawable/ic_stat_notify',
+            icon: 'ic_stat_notify',
             color: const Color(0xFF2D6A4F),
           ),
           iOS: const DarwinNotificationDetails(
@@ -404,7 +458,7 @@ class NotificationService {
             priority: Priority.high,
             playSound: true,
             enableVibration: true,
-            icon: '@drawable/ic_stat_notify',
+            icon: 'ic_stat_notify',
             color: const Color(0xFF2D6A4F),
           ),
           iOS: const DarwinNotificationDetails(
@@ -450,7 +504,12 @@ class NotificationService {
       tz.setLocalLocation(tz.getLocation(detected));
       debugPrint(
           '[NotificationService] timezone changed → $detected, re-scheduling');
-      await scheduleFromPrefs();
+      final result = await scheduleFromPrefs();
+      if (!result.success) {
+        debugPrint(
+          '[NotificationService] timezone refresh schedule failed: ${result.error}',
+        );
+      }
     } catch (e) {
       debugPrint('[NotificationService] refreshTimezone error: $e');
     }
@@ -458,6 +517,81 @@ class NotificationService {
 
   // ── Diagnostic: fire a test notification right now ───────────────────────
   //
+  static Future<List<PendingNotificationRequest>>
+      getPendingNotifications() async {
+    try {
+      return await _plugin.pendingNotificationRequests();
+    } catch (e) {
+      debugPrint('[NotificationService] getPendingNotifications error: $e');
+      return [];
+    }
+  }
+
+  static Future<bool?> isIgnoringBatteryOptimizations() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      return await _batteryChannel.invokeMethod<bool>(
+        'isIgnoringBatteryOptimizations',
+      );
+    } catch (e) {
+      debugPrint('[NotificationService] battery check error: $e');
+      return null;
+    }
+  }
+
+  static Future<void> openBatteryOptimizationSettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      await _batteryChannel.invokeMethod('openBatteryOptimizationSettings');
+    } catch (e) {
+      debugPrint('[NotificationService] open battery settings error: $e');
+    }
+  }
+
+  static Future<bool?> areNotificationsAllowedIfAvailable() async {
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return true;
+      return await android.areNotificationsEnabled();
+    } catch (e) {
+      debugPrint(
+          '[NotificationService] areNotificationsAllowedIfAvailable error: $e');
+      return null;
+    }
+  }
+
+  static Future<bool?> canScheduleExactAlarmsIfAvailable() async {
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) return null;
+      return await android.canScheduleExactNotifications();
+    } catch (e) {
+      debugPrint(
+          '[NotificationService] canScheduleExactAlarmsIfAvailable error: $e');
+      return null;
+    }
+  }
+
+  static String? localTimezoneNameIfAvailable() {
+    try {
+      return tz.local.name;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String? localTimezoneNowTextIfAvailable() {
+    try {
+      return tz.TZDateTime.now(tz.local).toString();
+    } catch (_) {
+      return null;
+    }
+  }
+
   // Exposed via Settings → Notifications so the user can verify the whole
   // pipeline (permission → channel → OS scheduler) without waiting until
   // 08:00. Returns false if the OS rejected the post — usually permission
@@ -477,7 +611,7 @@ class NotificationService {
             priority: Priority.high,
             playSound: true,
             enableVibration: true,
-            icon: '@drawable/ic_stat_notify',
+            icon: 'ic_stat_notify',
             color: const Color(0xFF2D6A4F),
           ),
           iOS: const DarwinNotificationDetails(
@@ -519,8 +653,8 @@ class NotificationService {
   /// adjusts the underlying UTC trigger so the user still sees 08:00.
   static tz.TZDateTime _nextInstanceOf(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-        tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }

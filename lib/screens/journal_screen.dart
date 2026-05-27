@@ -324,8 +324,7 @@ class _JournalTab extends ConsumerWidget {
                       child: _EmptyState(
                         icon: Icons.filter_alt_off_outlined,
                         title: 'Nothing matches',
-                        subtitle:
-                            'Try a different filter or clear the search.',
+                        subtitle: 'Try a different filter or clear the search.',
                       ),
                     ),
                   )
@@ -350,9 +349,8 @@ class _JournalTab extends ConsumerWidget {
                               onTap: () => _openDetail(context, ref, entry),
                               onTagTap: (tag) {
                                 H.selection();
-                                ref
-                                    .read(journalFilterProvider.notifier)
-                                    .state = filter.copyWith(tag: tag);
+                                ref.read(journalFilterProvider.notifier).state =
+                                    filter.copyWith(tag: tag);
                               },
                             );
                           },
@@ -402,8 +400,8 @@ class _JournalTab extends ConsumerWidget {
       BuildContext context, WidgetRef ref, JournalEntry entry) async {
     H.selection();
     if (entry.locked) {
-      final ok = await JournalReauth.require(context,
-          reason: 'View this entry');
+      final ok =
+          await JournalReauth.require(context, reason: 'View this entry');
       if (!ok || !context.mounted) return;
     }
     if (!context.mounted) return;
@@ -505,7 +503,6 @@ class _JournalTab extends ConsumerWidget {
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.stone500)),
                 const SizedBox(height: 18),
-
                 _EntryKindCard(
                   icon: Icons.edit_note_rounded,
                   tint: AppColors.mintChip,
@@ -599,8 +596,7 @@ class _JournalTab extends ConsumerWidget {
                 _CrisisAction(
                   icon: Icons.psychology_outlined,
                   label: 'Try a thought record',
-                  detail:
-                      'Name the thought, weigh the evidence, reframe it.',
+                  detail: 'Name the thought, weigh the evidence, reframe it.',
                   onTap: () {
                     Navigator.pop(ctx);
                     context.go('/cbt');
@@ -785,9 +781,7 @@ class _DiaryHeader extends StatelessWidget {
                     size: 16, color: AppColors.honey500),
                 const SizedBox(width: 6),
                 Text(
-                  streak == 1
-                      ? '1 day writing'
-                      : '$streak day writing streak',
+                  streak == 1 ? '1 day writing' : '$streak day writing streak',
                   style: AppTextStyles.labelMedium
                       .copyWith(color: AppColors.forest700),
                 ),
@@ -847,8 +841,8 @@ class _QuickMoodPill extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.stone100),
                       ),
-                      child: Text(m.emoji,
-                          style: const TextStyle(fontSize: 16)),
+                      child:
+                          Text(m.emoji, style: const TextStyle(fontSize: 16)),
                     ),
                   ),
                 )),
@@ -1029,8 +1023,8 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
             TextField(
               controller: _searchCtrl,
               autofocus: true,
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone800),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
               decoration: InputDecoration(
                 hintText: 'Search your entries…',
                 hintStyle: AppTextStyles.bodyMedium
@@ -1052,8 +1046,8 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.md,
-                  borderSide: const BorderSide(
-                      color: AppColors.forest400, width: 1.5),
+                  borderSide:
+                      const BorderSide(color: AppColors.forest400, width: 1.5),
                 ),
               ),
               onChanged: widget.onQueryChanged,
@@ -1063,8 +1057,8 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
             const SizedBox(height: 8),
             InputChip(
               label: Text('#${widget.filter.tag!}'),
-              labelStyle: AppTextStyles.labelSmall
-                  .copyWith(color: AppColors.forest700),
+              labelStyle:
+                  AppTextStyles.labelSmall.copyWith(color: AppColors.forest700),
               backgroundColor: AppColors.mintChip,
               side: const BorderSide(color: AppColors.forest100),
               deleteIconColor: AppColors.forest500,
@@ -1096,8 +1090,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
           children: [
             Text(label,
                 style: AppTextStyles.labelMedium.copyWith(
-                    color:
-                        selected ? Colors.white : AppColors.stone600)),
+                    color: selected ? Colors.white : AppColors.stone600)),
             if (count > 0) ...[
               const SizedBox(width: 5),
               Text('$count',
@@ -1156,8 +1149,8 @@ class _DiaryEmptyState extends StatelessWidget {
           Center(
             child: Text(
               'Pick a door — or tap + to start with a blank page.',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone500),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
               textAlign: TextAlign.center,
             ),
           ),
@@ -1239,8 +1232,8 @@ class _JournalCard extends ConsumerWidget {
           color: AppColors.honeySoft,
           borderRadius: AppRadius.lg,
         ),
-        child: const Icon(Icons.delete_outline_rounded,
-            color: AppColors.honey500),
+        child:
+            const Icon(Icons.delete_outline_rounded, color: AppColors.honey500),
       ),
       confirmDismiss: (_) async {
         return await showDialog<bool>(
@@ -1291,8 +1284,8 @@ class _JournalCard extends ConsumerWidget {
                   Icon(mood.icon, size: 18, color: mood.color),
                   const SizedBox(width: 6),
                   Text(mood.label,
-                      style: AppTextStyles.labelSmall
-                          .copyWith(color: mood.color)),
+                      style:
+                          AppTextStyles.labelSmall.copyWith(color: mood.color)),
                   if (entry.subMood != null && entry.subMood!.isNotEmpty) ...[
                     const SizedBox(width: 6),
                     Container(
@@ -1315,8 +1308,7 @@ class _JournalCard extends ConsumerWidget {
                   ],
                   if (entry.locked) ...[
                     const SizedBox(width: 8),
-                    const Icon(Icons.lock,
-                        size: 12, color: AppColors.honey500),
+                    const Icon(Icons.lock, size: 12, color: AppColors.honey500),
                   ],
                   const Spacer(),
                   Text(
@@ -1390,8 +1382,7 @@ class _JournalCard extends ConsumerWidget {
                         child: Text(
                           '#$t',
                           style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.forest600,
-                              letterSpacing: 0.2),
+                              color: AppColors.forest600, letterSpacing: 0.2),
                         ),
                       ),
                     );
@@ -1443,8 +1434,7 @@ class _JournalEntrySheet extends ConsumerStatefulWidget {
   final JournalPrompt? seedPrompt; // empty-state starter
 
   @override
-  ConsumerState<_JournalEntrySheet> createState() =>
-      _JournalEntrySheetState();
+  ConsumerState<_JournalEntrySheet> createState() => _JournalEntrySheetState();
 }
 
 class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
@@ -1653,8 +1643,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
       // Soft-prepend to the text field so the user sees what they're answering.
       if (_ctrl.text.trim().isEmpty) {
         _ctrl.text = '${p.text}\n\n';
-        _ctrl.selection = TextSelection.fromPosition(
-            TextPosition(offset: _ctrl.text.length));
+        _ctrl.selection =
+            TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
       }
     });
     H.selection();
@@ -1666,10 +1656,11 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
     // Drop sub-mood if it no longer applies to the chosen primary mood
     // (user could have toggled great → okay after picking a sub-mood).
     final allowedSub = subMoodsFor(_mood);
-    final finalSub =
-        (allowedSub == null || _subMood == null || !allowedSub.contains(_subMood))
-            ? null
-            : _subMood;
+    final finalSub = (allowedSub == null ||
+            _subMood == null ||
+            !allowedSub.contains(_subMood))
+        ? null
+        : _subMood;
     widget.onSave(
       text: text,
       mood: _mood,
@@ -1738,7 +1729,9 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ── Draft restore banner (fresh entries only) ──────────
-                  if (_availableDraft != null && !_draftDismissed && !_draftRestored)
+                  if (_availableDraft != null &&
+                      !_draftDismissed &&
+                      !_draftRestored)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _DraftRestoreBanner(
@@ -1795,9 +1788,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               const SizedBox(height: 2),
                               Text(m.label,
                                   style: AppTextStyles.labelSmall.copyWith(
-                                    color: selected
-                                        ? m.color
-                                        : AppColors.stone400,
+                                    color:
+                                        selected ? m.color : AppColors.stone400,
                                   )),
                             ],
                           ),
@@ -1833,8 +1825,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                     return GestureDetector(
                                       onTap: () => _toggleSubMood(s),
                                       child: AnimatedContainer(
-                                        duration: const Duration(
-                                            milliseconds: 120),
+                                        duration:
+                                            const Duration(milliseconds: 120),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 11, vertical: 5),
                                         decoration: BoxDecoration(
@@ -1851,8 +1843,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                         ),
                                         child: Text(
                                           s,
-                                          style: AppTextStyles.labelSmall
-                                              .copyWith(
+                                          style:
+                                              AppTextStyles.labelSmall.copyWith(
                                             color: selected
                                                 ? Colors.white
                                                 : AppColors.stone600,
@@ -1921,8 +1913,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.stone800, height: 1.5),
                     decoration: InputDecoration(
-                      hintText:
-                          'Write freely — no one else will see this...',
+                      hintText: 'Write freely — no one else will see this...',
                       hintStyle: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone300),
                       filled: true,
@@ -1976,9 +1967,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                           child: Text(
                             '#$t',
                             style: AppTextStyles.labelSmall.copyWith(
-                              color: selected
-                                  ? Colors.white
-                                  : AppColors.stone600,
+                              color:
+                                  selected ? Colors.white : AppColors.stone600,
                               letterSpacing: 0.2,
                             ),
                           ),
@@ -2042,9 +2032,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                       child: Row(
                         children: [
                           Icon(
-                            _locked
-                                ? Icons.lock
-                                : Icons.lock_open_outlined,
+                            _locked ? Icons.lock : Icons.lock_open_outlined,
                             size: 18,
                             color: _locked
                                 ? AppColors.honey500
@@ -2056,11 +2044,9 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _locked
-                                      ? 'Locked entry'
-                                      : 'Lock this entry',
-                                  style: AppTextStyles.labelMedium.copyWith(
-                                      color: AppColors.stone700),
+                                  _locked ? 'Locked entry' : 'Lock this entry',
+                                  style: AppTextStyles.labelMedium
+                                      .copyWith(color: AppColors.stone700),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
@@ -2098,13 +2084,11 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.lg),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(
                   _isEdit ? 'Save Changes' : 'Save Entry',
-                  style: AppTextStyles.labelLarge
-                      .copyWith(color: Colors.white),
+                  style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
                 ),
               ),
             ),
@@ -2129,8 +2113,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
           : DateTime.now().difference(mostRecent.date),
     );
     final suggestedPrompt = dailyPromptFor(suggestedCategory);
-    final headlineText = activePrompt?.text ??
-        'Suggested: ${suggestedPrompt.text}';
+    final headlineText =
+        activePrompt?.text ?? 'Suggested: ${suggestedPrompt.text}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2138,8 +2122,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
           borderRadius: AppRadius.md,
           onTap: () => setState(() => _promptPickerOpen = !_promptPickerOpen),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.mintChip,
               borderRadius: AppRadius.md,
@@ -2231,8 +2214,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                         children: [
                                           Text(
                                             cat.label.toUpperCase(),
-                                            style: AppTextStyles.overline
-                                                .copyWith(
+                                            style:
+                                                AppTextStyles.overline.copyWith(
                                               color: cat.color,
                                               fontSize: 9,
                                               letterSpacing: 1.0,
@@ -2248,8 +2231,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                                 color: AppColors.stone400,
                                                 fontSize: 9,
                                                 letterSpacing: 0.8,
-                                                fontWeight:
-                                                    FontWeight.w500,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                           ],
@@ -2258,8 +2240,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                       const SizedBox(height: 1),
                                       Text(
                                         prompt.text,
-                                        style: AppTextStyles.bodySmall
-                                            .copyWith(
+                                        style: AppTextStyles.bodySmall.copyWith(
                                           color: AppColors.stone700,
                                           fontStyle: FontStyle.italic,
                                         ),
@@ -2694,9 +2675,7 @@ class _AffirmCard extends StatelessWidget {
                     onFavourite();
                   },
                   child: Icon(
-                    isFavourite
-                        ? Icons.spa_rounded
-                        : Icons.spa_outlined,
+                    isFavourite ? Icons.spa_rounded : Icons.spa_outlined,
                     size: 22,
                     color:
                         isFavourite ? AppColors.honey500 : AppColors.stone300,
@@ -2850,12 +2829,13 @@ class _VisionTabState extends ConsumerState<_VisionTab> {
               // One sliver per category section.
               ...byCategory.entries.expand((entry) {
                 final info = categoryInfoFor(entry.key);
-                final showHeader = byCategory.length > 1 ||
-                    entry.key != VisionCategory.none;
+                final showHeader =
+                    byCategory.length > 1 || entry.key != VisionCategory.none;
                 return [
                   if (showHeader)
                     SliverToBoxAdapter(
-                      child: _SectionHeader(info: info, count: entry.value.length),
+                      child:
+                          _SectionHeader(info: info, count: entry.value.length),
                     ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
@@ -2915,8 +2895,7 @@ class _VisionTabState extends ConsumerState<_VisionTab> {
       builder: (ctx) => Padding(
         // Lift sheet above keyboard — outside the stateful widget so it only
         // rebuilds the Padding, never the text fields.
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
         child: _VisionEditSheet(
           existingItem: item,
           starter: starter,
@@ -2926,8 +2905,7 @@ class _VisionTabState extends ConsumerState<_VisionTab> {
               ref.read(visionBoardProvider.notifier).saveItem(updated),
           onDelete: item == null
               ? null
-              : () =>
-                  ref.read(visionBoardProvider.notifier).remove(item.id),
+              : () => ref.read(visionBoardProvider.notifier).remove(item.id),
         ),
       ),
     );
@@ -3117,8 +3095,8 @@ class _SectionHeader extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text('· $count',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone400)),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone400)),
         ],
       ),
     );
@@ -3165,8 +3143,8 @@ class _VisionEmptyState extends StatelessWidget {
           Center(
             child: Text(
               'Start with one of these — or tap + for a blank canvas.',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone500),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
               textAlign: TextAlign.center,
             ),
           ),
@@ -3292,7 +3270,6 @@ class _VisionCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
@@ -3373,8 +3350,8 @@ class _VisionCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: AppShadows.luxury,
                 ),
-                child: const Icon(Icons.push_pin,
-                    size: 12, color: Colors.white),
+                child:
+                    const Icon(Icons.push_pin, size: 12, color: Colors.white),
               ),
             ),
 
@@ -3405,11 +3382,10 @@ class _VisionCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         title: Text('Remove this dream?',
-            style: AppTextStyles.titleMedium
-                .copyWith(color: AppColors.stone800)),
-        content: Text(item.title,
             style:
-                AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
+                AppTextStyles.titleMedium.copyWith(color: AppColors.stone800)),
+        content: Text(item.title,
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -3516,8 +3492,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
     _titleCtrl = TextEditingController(text: ex?.title ?? st?.title ?? '');
     _descCtrl = TextEditingController(text: ex?.description ?? '');
     _whyCtrl = TextEditingController(text: ex?.whyItMatters ?? '');
-    _affirmCtrl = TextEditingController(
-        text: ex?.affirmation ?? st?.affirmation ?? '');
+    _affirmCtrl =
+        TextEditingController(text: ex?.affirmation ?? st?.affirmation ?? '');
     _milestoneCtrl = TextEditingController();
     _iconKey = ex?.emoji ?? st?.iconKey ?? 'guide';
     _category = ex?.category ?? st?.category ?? VisionCategory.none;
@@ -3541,8 +3517,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
   Future<void> _pickImage() async {
     if (_imagePaths.length >= 4) return; // cap at 4
     final picker = ImagePicker();
-    final picked = await picker.pickImage(
-        source: ImageSource.gallery, imageQuality: 85);
+    final picked =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
     if (picked != null && mounted) {
       setState(() => _imagePaths.add(picked.path));
     }
@@ -3705,8 +3681,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.forest600,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: AppRadius.lg),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                     ),
                     child: Text(
                       _isEdit ? 'Save Changes' : 'Add to Vision Board',
@@ -3726,8 +3701,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                       },
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: AppRadius.lg),
+                        shape:
+                            RoundedRectangleBorder(borderRadius: AppRadius.lg),
                       ),
                       child: Text('Remove this dream',
                           style: AppTextStyles.labelMedium
@@ -3768,13 +3743,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           controller: _titleCtrl,
           focusNode: _titleFocus,
           textInputAction: TextInputAction.next,
-          style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
           decoration: _fieldDecor(
               'e.g. Be more present for my family', Icons.title_rounded),
         ),
         const SizedBox(height: 14),
-
         _label('Notes (optional)'),
         const SizedBox(height: 6),
         TextField(
@@ -3782,13 +3755,10 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           textInputAction: TextInputAction.newline,
           maxLines: 3,
           minLines: 2,
-          style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-          decoration:
-              _fieldDecor('Anything to remember…', Icons.notes_rounded),
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          decoration: _fieldDecor('Anything to remember…', Icons.notes_rounded),
         ),
         const SizedBox(height: 14),
-
         _label('Why this matters (optional)'),
         const SizedBox(height: 6),
         TextField(
@@ -3796,14 +3766,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           textInputAction: TextInputAction.newline,
           maxLines: 3,
           minLines: 2,
-          style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-          decoration: _fieldDecor(
-              'When this matters most, why does it matter?',
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
+          decoration: _fieldDecor('When this matters most, why does it matter?',
               Icons.psychology_outlined),
         ),
         const SizedBox(height: 18),
-
         _label('Category'),
         const SizedBox(height: 8),
         Wrap(
@@ -3837,14 +3804,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                   children: [
                     Icon(info.icon,
                         size: 14,
-                        color:
-                            selected ? info.color : AppColors.stone400),
+                        color: selected ? info.color : AppColors.stone400),
                     const SizedBox(width: 6),
                     Text(info.label,
                         style: AppTextStyles.labelMedium.copyWith(
-                            color: selected
-                                ? info.color
-                                : AppColors.stone600)),
+                            color: selected ? info.color : AppColors.stone600)),
                   ],
                 ),
               ),
@@ -3852,7 +3816,6 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           }).toList(),
         ),
         const SizedBox(height: 18),
-
         _label('Choose your icon'),
         const SizedBox(height: 10),
         GridView.count(
@@ -3901,9 +3864,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     style: TextStyle(
                       fontSize: 9,
                       color: selected ? o.color : AppColors.stone400,
-                      fontWeight: selected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
+                      fontWeight:
+                          selected ? FontWeight.w600 : FontWeight.normal,
                       letterSpacing: 0.1,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -3915,15 +3877,13 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           }).toList(),
         ),
         const SizedBox(height: 18),
-
         _label('Target date (optional)'),
         const SizedBox(height: 6),
         InkWell(
           borderRadius: AppRadius.lg,
           onTap: _pickTargetDate,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             decoration: BoxDecoration(
               color: AppColors.stone50,
               borderRadius: AppRadius.lg,
@@ -3977,8 +3937,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
               for (var i = 0; i < _imagePaths.length; i++)
                 _PhotoTile(
                   path: _imagePaths[i],
-                  onRemove: () =>
-                      setState(() => _imagePaths.removeAt(i)),
+                  onRemove: () => setState(() => _imagePaths.removeAt(i)),
                 ),
             ],
           ),
@@ -4033,7 +3992,6 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 14),
-
         if (_milestones.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -4066,9 +4024,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     child: Text(
                       m.text,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: m.done
-                            ? AppColors.stone400
-                            : AppColors.stone800,
+                        color: m.done ? AppColors.stone400 : AppColors.stone800,
                         decoration: m.done
                             ? TextDecoration.lineThrough
                             : TextDecoration.none,
@@ -4084,7 +4040,6 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
               ),
             );
           }),
-
         const SizedBox(height: 6),
         Row(
           children: [
@@ -4104,12 +4059,12 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
               onPressed: _addMilestone,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest600,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
-              child: const Icon(Icons.add_rounded,
-                  color: Colors.white, size: 18),
+              child:
+                  const Icon(Icons.add_rounded, color: Colors.white, size: 18),
             ),
           ],
         ),
@@ -4134,8 +4089,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           maxLines: 4,
           minLines: 3,
           textInputAction: TextInputAction.newline,
-          style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.stone800, fontStyle: FontStyle.italic),
+          style: AppTextStyles.bodyMedium
+              .copyWith(color: AppColors.stone800, fontStyle: FontStyle.italic),
           decoration: _fieldDecor(
               'I am present, patient, and proud of how I show up.',
               Icons.format_quote_rounded),
@@ -4160,8 +4115,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   InputDecoration _fieldDecor(String hint, IconData icon) => InputDecoration(
         hintText: hint,
-        hintStyle:
-            AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
         prefixIcon: Icon(icon, size: 18, color: AppColors.stone300),
         filled: true,
         fillColor: AppColors.stone50,
@@ -4175,8 +4129,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide:
-              const BorderSide(color: AppColors.forest400, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.forest400, width: 1.5),
         ),
         contentPadding: const EdgeInsets.all(14),
       );
@@ -4233,9 +4186,8 @@ class _SheetTabBar extends StatelessWidget {
                         fontSize: 11,
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
-                        color: selected
-                            ? AppColors.forest700
-                            : AppColors.stone500,
+                        color:
+                            selected ? AppColors.forest700 : AppColors.stone500,
                       ),
                     ),
                   ],
@@ -4685,14 +4637,13 @@ class _MindfulMoment extends StatelessWidget {
   Widget build(BuildContext context) {
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
-    final (title, desc, hasGuided) =
-        _exercises[dayOfYear % _exercises.length];
+    final (title, desc, hasGuided) = _exercises[dayOfYear % _exercises.length];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: AppTextStyles.labelMedium
-                .copyWith(color: AppColors.forest600)),
+            style:
+                AppTextStyles.labelMedium.copyWith(color: AppColors.forest600)),
         const SizedBox(height: 6),
         Text(desc,
             style: AppTextStyles.bodyMedium.copyWith(
@@ -4704,8 +4655,7 @@ class _MindfulMoment extends StatelessWidget {
           GestureDetector(
             onTap: () => context.go('/emergency'),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
                 color: AppColors.forest50,
                 borderRadius: AppRadius.md,

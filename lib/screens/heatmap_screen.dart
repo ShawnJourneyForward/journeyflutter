@@ -65,6 +65,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
       final day = DateTime(d.year, d.month, d.day);
       if (earliest == null || day.isBefore(earliest!)) earliest = day;
     }
+
     for (final e in journals) check(e.date);
     for (final e in cravings) check(e.date);
     for (final e in activities) check(e.date);
@@ -132,6 +133,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
       final k = _dk(day);
       all[k] = (all[k] ?? 0) + 1;
     }
+
     for (final e in journals) add(e.date);
     for (final e in cravings) add(e.date);
     for (final e in activities) add(e.date);
@@ -216,9 +218,8 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
 
     final daysSinceStart = today.difference(recordStart).inDays;
     final isLongUser = daysSinceStart >= 365;
-    final windowStart = isLongUser
-        ? today.subtract(const Duration(days: 364))
-        : recordStart;
+    final windowStart =
+        isLongUser ? today.subtract(const Duration(days: 364)) : recordStart;
 
     final subtitle = isLongUser
         ? 'Last 365 days · A quiet record of the days you showed up.'
@@ -244,8 +245,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
 
     // Months to display — newest first
     final months = _showFullYear
-        ? List.generate(
-            12, (i) => DateTime(now.year, now.month - i, 1))
+        ? List.generate(12, (i) => DateTime(now.year, now.month - i, 1))
         : [
             DateTime(now.year, now.month, 1),
             DateTime(now.year, now.month - 1, 1),
@@ -301,9 +301,8 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                 child: _SummaryCard(
                   careDays: st.careDays,
                   totalCheckIns: st.totalCheckIns,
-                  mostUsed: st.mostUsed == null
-                      ? '—'
-                      : _catLabel(st.mostUsed!, l10n),
+                  mostUsed:
+                      st.mostUsed == null ? '—' : _catLabel(st.mostUsed!, l10n),
                   thisMonth: st.thisMonth,
                 ),
               ),
@@ -330,8 +329,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                 (context, i) {
                   final month = months[i];
                   return Padding(
-                    padding:
-                        EdgeInsets.fromLTRB(20, i == 0 ? 16 : 12, 20, 0),
+                    padding: EdgeInsets.fromLTRB(20, i == 0 ? 16 : 12, 20, 0),
                     child: _MonthCard(
                       month: month,
                       scores: scores,
@@ -576,9 +574,7 @@ class _FilterChips extends StatelessWidget {
                   color: active ? AppColors.forest700 : AppColors.card,
                   borderRadius: AppRadius.pill,
                   border: Border.all(
-                    color: active
-                        ? AppColors.forest700
-                        : AppColors.stone200,
+                    color: active ? AppColors.forest700 : AppColors.stone200,
                   ),
                 ),
                 child: Text(
@@ -678,8 +674,7 @@ class _MonthCard extends StatelessWidget {
             return Column(
               children: List.generate(rows, (row) {
                 return Padding(
-                  padding:
-                      EdgeInsets.only(bottom: row < rows - 1 ? gap : 0),
+                  padding: EdgeInsets.only(bottom: row < rows - 1 ? gap : 0),
                   child: Row(
                     children: List.generate(7, (col) {
                       final idx = row * 7 + col;
@@ -691,8 +686,7 @@ class _MonthCard extends StatelessWidget {
                       if (isEmpty) {
                         tile = SizedBox(width: cellSize, height: cellSize);
                       } else {
-                        final date =
-                            DateTime(month.year, month.month, dayNum);
+                        final date = DateTime(month.year, month.month, dayNum);
                         final isFuture = date.isAfter(today);
                         final isPreStart = date.isBefore(recordStart);
                         final isToday = _dk(date) == _dk(today);
@@ -712,8 +706,7 @@ class _MonthCard extends StatelessWidget {
                       }
 
                       return Padding(
-                        padding:
-                            EdgeInsets.only(right: col < 6 ? gap : 0),
+                        padding: EdgeInsets.only(right: col < 6 ? gap : 0),
                         child: tile,
                       );
                     }),
@@ -737,8 +730,7 @@ class _DowLabel extends StatelessWidget {
     return Expanded(
       child: Center(
         child: Text(label,
-            style:
-                AppTextStyles.caption.copyWith(color: AppColors.stone400)),
+            style: AppTextStyles.caption.copyWith(color: AppColors.stone400)),
       ),
     );
   }
@@ -824,9 +816,7 @@ class _LegendBar extends StatelessWidget {
       runSpacing: 8,
       children: const [
         _LegendSwatch(
-            color: _kPreStartColor,
-            label: 'Before you began',
-            bordered: true),
+            color: _kPreStartColor, label: 'Before you began', bordered: true),
         _LegendSwatch(color: Color(0xFFEDE8E1), label: 'No entry'),
         _LegendSwatch(color: Color(0xFFD1E8D5), label: '1'),
         _LegendSwatch(color: Color(0xFF8FC49A), label: '2–3'),
@@ -855,14 +845,12 @@ class _LegendSwatch extends StatelessWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(3),
-            border:
-                bordered ? Border.all(color: AppColors.stone300) : null,
+            border: bordered ? Border.all(color: AppColors.stone300) : null,
           ),
         ),
         const SizedBox(width: 5),
         Text(label,
-            style:
-                AppTextStyles.caption.copyWith(color: AppColors.stone500)),
+            style: AppTextStyles.caption.copyWith(color: AppColors.stone500)),
       ],
     );
   }
@@ -923,8 +911,7 @@ class _DaySheet extends StatelessWidget {
         sleeps.isNotEmpty ||
         thoughts.isNotEmpty;
 
-    final dateLabel =
-        DateFormat('EEEE, d MMMM yyyy').format(date);
+    final dateLabel = DateFormat('EEEE, d MMMM yyyy').format(date);
 
     return Container(
       margin: const EdgeInsets.only(top: 80),
@@ -981,22 +968,19 @@ class _DaySheet extends StatelessWidget {
               const _SheetSection(
                   icon: Icons.psychology_outlined, label: 'Thoughts'),
               ...thoughts.map((t) => _SheetRow(
-                  text: t.text.isNotEmpty
-                      ? t.text
-                      : '(thought — ${t.type})',
+                  text: t.text.isNotEmpty ? t.text : '(thought — ${t.type})',
                   sub: t.strength)),
               const SizedBox(height: 10),
             ],
             if (activities.isNotEmpty) ...[
               const _SheetSection(
                   icon: Icons.directions_run_outlined, label: 'Movement'),
-              ...activities.map((a) =>
-                  _SheetRow(text: '${a.activity} · ${a.minutes} min', sub: a.effort)),
+              ...activities.map((a) => _SheetRow(
+                  text: '${a.activity} · ${a.minutes} min', sub: a.effort)),
               const SizedBox(height: 10),
             ],
             if (sleeps.isNotEmpty) ...[
-              const _SheetSection(
-                  icon: Icons.bedtime_outlined, label: 'Sleep'),
+              const _SheetSection(icon: Icons.bedtime_outlined, label: 'Sleep'),
               ...sleeps.map((s) =>
                   _SheetRow(text: '${s.hours}h · quality ${s.quality}/5')),
               const SizedBox(height: 10),

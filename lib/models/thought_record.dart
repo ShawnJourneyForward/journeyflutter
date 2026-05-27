@@ -80,7 +80,8 @@ class CognitiveDistortion {
     CognitiveDistortion(
       code: 'catastrophizing',
       name: 'Catastrophizing',
-      description: 'Expecting the worst possible outcome and treating it as certain.',
+      description:
+          'Expecting the worst possible outcome and treating it as certain.',
       reframePrompt:
           'What is the most likely outcome, not the worst possible one?',
     ),
@@ -88,7 +89,8 @@ class CognitiveDistortion {
       code: 'overgeneralization',
       name: 'Overgeneralization',
       description: 'One bad event becomes a never-ending pattern of defeat.',
-      reframePrompt: 'Is this really "always" / "never," or is it just this once?',
+      reframePrompt:
+          'Is this really "always" / "never," or is it just this once?',
     ),
     CognitiveDistortion(
       code: 'mind_reading',
@@ -101,7 +103,8 @@ class CognitiveDistortion {
       name: '"Should" statements',
       description:
           'Beating yourself up with "should," "must," "ought to." Drives shame.',
-      reframePrompt: 'Replace "I should" with "I would like to" — does it land softer?',
+      reframePrompt:
+          'Replace "I should" with "I would like to" — does it land softer?',
     ),
     CognitiveDistortion(
       code: 'emotional_reasoning',
@@ -112,19 +115,22 @@ class CognitiveDistortion {
     CognitiveDistortion(
       code: 'personalization',
       name: 'Personalization',
-      description: 'Blaming yourself for things that aren\'t entirely your fault.',
+      description:
+          'Blaming yourself for things that aren\'t entirely your fault.',
       reframePrompt: 'What other factors contributed — was this all on me?',
     ),
     CognitiveDistortion(
       code: 'mental_filter',
       name: 'Mental filter',
-      description: 'Focusing only on the negative and screening out the positive.',
+      description:
+          'Focusing only on the negative and screening out the positive.',
       reframePrompt: 'What good has happened today that I\'m discounting?',
     ),
     CognitiveDistortion(
       code: 'labeling',
       name: 'Labeling',
-      description: 'Attaching a global label to yourself: "I\'m a failure," "I\'m broken."',
+      description:
+          'Attaching a global label to yourself: "I\'m a failure," "I\'m broken."',
       reframePrompt:
           'Separate the behaviour from the person. What would I tell a friend?',
     ),

@@ -24,11 +24,8 @@ class MeetingsScreen extends ConsumerWidget {
     final all = async.valueOrNull ?? [];
     final now = DateTime.now();
     final upcoming = all.where((m) => m.dateTime.isAfter(now)).toList();
-    final past = all
-        .where((m) => !m.dateTime.isAfter(now))
-        .toList()
-        .reversed
-        .toList();
+    final past =
+        all.where((m) => !m.dateTime.isAfter(now)).toList().reversed.toList();
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -97,8 +94,7 @@ class MeetingsScreen extends ConsumerWidget {
                         opacity: 0.6,
                         child: _MeetingCard(
                           meeting: m,
-                          onTap: () =>
-                              _openEditor(context, ref, existing: m),
+                          onTap: () => _openEditor(context, ref, existing: m),
                           onDelete: () => _confirmDelete(context, ref, m),
                         ),
                       ),
@@ -152,8 +148,7 @@ class MeetingsScreen extends ConsumerWidget {
             style: FilledButton.styleFrom(backgroundColor: AppColors.blush500),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('Delete',
-                style:
-                    AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+                style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
       ),
@@ -203,10 +198,8 @@ class _EmptyState extends StatelessWidget {
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
               foregroundColor: Colors.white,
-              shape:
-                  const RoundedRectangleBorder(borderRadius: AppRadius.pill),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              shape: const RoundedRectangleBorder(borderRadius: AppRadius.pill),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
             ),
           ),
         ],
@@ -320,8 +313,8 @@ class _MeetingCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               meeting.location!,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.stone500),
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(color: AppColors.stone500),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -485,9 +478,8 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
       id: id,
       title: title,
       dateTime: _dateTime,
-      location: _locationCtrl.text.trim().isEmpty
-          ? null
-          : _locationCtrl.text.trim(),
+      location:
+          _locationCtrl.text.trim().isEmpty ? null : _locationCtrl.text.trim(),
       notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       notify: _notify,
       reminderMinutesBefore: _reminderMinutes,
@@ -615,8 +607,8 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
               // Notify toggle
               SolidCard(
                 borderRadius: AppRadius.xl,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                 child: SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
                   value: _notify,
@@ -625,8 +617,8 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                     H.selection();
                     setState(() => _notify = v);
                   },
-                  title: Text('Remind me before',
-                      style: AppTextStyles.titleSmall),
+                  title:
+                      Text('Remind me before', style: AppTextStyles.titleSmall),
                   subtitle: Text(
                     _notify
                         ? 'A quiet notification will fire ${_reminderLabel()} early.'
@@ -654,9 +646,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
-                            color: sel
-                                ? AppColors.forest700
-                                : AppColors.card,
+                            color: sel ? AppColors.forest700 : AppColors.card,
                             borderRadius: AppRadius.pill,
                             border: Border.all(
                               color: sel
@@ -666,9 +656,8 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                           ),
                           child: Text(opt.$2,
                               style: AppTextStyles.labelMedium.copyWith(
-                                  color: sel
-                                      ? Colors.white
-                                      : AppColors.stone600)),
+                                  color:
+                                      sel ? Colors.white : AppColors.stone600)),
                         ),
                       );
                     }).toList(),
@@ -719,8 +708,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
 
   InputDecoration _fieldDecoration(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle:
-            AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
         filled: true,
         fillColor: AppColors.stone50,
         contentPadding:
@@ -772,8 +760,7 @@ class _PickerTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: AppRadius.lg,
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
             color: AppColors.stone50,
             borderRadius: AppRadius.lg,

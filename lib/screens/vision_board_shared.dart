@@ -25,35 +25,116 @@ class VisionIconOption {
 }
 
 const kVisionIcons = <VisionIconOption>[
-  VisionIconOption(key: 'guide',     icon: Icons.auto_awesome_rounded,          label: 'Guide',     color: AppColors.honey400),
-  VisionIconOption(key: 'strength',  icon: Icons.fitness_center_rounded,        label: 'Strength',  color: AppColors.forest500),
-  VisionIconOption(key: 'love',      icon: Icons.spa_rounded,                   label: 'Love',      color: Color(0xFFD97272)),
-  VisionIconOption(key: 'home',      icon: Icons.home_rounded,                  label: 'Home',      color: AppColors.forest600),
-  VisionIconOption(key: 'family',    icon: Icons.group_rounded,                 label: 'Family',    color: AppColors.forest500),
-  VisionIconOption(key: 'savings',   icon: Icons.account_balance_wallet_rounded, label: 'Savings',  color: AppColors.honey500),
-  VisionIconOption(key: 'learn',     icon: Icons.school_rounded,                label: 'Learn',     color: AppColors.forest600),
-  VisionIconOption(key: 'growth',    icon: Icons.eco_rounded,                   label: 'Growth',    color: AppColors.forest500),
-  VisionIconOption(key: 'journey',   icon: Icons.explore_rounded,               label: 'Journey',   color: AppColors.forest600),
-  VisionIconOption(key: 'create',    icon: Icons.palette_rounded,               label: 'Create',    color: AppColors.honey400),
-  VisionIconOption(key: 'move',      icon: Icons.directions_run_rounded,        label: 'Move',      color: AppColors.forest500),
-  VisionIconOption(key: 'stillness', icon: Icons.self_improvement_rounded,      label: 'Stillness', color: AppColors.forest400),
-  VisionIconOption(key: 'wisdom',    icon: Icons.menu_book_rounded,             label: 'Wisdom',    color: AppColors.honey500),
-  VisionIconOption(key: 'aim',       icon: Icons.my_location_rounded,           label: 'Aim',       color: AppColors.forest600),
-  VisionIconOption(key: 'hope',      icon: Icons.wb_twilight_rounded,           label: 'Hope',      color: AppColors.honey400),
-  VisionIconOption(key: 'peace',     icon: Icons.spa_rounded,                   label: 'Peace',     color: AppColors.forest400),
-  VisionIconOption(key: 'support',   icon: Icons.handshake_rounded,             label: 'Support',   color: AppColors.forest500),
-  VisionIconOption(key: 'bloom',     icon: Icons.local_florist_rounded,         label: 'Bloom',     color: AppColors.honey400),
-  VisionIconOption(key: 'milestone', icon: Icons.emoji_events_rounded,          label: 'Milestone', color: AppColors.honey500),
-  VisionIconOption(key: 'spark',     icon: Icons.local_fire_department_rounded, label: 'Spark',     color: AppColors.honey400),
+  VisionIconOption(
+      key: 'guide',
+      icon: Icons.auto_awesome_rounded,
+      label: 'Guide',
+      color: AppColors.honey400),
+  VisionIconOption(
+      key: 'strength',
+      icon: Icons.fitness_center_rounded,
+      label: 'Strength',
+      color: AppColors.forest500),
+  VisionIconOption(
+      key: 'love',
+      icon: Icons.spa_rounded,
+      label: 'Love',
+      color: Color(0xFFD97272)),
+  VisionIconOption(
+      key: 'home',
+      icon: Icons.home_rounded,
+      label: 'Home',
+      color: AppColors.forest600),
+  VisionIconOption(
+      key: 'family',
+      icon: Icons.group_rounded,
+      label: 'Family',
+      color: AppColors.forest500),
+  VisionIconOption(
+      key: 'savings',
+      icon: Icons.account_balance_wallet_rounded,
+      label: 'Savings',
+      color: AppColors.honey500),
+  VisionIconOption(
+      key: 'learn',
+      icon: Icons.school_rounded,
+      label: 'Learn',
+      color: AppColors.forest600),
+  VisionIconOption(
+      key: 'growth',
+      icon: Icons.eco_rounded,
+      label: 'Growth',
+      color: AppColors.forest500),
+  VisionIconOption(
+      key: 'journey',
+      icon: Icons.explore_rounded,
+      label: 'Journey',
+      color: AppColors.forest600),
+  VisionIconOption(
+      key: 'create',
+      icon: Icons.palette_rounded,
+      label: 'Create',
+      color: AppColors.honey400),
+  VisionIconOption(
+      key: 'move',
+      icon: Icons.directions_run_rounded,
+      label: 'Move',
+      color: AppColors.forest500),
+  VisionIconOption(
+      key: 'stillness',
+      icon: Icons.self_improvement_rounded,
+      label: 'Stillness',
+      color: AppColors.forest400),
+  VisionIconOption(
+      key: 'wisdom',
+      icon: Icons.menu_book_rounded,
+      label: 'Wisdom',
+      color: AppColors.honey500),
+  VisionIconOption(
+      key: 'aim',
+      icon: Icons.my_location_rounded,
+      label: 'Aim',
+      color: AppColors.forest600),
+  VisionIconOption(
+      key: 'hope',
+      icon: Icons.wb_twilight_rounded,
+      label: 'Hope',
+      color: AppColors.honey400),
+  VisionIconOption(
+      key: 'peace',
+      icon: Icons.spa_rounded,
+      label: 'Peace',
+      color: AppColors.forest400),
+  VisionIconOption(
+      key: 'support',
+      icon: Icons.handshake_rounded,
+      label: 'Support',
+      color: AppColors.forest500),
+  VisionIconOption(
+      key: 'bloom',
+      icon: Icons.local_florist_rounded,
+      label: 'Bloom',
+      color: AppColors.honey400),
+  VisionIconOption(
+      key: 'milestone',
+      icon: Icons.emoji_events_rounded,
+      label: 'Milestone',
+      color: AppColors.honey500),
+  VisionIconOption(
+      key: 'spark',
+      icon: Icons.local_fire_department_rounded,
+      label: 'Spark',
+      color: AppColors.honey400),
 ];
 
-VisionIconOption visionOptionFor(String key) =>
-    kVisionIcons.firstWhere((o) => o.key == key, orElse: () => kVisionIcons.first);
+VisionIconOption visionOptionFor(String key) => kVisionIcons
+    .firstWhere((o) => o.key == key, orElse: () => kVisionIcons.first);
 
 /// Effective accent — per-card override wins, otherwise fall back to the icon's
 /// natural colour. Keeps cards looking coherent even before a user customises.
-Color visionAccent(VisionItem item) =>
-    item.accentColor != null ? Color(item.accentColor!) : visionOptionFor(item.emoji).color;
+Color visionAccent(VisionItem item) => item.accentColor != null
+    ? Color(item.accentColor!)
+    : visionOptionFor(item.emoji).color;
 
 // ─── Category metadata ───────────────────────────────────────────────────────
 
@@ -118,8 +199,8 @@ const kCategoryInfo = <VisionCategoryInfo>[
       color: AppColors.stone400),
 ];
 
-VisionCategoryInfo categoryInfoFor(VisionCategory c) =>
-    kCategoryInfo.firstWhere((i) => i.category == c, orElse: () => kCategoryInfo.last);
+VisionCategoryInfo categoryInfoFor(VisionCategory c) => kCategoryInfo
+    .firstWhere((i) => i.category == c, orElse: () => kCategoryInfo.last);
 
 // ─── Starter prompts for the empty state ─────────────────────────────────────
 
@@ -147,19 +228,22 @@ const kStarterPrompts = <VisionStarter>[
     title: 'Be the parent I want to be',
     iconKey: 'family',
     category: VisionCategory.family,
-    affirmation: 'I am present, patient, and proud of how I show up for my family.',
+    affirmation:
+        'I am present, patient, and proud of how I show up for my family.',
   ),
   VisionStarter(
     title: 'Run a 5K',
     iconKey: 'move',
     category: VisionCategory.health,
-    affirmation: 'I am strong, I move with purpose, and my body is reclaiming itself.',
+    affirmation:
+        'I am strong, I move with purpose, and my body is reclaiming itself.',
   ),
   VisionStarter(
     title: 'Save for something meaningful',
     iconKey: 'savings',
     category: VisionCategory.freedom,
-    affirmation: 'Every day sober is money in my pocket and possibility in my future.',
+    affirmation:
+        'Every day sober is money in my pocket and possibility in my future.',
   ),
   VisionStarter(
     title: 'Learn a new skill',
@@ -171,7 +255,8 @@ const kStarterPrompts = <VisionStarter>[
     title: 'Heal a relationship',
     iconKey: 'support',
     category: VisionCategory.family,
-    affirmation: 'I lead with honesty and humility. The right people are coming closer.',
+    affirmation:
+        'I lead with honesty and humility. The right people are coming closer.',
   ),
 ];
 
@@ -190,7 +275,8 @@ String suggestAffirmationForTitle(String title) {
     return 'I am $what.';
   }
   if (lower.startsWith('stop ') || lower.startsWith('quit ')) {
-    final what = t.replaceFirst(RegExp(r'^(stop|quit)\s+', caseSensitive: false), '');
+    final what =
+        t.replaceFirst(RegExp(r'^(stop|quit)\s+', caseSensitive: false), '');
     return 'I am free from $what.';
   }
   if (lower.startsWith('learn ')) {
@@ -200,17 +286,26 @@ String suggestAffirmationForTitle(String title) {
   if (lower.startsWith('save ') || lower.startsWith('save for ')) {
     return 'I am building financial freedom with every sober day.';
   }
-  if (lower.startsWith('run ') || lower.startsWith('walk ') || lower.startsWith('move ')) {
+  if (lower.startsWith('run ') ||
+      lower.startsWith('walk ') ||
+      lower.startsWith('move ')) {
     return 'I am strong, and my body carries me forward.';
   }
-  if (lower.startsWith('write ') || lower.startsWith('create ') || lower.startsWith('build ')) {
-    final what = t.replaceFirst(RegExp(r'^(write|create|build)\s+', caseSensitive: false), '');
+  if (lower.startsWith('write ') ||
+      lower.startsWith('create ') ||
+      lower.startsWith('build ')) {
+    final what = t.replaceFirst(
+        RegExp(r'^(write|create|build)\s+', caseSensitive: false), '');
     return 'I am creating $what — one focused step at a time.';
   }
-  if (lower.contains('family') || lower.contains('kid') || lower.contains('child')) {
+  if (lower.contains('family') ||
+      lower.contains('kid') ||
+      lower.contains('child')) {
     return 'I am present and patient with the people I love.';
   }
-  if (lower.contains('sober') || lower.contains('clean') || lower.contains('freedom')) {
+  if (lower.contains('sober') ||
+      lower.contains('clean') ||
+      lower.contains('freedom')) {
     return 'I am free, and every day strengthens that freedom.';
   }
 

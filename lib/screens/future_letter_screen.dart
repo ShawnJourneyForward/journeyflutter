@@ -219,16 +219,14 @@ class _LetterCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color:
-                      isSealed ? AppColors.stone100 : AppColors.honey50,
+                  color: isSealed ? AppColors.stone100 : AppColors.honey50,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isSealed
                       ? Icons.lock_outline_rounded
                       : Icons.mark_email_unread_outlined,
-                  color:
-                      isSealed ? AppColors.stone400 : AppColors.honey600,
+                  color: isSealed ? AppColors.stone400 : AppColors.honey600,
                   size: 26,
                 ),
               ),
@@ -313,8 +311,8 @@ class _LetterReader extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Text(
                   letter.body,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.stone800, height: 1.55),
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: AppColors.stone800, height: 1.55),
                 ),
               ),
             ),
@@ -407,8 +405,8 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
               const SizedBox(height: 8),
               Text(
                 'Unlocks day $_day · ${DateFormat('EEE d MMM yyyy').format(unlockOn)}',
-                style: AppTextStyles.caption
-                    .copyWith(color: AppColors.stone500),
+                style:
+                    AppTextStyles.caption.copyWith(color: AppColors.stone500),
               ),
               const SizedBox(height: 14),
               Wrap(
@@ -425,20 +423,17 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color:
-                              sel ? AppColors.forest700 : AppColors.card,
+                          color: sel ? AppColors.forest700 : AppColors.card,
                           borderRadius: AppRadius.pill,
                           border: Border.all(
-                            color: sel
-                                ? AppColors.forest700
-                                : AppColors.stone200,
+                            color:
+                                sel ? AppColors.forest700 : AppColors.stone200,
                           ),
                         ),
                         child: Text('Day $d',
                             style: AppTextStyles.labelMedium.copyWith(
-                                color: sel
-                                    ? Colors.white
-                                    : AppColors.stone600)),
+                                color:
+                                    sel ? Colors.white : AppColors.stone600)),
                       ),
                     );
                   }),
@@ -550,8 +545,8 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('$_value days from your sober date',
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.stone600)),
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600)),
           Slider(
             value: _value.toDouble(),
             min: 7,
@@ -571,11 +566,9 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_value),
-          style: FilledButton.styleFrom(
-              backgroundColor: AppColors.forest700),
+          style: FilledButton.styleFrom(backgroundColor: AppColors.forest700),
           child: Text('Use day $_value',
-              style:
-                  AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+              style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
         ),
       ],
     );

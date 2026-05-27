@@ -33,7 +33,6 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -224,11 +223,9 @@ class _StreakTab extends ConsumerWidget {
                     _Colon(),
                     _CounterUnit(value: liveStats?.hours ?? 0, label: 'HRS'),
                     _Colon(),
-                    _CounterUnit(
-                        value: liveStats?.minutes ?? 0, label: 'MIN'),
+                    _CounterUnit(value: liveStats?.minutes ?? 0, label: 'MIN'),
                     _Colon(),
-                    _CounterUnit(
-                        value: liveStats?.seconds ?? 0, label: 'SEC'),
+                    _CounterUnit(value: liveStats?.seconds ?? 0, label: 'SEC'),
                   ],
                 ),
               ],
@@ -282,11 +279,13 @@ class _StreakTab extends ConsumerWidget {
         ),
         const SizedBox(height: 14),
 
-        // ── Inline 28-day sobriety heatmap ──────────────────────────
-        if (profile != null)
-          _MiniHeatmap(
-            soberDate: DateTime.tryParse(profile!.soberDate) ?? DateTime.now(),
-          ),
+        // ── Inline 28-day cravings heatmap (toggleable) ───────────────
+        // Day 1 = first app-use date (NOT sober date) so the heatmap is
+        // meaningful even for users who join already weeks-sober. Users
+        // further into recovery without frequent cravings can hide the
+        // card; the dismiss control swaps to a re-enable button so it's
+        // always recoverable without leaving the screen.
+        const _CravingsHeatmapSection(),
         const SizedBox(height: 14),
 
         // ── Milestone achievement grid ─────────────────────────────────────
@@ -615,7 +614,8 @@ class _InsightTile extends StatelessWidget {
           // ── Title row
           Text(
             '$title — 14 days',
-            style: AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
+            style:
+                AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
           ),
           const SizedBox(height: 4),
 
@@ -651,8 +651,8 @@ class _InsightTile extends StatelessWidget {
             children: [
               const Spacer(),
               Text(yLabel,
-                  style: AppTextStyles.caption.copyWith(
-                      color: AppColors.stone400, fontSize: 10)),
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400, fontSize: 10)),
             ],
           ),
           const SizedBox(height: 6),
@@ -788,8 +788,8 @@ class _MiniBarChart14 extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 6),
                   child: Text(
                     _fmtNum(v),
-                    style: AppTextStyles.caption.copyWith(
-                        fontSize: 10, color: AppColors.stone400),
+                    style: AppTextStyles.caption
+                        .copyWith(fontSize: 10, color: AppColors.stone400),
                   ),
                 );
               },
@@ -822,9 +822,8 @@ class _MiniBarChart14 extends StatelessWidget {
                           color: isToday
                               ? AppColors.forest700
                               : AppColors.stone500,
-                          fontWeight: isToday
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                          fontWeight:
+                              isToday ? FontWeight.w700 : FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 1),
@@ -835,9 +834,8 @@ class _MiniBarChart14 extends StatelessWidget {
                           color: isToday
                               ? AppColors.forest600
                               : AppColors.stone400,
-                          fontWeight: isToday
-                              ? FontWeight.w600
-                              : FontWeight.w400,
+                          fontWeight:
+                              isToday ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
                     ],
@@ -878,8 +876,8 @@ class _MiniBarChart14 extends StatelessWidget {
           handleBuiltInTouches: true,
           touchTooltipData: BarTouchTooltipData(
             tooltipRoundedRadius: 10,
-            tooltipPadding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: 6),
+            tooltipPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             tooltipMargin: 8,
             getTooltipColor: (_) => AppColors.forest700,
             getTooltipItem: (group, _, rod, __) {
@@ -901,15 +899,102 @@ class _MiniBarChart14 extends StatelessWidget {
   }
 }
 
+// ─── Cravings Heatmap section wrapper ───────────────────────────────────────
+// Watches the user's show/hide preference and renders either the full mini
+// heatmap card or a small "Show cravings heatmap" placeholder so the toggle
+// is always recoverable without leaving the screen.
+
+class _CravingsHeatmapSection extends ConsumerWidget {
+  const _CravingsHeatmapSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final visible =
+        ref.watch(showCravingsHeatmapProvider).valueOrNull ?? true;
+    final startDateAsync = ref.watch(appStartDateProvider);
+
+    if (!visible) {
+      return _ShowHeatmapButton(onShow: () async {
+        H.light();
+        await ref
+            .read(showCravingsHeatmapProvider.notifier)
+            .setVisible(true);
+      });
+    }
+
+    // While the start date is loading on cold start, render an empty box of
+    // similar height so the layout doesn't pop when the card materialises.
+    final startDate = startDateAsync.valueOrNull;
+    if (startDate == null) {
+      return const SizedBox(height: 220);
+    }
+
+    return _MiniHeatmap(
+      startDate: startDate,
+      onHide: () async {
+        H.light();
+        await ref
+            .read(showCravingsHeatmapProvider.notifier)
+            .setVisible(false);
+      },
+    );
+  }
+}
+
+// ─── "Show cravings heatmap" placeholder ─────────────────────────────────────
+// Shown in place of the heatmap card when the user has dismissed it. Keeps
+// the toggle visible on the Progress screen so re-enabling never requires a
+// trip to Settings.
+
+class _ShowHeatmapButton extends StatelessWidget {
+  const _ShowHeatmapButton({required this.onShow});
+  final VoidCallback onShow;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onShow,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.forest100, width: 1),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.visibility_outlined,
+                size: 18, color: AppColors.forest600),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Show cravings heatmap',
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.forest700),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                size: 18, color: AppColors.stone400),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // ─── Mini 28-day Cravings Heatmap ────────────────────────────────────────────
 //
-// Tracks ONLY cravings logged from the Home screen. Every user's heatmap
-// starts at Day 1 (their first day in the app — soberDate). Each cell shows
-// the count of cravings logged that day so progress is visible at a glance.
+// Tracks ONLY cravings logged from the Home screen. Day 1 is the day the
+// user first opened the app (appStartDate), NOT their sober date — so
+// someone who is already 3 weeks sober on install still sees a meaningful
+// 28-day window starting today. Each cell shows the count of cravings
+// logged that day so progress is visible at a glance.
 
 class _MiniHeatmap extends ConsumerWidget {
-  const _MiniHeatmap({required this.soberDate});
-  final DateTime soberDate;
+  const _MiniHeatmap({required this.startDate, required this.onHide});
+  final DateTime startDate;
+  final VoidCallback onHide;
 
   // Color scales with craving count. 0 = empty (neutral), more = stronger.
   static Color _cellColor(int count) => switch (count) {
@@ -928,17 +1013,19 @@ class _MiniHeatmap extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
 
-    final soberDay0 = DateTime(soberDate.year, soberDate.month, soberDate.day);
+    final day0 = DateTime(startDate.year, startDate.month, startDate.day);
     final now = DateTime.now();
     final today0 = DateTime(now.year, now.month, now.day);
-    final daysSober =
-        today0.difference(soberDay0).inDays; // 0-based (0 = day 1)
+    final daysSinceStart =
+        today0.difference(day0).inDays; // 0-based (0 = day 1)
 
     // Build craving-count map: dayIndex (0-based) → number of cravings logged.
+    // Only counts cravings logged on/after day0 — anything logged before the
+    // user opened the app is ignored so the heatmap starts clean at Day 1.
     final Map<int, int> counts = {};
     for (final e in cravings) {
       final d = DateTime(e.date.year, e.date.month, e.date.day);
-      final idx = d.difference(soberDay0).inDays;
+      final idx = d.difference(day0).inDays;
       if (idx >= 0 && idx < 28) counts[idx] = (counts[idx] ?? 0) + 1;
     }
 
@@ -966,11 +1053,24 @@ class _MiniHeatmap extends ConsumerWidget {
                         color: AppColors.forest600,
                         fontWeight: FontWeight.w600)),
               ),
+              const SizedBox(width: 10),
+              // Hide-card affordance: turns into a "Show cravings heatmap"
+              // button via _CravingsHeatmapSection so it's always recoverable.
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onHide,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 2, vertical: 4),
+                  child: Icon(Icons.visibility_off_outlined,
+                      size: 18, color: AppColors.stone400),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            'Tracks only cravings logged from the Home screen.',
+            'Day 1 = your first day in the app. Only cravings logged from the Home screen count.',
             style: AppTextStyles.caption
                 .copyWith(color: AppColors.stone500, fontSize: 11),
           ),
@@ -1001,8 +1101,8 @@ class _MiniHeatmap extends ConsumerWidget {
                       // 7 tiles
                       ...List.generate(7, (col) {
                         final idx = row * 7 + col;
-                        final isFuture = idx > daysSober;
-                        final isToday = idx == daysSober;
+                        final isFuture = idx > daysSinceStart;
+                        final isToday = idx == daysSinceStart;
                         final count = counts[idx] ?? 0;
                         return Padding(
                           padding: EdgeInsets.only(right: col < 6 ? gap : 0),
@@ -1224,8 +1324,7 @@ class _CapitalFilledContent extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.mintChip,
                 borderRadius: BorderRadius.circular(20),
@@ -1253,16 +1352,13 @@ class _CapitalFilledContent extends StatelessWidget {
                       : AppColors.stone50,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: d.$1
-                        ? AppColors.forest400
-                        : AppColors.stone100,
+                    color: d.$1 ? AppColors.forest400 : AppColors.stone100,
                   ),
                 ),
                 child: Icon(
                   d.$2,
                   size: 18,
-                  color:
-                      d.$1 ? AppColors.forest600 : AppColors.stone300,
+                  color: d.$1 ? AppColors.forest600 : AppColors.stone300,
                 ),
               ),
             );

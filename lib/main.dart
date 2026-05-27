@@ -92,7 +92,11 @@ void main() async {
   // and is the kind of permission ask Play reviewers flag.
   try {
     await NotificationService.init();
-    await NotificationService.scheduleFromPrefs();
+    final scheduleResult = await NotificationService.scheduleFromPrefs();
+    if (!scheduleResult.success) {
+      debugPrint(
+          '[main] notification scheduling failed: ${scheduleResult.error}');
+    }
   } catch (e) {
     debugPrint('[main] notification setup failed: $e');
   }

@@ -33,6 +33,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   );
   final _auth = LocalAuthentication();
 
+  int _versionTapCount = 0;
+  bool _showDiagnostics = false;
+
   // ── Edit profile dialog ───────────────────────────────────────────────────
 
   Future<void> _editUsername(UserProfile p) async {
@@ -75,8 +78,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // silently reset hours/minutes/seconds to midnight.
     final existingTime = DateTime.tryParse(p.soberDate) ?? DateTime.now();
     final merged = DateTime(
-      picked.year, picked.month, picked.day,
-      existingTime.hour, existingTime.minute, existingTime.second,
+      picked.year,
+      picked.month,
+      picked.day,
+      existingTime.hour,
+      existingTime.minute,
+      existingTime.second,
     );
     await ref.read(profileProvider.notifier).patch(
           (p) => p.copyWith(
@@ -373,8 +380,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           'No biometrics enrolled on this device. Add a fingerprint or face in your phone\'s settings.',
         'NotAvailable' =>
           'Biometric hardware is unavailable right now. Try again in a moment.',
-        'LockedOut' =>
-          'Too many failed attempts. Wait a moment and try again.',
+        'LockedOut' => 'Too many failed attempts. Wait a moment and try again.',
         'PermanentlyLockedOut' =>
           'Biometrics are locked. Use your phone\'s screen lock to re-enable.',
         _ => 'Biometric authentication failed: ${e.message ?? e.code}',
@@ -461,10 +467,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // Schedule regardless — even if the OS reports "blocked" right now, the
     // schedules sit dormant and start firing the moment the user re-enables
     // notifications in system settings.
-    await NotificationService.scheduleFromPrefs();
+    final scheduleResult = await NotificationService.scheduleFromPrefs();
 
     if (!mounted) return;
-    if (wantAny && !enabled) {
+    if (!scheduleResult.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 6),
+          content: const Text(
+            'Reminder scheduling failed. Please check notification permissions.',
+          ),
+          backgroundColor: AppColors.honey500,
+        ),
+      );
+    } else if (wantAny && !enabled) {
       // Permission is denied — offer a one-tap deep link to system settings,
       // since on Android 13+ the in-app prompt won't re-show after the first
       // denial.
@@ -481,6 +498,238 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } else {
       _showSnack('Notification settings saved');
     }
+  }
+
+  void _handleVersionTap() {
+    _versionTapCount++;
+    if (_versionTapCount < 5 || _showDiagnostics) return;
+
+    setState(() => _showDiagnostics = true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Diagnostics enabled'),
+        backgroundColor: AppColors.forest700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.md),
+      ),
+    );
+  }
+
+  Future<void> _showScheduledNotifDiagnostic(BuildContext context) async {
+    final result = await NotificationService.scheduleFromPrefs();
+    final pending = await NotificationService.getPendingNotifications();
+    final notificationsAllowed =
+        await NotificationService.areNotificationsAllowedIfAvailable();
+    final exactAlarmAllowed =
+        await NotificationService.canScheduleExactAlarmsIfAvailable();
+    final batteryStatus =
+        await NotificationService.isIgnoringBatteryOptimizations();
+    final timezoneName = NotificationService.localTimezoneNameIfAvailable();
+    final timezoneNow = NotificationService.localTimezoneNowTextIfAvailable();
+
+    if (!context.mounted) return;
+
+    String describeId(int id) {
+      if (id == 1) return 'Morning reminder';
+      if (id == 2) return 'Evening reminder';
+      if (id == 99) return 'Test notification';
+      if (id >= 10000 && id < 20000) return 'Milestone: day ${id - 10000}';
+      if (id >= 20000 && id < 30000) return 'Savings milestone';
+      if (id >= 30000) return 'Meeting reminder';
+      return 'Unknown (ID $id)';
+    }
+
+    final hasMorning = pending.any((n) => n.id == 1);
+    final hasEvening = pending.any((n) => n.id == 2);
+
+    String yesNoUnknown(bool? value) {
+      if (value == true) return 'Yes';
+      if (value == false) return 'No';
+      return 'Unknown';
+    }
+
+    String batteryLabel(bool? value) {
+      if (value == true) return 'Not restricted';
+      if (value == false) return 'Restricted';
+      return 'Unknown';
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Scheduled Notifications',
+                style: AppTextStyles.titleMedium.copyWith(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                result.success
+                    ? 'Scheduler ran OK'
+                    : 'Scheduler error: ${result.error}',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color:
+                      result.success ? AppColors.forest700 : AppColors.blush700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _DiagnosticLine(
+                label: 'Notifications allowed',
+                value: yesNoUnknown(notificationsAllowed),
+              ),
+              _DiagnosticLine(
+                label: 'Battery optimization',
+                value: batteryLabel(batteryStatus),
+              ),
+              _DiagnosticLine(
+                label: 'Exact alarms',
+                value: exactAlarmAllowed == true
+                    ? 'Available'
+                    : exactAlarmAllowed == false
+                        ? 'Unavailable'
+                        : 'Unknown / not applicable',
+              ),
+              _DiagnosticLine(
+                label: 'Timezone',
+                value: timezoneName ?? 'Unknown',
+              ),
+              _DiagnosticLine(
+                label: 'Timezone now',
+                value: timezoneNow ?? 'Unknown',
+              ),
+              _DiagnosticLine(
+                label: 'Pending count',
+                value: pending.length.toString(),
+              ),
+              _DiagnosticLine(
+                label: 'Morning queued',
+                value: hasMorning ? 'Yes' : 'No',
+              ),
+              _DiagnosticLine(
+                label: 'Evening queued',
+                value: hasEvening ? 'Yes' : 'No',
+              ),
+              const SizedBox(height: 16),
+              if (pending.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.honey50,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.honey200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.warning_amber_outlined,
+                        color: AppColors.honey600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'No notifications are scheduled. Your daily reminders will not fire.',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.stone700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ...pending.map(
+                  (n) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.forest700,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                describeId(n.id),
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (n.body != null)
+                                Text(
+                                  n.body!,
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: AppColors.mistGrey,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.send_outlined, size: 18),
+                  label: const Text('Send test notification now'),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    final ok = await NotificationService.sendTestNotification();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            ok
+                                ? 'Test sent - you should see it within 2 seconds'
+                                : 'Test failed - check notification permissions',
+                          ),
+                          backgroundColor:
+                              ok ? AppColors.forest700 : AppColors.blush600,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.battery_alert_outlined, size: 18),
+                  label: const Text('Open Battery Settings'),
+                  onPressed: () {
+                    NotificationService.openBatteryOptimizationSettings();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -771,6 +1020,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
             ),
+            if (_showDiagnostics) ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: _SectionLabel('Diagnostics'),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: SolidCard(
+                    borderRadius: AppRadius.xl,
+                    padding: EdgeInsets.zero,
+                    child: _SettingsRow(
+                      icon: Icons.schedule_outlined,
+                      label: 'Check scheduled reminders',
+                      value: 'Verify alarms, permissions, and timezone',
+                      onTap: () => _showScheduledNotifDiagnostic(context),
+                    ),
+                  ),
+                ),
+              ),
+            ],
 
             // ── More (Records + Tools & App) ─────────────────────────────
             SliverToBoxAdapter(
@@ -791,6 +1063,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
                 child: const _AboutCard(),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                child: Center(
+                  child: TextButton(
+                    key: const Key('settings_version_diagnostics_tap_target'),
+                    onPressed: _handleVersionTap,
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.stone400,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      'Version 5.8.0',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.stone400,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -1510,8 +1808,9 @@ class _SecurityCardState extends State<_SecurityCard> {
             secondCurve: Curves.easeInCubic,
             sizeCurve: Curves.easeInOutCubic,
             duration: const Duration(milliseconds: 260),
-            crossFadeState:
-                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState: _expanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
             secondChild: const SizedBox.shrink(),
             firstChild: Column(
               children: [
@@ -1540,7 +1839,8 @@ class _SecurityCardState extends State<_SecurityCard> {
                   onTap: widget.onPin,
                 ),
                 // Data-recovery warning
-                if (widget.current == 'pin' || widget.current == 'biometric') ...[
+                if (widget.current == 'pin' ||
+                    widget.current == 'biometric') ...[
                   const Divider(height: 1, color: AppColors.stone100),
                   Padding(
                     padding: const EdgeInsets.all(14),
@@ -1699,7 +1999,8 @@ class _MoreCard extends ConsumerWidget {
               _SettingsRow(
                 icon: Icons.article_outlined,
                 label: 'Weekly Care Summary',
-                value: 'Create a private summary to share with someone you trust.',
+                value:
+                    'Create a private summary to share with someone you trust.',
                 onTap: () => context.push('/weekly-care-summary'),
               ),
             ],
@@ -1865,8 +2166,9 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
             secondCurve: Curves.easeInCubic,
             sizeCurve: Curves.easeInOutCubic,
             duration: const Duration(milliseconds: 260),
-            crossFadeState:
-                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState: _expanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
             secondChild: const SizedBox.shrink(),
             firstChild: Column(
               children: [
@@ -1882,8 +2184,8 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                         horizontal: 20, vertical: 12),
                     decoration: const BoxDecoration(
                       border: Border(
-                          bottom: BorderSide(
-                              color: AppColors.stone100, width: 1)),
+                          bottom:
+                              BorderSide(color: AppColors.stone100, width: 1)),
                     ),
                     child: Row(
                       children: [
@@ -1967,7 +2269,8 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   decoration: const BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: AppColors.stone100, width: 1)),
+                        bottom:
+                            BorderSide(color: AppColors.stone100, width: 1)),
                   ),
                   child: Row(
                     children: [
@@ -2242,8 +2545,8 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       behavior: SnackBarBehavior.floating,
-                      content: Text(
-                          'Test sent — check your notification shade.'),
+                      content:
+                          Text('Test sent — check your notification shade.'),
                       duration: Duration(seconds: 4),
                     ),
                   );
@@ -2443,6 +2746,46 @@ class _SettingsRow extends StatelessWidget {
   }
 }
 
+class _DiagnosticLine extends StatelessWidget {
+  const _DiagnosticLine({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.mistGrey,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.forest700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── About card ───────────────────────────────────────────────────────────────
 
 class _AboutCard extends StatefulWidget {
@@ -2522,8 +2865,9 @@ class _AboutCardState extends State<_AboutCard> {
             secondCurve: Curves.easeInCubic,
             sizeCurve: Curves.easeInOutCubic,
             duration: const Duration(milliseconds: 260),
-            crossFadeState:
-                _expanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+            crossFadeState: _expanded
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
             secondChild: const SizedBox.shrink(),
             firstChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -2608,8 +2952,7 @@ class _AboutCardState extends State<_AboutCard> {
                             side: const BorderSide(
                                 color: AppColors.forest200, width: 1.5),
                             backgroundColor: AppColors.forest50,
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: const RoundedRectangleBorder(
                                 borderRadius: AppRadius.xl),
                           ),

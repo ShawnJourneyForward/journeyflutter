@@ -34,8 +34,7 @@ void main() {
     expect(
       () => EncryptedStore.write('profile', '{"username":"Shawn"}'),
       throwsA(isA<EncryptedStoreException>()),
-      reason:
-          'Silent swallow would leave callers thinking data persisted '
+      reason: 'Silent swallow would leave callers thinking data persisted '
           'when it did not — that is the bug this is meant to prevent.',
     );
 

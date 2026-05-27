@@ -13,6 +13,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private val secureWindowChannel = "com.journeyforward/secure_window"
     private val appSettingsChannel = "com.journeyforward/app_settings"
+    private val batteryChannel = "com.journeyforward/battery_opt"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -33,6 +34,40 @@ class MainActivity : FlutterFragmentActivity() {
                     "disable" -> {
                         window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                         result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+
+
+
+        // Battery-optimization diagnostics bridge ? policy-safe. This only
+        // checks current status and opens Android's general battery settings;
+        // it does NOT request the restricted ignore-battery-optimizations
+        // permission.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, batteryChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "isIgnoringBatteryOptimizations" -> {
+                        try {
+                            val pm = getSystemService(POWER_SERVICE) as android.os.PowerManager
+                            result.success(pm.isIgnoringBatteryOptimizations(packageName))
+                        } catch (e: Exception) {
+                            result.error("BATTERY_OPT_CHECK_FAILED", e.message, null)
+                        }
+                    }
+                    "openBatteryOptimizationSettings" -> {
+                        try {
+                            val intent = Intent(
+                                Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+                            ).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            startActivity(intent)
+                            result.success(null)
+                        } catch (e: Exception) {
+                            result.error("BATTERY_OPT_SETTINGS_FAILED", e.message, null)
+                        }
                     }
                     else -> result.notImplemented()
                 }

@@ -85,9 +85,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         'data': data,
       });
 
-      final fileContents = usingEncryption
-          ? BackupCrypto.encrypt(payload, passphrase)
-          : payload;
+      final fileContents =
+          usingEncryption ? BackupCrypto.encrypt(payload, passphrase) : payload;
       final filename = usingEncryption
           ? 'journey_forward_backup.jfwbk'
           : 'journey_forward_backup.json';
@@ -211,8 +210,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   Navigator.of(ctx).pop(ctrl.text);
                 },
                 child: Text(forExport ? 'Encrypt' : 'Unlock',
-                    style:
-                        AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+                    style: AppTextStyles.labelMedium
+                        .copyWith(color: Colors.white)),
               ),
             ],
           );
@@ -336,7 +335,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final writes = <String, String>{};
       for (final entry in data.entries) {
         if (entry.key == 'lockMethod') continue; // never restore lock state
-        if (entry.key == 'profile') continue;    // sanitised below
+        if (entry.key == 'profile') continue; // sanitised below
         if (entry.value is String) {
           writes[entry.key] = entry.value as String;
         }

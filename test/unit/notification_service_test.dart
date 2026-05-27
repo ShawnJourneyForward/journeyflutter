@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/utils/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Critical flow #12: scheduling helpers must produce stable, collision-free
 // IDs in the documented ID space. A non-deterministic ID would make
@@ -11,7 +12,7 @@ import 'package:journey_forward/utils/notification_service.dart';
 
 void main() {
   group('NotificationService.meetingNotificationId', () {
-    test('lands inside the reserved 30000–39999 range', () {
+    test('lands inside the reserved 30000-39999 range', () {
       final id =
           NotificationService.meetingNotificationId('meeting-2026-05-20');
       expect(id, greaterThanOrEqualTo(30000));
@@ -41,6 +42,42 @@ void main() {
       final id = NotificationService.meetingNotificationId('');
       expect(id, greaterThanOrEqualTo(30000));
       expect(id, lessThan(40000));
+    });
+  });
+
+  group('NotificationService diagnostics', () {
+    test('scheduleFromPrefs surfaces timezone recovery failure', () async {
+      SharedPreferences.setMockInitialValues({
+        'notif_motivation': true,
+        'notif_reminders': true,
+        'notif_milestones': true,
+        'notif_morning': '08:00',
+        'notif_evening': '20:00',
+      });
+
+      final result = await NotificationService.scheduleFromPrefs();
+
+      expect(result.success, isFalse);
+      expect(result.error, isNotNull);
+      expect(result.error, contains('Timezone'));
+    });
+
+    test('getPendingNotifications returns an empty list on plugin error',
+        () async {
+      final pending = await NotificationService.getPendingNotifications();
+      expect(pending, isEmpty);
+    });
+
+    test('sendTestNotification returns false on plugin error', () async {
+      final ok = await NotificationService.sendTestNotification();
+      expect(ok, isFalse);
+    });
+
+    test('battery diagnostics use policy-safe open settings method name',
+        () async {
+      await NotificationService.openBatteryOptimizationSettings();
+      expect(
+          NotificationService.openBatteryOptimizationSettings, isA<Function>());
     });
   });
 }

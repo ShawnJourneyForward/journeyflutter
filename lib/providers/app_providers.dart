@@ -233,6 +233,61 @@ final soberMoneyProvider = Provider<SoberStats?>((ref) {
 // Settings "Mood & craving insights" sets this to 1 before navigating to /progress.
 final progressTabProvider = StateProvider<int>((ref) => 0);
 
+// ─── App start date (Day 1 of app use, NOT sober date) ───────────────────────
+// Anchors the mini cravings heatmap so a user who is already 3 weeks sober
+// when they install still sees Day 1 = today, not 21 cells of greyed-out
+// pre-start dates. Lazy-initialised: the first read writes today's date and
+// keeps it forever. Stored in plain SharedPreferences (no encryption needed —
+// install date is not sensitive).
+class AppStartDateNotifier extends AsyncNotifier<DateTime> {
+  static const _key = 'app_start_date'; // YYYY-MM-DD
+
+  @override
+  Future<DateTime> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    final raw = prefs.getString(_key);
+    if (raw != null) {
+      final parsed = DateTime.tryParse(raw);
+      if (parsed != null) {
+        return DateTime(parsed.year, parsed.month, parsed.day);
+      }
+    }
+    // First read → freeze today as Day 1 forever.
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    await prefs.setString(_key, today.toIso8601String().substring(0, 10));
+    return today;
+  }
+}
+
+final appStartDateProvider =
+    AsyncNotifierProvider<AppStartDateNotifier, DateTime>(
+        AppStartDateNotifier.new);
+
+// ─── Show / hide the mini cravings heatmap on Progress screen ────────────────
+// Users further into recovery often don't have frequent cravings; the heatmap
+// just shows a wall of empty cells. They can hide it from the card itself
+// (and re-enable from settings). Default true so new users see it.
+class ShowCravingsHeatmapNotifier extends AsyncNotifier<bool> {
+  static const _key = 'progress_show_cravings_heatmap';
+
+  @override
+  Future<bool> build() async {
+    final prefs = await ref.watch(prefsProvider.future);
+    return prefs.getBool(_key) ?? true;
+  }
+
+  Future<void> setVisible(bool visible) async {
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setBool(_key, visible);
+    state = AsyncData(visible);
+  }
+}
+
+final showCravingsHeatmapProvider =
+    AsyncNotifierProvider<ShowCravingsHeatmapNotifier, bool>(
+        ShowCravingsHeatmapNotifier.new);
+
 final soberDaysProvider = Provider<SoberStats?>((ref) {
   final profileAsync = ref.watch(profileProvider);
   // Re-run only when the calendar date changes, not every tick
@@ -524,8 +579,7 @@ class JournalEntry {
         tags: tags ?? this.tags,
         promptId: promptId == _sentinel ? this.promptId : promptId as String?,
         locked: locked ?? this.locked,
-        editedAt:
-            editedAt == _sentinel ? this.editedAt : editedAt as DateTime?,
+        editedAt: editedAt == _sentinel ? this.editedAt : editedAt as DateTime?,
         attachments: attachments ?? this.attachments,
       );
 }
@@ -722,7 +776,8 @@ final allJournalTagsProvider = Provider<List<String>>((ref) {
   for (final e in all) {
     seen.addAll(e.tags);
   }
-  final list = seen.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  final list = seen.toList()
+    ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
   return list;
 });
 
@@ -985,9 +1040,8 @@ class VisionItem {
         emoji: emoji ?? this.emoji,
         imagePaths: imagePaths ?? this.imagePaths,
         category: category ?? this.category,
-        targetDate: targetDate == _sentinel
-            ? this.targetDate
-            : targetDate as DateTime?,
+        targetDate:
+            targetDate == _sentinel ? this.targetDate : targetDate as DateTime?,
         milestones: milestones ?? this.milestones,
         affirmation: affirmation ?? this.affirmation,
         whyItMatters: whyItMatters ?? this.whyItMatters,
@@ -996,9 +1050,8 @@ class VisionItem {
         achievedDate: achievedDate == _sentinel
             ? this.achievedDate
             : achievedDate as DateTime?,
-        accentColor: accentColor == _sentinel
-            ? this.accentColor
-            : accentColor as int?,
+        accentColor:
+            accentColor == _sentinel ? this.accentColor : accentColor as int?,
       );
 }
 
@@ -1091,7 +1144,8 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
       for (final id in orderedIds)
         if (byId.containsKey(id)) byId[id]!,
       // Append anything missing from the order list so nothing is lost.
-      for (final e in current) if (!orderedIds.contains(e.id)) e,
+      for (final e in current)
+        if (!orderedIds.contains(e.id)) e,
     ];
     await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
@@ -1382,7 +1436,8 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
 
   @override
   Future<List<DailyIntention>> build() async {
-    return _safeParseList(await EncryptedStore.read(_key), DailyIntention.fromJson)
+    return _safeParseList(
+        await EncryptedStore.read(_key), DailyIntention.fromJson)
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
@@ -1390,8 +1445,7 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
 
   /// Set (or replace) today's morning intention. There's only ever one per
   /// local day — editing pre-evening replaces the text in place.
-  Future<void> setToday(String text) =>
-      _writeLock = _writeLock.then((_) async {
+  Future<void> setToday(String text) => _writeLock = _writeLock.then((_) async {
         final trimmed = text.trim();
         if (trimmed.isEmpty) return;
         final now = DateTime.now();
@@ -1519,13 +1573,13 @@ class RecoveryCapitalWeek {
       };
 }
 
-class RecoveryCapitalNotifier
-    extends AsyncNotifier<List<RecoveryCapitalWeek>> {
+class RecoveryCapitalNotifier extends AsyncNotifier<List<RecoveryCapitalWeek>> {
   static const _key = 'recovery_capital';
 
   @override
   Future<List<RecoveryCapitalWeek>> build() async {
-    return _safeParseList(await EncryptedStore.read(_key), RecoveryCapitalWeek.fromJson)
+    return _safeParseList(
+        await EncryptedStore.read(_key), RecoveryCapitalWeek.fromJson)
       ..sort((a, b) => b.weekStart.compareTo(a.weekStart));
   }
 
@@ -1864,6 +1918,7 @@ class Meeting {
   final String? location;
   final String? notes;
   final bool notify;
+
   /// Minutes before [dateTime] to fire a reminder notification.
   /// Common values: 5, 15, 30, 60, 1440 (1 day). Ignored when [notify] is false.
   final int reminderMinutesBefore;
@@ -1960,9 +2015,8 @@ class MeetingsNotifier extends AsyncNotifier<List<Meeting>> {
   }
 }
 
-final meetingsProvider =
-    AsyncNotifierProvider<MeetingsNotifier, List<Meeting>>(
-        MeetingsNotifier.new);
+final meetingsProvider = AsyncNotifierProvider<MeetingsNotifier, List<Meeting>>(
+    MeetingsNotifier.new);
 
 // ─── Future-self letters ──────────────────────────────────────────────────────
 
@@ -1984,15 +2038,14 @@ class FutureLetterNotifier extends AsyncNotifier<List<FutureLetter>> {
 
   Future<void> add(FutureLetter letter) async {
     final current = state.valueOrNull ?? [];
-    await _persist([...current, letter]
-      ..sort((a, b) => a.unlockAt.compareTo(b.unlockAt)));
+    await _persist(
+        [...current, letter]..sort((a, b) => a.unlockAt.compareTo(b.unlockAt)));
   }
 
   Future<void> markOpened(String id) async {
     final current = state.valueOrNull ?? [];
-    final updated = current
-        .map((l) => l.id == id ? l.copyWith(opened: true) : l)
-        .toList();
+    final updated =
+        current.map((l) => l.id == id ? l.copyWith(opened: true) : l).toList();
     await _persist(updated);
   }
 
@@ -2117,8 +2170,14 @@ class CravingPattern {
   });
 
   String get weekdayLabel => const [
-        '', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-        'Friday', 'Saturday', 'Sunday',
+        '',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
       ][weekday];
 
   String get timeLabel {
@@ -2128,6 +2187,7 @@ class CravingPattern {
       if (h == 12) return '12pm';
       return '${h - 12}pm';
     }
+
     return '${fmt(startHour)}–${fmt((startHour + 2) % 24)}';
   }
 }

@@ -71,8 +71,7 @@ class _IntentionSheetState extends ConsumerState<IntentionSheet> {
     final now = DateTime.now();
     // Heuristic: after 16:00 local, if an intention exists and hasn't been
     // reviewed, show the review pane. Otherwise show write/edit.
-    final showReview =
-        today != null && today.outcome == null && now.hour >= 16;
+    final showReview = today != null && today.outcome == null && now.hour >= 16;
 
     return Container(
       decoration: const BoxDecoration(
@@ -134,14 +133,12 @@ class _WritePane extends StatelessWidget {
       children: [
         Text(
           alreadySet ? 'Edit today\'s intention' : 'Set today\'s intention',
-          style: AppTextStyles.titleLarge
-              .copyWith(color: AppColors.forest700),
+          style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
         ),
         const SizedBox(height: 4),
         Text(
           'One small thing for your recovery today.',
-          style:
-              AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -150,12 +147,12 @@ class _WritePane extends StatelessWidget {
           maxLength: 120,
           maxLines: 3,
           minLines: 2,
-          style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.stone800, height: 1.4, fontSize: 16),
+          style: AppTextStyles.bodyLarge
+              .copyWith(color: AppColors.stone800, height: 1.4, fontSize: 16),
           decoration: InputDecoration(
             hintText: 'e.g. Call my sponsor before noon.',
-            hintStyle: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.stone400),
+            hintStyle:
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
             filled: true,
             fillColor: AppColors.stone50,
             counterText: '',
@@ -187,8 +184,7 @@ class _WritePane extends StatelessWidget {
             ),
             child: Text(
               saving ? 'Saving…' : 'Save intention',
-              style:
-                  AppTextStyles.labelMedium.copyWith(color: Colors.white),
+              style: AppTextStyles.labelMedium.copyWith(color: Colors.white),
             ),
           ),
         ),
@@ -209,14 +205,12 @@ class _ReviewPane extends StatelessWidget {
       children: [
         Text(
           'How did today go?',
-          style: AppTextStyles.titleLarge
-              .copyWith(color: AppColors.forest700),
+          style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
         ),
         const SizedBox(height: 4),
         Text(
           'This morning you said:',
-          style:
-              AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
+          style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 12),
         Container(
@@ -300,8 +294,7 @@ class _ReviewPill extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 label,
-                style:
-                    AppTextStyles.labelMedium.copyWith(color: color),
+                style: AppTextStyles.labelMedium.copyWith(color: color),
               ),
             ],
           ),
@@ -405,14 +398,14 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
             const SizedBox(height: 14),
             Text(
               'Recovery capital this week',
-              style: AppTextStyles.titleLarge
-                  .copyWith(color: AppColors.forest700),
+              style:
+                  AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
             ),
             const SizedBox(height: 4),
             Text(
               '${DateFormat('MMM d').format(weekStart)} – ${DateFormat('MMM d').format(weekEnd)}',
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone500),
+              style:
+                  AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
             ),
             const SizedBox(height: 18),
             _CapitalRow(
@@ -453,8 +446,8 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
                   .copyWith(color: AppColors.stone800, height: 1.4),
               decoration: InputDecoration(
                 hintText: 'A note for future-you (optional)',
-                hintStyle: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone400),
+                hintStyle:
+                    AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
                 filled: true,
                 fillColor: AppColors.stone50,
                 contentPadding: const EdgeInsets.all(12),
@@ -486,8 +479,8 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
                 ),
                 child: Text(
                   _saving ? 'Saving…' : 'Save this week',
-                  style: AppTextStyles.labelMedium
-                      .copyWith(color: Colors.white),
+                  style:
+                      AppTextStyles.labelMedium.copyWith(color: Colors.white),
                 ),
               ),
             ),

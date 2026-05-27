@@ -265,18 +265,28 @@ class AppRadius {
 class AppShadows {
   AppShadows._();
 
-  // Luxury warm shadow — forestDark tinted, very diffuse
+  // Luxury warm shadow — forestDark tinted, soft but cheap to rasterize.
+  //
+  // Skia's Gaussian blur cost grows ~quadratically with blurRadius, and these
+  // shadows are applied to every LuxuryCard. With ~13 cards on the home
+  // screen each wearing this shadow, oversized blurs were the primary cause
+  // of scroll jitter (the shadow extends past each card's RepaintBoundary so
+  // every scroll frame re-rasterizes the soft penumbra). Values were tuned
+  // to be visually indistinguishable at viewing distance while costing the
+  // GPU ~6x less per frame (blurRadius 45 → 18 ≈ (45/18)² ≈ 6.25x cheaper).
   static const luxury = [
     BoxShadow(
-      color: Color(0x141F4D38), // 8% forestDark
-      blurRadius: 45,
-      offset: Offset(0, 18),
-      spreadRadius: -5,
+      color: Color(0x1A1F4D38), // 10% forestDark — slightly stronger to
+                                 // preserve perceived depth at the smaller
+                                 // blur radius (smaller blur reads paler).
+      blurRadius: 18,
+      offset: Offset(0, 10),
+      spreadRadius: -4,
     ),
     BoxShadow(
-      color: Color(0x0A1F4D38), // 4% forestDark
-      blurRadius: 12,
-      offset: Offset(0, 4),
+      color: Color(0x0A1F4D38), // 4% forestDark — close contact shadow
+      blurRadius: 6,
+      offset: Offset(0, 2),
     ),
   ];
 
@@ -284,27 +294,27 @@ class AppShadows {
   static const card = [
     BoxShadow(
       color: Color(0x0A1E293B),
-      blurRadius: 8,
+      blurRadius: 6,
       offset: Offset(0, 1),
     ),
     BoxShadow(
-      color: Color(0x0A1E293B),
-      blurRadius: 24,
-      offset: Offset(0, 4),
+      color: Color(0x101E293B),
+      blurRadius: 14,
+      offset: Offset(0, 3),
     ),
   ];
 
   // Glass card — diffuse, no hard edge
   static const glass = [
     BoxShadow(
-      color: Color(0x14000000),
-      blurRadius: 32,
-      offset: Offset(0, 8),
-      spreadRadius: -4,
+      color: Color(0x1A000000),
+      blurRadius: 18,
+      offset: Offset(0, 6),
+      spreadRadius: -3,
     ),
     BoxShadow(
       color: Color(0x08000000),
-      blurRadius: 8,
+      blurRadius: 6,
       offset: Offset(0, 2),
     ),
   ];
@@ -313,8 +323,8 @@ class AppShadows {
   static const button = [
     BoxShadow(
       color: Color(0x333E745A),
-      blurRadius: 16,
-      offset: Offset(0, 6),
+      blurRadius: 12,
+      offset: Offset(0, 4),
       spreadRadius: -2,
     ),
   ];
