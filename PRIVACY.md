@@ -1,17 +1,17 @@
 # Privacy Policy — Journey Forward
 
-**Effective date:** 24 May 2026
+**Effective date:** 27 May 2026
 **App:** Journey Forward (Android)
 **Developer:** Shawn Fourie / Stillwater Studios
 **Contact:** shawn@journeyforward.app
 
 ---
 
-## Your privacy is absolute.
+## Your data stays on your device.
 
-**Journey Forward stores everything on your device only. No data is ever sent to any server.**
+**Journey Forward stores everything on your device. The app itself sends no data to any server.**
 
-This policy explains, in plain language, exactly what data the app handles, where it goes, and how to control it. The short version: it stays on your phone, and only you can see it.
+This policy explains, in plain language, exactly what data the app handles, where it goes, and how to control it. The short version: it stays on your phone, and only you can see it. The one nuance to be aware of — covered in §5 — is that if you use the optional voice-dictation feature for journaling, your spoken audio is handed to your phone's own speech-recognition service, which on many Android devices is provided by Google and may process audio in the cloud. That's an OS-level service we don't control; everything the app itself does is local.
 
 ---
 
@@ -35,7 +35,7 @@ You can enter the following information into Journey Forward:
 - Lock method preference (PIN or biometric) — the PIN itself is salted and hashed, never stored as plaintext
 - Notification preferences (morning/evening times, motivation/reminder/milestone toggles)
 
-**Where it lives.** All of the above is stored locally on your device using the operating system's standard app storage. Sensitive collections (journal, cravings, thoughts, slips, intentions, etc.) are written through Android's hardware-backed **Keystore-encrypted shared preferences** so they remain encrypted at rest. The encryption key never leaves the Android Keystore.
+**Where it lives.** All of the above is stored locally on your device using the operating system's standard app storage. Sensitive collections (journal, cravings, thoughts, slips, intentions, etc.) are written through Android's **Keystore-encrypted shared preferences** so they remain encrypted at rest. On most modern Android devices the encryption key is held in a hardware-backed secure element (TEE or StrongBox); on older or lower-end hardware Android may keep the key in a software-backed Keystore. Either way the key is managed by the OS and never leaves the Keystore boundary into Journey Forward's own memory.
 
 **What we collect.** Nothing. None of this information leaves your device. There is no account to sign up for, no profile to create on a server, and no copy of your data held by us, by Google, by Stillwater Studios, or by any third party.
 
@@ -48,6 +48,7 @@ Journey Forward works fully offline.
 - All fonts (Inter, Fraunces) and visual assets are bundled inside the app.
 - The app does **not** request the `INTERNET` permission in its Android manifest — meaning it is **technically incapable** of making network requests from inside the app itself.
 - If you tap a link to a crisis line, support group, or external resource, your device opens it in your system browser or dialer — outside of Journey Forward — and your interaction there is subject to that destination's own privacy policy.
+- One caveat: the optional voice-dictation feature in the journal hands audio to your phone's built-in speech-recognition service (commonly Google's Speech Services on Android). That service — not Journey Forward — may transmit audio to the cloud depending on your device and OS settings. See §5 for the full explanation, and deny the microphone permission if you'd rather not use this feature at all.
 
 ---
 
@@ -114,7 +115,7 @@ Journey Forward includes an opt-in, manual backup feature:
 If you set a PIN in Settings:
 
 - The PIN is **never stored as plaintext**.
-- It is concatenated with a per-install random salt and hashed via a slow key-derivation function (PBKDF2-SHA256 with 100,000 iterations).
+- It is concatenated with a per-install random salt and hashed via a slow key-derivation function (PBKDF2-HMAC-SHA256 with 150,000 iterations).
 - The salt and hash are written to Android's Keystore-encrypted secure storage.
 - When you enter your PIN to unlock, we re-derive the hash and compare in constant time.
 

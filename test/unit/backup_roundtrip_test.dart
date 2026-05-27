@@ -26,7 +26,8 @@ const _profileJson =
     '"dailySpend":120.0,"currency":"\$","lockMethod":"pin"}';
 
 // The set must match backup_screen.dart's _exportKeys (sans 'profile',
-// which is read from EncryptedStore).
+// which is exercised on its own line below). Post-migration, every one of
+// these reads from EncryptedStore — not plain SharedPreferences.
 const _exportKeys = [
   'journal_entries',
   'gratitude',
@@ -37,6 +38,14 @@ const _exportKeys = [
   'thoughts',
   'activities',
   'sleep_logs',
+  // v5.8 feature data
+  'future_letters',
+  'hard_days',
+  'thought_records',
+  'meetings',
+  // v5.9 clinical features
+  'daily_intentions',
+  'recovery_capital',
 ];
 
 void main() {
@@ -46,35 +55,35 @@ void main() {
   });
   setUp(resetSecureStorageMock);
 
-  test('export reads profile from EncryptedStore, not SharedPreferences',
-      () async {
-    // Simulate the post-migration state: profile lives ONLY in EncryptedStore.
-    SharedPreferences.setMockInitialValues({
-      'has_profile': '1',
-      'journal_entries': '[{"id":"1","date":"2026-01-02T10:00:00.000",'
-          '"text":"hi","mood":"good"}]',
-    });
+  test('export reads profile and side-band data from EncryptedStore, '
+      'not SharedPreferences', () async {
+    // Simulate the post-migration state: every sensitive collection lives in
+    // EncryptedStore; plain SharedPreferences holds only the presence sentinel.
+    SharedPreferences.setMockInitialValues({'has_profile': '1'});
     await EncryptedStore.write('profile', _profileJson);
+    await EncryptedStore.write(
+      'journal_entries',
+      '[{"id":"1","date":"2026-01-02T10:00:00.000","text":"hi","mood":"good"}]',
+    );
 
     final prefs = await SharedPreferences.getInstance();
-    final exportedProfile = await EncryptedStore.read('profile');
-    expect(exportedProfile, _profileJson,
+
+    // Profile is read from EncryptedStore.
+    expect(await EncryptedStore.read('profile'), _profileJson,
         reason: 'Backup export must read profile from EncryptedStore.');
 
-    // Side-band keys are exported from SharedPreferences only.
+    // Side-band data is read from EncryptedStore — NOT plain prefs.
+    expect(await EncryptedStore.read('journal_entries'), isNotNull,
+        reason: 'Sensitive collections must live in EncryptedStore.');
     for (final k in _exportKeys) {
-      // Just confirm prefs.getString is the source — the journal_entries
-      // value above is the one we expect to find.
-      if (k == 'journal_entries') {
-        expect(prefs.getString(k), isNotNull);
-      } else {
-        expect(prefs.getString(k), isNull);
-      }
+      expect(prefs.getString(k), isNull,
+          reason: '$k must not exist in plain prefs after migration — '
+              'the StorageMigration pass moves it to EncryptedStore and '
+              'deletes the plaintext copy.');
     }
     // Crucially: the plaintext 'profile' key must NOT be the source.
     expect(prefs.getString('profile'), isNull,
-        reason:
-            'Plaintext profile in SharedPreferences would mean the backup '
+        reason: 'Plaintext profile in SharedPreferences would mean the backup '
             'wrote unencrypted data — the migration must clear it.');
   });
 

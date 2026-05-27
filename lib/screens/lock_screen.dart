@@ -67,9 +67,22 @@ class _LockScreenState extends State<LockScreen>
     // a PIN from Settings. This is what closes the "type any 4 digits to
     // bypass" hole that existed before.
     if (method == 'pin') {
-      final hasV2 = (await _storage.read(key: PinHash.storageKey)) != null;
-      final hasLegacy = (await _storage.read(key: PinHash.legacyKey)) != null;
-      if (!hasV2 && !hasLegacy) {
+      if (!await _hasAnyPinHash()) {
+        await prefs.remove('lockMethod');
+        if (!mounted) return;
+        _unlock();
+        return;
+      }
+    }
+
+    // ── Integrity check: biometric is configured but the device can no
+    // longer authenticate (sensor disabled, enrollment cleared, hardware
+    // fault) AND no PIN backup exists. Without this, the biometric flow
+    // would fall back to a PIN pad with no valid hash and lock the user
+    // out permanently. Clear the orphaned lock so they can re-set it from
+    // Settings once they're back in.
+    if (method == 'biometric' && !await _hasAnyPinHash()) {
+      if (!await _biometricUsable()) {
         await prefs.remove('lockMethod');
         if (!mounted) return;
         _unlock();
@@ -89,6 +102,24 @@ class _LockScreenState extends State<LockScreen>
       _unlock();
     }
     // 'pin' falls through to show the PIN pad
+  }
+
+  Future<bool> _hasAnyPinHash() async {
+    final hasV2 = (await _storage.read(key: PinHash.storageKey)) != null;
+    final hasLegacy = (await _storage.read(key: PinHash.legacyKey)) != null;
+    return hasV2 || hasLegacy;
+  }
+
+  Future<bool> _biometricUsable() async {
+    try {
+      final canCheck = await _auth.canCheckBiometrics;
+      final isAvailable = await _auth.isDeviceSupported();
+      if (!canCheck || !isAvailable) return false;
+      final enrolled = await _auth.getAvailableBiometrics();
+      return enrolled.isNotEmpty;
+    } on PlatformException {
+      return false;
+    }
   }
 
   Future<void> _tryBiometric() async {
@@ -132,7 +163,20 @@ class _LockScreenState extends State<LockScreen>
     }
   }
 
-  void _fallbackToPin() => setState(() => _lockMethod = 'pin');
+  Future<void> _fallbackToPin() async {
+    // If biometric fails mid-session and the user never set a backup PIN,
+    // the PIN pad would be unsatisfiable — clear the broken lock instead of
+    // stranding them. Mirrors the startup integrity check above.
+    if (!await _hasAnyPinHash()) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('lockMethod');
+      if (!mounted) return;
+      _unlock();
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _lockMethod = 'pin');
+  }
 
   void _unlock() {
     // Clear the global gate so the GoRouter redirect stops bouncing
