@@ -94,6 +94,8 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `urge_rides` | **`EncryptedStore`** | "Ride the Wave" timer wins (v6.0) — included in backups |
 | `theme_mode` | Plain prefs | `'system'` / `'light'` / `'dark'` — read synchronously before the first frame |
 | `safety_modal_seen` | Plain prefs | One-time first-launch safety note + medical disclaimer flag |
+| `last_backup_date` | Plain prefs | ISO timestamp stamped on successful export — drives the milestone-time backup nudge (never / >14 days stale) |
+| `supporter_thanks` | Plain prefs | Set after a tip-jar purchase completes (v6.1) |
 | `has_profile` | Plain prefs | Sentinel "1" so the synchronous router redirect can answer "is there a profile?" without awaiting encrypted storage |
 | `profile_sober_date` | Plain prefs | Mirror of `profile.soberDate` so the home-screen widget can render the streak without touching encrypted storage |
 | `lockMethod` | Plain prefs | `'pin'` / `'biometric'` / `'none'` — read synchronously by the GoRouter lock-gate redirect |
@@ -135,6 +137,7 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `/heatmap` | `HeatmapScreen` | 13-week activity heatmap |
 | `/slip-support` | `SlipSupportScreen` | Urge surfing and slip support flow |
 | `/urge-timer` | `UrgeTimerScreen` | "Ride the Wave" — auto-starting 10-min urge countdown with breathing visual; every ride (full or ended early via "I'm steady now") records an `UrgeRide` win. Reachable while locked (LockGate allowlist) and targeted by the SOS widget |
+| `/supporter` | `SupporterScreen` | Tip jar (v6.1) — three consumable "coffee" Play Billing products (`supporter_coffee_small/_medium/_large`, must be created in Play Console). Degrades to a kind "not available" card if the store/products are missing. Nothing unlocks — tips are thank-yous only |
 
 ### Utility Screens
 
@@ -262,6 +265,26 @@ Content that sits on a forest-filled control should use `AppColors.onForest`
 (white in light mode, deep charcoal in dark mode) — never hardcoded white.
 Because tokens are no longer compile-time consts, new code must not reference
 `AppColors`/`AppTextStyles` inside `const` expressions.
+
+### Journey types & healing timeline (v6.1)
+
+Onboarding asks "What are you stepping away from?" (optional, tap-to-deselect;
+changeable later via Settings → Journey focus). The choice is stored as
+`UserProfile.journeyType` — a `kJourneyTypes` slug from
+`lib/utils/journey_types.dart` (alcohol, smoking, vaping, cannabis, gambling,
+pornography, other) — and drives the per-type **healing timeline card** on the
+Progress → Journey tab. Unknown/empty slugs fall back to the generic 'other'
+timeline, so pre-v6.1 profiles need no migration. Timeline copy is gentle
+("many people"), with an explicit "patterns, not promises" footer.
+
+### Risk windows (v6.1)
+
+`topRiskWindow()` in `lib/utils/craving_insights.dart` slides a wrap-around
+3-hour window over an hour-of-day histogram of the user's logged cravings.
+It reports a window only with ≥8 logs AND ≥35% concentration (uniform noise
+would put 12.5% in any 3-hour slice) — it never invents a pattern. Surfaced
+as the "Your tender hours" card on Progress → Insights, linking to the
+pre-craving plan. Fully on-device, like all insights.
 
 ### Colours
 

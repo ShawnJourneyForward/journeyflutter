@@ -21,6 +21,10 @@ class UserProfile {
   final List<String> cons;
   final String lockMethod; // 'none' | 'biometric' | 'pin'
   final bool hapticsEnabled;
+  // What the user is stepping away from — a kJourneyTypes slug ('alcohol',
+  // 'smoking', ...). Empty string = chosen before v6.1 / prefers not to say;
+  // journeyTypeFor() falls back to the generic 'other' timeline.
+  final String journeyType;
   final List<int> firedMilestoneDays;
   final List<double> firedSavingsTiers;
   // Pre-craving plan: 3 short steps the user has pre-committed to running
@@ -56,6 +60,7 @@ class UserProfile {
     this.cons = const [],
     this.lockMethod = 'none',
     this.hapticsEnabled = true,
+    this.journeyType = '',
     this.firedMilestoneDays = const [],
     this.firedSavingsTiers = const [],
     this.preCravingPlan = const [],
@@ -94,6 +99,7 @@ class UserProfile {
             [],
         lockMethod: j['lockMethod'] as String? ?? 'none',
         hapticsEnabled: j['hapticsEnabled'] as bool? ?? true,
+        journeyType: j['journeyType'] as String? ?? '',
         firedMilestoneDays: (j['firedMilestoneDays'] as List<dynamic>?)
                 ?.map((e) => e as int)
                 .toList() ??
@@ -133,6 +139,7 @@ class UserProfile {
         'cons': cons,
         'lockMethod': lockMethod,
         'hapticsEnabled': hapticsEnabled,
+        'journeyType': journeyType,
         'firedMilestoneDays': firedMilestoneDays,
         'firedSavingsTiers': firedSavingsTiers,
         'preCravingPlan': preCravingPlan,
@@ -161,6 +168,7 @@ class UserProfile {
     List<String>? cons,
     String? lockMethod,
     bool? hapticsEnabled,
+    String? journeyType,
     List<int>? firedMilestoneDays,
     List<double>? firedSavingsTiers,
     List<String>? preCravingPlan,
@@ -193,6 +201,7 @@ class UserProfile {
         cons: cons ?? this.cons,
         lockMethod: lockMethod ?? this.lockMethod,
         hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
+        journeyType: journeyType ?? this.journeyType,
         firedMilestoneDays: firedMilestoneDays ?? this.firedMilestoneDays,
         firedSavingsTiers: firedSavingsTiers ?? this.firedSavingsTiers,
         preCravingPlan: preCravingPlan ?? this.preCravingPlan,

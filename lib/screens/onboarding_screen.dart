@@ -11,6 +11,7 @@ import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/journey_types.dart';
 import '../utils/notification_service.dart';
 import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
@@ -19,7 +20,7 @@ import '../l10n/app_localizations.dart';
 
 // ─── Step enum ────────────────────────────────────────────────────────────────
 
-enum _Step { welcome, name, date, spend, security, pin, notifications, finish }
+enum _Step { welcome, name, journey, date, spend, security, pin, notifications, finish }
 
 // ─── Onboarding Screen ────────────────────────────────────────────────────────
 
@@ -33,6 +34,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // ── Form state ──────────────────────────────────────────────────────────────
   String _username = '';
+  String _journeyType = '';
   DateTime _soberDate = DateTime.now();
   double _dailySpend = 0;
   String _currency = '\$';
@@ -60,6 +62,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final all = [
       _Step.welcome,
       _Step.name,
+      _Step.journey,
       _Step.date,
       _Step.spend,
       _Step.security,
@@ -220,6 +223,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         currency: _currency,
         timezone: DateTime.now().timeZoneName,
         lockMethod: _lockMethod,
+        journeyType: _journeyType.isEmpty ? 'other' : _journeyType,
         weeklyGoals: const [],
       );
 
@@ -402,6 +406,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           value: _username,
           onChanged: (v) => setState(() => _username = v),
           onSubmit: _next,
+        ),
+      _Step.journey => _JourneyStep(
+          selected: _journeyType,
+          onChanged: (v) => setState(() => _journeyType = v),
         ),
       _Step.date => _DateStep(
           date: _soberDate,
@@ -719,6 +727,107 @@ class _NameStepState extends State<_NameStep> {
         onSubmitted: (_) => widget.onSubmit(),
         style: AppTextStyles.bodyLarge.copyWith(color: AppColors.stone800),
         decoration: _inputDecor(l10n.onbNameHint, Icons.person_outline_rounded),
+      ),
+    );
+  }
+}
+
+// ─── Step 2b: Journey type ────────────────────────────────────────────────────
+// "What are you stepping away from?" — optional, defaults to the generic
+// journey. Personalizes the healing timeline on the Progress screen. Stored
+// on-device like everything else; changeable later in Settings.
+
+class _JourneyStep extends StatelessWidget {
+  const _JourneyStep({required this.selected, required this.onChanged});
+  final String selected;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return _StepShell(
+      headline: l10n.onbJourneyTitle,
+      sub: l10n.onbJourneySub,
+      child: Column(
+        children: [
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 2.6,
+            ),
+            itemCount: kJourneyTypes.length,
+            itemBuilder: (_, i) {
+              final t = kJourneyTypes[i];
+              final isSelected = selected == t.slug;
+              return GestureDetector(
+                onTap: () {
+                  H.selection();
+                  // Tap again to deselect — keeps the choice truly optional.
+                  onChanged(isSelected ? '' : t.slug);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.forest600 : AppColors.card,
+                    borderRadius: AppRadius.xl,
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.forest600
+                          : AppColors.softBorder,
+                      width: isSelected ? 1.5 : 1,
+                    ),
+                    boxShadow: isSelected ? AppShadows.card : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        t.icon,
+                        size: 19,
+                        color: isSelected
+                            ? AppColors.onForest
+                            : AppColors.forest600,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          t.label,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: isSelected
+                                ? AppColors.onForest
+                                : AppColors.stone700,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(Icons.lock_outline_rounded,
+                  size: 14, color: AppColors.stone400),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.onbJourneyPrivacyNote,
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400, height: 1.4),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

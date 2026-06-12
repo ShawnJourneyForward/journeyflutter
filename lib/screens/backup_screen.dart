@@ -96,7 +96,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final file = File('${Directory.systemTemp.path}/$filename');
       await file.writeAsString(fileContents);
 
-      await Share.shareXFiles(
+      final shareResult = await Share.shareXFiles(
         [
           XFile(file.path,
               mimeType: usingEncryption
@@ -107,6 +107,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ? 'Journey Forward Backup (encrypted)'
             : 'Journey Forward Backup',
       );
+
+      // Stamp the backup date (plain pref — not sensitive) so the home
+      // screen's milestone-time nudge knows the streak is protected.
+      if (shareResult.status != ShareResultStatus.dismissed) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(
+            'last_backup_date', DateTime.now().toIso8601String());
+      }
     } catch (e) {
       if (mounted) {
         _showSnack(AppLocalizations.of(context).backupExportFailed,

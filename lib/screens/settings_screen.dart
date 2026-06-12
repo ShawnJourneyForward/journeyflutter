@@ -15,6 +15,7 @@ import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/journey_types.dart';
 import '../utils/notification_service.dart';
 import '../utils/pin_hash.dart';
 
@@ -2062,6 +2063,14 @@ class _MoreCard extends ConsumerWidget {
                 icon: Icons.privacy_tip_outlined,
                 label: l10n.settingsPrivacyLabel,
                 onTap: () => context.push('/privacy'),
+                borderBottom: true,
+              ),
+              _SettingsRow(
+                icon: Icons.coffee_outlined,
+                iconColor: AppColors.honey600,
+                label: 'Support Journey Forward',
+                value: 'Free forever — tips welcome, never required',
+                onTap: () => context.push('/supporter'),
               ),
             ],
           ),
@@ -2275,6 +2284,15 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   onTap: _editAppearance,
                   borderBottom: true,
                 ),
+                _SettingsRow(
+                  icon: Icons.route_outlined,
+                  label: 'Journey focus',
+                  value: journeyTypeFor(
+                          ref.watch(profileProvider).valueOrNull?.journeyType)
+                      .label,
+                  onTap: _editJourney,
+                  borderBottom: true,
+                ),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -2403,6 +2421,44 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
     if (picked != null) {
       H.selection();
       await ref.read(themeModeProvider.notifier).set(picked);
+    }
+  }
+
+  Future<void> _editJourney() async {
+    final current =
+        journeyTypeFor(ref.read(profileProvider).valueOrNull?.journeyType);
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text('Journey focus', style: AppTextStyles.titleMedium),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final t in kJourneyTypes)
+                RadioListTile<String>(
+                  value: t.slug,
+                  groupValue: current.slug,
+                  onChanged: (v) => Navigator.pop(ctx, v),
+                  title: Text(t.label, style: AppTextStyles.bodyMedium),
+                  secondary:
+                      Icon(t.icon, size: 20, color: AppColors.forest600),
+                  activeColor: AppColors.forest600,
+                  dense: true,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked != null) {
+      H.selection();
+      await ref
+          .read(profileProvider.notifier)
+          .patch((p) => p.copyWith(journeyType: picked));
     }
   }
 }

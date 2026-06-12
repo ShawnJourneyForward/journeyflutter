@@ -380,6 +380,36 @@ abstract class AppLocalizations {
   /// **'Your name'**
   String get onbNameHint;
 
+  /// No description provided for @onbJourneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you stepping away from?'**
+  String get onbJourneyTitle;
+
+  /// No description provided for @onbJourneySub.
+  ///
+  /// In en, this message translates to:
+  /// **'This helps Journey Forward speak to your journey — your healing timeline, your milestones. You can skip it or change it any time in Settings.'**
+  String get onbJourneySub;
+
+  /// No description provided for @onbJourneyPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Like everything in this app, your answer never leaves your phone.'**
+  String get onbJourneyPrivacyNote;
+
+  /// No description provided for @homeBackupNudge.
+  ///
+  /// In en, this message translates to:
+  /// **'Beautiful milestone — a 2-minute backup keeps it safe forever.'**
+  String get homeBackupNudge;
+
+  /// No description provided for @homeBackupNudgeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up'**
+  String get homeBackupNudgeAction;
+
   /// No description provided for @onbNameError.
   ///
   /// In en, this message translates to:

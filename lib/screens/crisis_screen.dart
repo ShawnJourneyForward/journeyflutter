@@ -117,6 +117,12 @@ const _regions = <CrisisRegion>[
     initiallyExpanded: true,
     lines: [
       CrisisLine(
+        name: 'Suicide Crisis Helpline',
+        number: '0800 567 567',
+        description: 'SADAG 24-hour suicide crisis line',
+        hours: '24/7',
+      ),
+      CrisisLine(
         name: 'SADAG Substance Abuse',
         number: '0800 12 13 14',
         description: 'South African Depression and Anxiety Group',

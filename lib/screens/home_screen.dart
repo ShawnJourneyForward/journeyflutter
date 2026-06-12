@@ -730,6 +730,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             );
       }
+      // A milestone is when the streak feels most precious — if there's no
+      // recent backup, this is the one moment a gentle nudge lands.
+      await _maybeNudgeBackup();
     }
 
     // ── Savings milestones ──────────────────────────────────────────────────
@@ -751,6 +754,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
     }
+  }
+
+  // ── Backup nudge ──────────────────────────────────────────────────────────
+  // Shown only right after a milestone fires, and only when the user has
+  // never exported a backup (or not within 14 days). last_backup_date is
+  // stamped by the backup screen on successful export.
+
+  Future<void> _maybeNudgeBackup() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('last_backup_date');
+    final last = raw == null ? null : DateTime.tryParse(raw);
+    final stale = last == null || DateTime.now().difference(last).inDays >= 14;
+    if (!stale || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        l10n.homeBackupNudge,
+        style: AppTextStyles.bodySmall.copyWith(color: Colors.white),
+      ),
+      backgroundColor: AppColors.stone700,
+      behavior: SnackBarBehavior.floating,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 7),
+      action: SnackBarAction(
+        label: l10n.homeBackupNudgeAction,
+        textColor: AppColors.honey500,
+        onPressed: () => context.push('/backup'),
+      ),
+    ));
   }
 
   // ── First-launch safety note ─────────────────────────────────────────────

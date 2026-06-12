@@ -7,7 +7,9 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/craving_insights.dart';
 import '../utils/haptic_service.dart';
+import '../utils/journey_types.dart';
 import 'daily_practice_sheets.dart';
 
 // ─── Milestone definitions ─────────────────────────────────────────────────
@@ -386,7 +388,158 @@ class _StreakTab extends ConsumerWidget {
             ],
           ),
         ),
+        const SizedBox(height: 14),
+
+        // ── Healing timeline — what the body/mind is doing right now ──────
+        // Driven by the journey type chosen at onboarding; generic journey
+        // for pre-v6.1 profiles or "rather not say".
+        _HealingTimelineCard(
+          days: days,
+          journeyType: profile?.journeyType ?? '',
+        ),
       ],
+    );
+  }
+}
+
+// ─── Healing timeline card ──────────────────────────────────────────────────
+
+class _HealingTimelineCard extends StatelessWidget {
+  const _HealingTimelineCard({required this.days, required this.journeyType});
+  final int days;
+  final String journeyType;
+
+  @override
+  Widget build(BuildContext context) {
+    final type = journeyTypeFor(journeyType);
+    final benefits = type.benefits;
+    // The first not-yet-reached benefit gets the "coming up" highlight.
+    final nextIdx = benefits.indexWhere((b) => b.day > days);
+
+    return SolidCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(type.icon, size: 18, color: AppColors.forest600),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Your healing timeline',
+                    style: AppTextStyles.titleMedium),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...List.generate(benefits.length, (i) {
+            final b = benefits[i];
+            final achieved = days >= b.day;
+            final isNext = i == nextIdx;
+            final isLast = i == benefits.length - 1;
+            return IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Timeline rail: dot + connector line
+                  SizedBox(
+                    width: 22,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            color: achieved
+                                ? AppColors.forest600
+                                : isNext
+                                    ? AppColors.honey50
+                                    : AppColors.stone50,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: achieved
+                                  ? AppColors.forest600
+                                  : isNext
+                                      ? AppColors.honey500
+                                      : AppColors.stone200,
+                              width: isNext ? 1.5 : 1,
+                            ),
+                          ),
+                          child: achieved
+                              ? Icon(Icons.check_rounded,
+                                  size: 12, color: AppColors.onForest)
+                              : null,
+                        ),
+                        if (!isLast)
+                          Expanded(
+                            child: Container(
+                              width: 2,
+                              color: achieved
+                                  ? AppColors.forest200
+                                  : AppColors.stone100,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  b.title,
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                    color: achieved
+                                        ? AppColors.stone800
+                                        : isNext
+                                            ? AppColors.stone700
+                                            : AppColors.stone400,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                b.day == 1 ? 'Day 1' : 'Day ${b.day}',
+                                style: AppTextStyles.labelSmall.copyWith(
+                                  color: achieved
+                                      ? AppColors.forest600
+                                      : isNext
+                                          ? AppColors.honey600
+                                          : AppColors.stone300,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            b.body,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: achieved || isNext
+                                  ? AppColors.stone600
+                                  : AppColors.stone400,
+                              height: 1.45,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          const SizedBox(height: 12),
+          Text(
+            'Typical patterns, not promises — every body heals on its own schedule.',
+            style: AppTextStyles.caption.copyWith(
+                color: AppColors.stone400, fontStyle: FontStyle.italic),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -441,6 +594,11 @@ class _InsightsTab extends ConsumerWidget {
         const _RecoveryCapitalCard(),
         const SizedBox(height: 14),
 
+        // ── Risk window — "your tender hours" ──────────────────────────
+        // Only renders when the user's own logs show real time-of-day
+        // clustering (see topRiskWindow's noise guard). Fully on-device.
+        const _RiskWindowCard(),
+
         _InsightTile(
           title: 'Craving Support',
           subtitle: 'Every log is a brave step toward healing.',
@@ -484,6 +642,76 @@ class _InsightsTab extends ConsumerWidget {
               'Reflection builds resilience.\nYour thoughts are your inner compass.',
         ),
       ],
+    );
+  }
+}
+
+// ─── Risk window card ────────────────────────────────────────────────────────
+
+class _RiskWindowCard extends ConsumerWidget {
+  const _RiskWindowCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cravings = ref.watch(cravingProvider).valueOrNull ?? const [];
+    final window = topRiskWindow(cravings);
+    if (window == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: SolidCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.honey50,
+                    borderRadius: AppRadius.sm,
+                  ),
+                  child: Icon(Icons.nights_stay_outlined,
+                      size: 18, color: AppColors.honey600),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text('Your tender hours',
+                      style: AppTextStyles.titleMedium),
+                ),
+                Text(
+                  window.label,
+                  style: AppTextStyles.labelLarge
+                      .copyWith(color: AppColors.honey600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '${window.count} of your ${window.total} logged cravings land in '
+              'this window. Knowing your pattern is power — plan something '
+              'gentle for those hours: a walk, a call, the urge timer.',
+              style: AppTextStyles.bodySmall
+                  .copyWith(color: AppColors.stone600, height: 1.5),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => context.push('/pre-craving-plan'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  foregroundColor: AppColors.forest600,
+                ),
+                icon: const Icon(Icons.checklist_rounded, size: 17),
+                label: Text('Review my plan',
+                    style: AppTextStyles.labelLarge
+                        .copyWith(color: AppColors.forest600)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -166,6 +166,24 @@ class AppLocalizationsAf extends AppLocalizations {
   String get onbNameHint => 'Your name';
 
   @override
+  String get onbJourneyTitle => 'What are you stepping away from?';
+
+  @override
+  String get onbJourneySub =>
+      'This helps Journey Forward speak to your journey — your healing timeline, your milestones. You can skip it or change it any time in Settings.';
+
+  @override
+  String get onbJourneyPrivacyNote =>
+      'Like everything in this app, your answer never leaves your phone.';
+
+  @override
+  String get homeBackupNudge =>
+      'Beautiful milestone — a 2-minute backup keeps it safe forever.';
+
+  @override
+  String get homeBackupNudgeAction => 'Back up';
+
+  @override
   String get onbNameError => 'Please enter your name.';
 
   @override
