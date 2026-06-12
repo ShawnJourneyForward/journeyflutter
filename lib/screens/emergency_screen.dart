@@ -156,7 +156,6 @@ enum _Tab {
   cbt,
   reasons,
   halt,
-  urgeTimer,
   playTape,
   mindfulness,
 }
@@ -192,7 +191,6 @@ class _EmergencyScreenState extends ConsumerState<EmergencyScreen> {
                   _Tab.cbt => _CbtTab(onBack: _home),
                   _Tab.reasons => _ReasonsTab(onBack: _home),
                   _Tab.halt => _HaltTab(onBack: _home),
-                  _Tab.urgeTimer => _UrgeTimerTab(onBack: _home),
                   _Tab.playTape => _PlayTapeTab(onBack: _home, onNav: _go),
                   _Tab.mindfulness => _MindfulnessTab(onBack: _home),
                 },
@@ -237,31 +235,35 @@ class _HomeTab extends ConsumerWidget {
     final profile = ref.watch(profileProvider).valueOrNull;
     final ec = profile?.emergencyContact;
 
-    final tools = [
-      (Icons.air_rounded, 'Breathing', AppColors.forest400, _Tab.breathing),
+    // Each tool either switches to an in-screen tab or pushes a route.
+    final tools = <(IconData, String, Color, _Tab?, String?)>[
+      (Icons.air_rounded, 'Breathing', AppColors.forest400, _Tab.breathing, null),
       (
         Icons.self_improvement_rounded,
         'Meditation',
         AppColors.stone400,
-        _Tab.meditation
+        _Tab.meditation,
+        null
       ),
-      (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt),
-      (Icons.spa_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons),
-      (Icons.spa_outlined, 'H.A.L.T.', AppColors.honey500, _Tab.halt),
-      (Icons.timer_outlined, 'Urge Timer', AppColors.forest400, _Tab.urgeTimer),
+      (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt, null),
+      (Icons.spa_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons, null),
+      (Icons.spa_outlined, 'H.A.L.T.', AppColors.honey500, _Tab.halt, null),
+      (Icons.timer_outlined, 'Urge Timer', AppColors.forest400, null, '/urge-timer'),
       (
         Icons.play_circle_outline,
         'Play the Tape',
         AppColors.stone500,
-        _Tab.playTape
+        _Tab.playTape,
+        null
       ),
       (
         Icons.spa_outlined,
         'Mindfulness',
         AppColors.forest400,
-        _Tab.mindfulness
+        _Tab.mindfulness,
+        null
       ),
-      (Icons.extension_outlined, 'Puzzle', AppColors.stone400, null),
+      (Icons.extension_outlined, 'Puzzle', AppColors.stone400, null, '/puzzle'),
     ];
 
     return ListView(
@@ -284,8 +286,8 @@ class _HomeTab extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.phone_rounded,
-                      color: Colors.white, size: 24),
+                  Icon(Icons.phone_rounded,
+                      color: AppColors.onForest, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -293,15 +295,15 @@ class _HomeTab extends ConsumerWidget {
                       children: [
                         Text('Call ${ec.name}',
                             style: AppTextStyles.titleMedium
-                                .copyWith(color: Colors.white)),
+                                .copyWith(color: AppColors.onForest)),
                         Text(ec.phone,
-                            style: AppTextStyles.bodySmall
-                                .copyWith(color: Colors.white70)),
+                            style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.onForest.withOpacity(0.7))),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios_rounded,
-                      color: Colors.white70, size: 16),
+                  Icon(Icons.arrow_forward_ios_rounded,
+                      color: AppColors.onForest.withOpacity(0.7), size: 16),
                 ],
               ),
             ),
@@ -321,14 +323,15 @@ class _HomeTab extends ConsumerWidget {
           ),
           itemCount: tools.length,
           itemBuilder: (_, i) {
-            final (icon, label, color, tab) = tools[i];
+            final (icon, label, color, tab, route) = tools[i];
             return GestureDetector(
               onTap: () {
                 H.light();
-                if (tab != null)
+                if (tab != null) {
                   onNav(tab);
-                else
-                  context.push('/puzzle');
+                } else if (route != null) {
+                  context.push(route);
+                }
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -382,7 +385,7 @@ class _HomeTab extends ConsumerWidget {
                     color: AppColors.mintChip,
                     borderRadius: AppRadius.md,
                   ),
-                  child: const Icon(Icons.article_outlined,
+                  child: Icon(Icons.article_outlined,
                       size: 22, color: AppColors.forest700),
                 ),
                 const SizedBox(width: 14),
@@ -400,7 +403,7 @@ class _HomeTab extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
+                Icon(Icons.chevron_right_rounded,
                     size: 20, color: AppColors.stone300),
               ],
             ),
@@ -670,7 +673,7 @@ class _BreathingTabState extends State<_BreathingTab>
                         style: AppTextStyles.bodyMedium
                             .copyWith(color: AppColors.forest600)),
                     const SizedBox(width: 4),
-                    const Icon(Icons.chevron_right_rounded,
+                    Icon(Icons.chevron_right_rounded,
                         size: 18, color: AppColors.forest600),
                   ],
                 ),
@@ -769,7 +772,7 @@ class _BreathingTabState extends State<_BreathingTab>
                         Container(
                           width: 126,
                           height: 126,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.cream,
                           ),
@@ -827,7 +830,7 @@ class _BreathingTabState extends State<_BreathingTab>
                               width: 6,
                               height: 6,
                               margin: const EdgeInsets.only(right: 5),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: AppColors.forest600),
                             ),
@@ -865,7 +868,7 @@ class _BreathingTabState extends State<_BreathingTab>
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.eco_outlined,
+                        Icon(Icons.eco_outlined,
                             size: 18, color: AppColors.forest300),
                         const Spacer(),
                         Column(
@@ -887,7 +890,7 @@ class _BreathingTabState extends State<_BreathingTab>
                         value: progress,
                         backgroundColor: AppColors.forest100,
                         valueColor:
-                            const AlwaysStoppedAnimation(AppColors.forest500),
+                            AlwaysStoppedAnimation(AppColors.forest500),
                         minHeight: 5,
                       ),
                     ),
@@ -920,12 +923,12 @@ class _BreathingTabState extends State<_BreathingTab>
                             onPressed: _endSession,
                             style: OutlinedButton.styleFrom(
                               side:
-                                  const BorderSide(color: AppColors.forest300),
+                                  BorderSide(color: AppColors.forest300),
                               minimumSize: const Size.fromHeight(48),
                               shape: const RoundedRectangleBorder(
                                   borderRadius: AppRadius.xl),
                             ),
-                            child: const Text('End session',
+                            child: Text('End session',
                                 style: TextStyle(color: AppColors.forest700)),
                           ),
                         ),
@@ -1039,9 +1042,9 @@ class _RecommendedCard extends StatelessWidget {
               Container(
                 width: 52,
                 height: 52,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     color: AppColors.forest50, shape: BoxShape.circle),
-                child: const Icon(Icons.air_rounded,
+                child: Icon(Icons.air_rounded,
                     size: 26, color: AppColors.forest600),
               ),
               const SizedBox(width: 14),
@@ -1068,7 +1071,7 @@ class _RecommendedCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Divider(color: AppColors.stone100, height: 1),
+          Divider(color: AppColors.stone100, height: 1),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -1189,7 +1192,7 @@ class _LibraryCard extends StatelessWidget {
             Container(
               width: 50,
               height: 50,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   color: AppColors.forest50, shape: BoxShape.circle),
               child: Icon(icon, size: 24, color: AppColors.forest600),
             ),
@@ -1304,7 +1307,7 @@ class _PatternListTile extends StatelessWidget {
                         fontWeight: FontWeight.w600)),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   size: 18, color: AppColors.stone400),
             ],
           ),
@@ -1445,7 +1448,7 @@ class _MeditationTabState extends State<_MeditationTab>
               // ── Urge Surfing audio card ────────────────────────────────────
               Container(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [AppColors.forest900, Color(0xFF1A3D2B)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -1557,7 +1560,7 @@ class _MeditationTabState extends State<_MeditationTab>
                               child: Container(
                                 width: 56,
                                 height: 56,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: AppColors.honey400,
                                   shape: BoxShape.circle,
                                 ),
@@ -1630,7 +1633,7 @@ class _MeditationTabState extends State<_MeditationTab>
                                   backgroundColor:
                                       // ignore: deprecated_member_use
                                       Colors.white.withOpacity(0.12),
-                                  valueColor: const AlwaysStoppedAnimation(
+                                  valueColor: AlwaysStoppedAnimation(
                                       AppColors.honey400),
                                 ),
                               ),
@@ -1684,14 +1687,14 @@ class _MeditationTabState extends State<_MeditationTab>
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(children: [
-                  const Expanded(child: Divider(color: AppColors.stone100)),
+                  Expanded(child: Divider(color: AppColors.stone100)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text('Guided scripts',
                         style: AppTextStyles.caption
                             .copyWith(color: AppColors.stone400)),
                   ),
-                  const Expanded(child: Divider(color: AppColors.stone100)),
+                  Expanded(child: Divider(color: AppColors.stone100)),
                 ]),
               ),
 
@@ -1772,7 +1775,7 @@ class _MeditationTabState extends State<_MeditationTab>
                         minHeight: 4,
                         backgroundColor: AppColors.stone100,
                         valueColor:
-                            const AlwaysStoppedAnimation(AppColors.forest600),
+                            AlwaysStoppedAnimation(AppColors.forest600),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1901,7 +1904,7 @@ class _GuideList extends StatelessWidget {
                 Container(
                   width: 40,
                   height: 40,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.forest50,
                     shape: BoxShape.circle,
                   ),
@@ -1918,7 +1921,7 @@ class _GuideList extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
+                Icon(Icons.chevron_right_rounded,
                     color: AppColors.stone300),
               ],
             ),
@@ -1962,7 +1965,7 @@ class _GuideWalkthrough extends StatelessWidget {
             value: (step + 1) / guide.steps.length,
             minHeight: 6,
             backgroundColor: AppColors.stone100,
-            valueColor: const AlwaysStoppedAnimation(AppColors.forest600),
+            valueColor: AlwaysStoppedAnimation(AppColors.forest600),
           ),
         ),
         const SizedBox(height: 4),
@@ -2076,7 +2079,7 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
                         Container(
                           width: 22,
                           height: 22,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest600,
                             shape: BoxShape.circle,
                           ),
@@ -2230,154 +2233,6 @@ class _HaltTabState extends State<_HaltTab> {
   }
 }
 
-// ─── Tab 6: Urge Timer ────────────────────────────────────────────────────
-
-class _UrgeTimerTab extends StatefulWidget {
-  const _UrgeTimerTab({required this.onBack});
-  final VoidCallback onBack;
-
-  @override
-  State<_UrgeTimerTab> createState() => _UrgeTimerTabState();
-}
-
-class _UrgeTimerTabState extends State<_UrgeTimerTab> {
-  static const _totalSeconds = 15 * 60;
-  int _remaining = _totalSeconds;
-  bool _running = false;
-  bool _done = false;
-  Timer? _timer;
-
-  void _start() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) return;
-      setState(() {
-        _remaining--;
-        if (_remaining <= 0) {
-          _timer?.cancel();
-          _running = false;
-          _done = true;
-          H.medium();
-        }
-      });
-    });
-    setState(() {
-      _running = true;
-      _done = false;
-    });
-  }
-
-  void _pause() {
-    _timer?.cancel();
-    setState(() => _running = false);
-  }
-
-  void _reset() {
-    _timer?.cancel();
-    setState(() {
-      _running = false;
-      _done = false;
-      _remaining = _totalSeconds;
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  String get _timeStr {
-    final m = _remaining ~/ 60;
-    final s = _remaining % 60;
-    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
-  }
-
-  double get _progress => 1 - (_remaining / _totalSeconds);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _TabHeader(title: 'Urge Timer', onBack: widget.onBack),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _done
-                      ? 'You did it! 🎉'
-                      : 'Cravings peak and pass.\nThis one will too.',
-                  style: AppTextStyles.bodySerif.copyWith(
-                      color: AppColors.forest700, fontStyle: FontStyle.italic),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 40),
-                // Circular progress
-                SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: CircularProgressIndicator(
-                          value: _progress,
-                          strokeWidth: 10,
-                          backgroundColor: AppColors.stone100,
-                          valueColor: AlwaysStoppedAnimation(
-                              _done ? AppColors.honey500 : AppColors.forest600),
-                        ),
-                      ),
-                      Text(_done ? '✓' : _timeStr,
-                          style: AppTextStyles.displayMedium.copyWith(
-                              color: _done
-                                  ? AppColors.honey500
-                                  : AppColors.forest700)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                if (!_done) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _running ? _pause : _start,
-                          child: Text(_running ? 'Pause' : 'Start'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: _reset,
-                          style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.stone400),
-                          child: const Text('Reset'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  FilledButton(
-                    onPressed: _reset,
-                    style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.forest600),
-                    child: const Text('Start Again'),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 // ─── Tab 7: Play the Tape ─────────────────────────────────────────────────
 
 class _PlayTapeTab extends StatelessWidget {
@@ -2502,11 +2357,11 @@ class _PlayTapeTab extends StatelessWidget {
                         Container(
                           width: 32,
                           height: 32,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest100,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.spa_outlined,
+                          child: Icon(Icons.spa_outlined,
                               size: 16, color: AppColors.forest700),
                         ),
                         const SizedBox(width: 10),
@@ -2542,8 +2397,8 @@ class _PlayTapeTab extends StatelessWidget {
                         const SizedBox(width: 10),
                         _ActionButton(
                           icon: Icons.timer_outlined,
-                          label: 'Set a 20-minute timer',
-                          onTap: () => onNav(_Tab.urgeTimer),
+                          label: 'Ride the wave',
+                          onTap: () => context.push('/urge-timer'),
                         ),
                       ],
                     ),
@@ -2791,7 +2646,7 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                           Container(
                             width: 40,
                             height: 40,
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               color: AppColors.forest50,
                               shape: BoxShape.circle,
                             ),
@@ -2811,7 +2666,7 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.chevron_right_rounded,
+                          Icon(Icons.chevron_right_rounded,
                               color: AppColors.stone300),
                         ],
                       ),

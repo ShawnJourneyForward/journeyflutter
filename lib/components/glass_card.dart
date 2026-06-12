@@ -90,14 +90,14 @@ class SolidCard extends StatelessWidget {
     required this.child,
     this.borderRadius = AppRadius.luxury,
     this.padding = const EdgeInsets.all(20),
-    this.borderColor = AppColors.softBorder,
+    this.borderColor,
     this.shadows = AppShadows.luxury,
   });
 
   final Widget child;
   final BorderRadiusGeometry borderRadius;
   final EdgeInsetsGeometry padding;
-  final Color borderColor;
+  final Color? borderColor;
   final List<BoxShadow> shadows;
 
   @override
@@ -106,7 +106,8 @@ class SolidCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: borderRadius,
-        border: Border.all(color: borderColor, width: 1.0),
+        border:
+            Border.all(color: borderColor ?? AppColors.softBorder, width: 1.0),
         boxShadow: shadows,
       ),
       child: Padding(

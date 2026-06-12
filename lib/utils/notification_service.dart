@@ -58,13 +58,20 @@ class NotificationService {
 
   // ── Milestone constants ───────────────────────────────────────────────────
 
-  static const _milestoneDays = [1, 7, 14, 30, 60, 90, 180, 365, 730, 1095];
+  static const _milestoneDays = [
+    1, 2, 3, 5, 7, 10, 14, 21, 30, 60, 90, 180, 365, 730, 1095,
+  ];
   static const _savingsTiers = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
 
   static const _milestoneMessages = {
     1: '1 Day Sober. The first step is the hardest. You showed up.',
+    2: '2 Days Sober. Two days in a row. You\'re doing this.',
+    3: '3 Days Sober. Day three is one of the hardest. You\'re still here.',
+    5: '5 Days Sober. Five days of showing up for yourself.',
     7: '7 Days Sober. One full week — that takes real courage.',
+    10: '10 Days Sober. Double digits. Quietly, steadily, you keep going.',
     14: '14 Days Sober. Two weeks. Your body and mind are already responding.',
+    21: '21 Days Sober. Three weeks. New routines are starting to take root.',
     30: '30 Days Sober. One month of choosing yourself, one day at a time.',
     60: '60 Days Sober. Two months. Every single day has mattered.',
     90: '90 Days Sober. Three months. Keep going at your own pace.',

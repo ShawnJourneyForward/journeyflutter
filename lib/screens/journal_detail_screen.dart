@@ -47,7 +47,7 @@ class JournalDetailScreen extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Navigator.of(context).canPop()) Navigator.of(context).pop();
       });
-      return const Scaffold(backgroundColor: AppColors.stone50);
+      return Scaffold(backgroundColor: AppColors.stone50);
     }
 
     final mood = moodFor(entry.mood);
@@ -153,7 +153,7 @@ class JournalDetailScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.edit_note_rounded,
+                    Icon(Icons.edit_note_rounded,
                         size: 18, color: AppColors.stone400),
                     const SizedBox(width: 8),
                     Expanded(
@@ -338,7 +338,7 @@ class _PromptCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.format_quote_rounded,
+          Icon(Icons.format_quote_rounded,
               size: 16, color: AppColors.forest400),
           const SizedBox(width: 8),
           Expanded(
@@ -410,7 +410,7 @@ class _EchoCard extends StatelessWidget {
                         AppTextStyles.labelSmall.copyWith(color: mood.color)),
                 if (entry.locked) ...[
                   const SizedBox(width: 6),
-                  const Icon(Icons.lock, size: 11, color: AppColors.honey500),
+                  Icon(Icons.lock, size: 11, color: AppColors.honey500),
                 ],
                 const Spacer(),
                 Text(

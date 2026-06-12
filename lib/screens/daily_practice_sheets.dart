@@ -74,7 +74,7 @@ class _IntentionSheetState extends ConsumerState<IntentionSheet> {
     final showReview = today != null && today.outcome == null && now.hour >= 16;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -159,16 +159,16 @@ class _WritePane extends StatelessWidget {
             contentPadding: const EdgeInsets.all(14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.forest100),
+              borderSide: BorderSide(color: AppColors.forest100),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.forest100),
+              borderSide: BorderSide(color: AppColors.forest100),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.forest400, width: 1.4),
+                  BorderSide(color: AppColors.forest400, width: 1.4),
             ),
           ),
         ),
@@ -370,7 +370,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
     final weekEnd = weekStart.add(const Duration(days: 6));
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -453,16 +453,16 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
                 contentPadding: const EdgeInsets.all(12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.forest100),
+                  borderSide: BorderSide(color: AppColors.forest100),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.forest100),
+                  borderSide: BorderSide(color: AppColors.forest100),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide:
-                      const BorderSide(color: AppColors.forest400, width: 1.2),
+                      BorderSide(color: AppColors.forest400, width: 1.2),
                 ),
               ),
             ),

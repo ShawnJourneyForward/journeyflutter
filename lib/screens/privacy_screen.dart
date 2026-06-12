@@ -48,7 +48,7 @@ class PrivacyScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.lock_rounded,
+                      Icon(Icons.lock_rounded,
                           color: AppColors.forest300, size: 28),
                       const SizedBox(height: 12),
                       Text(l10n.privacyAbsoluteHeadline,

@@ -39,6 +39,8 @@ const _exportKeys = [
   // v5.9 clinical features
   'daily_intentions',
   'recovery_capital',
+  // v6.0 — urge timer wins
+  'urge_rides',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
@@ -233,7 +235,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       builder: (ctx) {
         final dialogL10n = AppLocalizations.of(ctx);
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.card,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
           title: Text(dialogL10n.backupConfirmTitle,
               style: AppTextStyles.titleMedium),
@@ -527,7 +529,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  const Icon(Icons.lock_outline_rounded,
+                  Icon(Icons.lock_outline_rounded,
                       size: 16, color: AppColors.stone500),
                   const SizedBox(width: 10),
                   Expanded(
@@ -559,7 +561,7 @@ class _ActionCard extends StatelessWidget {
     required this.buttonLabel,
     required this.loading,
     required this.onTap,
-    this.buttonColor = AppColors.forest600,
+    this.buttonColor,
   });
 
   final IconData icon;
@@ -570,7 +572,7 @@ class _ActionCard extends StatelessWidget {
   final String buttonLabel;
   final bool loading;
   final VoidCallback onTap;
-  final Color buttonColor;
+  final Color? buttonColor;
 
   @override
   Widget build(BuildContext context) => SolidCard(
@@ -602,20 +604,20 @@ class _ActionCard extends StatelessWidget {
               child: FilledButton(
                 onPressed: loading ? null : onTap,
                 style: FilledButton.styleFrom(
-                  backgroundColor: buttonColor,
+                  backgroundColor: buttonColor ?? AppColors.forest600,
                   minimumSize: const Size.fromHeight(48),
                   shape:
                       const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: loading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2))
+                            color: AppColors.onForest, strokeWidth: 2))
                     : Text(buttonLabel,
                         style: AppTextStyles.labelLarge
-                            .copyWith(color: Colors.white)),
+                            .copyWith(color: AppColors.onForest)),
               ),
             ),
           ],

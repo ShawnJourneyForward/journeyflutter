@@ -6,14 +6,14 @@ class LuxuryCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(20),
-    this.backgroundColor = AppColors.card,
-    this.borderColor = AppColors.softBorder,
+    this.backgroundColor,
+    this.borderColor,
     this.clip = false,
   });
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final Color backgroundColor;
-  final Color borderColor;
+  final Color? backgroundColor;
+  final Color? borderColor;
   // Only enable when a child overflows the card bounds (e.g. full-bleed images).
   final bool clip;
 
@@ -22,9 +22,9 @@ class LuxuryCard extends StatelessWidget {
     final inner = Padding(padding: padding, child: child);
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundColor ?? AppColors.card,
         borderRadius: AppRadius.luxury,
-        border: Border.all(color: borderColor),
+        border: Border.all(color: borderColor ?? AppColors.softBorder),
         boxShadow: AppShadows.luxury,
       ),
       child: clip
@@ -84,22 +84,23 @@ class IconChip extends StatelessWidget {
   const IconChip({
     super.key,
     required this.icon,
-    this.color = AppColors.forest,
-    this.backgroundColor = AppColors.mintChip,
+    this.color,
+    this.backgroundColor,
     this.size = 42,
   });
   final IconData icon;
-  final Color color;
-  final Color backgroundColor;
+  final Color? color;
+  final Color? backgroundColor;
   final double size;
 
   @override
   Widget build(BuildContext context) => Container(
         width: size,
         height: size,
-        decoration:
-            BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
-        child: Icon(icon, color: color, size: size * 0.46),
+        decoration: BoxDecoration(
+            color: backgroundColor ?? AppColors.mintChip,
+            shape: BoxShape.circle),
+        child: Icon(icon, color: color ?? AppColors.forest, size: size * 0.46),
       );
 }
 
@@ -143,11 +144,11 @@ class SoftInput extends StatelessWidget {
     super.key,
     required this.controller,
     required this.hintText,
-    this.tint = AppColors.mintChip,
+    this.tint,
   });
   final TextEditingController controller;
   final String hintText;
-  final Color tint;
+  final Color? tint;
 
   @override
   Widget build(BuildContext context) => TextField(
@@ -157,7 +158,7 @@ class SoftInput extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           filled: true,
-          fillColor: tint.withOpacity(0.55),
+          fillColor: (tint ?? AppColors.mintChip).withOpacity(0.55),
         ),
       );
 }

@@ -39,7 +39,7 @@ class MoodOption {
   final int score;
 }
 
-const kMoodOptions = <MoodOption>[
+final kMoodOptions = <MoodOption>[
   MoodOption(
     key: 'great',
     emoji: '😄',
@@ -176,7 +176,7 @@ class JournalPrompt {
   final String text;
 }
 
-const kPromptCategories = <JournalPromptCategory>[
+final kPromptCategories = <JournalPromptCategory>[
   JournalPromptCategory(
     id: 'reflection',
     label: 'Reflection',

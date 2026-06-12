@@ -165,7 +165,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
               onPressed: _saving ? null : _save,
               style: TextButton.styleFrom(
                 backgroundColor: AppColors.forest600,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onForest,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -473,17 +473,17 @@ class _NumberedField extends StatelessWidget {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    const BorderSide(color: AppColors.honey100, width: 1),
+                    BorderSide(color: AppColors.honey100, width: 1),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    const BorderSide(color: AppColors.honey100, width: 1),
+                    BorderSide(color: AppColors.honey100, width: 1),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    const BorderSide(color: AppColors.honey300, width: 1.2),
+                    BorderSide(color: AppColors.honey300, width: 1.2),
               ),
             ),
           ),
@@ -516,15 +516,15 @@ class _TallField extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.forest100, width: 1),
+          borderSide: BorderSide(color: AppColors.forest100, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.forest100, width: 1),
+          borderSide: BorderSide(color: AppColors.forest100, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.forest400, width: 1.2),
+          borderSide: BorderSide(color: AppColors.forest400, width: 1.2),
         ),
       ),
     );

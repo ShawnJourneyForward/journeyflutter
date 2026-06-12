@@ -39,6 +39,7 @@ import 'screens/heatmap_screen.dart';
 import 'screens/pre_craving_plan_screen.dart';
 import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
+import 'screens/urge_timer_screen.dart';
 import 'screens/weekly_care_summary_screen.dart';
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
@@ -113,7 +114,7 @@ void main() async {
 
   // Transparent status bar, dark icons on cream background
   try {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
       systemNavigationBarColor: AppColors.card,
@@ -145,6 +146,7 @@ void main() async {
     hasProfile = prefs.getString('has_profile') != null ||
         prefs.getString('profile') != null;
     lockMethod = prefs.getString('lockMethod') ?? 'none';
+    initialThemeModeRaw = prefs.getString(ThemeModeNotifier.prefsKey);
   } catch (e) {
     // If prefs are unreadable we fall through to onboarding rather than
     // blanking. _prefsCache stays null; the router redirect handles that.
@@ -202,10 +204,34 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Cold-start consistency: with a lock configured the initial route is
+    // /lock, but the gate flag has to be up too — otherwise programmatic
+    // navigation (e.g. the SOS widget's route below) could land past the
+    // lock before the user has authenticated.
+    LockGate.locked = widget.lockMethod != 'none';
     _router = _buildRouter(
       hasProfile: widget.hasProfile,
       lockMethod: widget.lockMethod,
     );
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _consumeWidgetRoute());
+  }
+
+  static const _widgetRouteChannel =
+      MethodChannel('com.journeyforward/widget_route');
+
+  /// Drains a route requested by a home-screen widget tap (SOS → urge
+  /// timer). Only exact, known-safe routes are honoured — the Intent extra
+  /// must never become a general navigation surface.
+  Future<void> _consumeWidgetRoute() async {
+    try {
+      final route =
+          await _widgetRouteChannel.invokeMethod<String>('takePendingRoute');
+      if (route == '/urge-timer') _router.go('/urge-timer');
+    } catch (_) {
+      // Channel unavailable (tests, non-Android) — widget routing is
+      // best-effort.
+    }
   }
 
   @override
@@ -225,6 +251,11 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         break;
 
       case AppLifecycleState.resumed:
+        // Drain any widget-tap route once the re-lock logic below has
+        // settled (post-frame, so it sees the final lock state).
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => _consumeWidgetRoute());
+
         // Travel / timezone refresh — the user may have crossed time zones
         // (or the OS may have updated its zone) while we were backgrounded.
         // tz.local was only set once at app start, so without this call the
@@ -257,9 +288,14 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         }
         // Set the route-level gate BEFORE navigating so any in-flight
         // navigation (deep link, back gesture) is also caught by the
-        // redirect, not only this go() call.
+        // redirect, not only this go() call. Crisis-allowed surfaces
+        // (/crisis, /emergency, /urge-timer) keep the gate up but are not
+        // yanked away — pulling someone off a crisis line or mid urge-ride
+        // to ask for a PIN is the wrong call.
         LockGate.locked = true;
-        _router.go('/lock');
+        if (!LockGate.isAllowedWhileLocked(currentLocation)) {
+          _router.go('/lock');
+        }
         break;
 
       case AppLifecycleState.inactive:
@@ -269,15 +305,41 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
   }
 
   @override
+  void didChangePlatformBrightness() {
+    // Re-evaluate ThemeMode.system when the OS toggles light/dark.
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Keep H in sync whenever the profile changes — but the router
     // is never touched here, so profile updates can't reset navigation.
     final profile = ref.watch(profileProvider).valueOrNull;
     H.sync(profile?.hapticsEnabled ?? true);
 
+    // Resolve the effective brightness and switch the Stillwater token
+    // palette BEFORE any descendant builds — every AppColors/AppTextStyles
+    // getter below this point resolves against the chosen palette.
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system &&
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark);
+    AppColors.setDark(isDark);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: AppColors.card,
+      systemNavigationBarIconBrightness:
+          isDark ? Brightness.light : Brightness.dark,
+    ));
+
     return MaterialApp.router(
       title: 'Journey Forward',
-      theme: buildAppTheme(highContrast: profile?.highContrast ?? false),
+      theme: buildAppTheme(
+        highContrast: profile?.highContrast ?? false,
+        dark: isDark,
+      ),
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -313,8 +375,14 @@ class LockGate {
   // /emergency hosts the warmline list; /crisis hosts the immediate-danger
   // phone numbers (988, SAMHSA, local lines). Both must be reachable while
   // the app is locked — withholding either behind biometric auth is the
-  // wrong call ethically.
-  static const _crisisAllowedWhenLocked = {'/lock', '/emergency', '/crisis'};
+  // wrong call ethically. /urge-timer joins them: it's the SOS widget's
+  // target and exposes nothing private beyond a lifetime win count.
+  static const _crisisAllowedWhenLocked = {
+    '/lock',
+    '/emergency',
+    '/crisis',
+    '/urge-timer',
+  };
   static bool isAllowedWhileLocked(String location) =>
       _crisisAllowedWhenLocked.contains(location);
 }
@@ -455,6 +523,10 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/slip',
         builder: (_, __) => const SlipSupportScreen(),
+      ),
+      GoRoute(
+        path: '/urge-timer',
+        builder: (_, __) => const UrgeTimerScreen(),
       ),
       GoRoute(
         path: '/slip-log',
@@ -622,7 +694,7 @@ class _StillwaterNavBar extends StatelessWidget {
                           duration: const Duration(milliseconds: 180),
                           width: selected ? 5 : 0,
                           height: 5,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest,
                             shape: BoxShape.circle,
                           ),

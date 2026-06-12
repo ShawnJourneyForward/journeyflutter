@@ -74,7 +74,7 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                   padding: const EdgeInsets.fromLTRB(8, 14, 24, 0),
                   child: Row(
                     children: [
-                      const LuxuryBackButton(color: AppColors.forest700),
+                      LuxuryBackButton(color: AppColors.forest700),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(l10n.slipSupportTitle,
@@ -95,7 +95,7 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.waves_rounded,
+                            Icon(Icons.waves_rounded,
                                 color: AppColors.forest300, size: 26),
                             const SizedBox(height: 12),
                             Text(
@@ -298,7 +298,7 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                         padding: const EdgeInsets.all(18),
                         child: Row(
                           children: [
-                            const Icon(Icons.support_agent_rounded,
+                            Icon(Icons.support_agent_rounded,
                                 size: 22, color: AppColors.stone500),
                             const SizedBox(width: 14),
                             Expanded(
@@ -449,7 +449,7 @@ class _BreathingPrompt extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.air_outlined, size: 20, color: AppColors.forest600),
+          Icon(Icons.air_outlined, size: 20, color: AppColors.forest600),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -489,7 +489,7 @@ class _DistractionRow extends StatelessWidget {
           Container(
             width: 34,
             height: 34,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.mintChip,
               shape: BoxShape.circle,
             ),
@@ -517,7 +517,7 @@ class _CravingLoggedConfirmation extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        const Icon(Icons.check_circle_rounded,
+        Icon(Icons.check_circle_rounded,
             color: AppColors.forest600, size: 36),
         const SizedBox(height: 10),
         Text(l10n.slipSupportCravingLoggedTitle,

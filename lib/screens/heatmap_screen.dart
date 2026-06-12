@@ -439,7 +439,7 @@ class _SummaryCard extends StatelessWidget {
                     value: '$careDays',
                   ),
                 ),
-                const VerticalDivider(
+                VerticalDivider(
                     color: AppColors.stone100, width: 1, thickness: 1),
                 Expanded(
                   child: _StatCell(
@@ -451,7 +451,7 @@ class _SummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          const Divider(color: AppColors.stone100, height: 1, thickness: 1),
+          Divider(color: AppColors.stone100, height: 1, thickness: 1),
           IntrinsicHeight(
             child: Row(
               children: [
@@ -463,7 +463,7 @@ class _SummaryCard extends StatelessWidget {
                     isText: true,
                   ),
                 ),
-                const VerticalDivider(
+                VerticalDivider(
                     color: AppColors.stone100, width: 1, thickness: 1),
                 Expanded(
                   child: _StatCell(
@@ -502,7 +502,7 @@ class _StatCell extends StatelessWidget {
           Container(
             width: 38,
             height: 38,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.forest50,
               shape: BoxShape.circle,
             ),
@@ -814,7 +814,7 @@ class _LegendBar extends StatelessWidget {
     return Wrap(
       spacing: 12,
       runSpacing: 8,
-      children: const [
+      children: [
         _LegendSwatch(
             color: _kPreStartColor, label: 'Before you began', bordered: true),
         _LegendSwatch(color: Color(0xFFEDE8E1), label: 'No entry'),
@@ -916,7 +916,7 @@ class _DaySheet extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 80),
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -985,7 +985,7 @@ class _DaySheet extends StatelessWidget {
                   _SheetRow(text: '${s.hours}h · quality ${s.quality}/5')),
               const SizedBox(height: 10),
             ],
-            const Divider(color: AppColors.stone100, height: 20),
+            Divider(color: AppColors.stone100, height: 20),
             Text(
               'You showed up for yourself today.',
               style: AppTextStyles.bodyMedium.copyWith(
@@ -1034,7 +1034,7 @@ class _SheetRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('· ',
+          Text('· ',
               style: TextStyle(color: AppColors.stone300, fontSize: 12)),
           Expanded(
             child: Column(

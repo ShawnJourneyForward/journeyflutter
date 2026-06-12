@@ -12,7 +12,9 @@ import 'daily_practice_sheets.dart';
 
 // ─── Milestone definitions ─────────────────────────────────────────────────
 
-const _allMilestones = [1, 3, 7, 14, 30, 60, 90, 100, 180, 365];
+const _allMilestones = [
+  1, 2, 3, 5, 7, 10, 14, 21, 30, 60, 90, 100, 180, 365, 730, 1095,
+];
 
 // ─── Progress Screen ───────────────────────────────────────────────────────
 
@@ -97,13 +99,13 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.article_outlined,
-                                  size: 14, color: Colors.white),
+                              Icon(Icons.article_outlined,
+                                  size: 14, color: AppColors.onForest),
                               const SizedBox(width: 4),
                               Text(
                                 'Summary',
                                 style: AppTextStyles.labelLarge.copyWith(
-                                    color: Colors.white, fontSize: 11),
+                                    color: AppColors.onForest, fontSize: 11),
                               ),
                             ],
                           ),
@@ -180,15 +182,21 @@ class _StreakTab extends ConsumerWidget {
     final liveStats = ref.watch(soberStatsProvider) ?? stats;
     final milestoneLabels = {
       1: l10n.progressMilestoneLabel1,
+      2: l10n.progressMilestoneLabel2,
       3: l10n.progressMilestoneLabel3,
+      5: l10n.progressMilestoneLabel5,
       7: l10n.progressMilestoneLabel7,
+      10: l10n.progressMilestoneLabel10,
       14: l10n.progressMilestoneLabel14,
+      21: l10n.progressMilestoneLabel21,
       30: l10n.progressMilestoneLabel30,
       60: l10n.progressMilestoneLabel60,
       90: l10n.progressMilestoneLabel90,
       100: l10n.progressMilestoneLabel100,
       180: l10n.progressMilestoneLabel180,
       365: l10n.progressMilestoneLabel365,
+      730: l10n.progressMilestoneLabel730,
+      1095: l10n.progressMilestoneLabel1095,
     };
     final days = stats?.days ?? 0;
 
@@ -634,7 +642,7 @@ class _InsightTile extends StatelessWidget {
                     label: 'This week',
                     value: _fmtNum(data.thisWeek),
                     valueColor: barColor),
-                const VerticalDivider(
+                VerticalDivider(
                     thickness: 1, width: 1, color: AppColors.stone100),
                 _SummaryCol(
                     label: 'Last week',
@@ -676,7 +684,7 @@ class _InsightTile extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.spa_outlined,
+                Icon(Icons.spa_outlined,
                     size: 18, color: AppColors.forest400),
                 const SizedBox(width: 8),
                 Expanded(
@@ -964,7 +972,7 @@ class _ShowHeatmapButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.visibility_outlined,
+            Icon(Icons.visibility_outlined,
                 size: 18, color: AppColors.forest600),
             const SizedBox(width: 10),
             Expanded(
@@ -974,7 +982,7 @@ class _ShowHeatmapButton extends StatelessWidget {
                     .copyWith(color: AppColors.forest700),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
+            Icon(Icons.chevron_right_rounded,
                 size: 18, color: AppColors.stone400),
           ],
         ),
@@ -1203,7 +1211,7 @@ class _CravingsCardBand extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.forest300, width: 1),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.spa_outlined,
               size: 14,
               color: AppColors.forest600,
@@ -1268,7 +1276,7 @@ class _CapitalEmptyContent extends StatelessWidget {
             color: AppColors.mintChip,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.auto_graph_rounded,
+          child: Icon(Icons.auto_graph_rounded,
               color: AppColors.forest600, size: 22),
         ),
         const SizedBox(width: 14),
@@ -1291,7 +1299,7 @@ class _CapitalEmptyContent extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        const Icon(Icons.chevron_right_rounded,
+        Icon(Icons.chevron_right_rounded,
             color: AppColors.stone400, size: 22),
       ],
     );

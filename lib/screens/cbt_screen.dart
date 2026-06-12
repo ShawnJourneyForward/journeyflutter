@@ -148,7 +148,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                         minHeight: 4,
                         backgroundColor: AppColors.stone100,
                         valueColor:
-                            const AlwaysStoppedAnimation(AppColors.forest600),
+                            AlwaysStoppedAnimation(AppColors.forest600),
                       ),
                     ),
                   ),
@@ -201,16 +201,16 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
               fillColor: AppColors.stone50,
               border: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
                 borderSide:
-                    const BorderSide(color: AppColors.forest600, width: 1.5),
+                    BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             onChanged: (_) => setState(() {}),
@@ -306,7 +306,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                       ),
                     ),
                     if (selected)
-                      const Icon(Icons.check_circle_rounded,
+                      Icon(Icons.check_circle_rounded,
                           size: 18, color: AppColors.forest600),
                   ],
                 ),
@@ -389,16 +389,16 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
               fillColor: AppColors.stone50,
               border: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.xl,
                 borderSide:
-                    const BorderSide(color: AppColors.forest600, width: 1.5),
+                    BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             onChanged: (_) => setState(() {}),
@@ -421,7 +421,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.auto_awesome_rounded,
+              Icon(Icons.auto_awesome_rounded,
                   color: AppColors.honey300, size: 24),
               const SizedBox(height: 12),
               Text(l10n.cbtSummaryTitle,
@@ -471,7 +471,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
                 onPressed: _reset,
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),
-                  side: const BorderSide(color: AppColors.stone200),
+                  side: BorderSide(color: AppColors.stone200),
                   shape:
                       const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
@@ -517,7 +517,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle_rounded,
+            Icon(Icons.check_circle_rounded,
                 color: AppColors.forest600, size: 52),
             const SizedBox(height: 20),
             Text(l10n.cbtSavedTitle,

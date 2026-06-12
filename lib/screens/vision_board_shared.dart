@@ -24,7 +24,7 @@ class VisionIconOption {
   final Color color;
 }
 
-const kVisionIcons = <VisionIconOption>[
+final kVisionIcons = <VisionIconOption>[
   VisionIconOption(
       key: 'guide',
       icon: Icons.auto_awesome_rounded,
@@ -151,7 +151,7 @@ class VisionCategoryInfo {
   final Color color;
 }
 
-const kCategoryInfo = <VisionCategoryInfo>[
+final kCategoryInfo = <VisionCategoryInfo>[
   VisionCategoryInfo(
       category: VisionCategory.health,
       label: 'Health',

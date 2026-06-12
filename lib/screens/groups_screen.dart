@@ -33,7 +33,7 @@ class _Group {
   final String? regions;
 }
 
-const _groups = [
+final _groups = [
   _Group(
     name: 'Alcoholics Anonymous',
     tagline: 'AA',
@@ -183,7 +183,7 @@ class GroupsScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.info_outline_rounded,
+                      Icon(Icons.info_outline_rounded,
                           color: AppColors.forest500, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
@@ -301,7 +301,7 @@ class _GroupCardState extends State<_GroupCard> {
             firstChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                   child: Column(
@@ -334,7 +334,7 @@ class _GroupCardState extends State<_GroupCard> {
                       if (g.regions != null) ...[
                         const SizedBox(height: 10),
                         Row(children: [
-                          const Icon(Icons.location_on_outlined,
+                          Icon(Icons.location_on_outlined,
                               size: 14, color: AppColors.stone400),
                           const SizedBox(width: 6),
                           Text(g.regions!,
@@ -355,7 +355,7 @@ class _GroupCardState extends State<_GroupCard> {
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.forest600,
                               side:
-                                  const BorderSide(color: AppColors.forest200),
+                                  BorderSide(color: AppColors.forest200),
                               shape: const RoundedRectangleBorder(
                                   borderRadius: AppRadius.lg),
                               minimumSize: const Size.fromHeight(44),

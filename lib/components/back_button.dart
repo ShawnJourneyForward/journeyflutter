@@ -21,7 +21,7 @@ class LuxuryBackButton extends StatelessWidget {
   const LuxuryBackButton({
     super.key,
     this.onPressed,
-    this.color = AppColors.stone700,
+    this.color,
     this.tooltip,
   });
 
@@ -29,8 +29,9 @@ class LuxuryBackButton extends StatelessWidget {
   /// [Navigator.of(context).maybePop()].
   final VoidCallback? onPressed;
 
-  /// Icon tint. Override for darker / tinted screens.
-  final Color color;
+  /// Icon tint. Defaults to [AppColors.stone700]; override for darker /
+  /// tinted screens.
+  final Color? color;
 
   /// Optional accessibility tooltip.
   final String? tooltip;
@@ -53,7 +54,7 @@ class LuxuryBackButton extends StatelessWidget {
       icon: Icon(
         Icons.arrow_back_ios_new_rounded,
         size: 22,
-        color: color,
+        color: color ?? AppColors.stone700,
       ),
     );
   }

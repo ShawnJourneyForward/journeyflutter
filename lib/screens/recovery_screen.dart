@@ -265,7 +265,7 @@ class RecoveryScreen extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.info_outline_rounded,
+                      Icon(Icons.info_outline_rounded,
                           size: 16, color: AppColors.honey600),
                       const SizedBox(width: 8),
                       Expanded(
@@ -528,10 +528,10 @@ class _TimelineTileState extends State<_TimelineTile> {
                             ),
                           ),
                         if (!achieved && !_expanded)
-                          const Icon(Icons.expand_more_rounded,
+                          Icon(Icons.expand_more_rounded,
                               size: 16, color: AppColors.stone300),
                         if (!achieved && _expanded)
-                          const Icon(Icons.expand_less_rounded,
+                          Icon(Icons.expand_less_rounded,
                               size: 16, color: AppColors.stone300),
                       ],
                     ),

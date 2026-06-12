@@ -48,7 +48,7 @@ class VisionDetailScreen extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Navigator.of(context).canPop()) Navigator.of(context).pop();
       });
-      return const Scaffold(backgroundColor: AppColors.stone50);
+      return Scaffold(backgroundColor: AppColors.stone50);
     }
 
     final accent = visionAccent(item);
@@ -80,8 +80,8 @@ class VisionDetailScreen extends ConsumerWidget {
                   item;
               if (!context.mounted) return;
               if (!after.pinned && !item.pinned) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: const Text(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
                       'You can pin up to 3 dreams — unpin one to make room.'),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.forest700,
@@ -100,8 +100,8 @@ class VisionDetailScreen extends ConsumerWidget {
                       ?.firstWhere((e) => e.id == item.id) ??
                   item;
               if (after.achieved) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: const Text('Marked achieved. Beautiful.'),
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Marked achieved. Beautiful.'),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.forest700,
                 ));
@@ -326,7 +326,7 @@ class _AchievedBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.emoji_events_rounded,
+          Icon(Icons.emoji_events_rounded,
               color: AppColors.forest600, size: 22),
           const SizedBox(width: 10),
           Expanded(
@@ -379,7 +379,7 @@ class _CategoryAndDate extends StatelessWidget {
             color: daysLeft < 0 ? AppColors.blush600 : accent,
           ),
         if (item.pinned)
-          const _Chip(
+          _Chip(
             icon: Icons.push_pin,
             label: 'Pinned',
             color: AppColors.honey500,

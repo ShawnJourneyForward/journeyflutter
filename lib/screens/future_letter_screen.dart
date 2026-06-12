@@ -31,7 +31,7 @@ class FutureLetterScreen extends ConsumerWidget {
       floatingActionButton: SafeArea(
         child: FloatingActionButton.extended(
           backgroundColor: AppColors.forest700,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onForest,
           elevation: 2,
           onPressed: () => _openWriter(context, ref),
           icon: const Icon(Icons.edit_outlined),
@@ -142,9 +142,9 @@ class _EmptyState extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 color: AppColors.honey50, shape: BoxShape.circle),
-            child: const Icon(Icons.mail_outline_rounded,
+            child: Icon(Icons.mail_outline_rounded,
                 size: 32, color: AppColors.honey600),
           ),
           const SizedBox(height: 16),
@@ -164,7 +164,7 @@ class _EmptyState extends StatelessWidget {
             label: const Text('Write a letter'),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onForest,
               shape: const RoundedRectangleBorder(borderRadius: AppRadius.pill),
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
             ),
@@ -258,7 +258,7 @@ class _LetterCard extends StatelessWidget {
                 ),
               ),
               if (!isSealed)
-                const Icon(Icons.chevron_right_rounded,
+                Icon(Icons.chevron_right_rounded,
                     color: AppColors.stone300),
             ],
           ),
@@ -288,7 +288,7 @@ class _LetterReader extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.mark_email_read_outlined,
+                Icon(Icons.mark_email_read_outlined,
                     color: AppColors.honey600),
                 const SizedBox(width: 8),
                 Text('Day ${letter.unlockDay} · from past you',
@@ -296,7 +296,7 @@ class _LetterReader extends StatelessWidget {
                         .copyWith(color: AppColors.forest700)),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close, color: AppColors.stone400),
+                  icon: Icon(Icons.close, color: AppColors.stone400),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -379,7 +379,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
       child: Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -480,15 +480,15 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                   contentPadding: const EdgeInsets.all(14),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
+                    borderSide: BorderSide(color: AppColors.stone100),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
+                    borderSide: BorderSide(color: AppColors.stone100),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                         color: AppColors.forest600, width: 1.5),
                   ),
                 ),
@@ -500,7 +500,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                   onPressed: _saving ? null : _save,
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.forest700,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.onForest,
                     minimumSize: const Size.fromHeight(50),
                     shape: const RoundedRectangleBorder(
                         borderRadius: AppRadius.lg),
@@ -568,7 +568,8 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
           onPressed: () => Navigator.of(context).pop(_value),
           style: FilledButton.styleFrom(backgroundColor: AppColors.forest700),
           child: Text('Use day $_value',
-              style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
+              style: AppTextStyles.labelMedium
+                  .copyWith(color: AppColors.onForest)),
         ),
       ],
     );

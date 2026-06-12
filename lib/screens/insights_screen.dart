@@ -117,7 +117,7 @@ class InsightsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(8, 14, 24, 0),
                   child: Row(
                     children: [
-                      const LuxuryBackButton(color: AppColors.forest700),
+                      LuxuryBackButton(color: AppColors.forest700),
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(l10n.insightsTitle,
@@ -315,7 +315,7 @@ class _EmptyChart extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.show_chart_rounded,
+            Icon(Icons.show_chart_rounded,
                 color: AppColors.stone200, size: 32),
             const SizedBox(height: 6),
             Text(label, style: AppTextStyles.bodySmall),
@@ -342,7 +342,7 @@ class _MoodBarChart extends StatelessWidget {
                 show: true,
                 drawVerticalLine: false,
                 getDrawingHorizontalLine: (_) =>
-                    const FlLine(color: AppColors.stone100, strokeWidth: 1),
+                    FlLine(color: AppColors.stone100, strokeWidth: 1),
               ),
               titlesData: FlTitlesData(
                 leftTitles:
@@ -386,7 +386,7 @@ class _MoodBarChart extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _MoodLegend(color: AppColors.forest600, label: 'Great'),
@@ -446,7 +446,7 @@ class _SimpleLineChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) =>
-              const FlLine(color: AppColors.stone100, strokeWidth: 1),
+              FlLine(color: AppColors.stone100, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           leftTitles:
@@ -508,7 +508,7 @@ class _SimpleBarChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (_) =>
-              const FlLine(color: AppColors.stone100, strokeWidth: 1),
+              FlLine(color: AppColors.stone100, strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
           leftTitles:

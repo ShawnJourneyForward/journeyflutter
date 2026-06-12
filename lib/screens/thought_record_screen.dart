@@ -28,7 +28,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
       floatingActionButton: SafeArea(
         child: FloatingActionButton.extended(
           backgroundColor: AppColors.forest700,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onForest,
           elevation: 2,
           onPressed: () => _openEditor(context, ref),
           icon: const Icon(Icons.add_rounded),
@@ -77,7 +77,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
                         final ok = await showDialog<bool>(
                           context: context,
                           builder: (_) => AlertDialog(
-                            backgroundColor: Colors.white,
+                            backgroundColor: AppColors.card,
                             shape: const RoundedRectangleBorder(
                                 borderRadius: AppRadius.xxl),
                             title: Text('Delete this record?',
@@ -137,9 +137,9 @@ class _EmptyState extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 color: AppColors.forest50, shape: BoxShape.circle),
-            child: const Icon(Icons.psychology_alt_outlined,
+            child: Icon(Icons.psychology_alt_outlined,
                 size: 32, color: AppColors.forest600),
           ),
           const SizedBox(height: 16),
@@ -159,7 +159,7 @@ class _EmptyState extends StatelessWidget {
             label: const Text('Start a record'),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onForest,
               shape: const RoundedRectangleBorder(borderRadius: AppRadius.pill),
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
             ),
@@ -211,7 +211,7 @@ class _RecordCard extends StatelessWidget {
                 ),
               IconButton(
                 onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline_rounded,
+                icon: Icon(Icons.delete_outline_rounded,
                     color: AppColors.stone400, size: 18),
               ),
             ],
@@ -343,7 +343,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
       child: Container(
         margin: const EdgeInsets.only(top: 60),
         padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -604,16 +604,16 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
           contentPadding: const EdgeInsets.all(12),
           border: OutlineInputBorder(
             borderRadius: AppRadius.lg,
-            borderSide: const BorderSide(color: AppColors.stone100),
+            borderSide: BorderSide(color: AppColors.stone100),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: AppRadius.lg,
-            borderSide: const BorderSide(color: AppColors.stone100),
+            borderSide: BorderSide(color: AppColors.stone100),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: AppRadius.lg,
             borderSide:
-                const BorderSide(color: AppColors.forest600, width: 1.5),
+                BorderSide(color: AppColors.forest600, width: 1.5),
           ),
         ),
       );

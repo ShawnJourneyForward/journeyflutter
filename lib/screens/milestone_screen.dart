@@ -340,7 +340,7 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
                           backgroundColor: isAchieved
                               ? AppColors.forest600
                               : AppColors.stone200,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.onForest,
                           minimumSize: const Size.fromHeight(50),
                           shape: const RoundedRectangleBorder(
                               borderRadius: AppRadius.lg),
@@ -442,7 +442,7 @@ class _HeroCard extends StatelessWidget {
         : 'Well done.';
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.forest800,
         borderRadius: AppRadius.xxl,
       ),
@@ -525,7 +525,7 @@ class _HeroCard extends StatelessWidget {
                         value: progressAnim.value * progress,
                         minHeight: 6,
                         backgroundColor: AppColors.forest700,
-                        valueColor: const AlwaysStoppedAnimation<Color>(
+                        valueColor: AlwaysStoppedAnimation<Color>(
                             AppColors.honey400),
                       ),
                     ),
@@ -730,7 +730,7 @@ class _ShareCard extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           // Deep forest — almost black-green, matches the reference exactly.
           color: AppColors.forest900,
           borderRadius: AppRadius.xxl,
@@ -865,7 +865,7 @@ class _ShareCard extends StatelessWidget {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.eco_rounded,
+                        child: Icon(Icons.eco_rounded,
                             size: 16, color: AppColors.forest400),
                       ),
                       const SizedBox(width: 10),
@@ -934,7 +934,7 @@ class _ShareCard extends StatelessWidget {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.energy_savings_leaf_outlined,
+                        child: Icon(Icons.energy_savings_leaf_outlined,
                             size: 11, color: AppColors.honey300),
                       ),
                     ],
@@ -955,7 +955,7 @@ class _ShareCard extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.lock_outline_rounded,
+                      Icon(Icons.lock_outline_rounded,
                           color: AppColors.honey300, size: 28),
                       const SizedBox(height: 8),
                       Text(
@@ -1047,7 +1047,7 @@ class _MilestoneTile extends StatelessWidget {
                   child: Container(
                     width: 13,
                     height: 13,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.forest600,
                       shape: BoxShape.circle,
                     ),
@@ -1130,48 +1130,62 @@ class _StatsRow extends StatelessWidget {
 }
 
 // ─── Botanical painter (shared decorative element) ────────────────────────────
+// One large brand leaf — the same vesica mark as the launcher icon — gently
+// rotated and cropped by the card edge so it reads as a debossed watermark
+// rather than a literal branch illustration. Geometry mirrors the icon:
+// pointed-oval body, two thin slit lenses as even-odd holes, stem through
+// the axis. Both call sites clip (Clip.hardEdge) and set their own Opacity.
 
 class _BotanicalPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final path = Path()
-      ..moveTo(size.width * .1, size.height)
-      ..cubicTo(size.width * .25, size.height * .75, size.width * .38,
-          size.height * .38, size.width * .55, size.height * .05)
-      ..moveTo(size.width * .35, size.height * .55)
-      ..cubicTo(size.width * .48, size.height * .5, size.width * .6,
-          size.height * .35, size.width * .72, size.height * .15)
-      ..moveTo(size.width * .44, size.height * .32)
-      ..cubicTo(size.width * .58, size.height * .28, size.width * .74,
-          size.height * .18, size.width * .9, size.height * .02);
-    canvas.drawPath(path, paint);
-
-    final leaf = Paint()
-      ..color = Colors.white
       ..style = PaintingStyle.fill;
 
-    void drawLeaf(Offset c, double rx, double ry, double angle) {
-      canvas.save();
-      canvas.translate(c.dx, c.dy);
-      canvas.rotate(angle);
-      final p = Path()
-        ..moveTo(0, -ry)
-        ..cubicTo(rx, -ry * .35, rx, ry * .35, 0, ry)
-        ..cubicTo(-rx, ry * .35, -rx, -ry * .35, 0, -ry);
-      canvas.drawPath(p, leaf);
-      canvas.restore();
-    }
+    final l = size.height * 1.05; // leaf length — oversized, card clips it
+    final a = l / 2;
 
-    drawLeaf(Offset(size.width * .25, size.height * .68), 11, 22, -.7);
-    drawLeaf(Offset(size.width * .42, size.height * .44), 13, 25, -.3);
-    drawLeaf(Offset(size.width * .58, size.height * .28), 14, 27, .2);
-    drawLeaf(Offset(size.width * .74, size.height * .16), 13, 25, .4);
+    canvas.save();
+    canvas.translate(size.width * 0.72, size.height * 0.55);
+    canvas.rotate(0.42);
+
+    // Stem capsule through the axis, poking past both tips.
+    final stemW = l * 0.033;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(center: Offset.zero, width: stemW, height: l * 1.18),
+        Radius.circular(stemW / 2),
+      ),
+      paint,
+    );
+
+    // Vesica body — circular arcs through tip/apex/tip, same as the icon.
+    final b = l * 0.29;
+    final r = (a * a + b * b) / (2 * b);
+    final path = Path()
+      ..fillType = PathFillType.evenOdd
+      ..moveTo(0, -a)
+      ..arcToPoint(Offset(0, a), radius: Radius.circular(r))
+      ..arcToPoint(Offset(0, -a), radius: Radius.circular(r));
+
+    // Slit lenses dividing the leaf into three lobes.
+    final sa = a * 0.785;
+    for (final side in [1.0, -1.0]) {
+      final x0 = side * l * 0.05;
+      final bOut = l * 0.099;
+      final bIn = l * 0.066;
+      final rOut = (sa * sa + bOut * bOut) / (2 * bOut);
+      final rIn = (sa * sa + bIn * bIn) / (2 * bIn);
+      path
+        ..moveTo(x0, -sa)
+        ..arcToPoint(Offset(x0, sa),
+            radius: Radius.circular(rOut), clockwise: side > 0)
+        ..arcToPoint(Offset(x0, -sa),
+            radius: Radius.circular(rIn), clockwise: side < 0);
+    }
+    canvas.drawPath(path, paint);
+    canvas.restore();
   }
 
   @override

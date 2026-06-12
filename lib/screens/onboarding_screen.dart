@@ -324,7 +324,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 child: LinearProgressIndicator(
                                   value: progress,
                                   backgroundColor: AppColors.mintChip,
-                                  valueColor: const AlwaysStoppedAnimation(
+                                  valueColor: AlwaysStoppedAnimation(
                                       AppColors.forest600),
                                   minHeight: 4,
                                 ),
@@ -569,7 +569,7 @@ class _WelcomeStep extends StatelessWidget {
                         onPressed: onBegin,
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.forest700,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.onForest,
                           minimumSize: const Size.fromHeight(58),
                           shape: const RoundedRectangleBorder(
                               borderRadius: AppRadius.xl),
@@ -643,7 +643,7 @@ class _FeaturePill extends StatelessWidget {
           Container(
             width: 26,
             height: 26,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.mintChip,
               shape: BoxShape.circle,
             ),
@@ -737,7 +737,7 @@ class _DateStep extends StatefulWidget {
 
 class _DateStepState extends State<_DateStep> {
   ThemeData _pickerTheme(BuildContext ctx) => Theme.of(ctx).copyWith(
-        colorScheme: const ColorScheme.light(
+        colorScheme: ColorScheme.light(
           primary: AppColors.forest600,
           onPrimary: Colors.white,
           surface: Colors.white,
@@ -812,11 +812,11 @@ class _DateStepState extends State<_DateStep> {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.forest50,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.calendar_today_rounded,
+                    child: Icon(Icons.calendar_today_rounded,
                         color: AppColors.forest600, size: 20),
                   ),
                   const SizedBox(width: 16),
@@ -834,7 +834,7 @@ class _DateStepState extends State<_DateStep> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.edit_outlined,
+                  Icon(Icons.edit_outlined,
                       size: 16, color: AppColors.stone400),
                 ],
               ),
@@ -859,11 +859,11 @@ class _DateStepState extends State<_DateStep> {
                   Container(
                     width: 44,
                     height: 44,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.forest50,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.access_time_rounded,
+                    child: Icon(Icons.access_time_rounded,
                         color: AppColors.forest600, size: 20),
                   ),
                   const SizedBox(width: 16),
@@ -881,7 +881,7 @@ class _DateStepState extends State<_DateStep> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.edit_outlined,
+                  Icon(Icons.edit_outlined,
                       size: 16, color: AppColors.stone400),
                 ],
               ),
@@ -1004,7 +1004,7 @@ class _SpendStepState extends State<_SpendStep> {
                     onChanged: (v) =>
                         widget.onCurrencyChanged(v ?? widget.currency),
                     borderRadius: AppRadius.lg,
-                    icon: const Icon(Icons.expand_more_rounded,
+                    icon: Icon(Icons.expand_more_rounded,
                         color: AppColors.stone400, size: 18),
                   ),
                 ),
@@ -1039,7 +1039,7 @@ class _SpendStepState extends State<_SpendStep> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.trending_up_rounded,
+                  Icon(Icons.trending_up_rounded,
                       color: AppColors.honey500, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1135,7 +1135,7 @@ class _SecurityStep extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.warning_amber_rounded,
+                  Icon(Icons.warning_amber_rounded,
                       size: 18, color: AppColors.honey500),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1436,7 +1436,7 @@ class _NotificationsStep extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.lock_outline_rounded,
+                Icon(Icons.lock_outline_rounded,
                     size: 16, color: AppColors.forest600),
                 const SizedBox(width: 8),
                 Expanded(
@@ -1575,7 +1575,7 @@ class _TimePicker extends StatelessWidget {
           initialTime: time,
           builder: (ctx, child) => Theme(
             data: Theme.of(ctx).copyWith(
-              colorScheme: const ColorScheme.light(
+              colorScheme: ColorScheme.light(
                   primary: AppColors.forest600,
                   onPrimary: Colors.white,
                   surface: Colors.white,
@@ -1596,7 +1596,7 @@ class _TimePicker extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.access_time_rounded,
+            Icon(Icons.access_time_rounded,
                 size: 16, color: AppColors.stone400),
             const SizedBox(width: 8),
             Text(label, style: AppTextStyles.bodySmall),
@@ -1605,7 +1605,7 @@ class _TimePicker extends StatelessWidget {
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest600)),
             const SizedBox(width: 4),
-            const Icon(Icons.edit_outlined,
+            Icon(Icons.edit_outlined,
                 size: 14, color: AppColors.stone400),
           ],
         ),
@@ -1762,7 +1762,7 @@ class _FinishStepState extends State<_FinishStep>
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.verified_user_outlined,
+                            Icon(Icons.verified_user_outlined,
                                 color: AppColors.forest600, size: 20),
                             const SizedBox(width: 10),
                             Expanded(
@@ -1788,7 +1788,7 @@ class _FinishStepState extends State<_FinishStep>
                         onPressed: widget.saving ? null : widget.onFinish,
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.forest700,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.onForest,
                           minimumSize: const Size.fromHeight(58),
                           shape: const RoundedRectangleBorder(
                               borderRadius: AppRadius.xl),
@@ -1928,13 +1928,13 @@ class _OnboardingPlantCard extends StatelessWidget {
               child: ShaderMask(
                 shaderCallback: (rect) => const RadialGradient(
                   center: Alignment.center,
-                  radius: 0.92,
+                  radius: 0.95,
                   colors: [
                     Colors.white,
                     Colors.white,
                     Color(0x00FFFFFF),
                   ],
-                  stops: [0.0, 0.68, 1.0],
+                  stops: [0.0, 0.52, 1.0],
                 ).createShader(rect),
                 blendMode: BlendMode.dstIn,
                 child: Image.asset(
@@ -1943,6 +1943,12 @@ class _OnboardingPlantCard extends StatelessWidget {
                   alignment: Alignment.center,
                   semanticLabel: PlantLogic.getStageLabel(days),
                   filterQuality: FilterQuality.high,
+                  // The artwork ships on a white ground; multiplying by the
+                  // card's centre colour turns that ground into the card
+                  // surface itself, so the picture reads as painted on the
+                  // card rather than pasted over it.
+                  color: const Color(0xFFFCF8EE),
+                  colorBlendMode: BlendMode.multiply,
                 ),
               ),
             ),
@@ -2065,15 +2071,15 @@ InputDecoration _inputDecor(String hint, IconData icon) => InputDecoration(
       fillColor: AppColors.card,
       border: OutlineInputBorder(
         borderRadius: AppRadius.xxl,
-        borderSide: const BorderSide(color: AppColors.softBorder),
+        borderSide: BorderSide(color: AppColors.softBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.xxl,
-        borderSide: const BorderSide(color: AppColors.softBorder),
+        borderSide: BorderSide(color: AppColors.softBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.xxl,
-        borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+        borderSide: BorderSide(color: AppColors.forest600, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );

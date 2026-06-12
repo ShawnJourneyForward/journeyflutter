@@ -307,7 +307,7 @@ class _CountdownViewState extends State<_CountdownView> {
                   child: Center(
                     child: _done
                         ? Column(mainAxisSize: MainAxisSize.min, children: [
-                            const Icon(Icons.check_rounded,
+                            Icon(Icons.check_rounded,
                                 color: AppColors.honey400, size: 36),
                             const SizedBox(height: 6),
                             Text('Done!',
@@ -400,7 +400,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
           borderColor: AppColors.honey100,
           padding: const EdgeInsets.all(24),
           child: Column(children: [
-            const Icon(Icons.shuffle_rounded,
+            Icon(Icons.shuffle_rounded,
                 color: AppColors.honey600, size: 28),
             const SizedBox(height: 16),
             Text(
@@ -422,13 +422,13 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.honey200)),
+                    borderSide: BorderSide(color: AppColors.honey200)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.honey200)),
+                    borderSide: BorderSide(color: AppColors.honey200)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                         color: AppColors.honey500, width: 1.5)),
                 contentPadding: const EdgeInsets.all(14),
               ),
@@ -442,7 +442,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
                 label: const Text('Shuffle prompt'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.honey600,
-                  side: const BorderSide(color: AppColors.honey300),
+                  side: BorderSide(color: AppColors.honey300),
                   minimumSize: const Size.fromHeight(46),
                   shape:
                       const RoundedRectangleBorder(borderRadius: AppRadius.lg),

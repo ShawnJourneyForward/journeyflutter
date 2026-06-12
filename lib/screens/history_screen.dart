@@ -266,7 +266,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
         title: Text('Delete entry?', style: AppTextStyles.titleMedium),
         content: Text(
@@ -654,19 +654,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   Widget _metaPill(
     String label, {
-    Color background = AppColors.stone50,
-    Color foreground = AppColors.stone600,
+    Color? background,
+    Color? foreground,
   }) =>
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: background,
+          color: background ?? AppColors.stone50,
           borderRadius: AppRadius.pill,
           border: Border.all(color: AppColors.stone100),
         ),
         child: Text(
           label,
-          style: AppTextStyles.caption.copyWith(color: foreground),
+          style: AppTextStyles.caption
+              .copyWith(color: foreground ?? AppColors.stone600),
         ),
       );
 
@@ -918,7 +919,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           children: [
             Container(
               width: 4,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.forest400,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -1028,7 +1029,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             color: AppColors.stone100,
                             borderRadius: AppRadius.md,
                           ),
-                          child: const Icon(Icons.bedtime_outlined,
+                          child: Icon(Icons.bedtime_outlined,
                               size: 18, color: AppColors.stone500),
                         ),
                         const SizedBox(width: 12),
@@ -1085,7 +1086,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           children: [
             Container(
               width: 4,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.honey400,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -1101,7 +1102,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.refresh_rounded,
+                        Icon(Icons.refresh_rounded,
                             size: 14, color: AppColors.stone400),
                         const SizedBox(width: 6),
                         Text(DateFormat('h:mm a').format(e.date),
@@ -1340,15 +1341,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
+                    borderSide: BorderSide(color: AppColors.stone100),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(color: AppColors.stone100),
+                    borderSide: BorderSide(color: AppColors.stone100),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: AppRadius.lg,
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                       color: AppColors.forest600,
                       width: 1.5,
                     ),
@@ -1381,7 +1382,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       activitiesAsync.isLoading ||
                       sleepAsync.isLoading ||
                       slipsAsync.isLoading)
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
                         color: AppColors.forest600,
                         strokeWidth: 2,

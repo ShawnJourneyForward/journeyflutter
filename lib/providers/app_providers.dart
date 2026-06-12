@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/future_letter.dart';
 import '../models/hard_day.dart';
 import '../models/thought_record.dart';
+import '../models/urge_ride.dart';
 import '../models/user_profile.dart';
 import '../utils/encrypted_store.dart';
 
@@ -2117,6 +2119,75 @@ class HardDayNotifier extends AsyncNotifier<List<HardDay>> {
 
 final hardDayProvider =
     AsyncNotifierProvider<HardDayNotifier, List<HardDay>>(HardDayNotifier.new);
+
+// ─── Urge rides ("ride the wave" timer wins) ──────────────────────────────────
+
+class UrgeRideNotifier extends AsyncNotifier<List<UrgeRide>> {
+  static const _key = 'urge_rides';
+
+  @override
+  Future<List<UrgeRide>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    return _safeParseList(raw, UrgeRide.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  Future<void> record(int seconds) async {
+    final current = state.valueOrNull ?? [];
+    final now = DateTime.now();
+    final updated = [
+      UrgeRide(
+        id: now.millisecondsSinceEpoch.toString(),
+        date: now,
+        seconds: seconds,
+      ),
+      ...current,
+    ];
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+}
+
+final urgeRideProvider = AsyncNotifierProvider<UrgeRideNotifier, List<UrgeRide>>(
+    UrgeRideNotifier.new);
+
+// ─── Theme mode (Appearance) ─────────────────────────────────────────────────
+// 'theme_mode' lives in plain prefs so the first frame can apply it without
+// awaiting storage. Light/cream is the default experience; dark is opt-in.
+
+/// Raw 'theme_mode' pref ('system' | 'light' | 'dark'). Set by main() from
+/// the cached SharedPreferences before runApp so the first build is correct.
+String? initialThemeModeRaw;
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  static const prefsKey = 'theme_mode';
+
+  static ThemeMode fromRaw(String? raw) => switch (raw) {
+        'dark' => ThemeMode.dark,
+        'system' => ThemeMode.system,
+        _ => ThemeMode.light,
+      };
+
+  @override
+  ThemeMode build() => fromRaw(initialThemeModeRaw);
+
+  Future<void> set(ThemeMode mode) async {
+    state = mode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      prefsKey,
+      switch (mode) {
+        ThemeMode.dark => 'dark',
+        ThemeMode.system => 'system',
+        ThemeMode.light => 'light',
+      },
+    );
+  }
+}
+
+final themeModeProvider =
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
 // ─── CBT thought records (full version) ───────────────────────────────────────
 

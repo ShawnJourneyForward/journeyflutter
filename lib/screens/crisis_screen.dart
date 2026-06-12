@@ -401,7 +401,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
                   color: AppColors.blush100,
                   borderRadius: AppRadius.sm,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.warning_rounded,
                   color: AppColors.blush600,
                   size: 18,
@@ -487,7 +487,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
                       color: AppColors.honey100,
                       borderRadius: AppRadius.sm,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.local_hospital_rounded,
                       color: AppColors.honey600,
                       size: 18,
@@ -520,7 +520,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
                   AnimatedRotation(
                     turns: _withdrawalExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(
+                    child: Icon(
                       Icons.keyboard_arrow_down_rounded,
                       color: AppColors.honey600,
                       size: 22,
@@ -578,7 +578,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
                     child: Container(
                       width: 5,
                       height: 5,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.honey500,
                         shape: BoxShape.circle,
                       ),

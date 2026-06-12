@@ -11,12 +11,43 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
 
+    companion object {
+        /** Intent extra carrying a target route from a home-screen widget. */
+        const val EXTRA_ROUTE = "open_route"
+    }
+
     private val secureWindowChannel = "com.journeyforward/secure_window"
     private val appSettingsChannel = "com.journeyforward/app_settings"
     private val batteryChannel = "com.journeyforward/battery_opt"
+    private val widgetRouteChannel = "com.journeyforward/widget_route"
+
+    /** Route requested by a widget tap, drained once by the Dart side. */
+    private var pendingRoute: String? = null
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Warm start: the SOS widget re-delivers its intent here.
+        intent.getStringExtra(EXTRA_ROUTE)?.let { pendingRoute = it }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        // Widget-route bridge — see _consumeWidgetRoute() in lib/main.dart.
+        // The Dart side polls at first frame and on every resume; the value
+        // is cleared on read so a route fires exactly once.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, widgetRouteChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "takePendingRoute" -> {
+                        val route = pendingRoute ?: intent?.getStringExtra(EXTRA_ROUTE)
+                        pendingRoute = null
+                        intent?.removeExtra(EXTRA_ROUTE)
+                        result.success(route)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
 
         // FLAG_SECURE bridge — see lib/utils/secure_window.dart. Sensitive
         // screens call enable()/disable() to block screenshots, screen

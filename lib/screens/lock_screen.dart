@@ -247,7 +247,7 @@ class _LockScreenState extends State<LockScreen>
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.stone50,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.forest600),
@@ -291,7 +291,7 @@ class _LockScreenState extends State<LockScreen>
                     H.medium();
                     context.go('/emergency');
                   },
-                  icon: const Icon(Icons.support_rounded,
+                  icon: Icon(Icons.support_rounded,
                       size: 16, color: AppColors.blush600),
                   label: Text(
                     'Need help right now?',
@@ -354,11 +354,11 @@ class _BiometricView extends StatelessWidget {
             child: Container(
               width: 80,
               height: 80,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.mintChip,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.fingerprint_rounded,
+              child: Icon(Icons.fingerprint_rounded,
                   size: 44, color: AppColors.forest600),
             ),
           ),
@@ -511,7 +511,7 @@ class _PinView extends StatelessWidget {
                       if (d == 'bio') {
                         return onBiometric != null
                             ? _PadButton(
-                                child: const Icon(Icons.fingerprint_rounded,
+                                child: Icon(Icons.fingerprint_rounded,
                                     size: 26, color: AppColors.stone500),
                                 onTap: onBiometric!,
                               )

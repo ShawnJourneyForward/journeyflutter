@@ -128,7 +128,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final result = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
         title: Text(l10n.settingsSavingsGoalDialogTitle,
             style: AppTextStyles.titleMedium),
@@ -208,7 +208,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
         title: Text(l10n.settingsEmergencyContactDialogTitle,
             style: AppTextStyles.titleMedium),
@@ -630,7 +630,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.warning_amber_outlined,
                         color: AppColors.honey600,
                         size: 20,
@@ -656,7 +656,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         Container(
                           width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest700,
                             shape: BoxShape.circle,
                           ),
@@ -745,7 +745,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
         title: Text(title, style: AppTextStyles.titleMedium),
         content: TextField(
@@ -784,15 +784,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.stone100),
+          borderSide: BorderSide(color: AppColors.stone100),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.stone100),
+          borderSide: BorderSide(color: AppColors.stone100),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.forest600, width: 1.5),
+          borderSide: BorderSide(color: AppColors.forest600, width: 1.5),
         ),
       );
 
@@ -816,7 +816,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final stats = ref.watch(soberMoneyProvider);
 
     return profileAsync.when(
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.stone50,
         body: Center(
             child: CircularProgressIndicator(color: AppColors.forest600)),
@@ -830,7 +830,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         // Show a spinner if we somehow land here without one rather than
         // racing the router with our own context.go call.
         if (profile == null) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: AppColors.stone50,
             body: Center(
               child: CircularProgressIndicator(color: AppColors.forest600),
@@ -1179,7 +1179,7 @@ class _ProfileHeader extends StatelessWidget {
                               .copyWith(color: Colors.white),
                         ),
                       ),
-                      const Icon(Icons.edit_outlined,
+                      Icon(Icons.edit_outlined,
                           size: 14, color: AppColors.forest300),
                     ],
                   ),
@@ -1229,7 +1229,7 @@ class _ProfileHeader extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.local_fire_department_rounded,
+                        Icon(Icons.local_fire_department_rounded,
                             size: 12, color: AppColors.honey300),
                         const SizedBox(width: 4),
                         Text(
@@ -1330,7 +1330,7 @@ class _SavingsGoalCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 _SettingsRow(
                   icon: Icons.edit_outlined,
                   label: 'Edit goal',
@@ -1372,11 +1372,11 @@ class _EmergencyContactCard extends StatelessWidget {
                       Container(
                         width: 44,
                         height: 44,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: AppColors.forest50,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.person_outline_rounded,
+                        child: Icon(Icons.person_outline_rounded,
                             color: AppColors.forest600, size: 22),
                       ),
                       const SizedBox(width: 14),
@@ -1416,7 +1416,7 @@ class _EmergencyContactCard extends StatelessWidget {
                             color: AppColors.stone100,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.edit_outlined,
+                          child: Icon(Icons.edit_outlined,
                               size: 16, color: AppColors.stone500),
                         ),
                       ),
@@ -1543,7 +1543,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
                         size: 20, color: AppColors.stone400),
                   ),
                 ],
@@ -1564,7 +1564,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
             firstChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
 
                 // Empty state
                 if (widget.items.isEmpty)
@@ -1582,7 +1582,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     decoration: i < widget.items.length - 1
-                        ? const BoxDecoration(
+                        ? BoxDecoration(
                             border: Border(
                                 bottom: BorderSide(color: AppColors.stone100)))
                         : null,
@@ -1591,7 +1591,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                         Container(
                           width: 24,
                           height: 24,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest600,
                             shape: BoxShape.circle,
                           ),
@@ -1615,7 +1615,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                             H.selection();
                             widget.onRemove(i);
                           },
-                          child: const Icon(Icons.close_rounded,
+                          child: Icon(Icons.close_rounded,
                               size: 16, color: AppColors.stone300),
                         ),
                       ],
@@ -1623,7 +1623,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                   ),
 
                 // Add row
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 12, 10),
                   child: Row(
@@ -1650,7 +1650,7 @@ class _MotivationSectionState extends State<_MotivationSection> {
                         child: Container(
                           width: 32,
                           height: 32,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.forest600,
                             shape: BoxShape.circle,
                           ),
@@ -1694,7 +1694,7 @@ class _WeeklyGoalsCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_outline,
+                  Icon(Icons.check_circle_outline,
                       size: 18, color: AppColors.forest600),
                   const SizedBox(width: 12),
                   Expanded(
@@ -1702,21 +1702,21 @@ class _WeeklyGoalsCard extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () => onRemove(goals[i]),
-                    child: const Icon(Icons.close,
+                    child: Icon(Icons.close,
                         size: 16, color: AppColors.stone300),
                   ),
                 ],
               ),
             ),
             if (i < goals.length - 1)
-              const Divider(
+              Divider(
                   height: 1,
                   color: AppColors.stone100,
                   indent: 20,
                   endIndent: 20),
           ],
           if (goals.isNotEmpty)
-            const Divider(height: 1, color: AppColors.stone100),
+            Divider(height: 1, color: AppColors.stone100),
           _SettingsRow(
             icon: Icons.add_circle_outline,
             iconColor: AppColors.forest600,
@@ -1795,7 +1795,7 @@ class _SecurityCardState extends State<_SecurityCard> {
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
                         size: 20, color: AppColors.stone400),
                   ),
                 ],
@@ -1814,7 +1814,7 @@ class _SecurityCardState extends State<_SecurityCard> {
             secondChild: const SizedBox.shrink(),
             firstChild: Column(
               children: [
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 _LockOption(
                   icon: Icons.lock_open_outlined,
                   label: 'No lock',
@@ -1841,13 +1841,13 @@ class _SecurityCardState extends State<_SecurityCard> {
                 // Data-recovery warning
                 if (widget.current == 'pin' ||
                     widget.current == 'biometric') ...[
-                  const Divider(height: 1, color: AppColors.stone100),
+                  Divider(height: 1, color: AppColors.stone100),
                   Padding(
                     padding: const EdgeInsets.all(14),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.warning_amber_rounded,
+                        Icon(Icons.warning_amber_rounded,
                             size: 18, color: AppColors.honey500),
                         const SizedBox(width: 10),
                         Expanded(
@@ -1898,7 +1898,7 @@ class _LockOption extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: borderBottom
-            ? const BoxDecoration(
+            ? BoxDecoration(
                 border: Border(bottom: BorderSide(color: AppColors.stone100)),
               )
             : null,
@@ -2142,7 +2142,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Row(
                 children: [
-                  const Icon(Icons.notifications_outlined,
+                  Icon(Icons.notifications_outlined,
                       size: 16, color: AppColors.forest600),
                   const SizedBox(width: 8),
                   Expanded(
@@ -2153,7 +2153,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
                         size: 20, color: AppColors.stone400),
                   ),
                 ],
@@ -2172,7 +2172,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
             secondChild: const SizedBox.shrink(),
             firstChild: Column(
               children: [
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 // ── Live status indicator ─────────────────────────────────
                 // Shows the OS-level enabled state at a glance so the user
                 // doesn't have to fire a test notification to find out their
@@ -2182,7 +2182,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 12),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       border: Border(
                           bottom:
                               BorderSide(color: AppColors.stone100, width: 1)),
@@ -2264,10 +2264,21 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   onTap: widget.onEditReminders,
                   borderBottom: true,
                 ),
+                _SettingsRow(
+                  icon: Icons.dark_mode_outlined,
+                  label: 'Appearance',
+                  value: switch (ref.watch(themeModeProvider)) {
+                    ThemeMode.light => 'Light',
+                    ThemeMode.dark => 'Dark',
+                    ThemeMode.system => 'Match system',
+                  },
+                  onTap: _editAppearance,
+                  borderBottom: true,
+                ),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     border: Border(
                         bottom:
                             BorderSide(color: AppColors.stone100, width: 1)),
@@ -2281,7 +2292,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                           color: AppColors.forest50,
                           borderRadius: AppRadius.sm,
                         ),
-                        child: const Icon(Icons.vibration_rounded,
+                        child: Icon(Icons.vibration_rounded,
                             size: 18, color: AppColors.forest700),
                       ),
                       const SizedBox(width: 14),
@@ -2314,7 +2325,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                           color: AppColors.forest50,
                           borderRadius: AppRadius.sm,
                         ),
-                        child: const Icon(Icons.straighten_rounded,
+                        child: Icon(Icons.straighten_rounded,
                             size: 18, color: AppColors.forest700),
                       ),
                       const SizedBox(width: 14),
@@ -2351,6 +2362,48 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
         ],
       ),
     );
+  }
+
+  Future<void> _editAppearance() async {
+    final current = ref.read(themeModeProvider);
+    final picked = await showDialog<ThemeMode>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text('Appearance', style: AppTextStyles.titleMedium),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final (mode, label, hint) in [
+              (
+                ThemeMode.light,
+                'Light',
+                'Warm cream — the classic Stillwater look'
+              ),
+              (ThemeMode.dark, 'Dark', 'Dim forest tones for late nights'),
+              (ThemeMode.system, 'Match system', 'Follow your phone setting'),
+            ])
+              RadioListTile<ThemeMode>(
+                value: mode,
+                groupValue: current,
+                onChanged: (v) => Navigator.pop(ctx, v),
+                title: Text(label, style: AppTextStyles.bodyMedium),
+                subtitle: Text(hint,
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.stone500)),
+                activeColor: AppColors.forest600,
+                dense: true,
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked != null) {
+      H.selection();
+      await ref.read(themeModeProvider.notifier).set(picked);
+    }
   }
 }
 
@@ -2426,7 +2479,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.stone50,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -2520,7 +2573,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
             child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.forest700,
-                side: const BorderSide(color: AppColors.forest300),
+                side: BorderSide(color: AppColors.forest300),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
@@ -2626,7 +2679,7 @@ class _SheetTimeRow extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: borderBottom
-              ? const BoxDecoration(
+              ? BoxDecoration(
                   border: Border(bottom: BorderSide(color: AppColors.stone100)))
               : null,
           child: Row(
@@ -2638,7 +2691,7 @@ class _SheetTimeRow extends StatelessWidget {
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.forest600)),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   size: 18, color: AppColors.stone300),
             ],
           ),
@@ -2662,7 +2715,7 @@ class _SheetToggleRow extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: borderBottom
-            ? const BoxDecoration(
+            ? BoxDecoration(
                 border: Border(bottom: BorderSide(color: AppColors.stone100)))
             : null,
         child: Row(
@@ -2688,14 +2741,14 @@ class _SettingsRow extends StatelessWidget {
   const _SettingsRow({
     required this.icon,
     required this.label,
-    this.iconColor = AppColors.forest700,
+    this.iconColor,
     this.value,
     this.onTap,
     this.borderBottom = false,
   });
 
   final IconData icon;
-  final Color iconColor;
+  final Color? iconColor;
   final String label;
   final String? value;
   final VoidCallback? onTap;
@@ -2708,7 +2761,7 @@ class _SettingsRow extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: borderBottom
-            ? const BoxDecoration(
+            ? BoxDecoration(
                 border: Border(bottom: BorderSide(color: AppColors.stone100)))
             : null,
         child: Row(
@@ -2720,7 +2773,7 @@ class _SettingsRow extends StatelessWidget {
                 color: AppColors.mintChip,
                 borderRadius: AppRadius.md,
               ),
-              child: Icon(icon, size: 18, color: iconColor),
+              child: Icon(icon, size: 18, color: iconColor ?? AppColors.forest700),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -2737,7 +2790,7 @@ class _SettingsRow extends StatelessWidget {
               ),
             ),
             if (onTap != null)
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   size: 20, color: AppColors.stone300),
           ],
         ),
@@ -2839,7 +2892,7 @@ class _AboutCardState extends State<_AboutCard> {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded,
+                  Icon(Icons.info_outline_rounded,
                       size: 16, color: AppColors.forest600),
                   const SizedBox(width: 8),
                   Expanded(
@@ -2852,7 +2905,7 @@ class _AboutCardState extends State<_AboutCard> {
                   AnimatedRotation(
                     turns: _expanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 200),
-                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
                         size: 20, color: AppColors.stone400),
                   ),
                 ],
@@ -2872,7 +2925,7 @@ class _AboutCardState extends State<_AboutCard> {
             firstChild: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Divider(height: 1, color: AppColors.stone100),
+                Divider(height: 1, color: AppColors.stone100),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                   child: Column(
@@ -2934,7 +2987,7 @@ class _AboutCardState extends State<_AboutCard> {
                                 borderRadius: AppRadius.pill,
                                 border: Border.all(color: AppColors.forest100),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.copy_rounded,
                                 size: 14,
                                 color: AppColors.forest600,
@@ -2949,7 +3002,7 @@ class _AboutCardState extends State<_AboutCard> {
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.forest700,
-                            side: const BorderSide(
+                            side: BorderSide(
                                 color: AppColors.forest200, width: 1.5),
                             backgroundColor: AppColors.forest50,
                             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -3040,7 +3093,7 @@ class _SpendDialogState extends State<_SpendDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
       title: Text(AppLocalizations.of(context).settingsDailySpendLabel,
           style: AppTextStyles.titleMedium),
@@ -3066,16 +3119,16 @@ class _SpendDialogState extends State<_SpendDialog> {
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
-                borderSide: const BorderSide(color: AppColors.stone100),
+                borderSide: BorderSide(color: AppColors.stone100),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppRadius.lg,
                 borderSide:
-                    const BorderSide(color: AppColors.forest600, width: 1.5),
+                    BorderSide(color: AppColors.forest600, width: 1.5),
               ),
             ),
             style: AppTextStyles.bodyMedium,
@@ -3185,7 +3238,7 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
       title: Text(_step == 0 ? 'Set a PIN' : 'Confirm PIN',
           style: AppTextStyles.titleMedium),

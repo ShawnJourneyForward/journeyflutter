@@ -61,7 +61,7 @@ class SlipLogScreen extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.format_quote_rounded,
+                    Icon(Icons.format_quote_rounded,
                         color: AppColors.forest400, size: 24),
                     const SizedBox(width: 10),
                     Expanded(
@@ -84,7 +84,7 @@ class SlipLogScreen extends ConsumerWidget {
             // ── Slip list ─────────────────────────────────────────────────
             Expanded(
               child: slipsAsync.when(
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
                       color: AppColors.forest600, strokeWidth: 2),
                 ),
@@ -125,7 +125,7 @@ class _EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.forest100),
               ),
-              child: const Icon(Icons.timeline_rounded,
+              child: Icon(Icons.timeline_rounded,
                   size: 34, color: AppColors.forest400),
             ),
             const SizedBox(height: 18),
@@ -160,7 +160,7 @@ class _SlipCard extends StatelessWidget {
         children: [
           // Header bar
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.blush50,
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -170,7 +170,7 @@ class _SlipCard extends StatelessWidget {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.blush400,
                     shape: BoxShape.circle,
                   ),

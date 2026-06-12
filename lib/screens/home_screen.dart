@@ -370,6 +370,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _gratitudeSaving = false;
   bool _isFirstLaunch = false;
   bool _milestonesChecked = false;
+  bool _safetyModalChecked = false;
   bool _redirectingToOnboarding = false;
 
   // Edit-override flags: let user tap a saved card to re-enter input mode.
@@ -380,6 +381,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _midnightTimer;
 
   static const _homeVisitedKey = 'home_visited';
+  static const _safetyModalSeenKey = 'safety_modal_seen';
 
   @override
   void initState() {
@@ -487,7 +489,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final missions = _dailyMissions(l10n);
 
     return profileAsync.when(
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         backgroundColor: AppColors.stone50,
         body: Center(
             child: CircularProgressIndicator(color: AppColors.forest600)),
@@ -513,7 +515,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               if (mounted) context.go('/onboarding');
             });
           }
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: AppColors.stone50,
             body: Center(
               child: CircularProgressIndicator(color: AppColors.forest600),
@@ -527,6 +529,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _milestonesChecked = true;
           WidgetsBinding.instance
               .addPostFrameCallback((_) => _checkMilestones(profile));
+        }
+
+        // One-time safety note + medical disclaimer (first Home visit ever).
+        if (!_safetyModalChecked) {
+          _safetyModalChecked = true;
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _maybeShowSafetyModal());
         }
 
         final pledgedToday = profile.lastPledgeDate == _today();
@@ -703,7 +712,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // Called once per HomeScreen lifecycle (flag prevents re-firing on rebuild).
 
   Future<void> _checkMilestones(UserProfile profile) async {
-    const milestoneDays = [1, 7, 14, 30, 60, 90, 180, 365, 730, 1095];
+    const milestoneDays = [
+      1, 2, 3, 5, 7, 10, 14, 21, 30, 60, 90, 180, 365, 730, 1095,
+    ];
     final now = DateTime.now();
     final days = SoberStats.compute(profile, now).days;
 
@@ -740,6 +751,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
     }
+  }
+
+  // ── First-launch safety note ─────────────────────────────────────────────
+  // One-time medical disclaimer + crisis signpost (Play health-app policy
+  // expects the disclaimer in-app, not only in the store listing).
+
+  Future<void> _maybeShowSafetyModal() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_safetyModalSeenKey) ?? false) return;
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Row(
+          children: [
+            Icon(Icons.favorite_outline,
+                color: AppColors.forest600, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child:
+                  Text(l10n.safetyModalTitle, style: AppTextStyles.titleMedium),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.safetyModalBody, style: AppTextStyles.bodyMedium),
+              const SizedBox(height: 12),
+              Text(l10n.safetyModalWithdrawal, style: AppTextStyles.bodyMedium),
+              const SizedBox(height: 12),
+              Text(l10n.safetyModalCrisis, style: AppTextStyles.bodyMedium),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.push('/crisis');
+            },
+            child: Text(l10n.safetyModalCrisisButton),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.safetyModalDismiss),
+          ),
+        ],
+      ),
+    );
+    await prefs.setBool(_safetyModalSeenKey, true);
   }
 }
 
@@ -799,7 +867,7 @@ class _HomeHeader extends StatelessWidget {
               border: Border.all(color: AppColors.softBorder),
               boxShadow: AppShadows.luxury,
             ),
-            child: const Icon(Icons.person_outline_rounded,
+            child: Icon(Icons.person_outline_rounded,
                 color: AppColors.forest, size: 27),
           ),
         ),
@@ -895,7 +963,7 @@ class _HeroCardHeader extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.forest300, width: 1),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.spa_outlined,
               size: 14,
               color: AppColors.forest600,
@@ -924,7 +992,7 @@ class _TimeSoberLabel extends StatelessWidget {
       children: [
         Container(width: 26, height: 1, color: AppColors.forest100),
         const SizedBox(width: 6),
-        const Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
+        Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
         const SizedBox(width: 8),
         Text(
           'TIME SOBER',
@@ -936,7 +1004,7 @@ class _TimeSoberLabel extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        const Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
+        Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
         const SizedBox(width: 6),
         Container(width: 26, height: 1, color: AppColors.forest100),
       ],
@@ -947,10 +1015,12 @@ class _TimeSoberLabel extends StatelessWidget {
 // ─── Plant image with seamless radial-fade edge blend ────────────────────────
 //
 // The growth_stages art assets have a soft watercolor background that
-// otherwise reads as a hard rectangle pasted onto the card. ShaderMask with
-// a RadialGradient (opaque centre → transparent outer ring) feathers every
-// edge so the plant melts into the card.  No matter which stage (sapling →
-// full bloom) is loaded, the centre stays crisp and the silhouette fades.
+// otherwise reads as a hard rectangle pasted onto the card. A card-coloured
+// radial vignette painted OVER the image feathers every edge so the plant
+// melts into the card. On the flat card surface this is visually identical
+// to the previous ShaderMask, but it avoids the saveLayer a ShaderMask
+// forces — that saveLayer was the biggest raster cost on the home screen
+// when the hero card rasterized mid-scroll.
 class _BlendedPlant extends StatelessWidget {
   const _BlendedPlant({required this.asset, required this.label});
   final String asset;
@@ -958,26 +1028,37 @@ class _BlendedPlant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (rect) => const RadialGradient(
-        center: Alignment.center,
-        radius: 0.78,
-        // Opaque in the middle, fully transparent past 95% of the radius.
-        // Adjust stops to feather more / less aggressively.
-        colors: [
-          Colors.white,
-          Colors.white,
-          Color(0x66FFFFFF),
-          Color(0x00FFFFFF),
-        ],
-        stops: [0.0, 0.55, 0.85, 1.0],
-      ).createShader(rect),
-      blendMode: BlendMode.dstIn,
-      child: Image.asset(
-        asset,
-        fit: BoxFit.contain,
-        semanticLabel: label,
-      ),
+    final card = AppColors.card;
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        Image.asset(
+          asset,
+          fit: BoxFit.contain,
+          semanticLabel: label,
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 0.78,
+                  // Clear in the middle, fully card-coloured past 95% of the
+                  // radius — mirrors the old mask's stops exactly.
+                  colors: [
+                    card.withOpacity(0.0),
+                    card.withOpacity(0.0),
+                    card.withOpacity(0.6),
+                    card,
+                  ],
+                  stops: const [0.0, 0.55, 0.85, 1.0],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1165,7 +1246,7 @@ class _LeafOrnament extends StatelessWidget {
               left: 0,
               child: Transform.rotate(
                 angle: -0.4,
-                child: const Icon(
+                child: Icon(
                   Icons.energy_savings_leaf_outlined,
                   size: 15,
                   color: AppColors.forest200,
@@ -1178,7 +1259,7 @@ class _LeafOrnament extends StatelessWidget {
               right: 2,
               child: Transform.rotate(
                 angle: 0.9,
-                child: const Icon(
+                child: Icon(
                   Icons.energy_savings_leaf_outlined,
                   size: 11,
                   color: AppColors.forest200,
@@ -1225,7 +1306,7 @@ class _BottomFlourish extends StatelessWidget {
                   color: AppColors.card,
                   border: Border.all(color: AppColors.forest600, width: 1.2),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.spa,
                   size: 11,
                   color: AppColors.forest600,
@@ -1533,7 +1614,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
     final hasGoal = widget.profile.savingsGoal != null;
     final insets = MediaQuery.of(context).viewInsets.bottom;
 
-    const border = OutlineInputBorder(
+    final border = OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(14)),
       borderSide: BorderSide(color: AppColors.softBorder),
     );
@@ -1543,7 +1624,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
     );
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -1615,7 +1696,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
               onPressed: _saving ? null : _save,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.forest,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.onForest,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -1673,7 +1754,7 @@ class _MyReasonCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.spa_rounded, size: 14, color: AppColors.forest600),
+            Icon(Icons.spa_rounded, size: 14, color: AppColors.forest600),
             const SizedBox(width: 6),
             Text('My Reason',
                 style: AppTextStyles.titleSmall
@@ -1701,7 +1782,7 @@ class _MyReasonCard extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.add_circle_outline_rounded,
+                  Icon(Icons.add_circle_outline_rounded,
                       size: 26, color: AppColors.stone300),
                   const SizedBox(height: 6),
                   Text('Add your reasons\nin Profile',
@@ -2091,7 +2172,7 @@ class _IntentionCard extends ConsumerWidget {
                     ),
             ),
             const SizedBox(width: 4),
-            const Icon(Icons.chevron_right_rounded,
+            Icon(Icons.chevron_right_rounded,
                 color: AppColors.stone400, size: 22),
           ],
         ),
@@ -2422,7 +2503,7 @@ class _DailyMissionsCard extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: isDone
-                                  ? const Icon(Icons.check_rounded,
+                                  ? Icon(Icons.check_rounded,
                                       size: 14, color: AppColors.leafGreen)
                                   : null,
                             ),
@@ -2536,7 +2617,7 @@ class _TodaysReminderCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.format_quote_rounded,
+          Icon(Icons.format_quote_rounded,
               color: AppColors.forest400, size: 28),
           const SizedBox(width: 12),
           Expanded(
@@ -2577,7 +2658,7 @@ class _RecoveryBanner extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text('THE HEALING TIMELINE', style: AppTextStyles.overline),
                 const Spacer(),
-                const Icon(Icons.chevron_right_rounded,
+                Icon(Icons.chevron_right_rounded,
                     color: AppColors.mistGrey, size: 20),
               ],
             ),
@@ -2608,7 +2689,7 @@ class _RecoveryBanner extends StatelessWidget {
                 value: rp.progress,
                 backgroundColor: AppColors.stone100,
                 valueColor:
-                    const AlwaysStoppedAnimation<Color>(AppColors.forest),
+                    AlwaysStoppedAnimation<Color>(AppColors.forest),
                 minHeight: 6,
               ),
             ),
@@ -2661,7 +2742,7 @@ Widget _sheetShell({
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * .92,
     ),
-    decoration: const BoxDecoration(
+    decoration: BoxDecoration(
       color: AppColors.card,
       borderRadius: AppRadius.xxl,
     ),
@@ -2825,14 +2906,14 @@ Widget _saveButton({
   required bool saving,
   required VoidCallback onPressed,
   required String label,
-  Color color = AppColors.forest600,
+  Color? color,
 }) =>
     SizedBox(
       width: double.infinity,
       child: FilledButton(
         onPressed: saving ? null : onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: color,
+          backgroundColor: color ?? AppColors.forest600,
           padding: const EdgeInsets.symmetric(vertical: 15),
         ),
         child: saving
@@ -3044,7 +3125,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.history_rounded,
+                  Icon(Icons.history_rounded,
                       size: 14, color: AppColors.forest500),
                   const SizedBox(width: 8),
                   Expanded(
@@ -3639,16 +3720,16 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                           border: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
                             borderSide:
-                                const BorderSide(color: AppColors.stone100),
+                                BorderSide(color: AppColors.stone100),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
                             borderSide:
-                                const BorderSide(color: AppColors.stone100),
+                                BorderSide(color: AppColors.stone100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.forest300, width: 1.5),
                           ),
                           suffixText: 'min',
@@ -3684,16 +3765,16 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                           border: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
                             borderSide:
-                                const BorderSide(color: AppColors.stone100),
+                                BorderSide(color: AppColors.stone100),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
                             borderSide:
-                                const BorderSide(color: AppColors.stone100),
+                                BorderSide(color: AppColors.stone100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.forest300, width: 1.5),
                           ),
                           hintText: '0.0',
@@ -3725,16 +3806,16 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
                   borderSide:
-                      const BorderSide(color: AppColors.forest300, width: 1.5),
+                      BorderSide(color: AppColors.forest300, width: 1.5),
                 ),
                 suffixText: 'min',
                 suffixStyle:

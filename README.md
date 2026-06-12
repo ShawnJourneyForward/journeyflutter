@@ -91,6 +91,9 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `meetings` | **`EncryptedStore`** | Meeting planner entries with reminder slot IDs |
 | `daily_intentions` | **`EncryptedStore`** | Daily intention check-ins (v5.9) |
 | `recovery_capital` | **`EncryptedStore`** | Weekly recovery-capital check-ins (v5.9) |
+| `urge_rides` | **`EncryptedStore`** | "Ride the Wave" timer wins (v6.0) — included in backups |
+| `theme_mode` | Plain prefs | `'system'` / `'light'` / `'dark'` — read synchronously before the first frame |
+| `safety_modal_seen` | Plain prefs | One-time first-launch safety note + medical disclaimer flag |
 | `has_profile` | Plain prefs | Sentinel "1" so the synchronous router redirect can answer "is there a profile?" without awaiting encrypted storage |
 | `profile_sober_date` | Plain prefs | Mirror of `profile.soberDate` so the home-screen widget can render the streak without touching encrypted storage |
 | `lockMethod` | Plain prefs | `'pin'` / `'biometric'` / `'none'` — read synchronously by the GoRouter lock-gate redirect |
@@ -131,6 +134,7 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `/insights` | `InsightsScreen` | Mood and craving charts (fl_chart) |
 | `/heatmap` | `HeatmapScreen` | 13-week activity heatmap |
 | `/slip-support` | `SlipSupportScreen` | Urge surfing and slip support flow |
+| `/urge-timer` | `UrgeTimerScreen` | "Ride the Wave" — auto-starting 10-min urge countdown with breathing visual; every ride (full or ended early via "I'm steady now") records an `UrgeRide` win. Reachable while locked (LockGate allowlist) and targeted by the SOS widget |
 
 ### Utility Screens
 
@@ -173,7 +177,7 @@ Managed by `flutter_local_notifications`. Notification ID ranges (disjoint by de
 | Category | ID range | Trigger |
 |---|---|---|
 | Morning / evening reminders | 1, 2 | Daily at user-set times |
-| Day milestones | 10000 + days | Once per crossing of 1, 7, 14, 30, 60, 90, 180, 365, 730, 1095 days |
+| Day milestones | 10000 + days | Once per crossing of 1, 2, 3, 5, 7, 10, 14, 21, 30, 60, 90, 180, 365, 730, 1095 days (dense early-week milestones — week one is where streaks are won) |
 | Savings milestones | 20000 + tier index | Once per crossing of R50, R100, R250 … R10 000 |
 | Meeting reminders | 30000 + folded id | Slot-stable; safe to re-schedule |
 
@@ -243,7 +247,21 @@ Both formats include `future_letters`, `hard_days`, `thought_records`, and `meet
 
 ## Design System — Stillwater Aesthetic
 
-All design tokens live in `lib/theme/app_theme.dart`. Custom components live in `lib/components/`. `buildAppTheme(highContrast: ...)` produces a high-contrast variant for the accessibility toggle in Settings.
+All design tokens live in `lib/theme/app_theme.dart`. Custom components live in `lib/components/`. `buildAppTheme(highContrast: ..., dark: ...)` produces high-contrast and dark variants.
+
+### Dark mode (v6.0)
+
+`AppColors` and `AppTextStyles` members are **getters** resolving against an
+active `_Palette` (light or dark). The root widget calls `AppColors.setDark()`
+before building `MaterialApp`, so the whole token system switches atomically —
+no per-screen theming required. The dark palette is a hand-tuned inversion
+(warm forest-charcoal surfaces, mint accents), deliberately dim rather than
+high-contrast black. **Light/cream remains the default**; dark is opt-in via
+Settings → Appearance (system / light / dark, persisted in `theme_mode`).
+Content that sits on a forest-filled control should use `AppColors.onForest`
+(white in light mode, deep charcoal in dark mode) — never hardcoded white.
+Because tokens are no longer compile-time consts, new code must not reference
+`AppColors`/`AppTextStyles` inside `const` expressions.
 
 ### Colours
 
@@ -286,3 +304,19 @@ Sources:
 - `android/app/src/main/kotlin/com/journeyforward/journey_forward/JourneyWidgetProvider.kt`
 - `android/app/src/main/res/layout/journey_widget.xml`
 - `android/app/src/main/res/xml/journey_widget_info.xml`
+
+### SOS widget (v6.0)
+
+A second 2×1 widget ("SOS · ride the wave") deep-links straight into
+`/urge-timer`. The route travels as an Intent extra (`open_route`); the Dart
+side drains it through the `com.journeyforward/widget_route` MethodChannel at
+first frame and on every resume, and only honours the exact `/urge-timer`
+value. `/urge-timer` is on the LockGate allowlist, so no PIN/biometric stands
+between a craving and the timer (the screen exposes nothing private). On
+resume-relock, crisis-allowed surfaces (`/crisis`, `/emergency`,
+`/urge-timer`) keep the gate up but are not yanked to `/lock`.
+
+Sources:
+- `android/app/src/main/kotlin/com/journeyforward/journey_forward/SosWidgetProvider.kt`
+- `android/app/src/main/res/layout/sos_widget.xml`
+- `android/app/src/main/res/xml/sos_widget_info.xml`

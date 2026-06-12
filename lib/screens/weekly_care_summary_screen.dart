@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -193,6 +194,13 @@ class _WeeklyCareSummaryScreenState
   }
 
   // ── PDF generation ──────────────────────────────────────────────────────────
+  //
+  // Mirrors the in-app preview card 1:1 so a recipient (therapist, sponsor,
+  // partner) sees the same document the user does. Same palette, same logo,
+  // same section layout. The row "icon badges" in the PDF are intentionally
+  // plain mint circles — bundling the Material Icons OTF just for these
+  // would add ~370 KB to the app bundle for what is decoration. The label
+  // text carries the meaning either way.
 
   Future<void> _sharePdf({
     required DateTimeRange range,
@@ -207,15 +215,21 @@ class _WeeklyCareSummaryScreenState
   }) async {
     final pdf = pw.Document();
 
-    final forestGreen = PdfColor(0.18, 0.345, 0.267);
-    final cream = PdfColor(0.961, 0.949, 0.933);
-    final darkInk = PdfColor(0.149, 0.200, 0.184);
-    final muted = PdfColor(0.416, 0.451, 0.435);
-    final divider = PdfColor(0.839, 0.816, 0.784);
+    // Palette mirrors lib/theme/app_theme.dart values so PDF + screen match.
+    const forest700 = PdfColor.fromInt(0xFF2E5844);
+    const forest100 = PdfColor.fromInt(0xFFDCE8DC);
+    const mintChip = PdfColor.fromInt(0xFFE8F1E8);
+    const stone700 = PdfColor.fromInt(0xFF3F4B46);
+    const stone500 = PdfColor.fromInt(0xFF69736F);
+    const stone300 = PdfColor.fromInt(0xFFB8AFA3);
+    const stone200 = PdfColor.fromInt(0xFFD6CFC5);
+    const stone100 = PdfColor.fromInt(0xFFEDE8E1);
+    const cardWhite = PdfColor.fromInt(0xFFFFFFFF);
 
     final fmt = DateFormat('dd MMM yyyy');
     final startLabel = fmt.format(range.start);
     final endLabel = fmt.format(range.end);
+    final dateRangeLabel = '$startLabel – $endLabel';
 
     final rows = [
       ('Journal entries', journalCount),
@@ -227,139 +241,214 @@ class _WeeklyCareSummaryScreenState
       ('Daily pledge', pledgeCount),
     ];
 
+    // ── Reusable widget builders ────────────────────────────────────────────
+
+    pw.Widget circleBadge({double size = 22}) => pw.Container(
+          width: size,
+          height: size,
+          decoration: pw.BoxDecoration(
+            color: mintChip,
+            shape: pw.BoxShape.circle,
+            border: pw.Border.all(color: forest100, width: 0.6),
+          ),
+        );
+
+    pw.Widget sectionHeader(String label) => pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          children: [
+            circleBadge(size: 22),
+            pw.SizedBox(width: 10),
+            pw.Text(
+              label,
+              style: pw.TextStyle(
+                font: pw.Font.helveticaBold(),
+                fontSize: 13,
+                color: forest700,
+              ),
+            ),
+          ],
+        );
+
+    pw.Widget softDivider() =>
+        pw.Container(height: 0.6, color: stone100);
+
+    pw.Widget summaryRow(String label, int count) {
+      final hasCount = count > 0;
+      return pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(vertical: 4),
+        child: pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          children: [
+            circleBadge(size: 22),
+            pw.SizedBox(width: 10),
+            pw.Text(
+              label,
+              style: pw.TextStyle(
+                font: pw.Font.helvetica(),
+                fontSize: 11,
+                color: stone700,
+              ),
+            ),
+            pw.SizedBox(width: 8),
+            // Dotted leader fills remaining space, ending just before the count.
+            pw.Expanded(
+              child: pw.Container(
+                height: 6,
+                child: pw.CustomPaint(
+                  painter: (PdfGraphics canvas, PdfPoint size) {
+                    canvas
+                      ..setStrokeColor(stone200)
+                      ..setLineWidth(0.8);
+                    // Dot every 3pt across the band.
+                    final y = size.y / 2;
+                    for (double x = 0; x < size.x; x += 3) {
+                      canvas
+                        ..moveTo(x, y)
+                        ..lineTo(x + 0.1, y);
+                    }
+                    canvas.strokePath();
+                  },
+                ),
+              ),
+            ),
+            pw.SizedBox(width: 8),
+            pw.SizedBox(
+              width: 22,
+              child: pw.Text(
+                '$count',
+                textAlign: pw.TextAlign.right,
+                style: pw.TextStyle(
+                  font: pw.Font.helveticaBold(),
+                  fontSize: 12,
+                  color: hasCount ? forest700 : stone300,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ── Page build ──────────────────────────────────────────────────────────
+
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(40),
+        margin: const pw.EdgeInsets.all(36),
         build: (pw.Context ctx) {
           return pw.Container(
             decoration: pw.BoxDecoration(
-              color: cream,
-              borderRadius: pw.BorderRadius.circular(8),
+              color: cardWhite,
+              borderRadius: pw.BorderRadius.circular(14),
+              border: pw.Border.all(color: stone200, width: 0.6),
             ),
-            padding: const pw.EdgeInsets.all(32),
+            padding: const pw.EdgeInsets.fromLTRB(28, 24, 28, 24),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                // ── Header ─────────────────────────────────────────────────
-                pw.Text(
-                  'Weekly Care Summary',
-                  style: pw.TextStyle(
-                    font: pw.Font.timesBold(),
-                    fontSize: 26,
-                    color: forestGreen,
-                  ),
-                ),
-                pw.SizedBox(height: 4),
-                pw.Text(
-                  'Journey Forward  •  $startLabel – $endLabel',
-                  style: pw.TextStyle(
-                    font: pw.Font.helvetica(),
-                    fontSize: 11,
-                    color: muted,
-                  ),
-                ),
-                pw.SizedBox(height: 20),
-                pw.Divider(color: divider, thickness: 1),
-                pw.SizedBox(height: 12),
-
-                // ── Care recorded ───────────────────────────────────────────
-                pw.Text(
-                  'Care recorded',
-                  style: pw.TextStyle(
-                    font: pw.Font.helveticaBold(),
-                    fontSize: 13,
-                    color: forestGreen,
-                  ),
-                ),
-                pw.SizedBox(height: 8),
-
-                ...rows.map((row) {
-                  final (label, count) = row;
-                  return pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                    child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text(
-                          label,
-                          style: pw.TextStyle(
-                            font: pw.Font.helvetica(),
-                            fontSize: 12,
-                            color: darkInk,
-                          ),
-                        ),
-                        pw.Text(
-                          '$count',
-                          style: pw.TextStyle(
-                            font: pw.Font.helveticaBold(),
-                            fontSize: 12,
-                            color: count > 0 ? forestGreen : muted,
-                          ),
-                        ),
-                      ],
+                // ── Header: logo + title block ────────────────────────────
+                pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
+                  children: [
+                    pw.Container(
+                      width: 56,
+                      height: 56,
+                      child: pw.CustomPaint(
+                        painter: (PdfGraphics canvas, PdfPoint size) {
+                          _paintPdfMountainLogo(canvas, size, forest700);
+                        },
+                      ),
                     ),
-                  );
-                }),
-
-                pw.SizedBox(height: 12),
-                pw.Divider(color: divider, thickness: 1),
-                pw.SizedBox(height: 12),
-
-                // ── Reflection ──────────────────────────────────────────────
-                pw.Text(
-                  'Reflection',
-                  style: pw.TextStyle(
-                    font: pw.Font.helveticaBold(),
-                    fontSize: 13,
-                    color: forestGreen,
-                  ),
+                    pw.SizedBox(width: 14),
+                    pw.Expanded(
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Text(
+                            'Weekly Care Summary',
+                            style: pw.TextStyle(
+                              font: pw.Font.timesBold(),
+                              fontSize: 24,
+                              color: forest700,
+                            ),
+                          ),
+                          pw.SizedBox(height: 2),
+                          pw.Text(
+                            'Journey Forward  •  $dateRangeLabel',
+                            style: pw.TextStyle(
+                              font: pw.Font.helvetica(),
+                              fontSize: 11,
+                              color: stone500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+                pw.SizedBox(height: 16),
+                softDivider(),
+                pw.SizedBox(height: 14),
+
+                // ── Care recorded section ─────────────────────────────────
+                sectionHeader('Care recorded'),
                 pw.SizedBox(height: 8),
-                pw.Text(
-                  reflectionText,
-                  style: pw.TextStyle(
-                    font: pw.Font.helvetica(),
-                    fontSize: 12,
-                    color: darkInk,
-                    lineSpacing: 4,
+                ...rows.map((r) => summaryRow(r.$1, r.$2)),
+
+                pw.SizedBox(height: 14),
+                softDivider(),
+                pw.SizedBox(height: 14),
+
+                // ── Reflection ─────────────────────────────────────────────
+                sectionHeader('Reflection'),
+                pw.SizedBox(height: 8),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(left: 32),
+                  child: pw.Text(
+                    reflectionText,
+                    style: pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 11,
+                      color: stone700,
+                      lineSpacing: 4,
+                    ),
                   ),
                 ),
 
-                pw.SizedBox(height: 12),
-                pw.Divider(color: divider, thickness: 1),
-                pw.SizedBox(height: 12),
+                pw.SizedBox(height: 14),
+                softDivider(),
+                pw.SizedBox(height: 14),
 
-                // ── Privacy note ────────────────────────────────────────────
-                pw.Container(
-                  padding: const pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    color: PdfColor(0.933, 0.941, 0.933),
-                    borderRadius: pw.BorderRadius.circular(6),
+                // ── Privacy note ──────────────────────────────────────────
+                // Body intentionally matches l10n.weeklySummaryPrivacyNoteBody
+                // so PDF and on-screen read the same to the recipient.
+                sectionHeader('Privacy note'),
+                pw.SizedBox(height: 8),
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(left: 32),
+                  child: pw.Text(
+                    'This summary was created on your device and shared '
+                    'only because you chose to share it.',
+                    style: pw.TextStyle(
+                      font: pw.Font.helvetica(),
+                      fontSize: 11,
+                      color: stone700,
+                      lineSpacing: 4,
+                    ),
                   ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(
-                        'Privacy note',
-                        style: pw.TextStyle(
-                          font: pw.Font.helveticaBold(),
-                          fontSize: 11,
-                          color: forestGreen,
-                        ),
-                      ),
-                      pw.SizedBox(height: 4),
-                      pw.Text(
-                        'This summary was created locally on the user\'s device. '
-                        'Journey Forward does not upload, send, or store shared reports.',
-                        style: pw.TextStyle(
-                          font: pw.Font.helvetica(),
-                          fontSize: 10,
-                          color: muted,
-                          lineSpacing: 3,
-                        ),
-                      ),
-                    ],
+                ),
+
+                pw.SizedBox(height: 8),
+                pw.Spacer(),
+                pw.Container(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Text(
+                    'Generated by Journey Forward',
+                    style: pw.TextStyle(
+                      font: pw.Font.helveticaOblique(),
+                      fontSize: 9,
+                      color: stone500,
+                    ),
                   ),
                 ),
               ],
@@ -381,6 +470,102 @@ class _WeeklyCareSummaryScreenState
       [XFile(file.path)],
       subject: 'Weekly Care Summary',
     );
+  }
+
+  // ── PDF mountain-logo painter ──────────────────────────────────────────────
+  //
+  // Mirrors _MountainLogoPainter (Flutter Canvas) on the PDF graphics
+  // context. PdfGraphics uses bottom-left origin (PDF convention), so all
+  // Y values are computed as (size.y - <flutter-y>) when porting from the
+  // Flutter version.
+
+  void _paintPdfMountainLogo(
+      PdfGraphics canvas, PdfPoint size, PdfColor ink) {
+    final w = size.x;
+    final h = size.y;
+    // Convert Flutter-style top-down y → PDF bottom-up y.
+    double py(double topDownY) => h - topDownY;
+
+    canvas
+      ..setStrokeColor(ink)
+      ..setFillColor(ink)
+      ..setLineWidth(0.9);
+
+    // Outer circle frame
+    canvas.drawEllipse(w / 2, h / 2, (w / 2) - 1, (h / 2) - 1);
+    canvas.strokePath();
+
+    // Sun + rays
+    final sunX = w * 0.50;
+    final sunY = py(h * 0.36);
+    final sunR = w * 0.090;
+    canvas.drawEllipse(sunX, sunY, sunR, sunR);
+    canvas.strokePath();
+
+    const rayCount = 7;
+    final rayInner = sunR + w * 0.025;
+    final rayOuter = sunR + w * 0.085;
+    for (int i = 0; i < rayCount; i++) {
+      final t = i / (rayCount - 1);
+      // Angles fan over the upper arc of the sun.
+      final ang = math.pi * (1 / 6 + (2 / 3) * t) + math.pi / 2;
+      final x1 = sunX + math.cos(ang) * rayInner;
+      final y1 = sunY + math.sin(ang) * rayInner;
+      final x2 = sunX + math.cos(ang) * rayOuter;
+      final y2 = sunY + math.sin(ang) * rayOuter;
+      canvas
+        ..moveTo(x1, y1)
+        ..lineTo(x2, y2);
+    }
+    canvas.strokePath();
+
+    // Right (back) mountain — outline only.
+    final groundY = py(h * 0.74);
+    final rightPeakX = w * 0.62;
+    final rightPeakY = py(h * 0.46);
+    canvas
+      ..moveTo(w * 0.34, groundY)
+      ..lineTo(rightPeakX, rightPeakY)
+      ..lineTo(w * 0.88, groundY)
+      ..closePath();
+    canvas.strokePath();
+
+    // Left (front) mountain — fill with white first to mask the right
+    // mountain behind it, then stroke the outline.
+    final leftPeakX = w * 0.36;
+    final leftPeakY = py(h * 0.56);
+    canvas
+      ..setFillColor(PdfColor.fromInt(0xFFFFFFFF))
+      ..moveTo(w * 0.16, groundY)
+      ..lineTo(leftPeakX, leftPeakY)
+      ..lineTo(w * 0.58, groundY)
+      ..closePath()
+      ..fillPath();
+    canvas
+      ..setFillColor(ink)
+      ..moveTo(w * 0.16, groundY)
+      ..lineTo(leftPeakX, leftPeakY)
+      ..lineTo(w * 0.58, groundY)
+      ..closePath()
+      ..strokePath();
+
+    // Ground line
+    canvas
+      ..moveTo(w * 0.14, groundY)
+      ..lineTo(w * 0.88, groundY);
+    canvas.strokePath();
+
+    // Path/road accent (single curve segment approximated as a short line
+    // — PdfGraphics quadratic helpers are limited, and a straight tick
+    // reads clean at this size).
+    canvas
+      ..moveTo(w * 0.50, py(h * 0.82))
+      ..lineTo(w * 0.40, py(h * 0.72));
+    canvas.strokePath();
+
+    // Hand-drawn dot at the start of the path.
+    canvas.drawEllipse(w * 0.50, py(h * 0.82), 1.0, 1.0);
+    canvas.fillPath();
   }
 
   // ── Build ───────────────────────────────────────────────────────────────────
@@ -517,71 +702,77 @@ class _WeeklyCareSummaryScreenState
                     const SizedBox(height: 16),
 
                     // ── In-app preview card ────────────────────────────────────
+                    // Layout matches the shared-PDF rendering (see _sharePdf):
+                    //  ┌───────────────────────────────────────────────┐
+                    //  │ [logo]  Weekly Care Summary                   │
+                    //  │         Journey Forward                       │
+                    //  ├───────────────────────────────────────────────┤
+                    //  │ [badge] Care recorded                         │
+                    //  │  [b]  Journal entries  · · · · · · ·    4    │
+                    //  │  ...                                          │
+                    //  ├───────────────────────────────────────────────┤
+                    //  │ [badge] Reflection                            │
+                    //  │  body copy …                                  │
+                    //  ├───────────────────────────────────────────────┤
+                    //  │ [badge] Privacy note                          │
+                    //  │  body copy …                                  │
+                    //  └───────────────────────────────────────────────┘
                     SolidCard(
                       borderRadius: AppRadius.xl,
                       padding: EdgeInsets.zero,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header band
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                            decoration: const BoxDecoration(
-                              color: AppColors.mintChip,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.eco_outlined,
-                                        size: 18, color: AppColors.forest700),
-                                    const SizedBox(width: 8),
-                                    Text(l10n.weeklySummaryTitle,
-                                        style: AppTextStyles.titleMedium
-                                            .copyWith(
-                                                color: AppColors.forest700)),
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${l10n.weeklySummaryAppName}  •  $dateRangeLabel',
-                                  style: AppTextStyles.caption,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Care recorded section
+                          // ── Header band: logo + title block ───────────────
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                            padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Icon(Icons.eco_outlined,
-                                    size: 15, color: AppColors.forest600),
-                                const SizedBox(width: 6),
-                                Text(l10n.weeklySummaryCareRecorded,
-                                    style: AppTextStyles.titleSmall
-                                        .copyWith(color: AppColors.forest700)),
+                                const _MountainLogo(size: 60),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        l10n.weeklySummaryTitle,
+                                        style: AppTextStyles.displaySmall
+                                            .copyWith(
+                                          fontSize: 22,
+                                          color: AppColors.forest700,
+                                          height: 1.1,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        l10n.weeklySummaryAppName,
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(color: AppColors.stone500),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child:
-                                Divider(height: 16, color: AppColors.stone100),
+                          const _SoftDivider(),
+
+                          // ── Care recorded section ─────────────────────────
+                          const SizedBox(height: 14),
+                          _SectionHeader(
+                            icon: Icons.eco_outlined,
+                            label: l10n.weeklySummaryCareRecorded,
                           ),
+                          const SizedBox(height: 6),
 
                           _SummaryRow(
                               icon: Icons.menu_book_outlined,
                               label: l10n.weeklySummaryJournalEntries,
                               count: journalCount),
                           _SummaryRow(
-                              icon: Icons.favorite_border_rounded,
+                              icon: Icons.volunteer_activism_outlined,
                               label: l10n.weeklySummaryCravingSupport,
                               count: cravingCount),
                           _SummaryRow(
@@ -589,15 +780,15 @@ class _WeeklyCareSummaryScreenState
                               label: l10n.weeklySummaryThoughtExercises,
                               count: thoughtCount),
                           _SummaryRow(
-                              icon: Icons.directions_walk_outlined,
+                              icon: Icons.directions_run_outlined,
                               label: l10n.weeklySummaryMovement,
                               count: activityCount),
                           _SummaryRow(
-                              icon: Icons.bedtime_outlined,
+                              icon: Icons.nights_stay_outlined,
                               label: l10n.weeklySummarySleepLogs,
                               count: sleepCount),
                           _SummaryRow(
-                              icon: Icons.wb_sunny_outlined,
+                              icon: Icons.favorite_border_rounded,
                               label: l10n.weeklySummaryDailyGratitude,
                               count: gratitudeCount),
                           _SummaryRow(
@@ -605,63 +796,39 @@ class _WeeklyCareSummaryScreenState
                               label: l10n.weeklySummaryDailyPledge,
                               count: pledgeCount),
 
-                          // Reflection section
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child:
-                                Divider(height: 24, color: AppColors.stone100),
+                          // ── Reflection section ────────────────────────────
+                          const SizedBox(height: 14),
+                          const _SoftDivider(),
+                          const SizedBox(height: 14),
+                          _SectionHeader(
+                            icon: Icons.eco_outlined,
+                            label: l10n.weeklySummaryReflection,
                           ),
+                          const SizedBox(height: 6),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.eco_outlined,
-                                    size: 15, color: AppColors.forest600),
-                                const SizedBox(width: 6),
-                                Text(l10n.weeklySummaryReflection,
-                                    style: AppTextStyles.titleSmall
-                                        .copyWith(color: AppColors.forest700)),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
                             child: Text(
                               reflectionText,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.stone700, height: 1.6),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.stone700, height: 1.5),
                             ),
                           ),
 
-                          // Privacy note section
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child:
-                                Divider(height: 24, color: AppColors.stone100),
+                          // ── Privacy note section ──────────────────────────
+                          const SizedBox(height: 14),
+                          const _SoftDivider(),
+                          const SizedBox(height: 14),
+                          _SectionHeader(
+                            icon: Icons.lock_outline,
+                            label: l10n.weeklySummaryPrivacyNote,
                           ),
+                          const SizedBox(height: 6),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.lock_outline,
-                                        size: 15, color: AppColors.forest600),
-                                    const SizedBox(width: 6),
-                                    Text(l10n.weeklySummaryPrivacyNote,
-                                        style: AppTextStyles.titleSmall
-                                            .copyWith(
-                                                color: AppColors.forest700)),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  l10n.weeklySummaryPrivacyNoteBody,
-                                  style: AppTextStyles.bodySmall,
-                                ),
-                              ],
+                            padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+                            child: Text(
+                              l10n.weeklySummaryPrivacyNoteBody,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.stone700, height: 1.5),
                             ),
                           ),
                         ],
@@ -671,27 +838,65 @@ class _WeeklyCareSummaryScreenState
                     const SizedBox(height: 16),
 
                     // ── Privacy warning footer ─────────────────────────────────
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.honey50,
-                        borderRadius: AppRadius.md,
-                        border: Border.all(color: AppColors.honey100),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline,
-                              size: 16, color: AppColors.honey600),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.weeklySummaryShareWarning,
-                              style: AppTextStyles.bodySmall
-                                  .copyWith(color: AppColors.stone700),
+                    // Honey-tinted reminder with a circular lock badge on the
+                    // left and a soft botanical sprig fading off the right edge.
+                    // The sprig is `Positioned` inside a `ClipRRect` so the
+                    // leaves can run right up to the border without overflow.
+                    ClipRRect(
+                      borderRadius: AppRadius.md,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                        decoration: BoxDecoration(
+                          color: AppColors.honey50,
+                          borderRadius: AppRadius.md,
+                          border: Border.all(color: AppColors.honey100),
+                        ),
+                        child: Stack(
+                          children: [
+                            // Faint botanical accent on the right edge
+                            Positioned(
+                              right: -10,
+                              top: -4,
+                              bottom: -4,
+                              child: Opacity(
+                                opacity: 0.35,
+                                child: SizedBox(
+                                  width: 78,
+                                  child: CustomPaint(
+                                    painter: _BotanicalSprigPainter(),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            Row(
+                              children: [
+                                Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.honey100,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.lock_outline,
+                                    size: 18,
+                                    color: AppColors.honey600,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    l10n.weeklySummaryShareWarning,
+                                    style: AppTextStyles.bodySmall
+                                        .copyWith(color: AppColors.stone700),
+                                  ),
+                                ),
+                                // Reserve space so text never sits under the sprig
+                                const SizedBox(width: 64),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -814,6 +1019,10 @@ class _RangeChip extends StatelessWidget {
 
 // ─── Summary row ─────────────────────────────────────────────────────────────
 
+/// One entry in the "Care recorded" list — mint-tinted icon badge, label,
+/// dotted leader line out to a right-aligned count. The dotted leader is
+/// laid out with an [Expanded] so the count column always lines up regardless
+/// of label length, and the dots fill whatever space is left.
 class _SummaryRow extends StatelessWidget {
   const _SummaryRow({
     required this.icon,
@@ -827,25 +1036,307 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasCount = count > 0;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.fromLTRB(18, 5, 18, 5),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: AppColors.forest600),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(label,
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.stone700)),
-          ),
+          _CircleBadge(icon: icon, size: 30, iconSize: 16),
+          const SizedBox(width: 12),
           Text(
-            '$count',
-            style: AppTextStyles.titleSmall.copyWith(
-              color: count > 0 ? AppColors.forest700 : AppColors.stone300,
+            label,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.stone700,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              child: _DottedLine(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$count',
+              textAlign: TextAlign.right,
+              style: AppTextStyles.titleSmall.copyWith(
+                color: hasCount ? AppColors.forest700 : AppColors.stone300,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+// ─── Section header (badge + label) ──────────────────────────────────────────
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 0),
+      child: Row(
+        children: [
+          _CircleBadge(icon: icon, size: 30, iconSize: 16),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.forest700,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Circular icon badge ────────────────────────────────────────────────────
+// Soft mint fill + faint forest border. Used by both _SummaryRow and
+// _SectionHeader so every icon in the card reads as the same family.
+
+class _CircleBadge extends StatelessWidget {
+  const _CircleBadge({
+    required this.icon,
+    this.size = 30,
+    this.iconSize = 16,
+  });
+  final IconData icon;
+  final double size;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.mintChip,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.forest100, width: 1),
+      ),
+      child: Icon(icon, size: iconSize, color: AppColors.forest600),
+    );
+  }
+}
+
+// ─── Soft full-width divider ────────────────────────────────────────────────
+
+class _SoftDivider extends StatelessWidget {
+  const _SoftDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Container(height: 1, color: AppColors.stone100),
+    );
+  }
+}
+
+// ─── Dotted leader line ─────────────────────────────────────────────────────
+// CustomPainter rather than a Row of dots so it scales with the available
+// width without re-laying out a variable number of children.
+
+class _DottedLine extends StatelessWidget {
+  const _DottedLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 6,
+      width: double.infinity,
+      child: CustomPaint(painter: _DottedLinePainter()),
+    );
+  }
+}
+
+class _DottedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.stone200
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round;
+    const dotSpacing = 4.0;
+    final y = size.height / 2;
+    for (double x = 0; x < size.width; x += dotSpacing) {
+      canvas.drawLine(Offset(x, y), Offset(x + 0.1, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ─── Mountain + sun logo ────────────────────────────────────────────────────
+// Hand-drawn-style mark used at the top of both the in-app preview card and
+// the shared PDF. Pure CustomPaint so there's no asset dependency — the
+// same vectors translate cleanly to the PDF's painter API in _sharePdf.
+
+class _MountainLogo extends StatelessWidget {
+  const _MountainLogo({this.size = 60});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(painter: _MountainLogoPainter()),
+    );
+  }
+}
+
+class _MountainLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final centre = Offset(w / 2, h / 2);
+    final r = (w / 2) - 1;
+
+    final inkColor = AppColors.forest700;
+    final stroke = Paint()
+      ..color = inkColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final fill = Paint()
+      ..color = inkColor
+      ..style = PaintingStyle.fill;
+
+    // ── Outer circle frame ──────────────────────────────────────────────
+    canvas.drawCircle(centre, r, stroke);
+
+    // ── Sun + rays (upper third) ────────────────────────────────────────
+    final sunCentre = Offset(w * 0.50, h * 0.36);
+    final sunR = w * 0.085;
+    canvas.drawCircle(sunCentre, sunR, stroke);
+    // 7 short rays fanning out from the sun's upper arc
+    const rayCount = 7;
+    final rayInner = sunR + w * 0.025;
+    final rayOuter = sunR + w * 0.085;
+    for (int i = 0; i < rayCount; i++) {
+      // angles from ~-120° to ~-60° (upper arc) in radians
+      final t = i / (rayCount - 1);
+      final ang = -math.pi * (1 / 6 + (2 / 3) * t) - math.pi / 2;
+      final p1 = sunCentre + Offset(math.cos(ang), math.sin(ang)) * rayInner;
+      final p2 = sunCentre + Offset(math.cos(ang), math.sin(ang)) * rayOuter;
+      canvas.drawLine(p1, p2, stroke);
+    }
+
+    // ── Mountains (two overlapping triangles, lower two-thirds) ──────────
+    // Right peak (taller, behind)
+    final rightPeak = Offset(w * 0.62, h * 0.46);
+    final mountainsBase = h * 0.74;
+    final rightPath = Path()
+      ..moveTo(w * 0.34, mountainsBase)
+      ..lineTo(rightPeak.dx, rightPeak.dy)
+      ..lineTo(w * 0.88, mountainsBase)
+      ..close();
+    canvas.drawPath(rightPath, stroke);
+
+    // Left peak (shorter, in front)
+    final leftPeak = Offset(w * 0.36, h * 0.56);
+    final leftPath = Path()
+      ..moveTo(w * 0.16, mountainsBase)
+      ..lineTo(leftPeak.dx, leftPeak.dy)
+      ..lineTo(w * 0.58, mountainsBase)
+      ..close();
+    // Fill so the left mountain visually sits in front of the right
+    canvas.drawPath(
+      leftPath,
+      Paint()
+        ..color = const Color(0xFFF5F0E8) // card cream — same as outer fill
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawPath(leftPath, stroke);
+
+    // ── Path/road leading to the mountains ──────────────────────────────
+    final pathPath = Path()
+      ..moveTo(w * 0.50, h * 0.82)
+      ..quadraticBezierTo(w * 0.46, h * 0.74, w * 0.40, h * 0.72);
+    canvas.drawPath(pathPath, stroke);
+
+    // ── Ground line ─────────────────────────────────────────────────────
+    canvas.drawLine(
+      Offset(w * 0.14, mountainsBase),
+      Offset(w * 0.88, mountainsBase),
+      stroke,
+    );
+
+    // Tiny accent dot at the start of the path for a hand-drawn feel
+    canvas.drawCircle(Offset(w * 0.50, h * 0.82), 1.0, fill);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// ─── Botanical sprig (right-edge decoration on the warning footer) ─────────
+// A small stylised twig with leaves fanning out, painted at low opacity so
+// the warning copy still reads cleanly. Strokes only — keeps it cheap.
+
+class _BotanicalSprigPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stroke = Paint()
+      ..color = AppColors.honey600
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // Main stem: gentle S-curve from bottom-left up to top-right.
+    final stem = Path()
+      ..moveTo(w * 0.15, h * 0.95)
+      ..cubicTo(
+        w * 0.30, h * 0.70,
+        w * 0.55, h * 0.45,
+        w * 0.85, h * 0.10,
+      );
+    canvas.drawPath(stem, stroke);
+
+    // Leaves: 5 elongated almond shapes branching off the stem at varying
+    // angles. Each is drawn with two quadratic curves so the silhouette
+    // tapers to a point at both ends — the visual signature of a leaf.
+    void drawLeaf(double tx, double ty, double angle, double leafLen) {
+      canvas.save();
+      canvas.translate(tx, ty);
+      canvas.rotate(angle);
+      final lw = leafLen * 0.42; // leaf width = ~42% of length
+      final p = Path()
+        ..moveTo(0, 0)
+        ..quadraticBezierTo(leafLen * 0.5, -lw, leafLen, 0)
+        ..quadraticBezierTo(leafLen * 0.5, lw, 0, 0);
+      canvas.drawPath(p, stroke);
+      canvas.restore();
+    }
+
+    drawLeaf(w * 0.22, h * 0.82, -0.95, w * 0.32);
+    drawLeaf(w * 0.32, h * 0.66, 0.55, w * 0.30);
+    drawLeaf(w * 0.46, h * 0.52, -1.10, w * 0.34);
+    drawLeaf(w * 0.58, h * 0.38, 0.40, w * 0.30);
+    drawLeaf(w * 0.72, h * 0.22, -1.20, w * 0.28);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

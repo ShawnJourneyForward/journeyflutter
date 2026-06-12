@@ -45,7 +45,7 @@ class TodaysStrengthCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.shield_outlined,
+              Icon(Icons.shield_outlined,
                   size: 18, color: AppColors.forest600),
               const SizedBox(width: 8),
               Text("Today's strength",
@@ -141,7 +141,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Row(
                   children: [
-                    const Icon(Icons.edit_outlined,
+                    Icon(Icons.edit_outlined,
                         size: 16, color: AppColors.stone500),
                     const SizedBox(width: 8),
                     Text(
@@ -152,7 +152,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                           .copyWith(color: AppColors.stone600),
                     ),
                     const Spacer(),
-                    const Icon(Icons.chevron_right_rounded,
+                    Icon(Icons.chevron_right_rounded,
                         color: AppColors.stone300, size: 18),
                   ],
                 ),

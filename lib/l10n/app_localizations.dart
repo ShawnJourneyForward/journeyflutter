@@ -2594,11 +2594,23 @@ abstract class AppLocalizations {
   /// **'First Day'**
   String get progressMilestoneLabel1;
 
+  /// No description provided for @progressMilestoneLabel2.
+  ///
+  /// In en, this message translates to:
+  /// **'Two Days'**
+  String get progressMilestoneLabel2;
+
   /// No description provided for @progressMilestoneLabel3.
   ///
   /// In en, this message translates to:
   /// **'Three Days'**
   String get progressMilestoneLabel3;
+
+  /// No description provided for @progressMilestoneLabel5.
+  ///
+  /// In en, this message translates to:
+  /// **'Five Days'**
+  String get progressMilestoneLabel5;
 
   /// No description provided for @progressMilestoneLabel7.
   ///
@@ -2606,11 +2618,23 @@ abstract class AppLocalizations {
   /// **'One Week'**
   String get progressMilestoneLabel7;
 
+  /// No description provided for @progressMilestoneLabel10.
+  ///
+  /// In en, this message translates to:
+  /// **'Ten Days'**
+  String get progressMilestoneLabel10;
+
   /// No description provided for @progressMilestoneLabel14.
   ///
   /// In en, this message translates to:
   /// **'Two Weeks'**
   String get progressMilestoneLabel14;
+
+  /// No description provided for @progressMilestoneLabel21.
+  ///
+  /// In en, this message translates to:
+  /// **'Three Weeks'**
+  String get progressMilestoneLabel21;
 
   /// No description provided for @progressMilestoneLabel30.
   ///
@@ -2647,6 +2671,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'One Year'**
   String get progressMilestoneLabel365;
+
+  /// No description provided for @progressMilestoneLabel730.
+  ///
+  /// In en, this message translates to:
+  /// **'Two Years'**
+  String get progressMilestoneLabel730;
+
+  /// No description provided for @progressMilestoneLabel1095.
+  ///
+  /// In en, this message translates to:
+  /// **'Three Years'**
+  String get progressMilestoneLabel1095;
 
   /// No description provided for @insightsTitle.
   ///
@@ -5267,7 +5303,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklySummarySharePdf.
   ///
   /// In en, this message translates to:
-  /// **'Share PDF'**
+  /// **'Share Summary'**
   String get weeklySummarySharePdf;
 
   /// No description provided for @weeklySummaryEdit.
@@ -5311,6 +5347,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Journey Forward'**
   String get weeklySummaryAppName;
+
+  /// No description provided for @safetyModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you begin'**
+  String get safetyModalTitle;
+
+  /// No description provided for @safetyModalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward is a companion for your recovery — a private place to track, reflect, and find steadying tools. It is not a medical device and does not provide medical advice, diagnosis, or treatment.'**
+  String get safetyModalBody;
+
+  /// No description provided for @safetyModalWithdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'If you are stopping alcohol or certain medications, withdrawal can be medically serious. Please talk to a doctor or healthcare professional about doing it safely.'**
+  String get safetyModalWithdrawal;
+
+  /// No description provided for @safetyModalCrisis.
+  ///
+  /// In en, this message translates to:
+  /// **'And if you are ever in crisis, you deserve immediate human support — helplines are always one tap away.'**
+  String get safetyModalCrisis;
+
+  /// No description provided for @safetyModalCrisisButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View crisis helplines'**
+  String get safetyModalCrisisButton;
+
+  /// No description provided for @safetyModalDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand'**
+  String get safetyModalDismiss;
+
+  /// No description provided for @urgeTimerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride the Wave'**
+  String get urgeTimerTitle;
+
+  /// No description provided for @urgeTimerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Urges feel overwhelming, then they pass — usually within minutes. You don\'t have to fight this one. Just stay with it.'**
+  String get urgeTimerSubtitle;
+
+  /// No description provided for @urgeTimerPhaseRising.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice it like a wave — rising, cresting, falling.'**
+  String get urgeTimerPhaseRising;
+
+  /// No description provided for @urgeTimerPhaseCresting.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not fighting it. You\'re outlasting it.'**
+  String get urgeTimerPhaseCresting;
+
+  /// No description provided for @urgeTimerPhaseFalling.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s already losing strength. Stay with yourself.'**
+  String get urgeTimerPhaseFalling;
+
+  /// No description provided for @urgeTimerImSteady.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m steady now'**
+  String get urgeTimerImSteady;
+
+  /// No description provided for @urgeTimerOpenPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Open my plan'**
+  String get urgeTimerOpenPlan;
+
+  /// No description provided for @urgeTimerCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The wave passed'**
+  String get urgeTimerCompleteTitle;
+
+  /// No description provided for @urgeTimerCompleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You stayed with it, and it passed. That\'s exactly how this is done.'**
+  String get urgeTimerCompleteBody;
+
+  /// No description provided for @urgeTimerWins.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 urge outlasted} other{{count} urges outlasted}}'**
+  String urgeTimerWins(int count);
+
+  /// No description provided for @urgeTimerDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get urgeTimerDone;
+
+  /// No description provided for @toolkitUrgeCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving right now?'**
+  String get toolkitUrgeCardTitle;
+
+  /// No description provided for @toolkitUrgeCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride the wave — most urges pass in minutes'**
+  String get toolkitUrgeCardSubtitle;
 }
 
 class _AppLocalizationsDelegate

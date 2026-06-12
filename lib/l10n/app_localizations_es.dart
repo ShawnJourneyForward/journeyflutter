@@ -1383,13 +1383,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get progressMilestoneLabel1 => 'First Day';
 
   @override
+  String get progressMilestoneLabel2 => 'Two Days';
+
+  @override
   String get progressMilestoneLabel3 => 'Three Days';
+
+  @override
+  String get progressMilestoneLabel5 => 'Five Days';
 
   @override
   String get progressMilestoneLabel7 => 'One Week';
 
   @override
+  String get progressMilestoneLabel10 => 'Ten Days';
+
+  @override
   String get progressMilestoneLabel14 => 'Two Weeks';
+
+  @override
+  String get progressMilestoneLabel21 => 'Three Weeks';
 
   @override
   String get progressMilestoneLabel30 => 'One Month';
@@ -1408,6 +1420,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get progressMilestoneLabel365 => 'One Year';
+
+  @override
+  String get progressMilestoneLabel730 => 'Two Years';
+
+  @override
+  String get progressMilestoneLabel1095 => 'Three Years';
 
   @override
   String get insightsTitle => 'Insights';
@@ -2857,7 +2875,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'This summary may contain personal recovery information. Only share it with someone you trust.';
 
   @override
-  String get weeklySummarySharePdf => 'Share PDF';
+  String get weeklySummarySharePdf => 'Share Summary';
 
   @override
   String get weeklySummaryEdit => 'Edit';
@@ -2892,4 +2910,78 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get weeklySummaryAppName => 'Journey Forward';
+
+  @override
+  String get safetyModalTitle => 'Before you begin';
+
+  @override
+  String get safetyModalBody =>
+      'Journey Forward is a companion for your recovery — a private place to track, reflect, and find steadying tools. It is not a medical device and does not provide medical advice, diagnosis, or treatment.';
+
+  @override
+  String get safetyModalWithdrawal =>
+      'If you are stopping alcohol or certain medications, withdrawal can be medically serious. Please talk to a doctor or healthcare professional about doing it safely.';
+
+  @override
+  String get safetyModalCrisis =>
+      'And if you are ever in crisis, you deserve immediate human support — helplines are always one tap away.';
+
+  @override
+  String get safetyModalCrisisButton => 'View crisis helplines';
+
+  @override
+  String get safetyModalDismiss => 'I understand';
+
+  @override
+  String get urgeTimerTitle => 'Ride the Wave';
+
+  @override
+  String get urgeTimerSubtitle =>
+      'Urges feel overwhelming, then they pass — usually within minutes. You don\'t have to fight this one. Just stay with it.';
+
+  @override
+  String get urgeTimerPhaseRising =>
+      'Notice it like a wave — rising, cresting, falling.';
+
+  @override
+  String get urgeTimerPhaseCresting =>
+      'You\'re not fighting it. You\'re outlasting it.';
+
+  @override
+  String get urgeTimerPhaseFalling =>
+      'It\'s already losing strength. Stay with yourself.';
+
+  @override
+  String get urgeTimerImSteady => 'I\'m steady now';
+
+  @override
+  String get urgeTimerOpenPlan => 'Open my plan';
+
+  @override
+  String get urgeTimerCompleteTitle => 'The wave passed';
+
+  @override
+  String get urgeTimerCompleteBody =>
+      'You stayed with it, and it passed. That\'s exactly how this is done.';
+
+  @override
+  String urgeTimerWins(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count urges outlasted',
+      one: '1 urge outlasted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get urgeTimerDone => 'Done';
+
+  @override
+  String get toolkitUrgeCardTitle => 'Craving right now?';
+
+  @override
+  String get toolkitUrgeCardSubtitle =>
+      'Ride the wave — most urges pass in minutes';
 }

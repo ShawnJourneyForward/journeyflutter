@@ -225,7 +225,7 @@ class _JournalTab extends ConsumerWidget {
     final entries = ref.watch(journalProvider);
 
     return entries.when(
-      loading: () => const Center(
+      loading: () => Center(
           child: CircularProgressIndicator(color: AppColors.forest600)),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (allEntries) {
@@ -723,7 +723,7 @@ class _CrisisAction extends StatelessWidget {
             Container(
               width: 40,
               height: 40,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.forest100,
                 shape: BoxShape.circle,
               ),
@@ -744,7 +744,7 @@ class _CrisisAction extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded,
+            Icon(Icons.arrow_forward_rounded,
                 size: 18, color: AppColors.forest500),
           ],
         ),
@@ -777,7 +777,7 @@ class _DiaryHeader extends StatelessWidget {
           if (streak > 0)
             Row(
               children: [
-                const Icon(Icons.local_fire_department_rounded,
+                Icon(Icons.local_fire_department_rounded,
                     size: 16, color: AppColors.honey500),
                 const SizedBox(width: 6),
                 Text(
@@ -869,7 +869,7 @@ class _OnThisDayCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [AppColors.mintChip, AppColors.forest50],
@@ -888,7 +888,7 @@ class _OnThisDayCard extends StatelessWidget {
                 color: mood.color.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.history_rounded,
+              child: Icon(Icons.history_rounded,
                   size: 18, color: AppColors.forest600),
             ),
             const SizedBox(width: 12),
@@ -1029,7 +1029,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
                 hintText: 'Search your entries…',
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone300),
-                prefixIcon: const Icon(Icons.search_rounded,
+                prefixIcon: Icon(Icons.search_rounded,
                     size: 18, color: AppColors.stone400),
                 filled: true,
                 fillColor: AppColors.card,
@@ -1038,16 +1038,16 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(
                   borderRadius: AppRadius.md,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: AppRadius.md,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.md,
                   borderSide:
-                      const BorderSide(color: AppColors.forest400, width: 1.5),
+                      BorderSide(color: AppColors.forest400, width: 1.5),
                 ),
               ),
               onChanged: widget.onQueryChanged,
@@ -1060,7 +1060,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
               labelStyle:
                   AppTextStyles.labelSmall.copyWith(color: AppColors.forest700),
               backgroundColor: AppColors.mintChip,
-              side: const BorderSide(color: AppColors.forest100),
+              side: BorderSide(color: AppColors.forest100),
               deleteIconColor: AppColors.forest500,
               onDeleted: widget.onClearTag,
             ),
@@ -1128,11 +1128,11 @@ class _DiaryEmptyState extends StatelessWidget {
             child: Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.forest50,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.menu_book_rounded,
+              child: Icon(Icons.menu_book_rounded,
                   size: 34, color: AppColors.forest500),
             ),
           ),
@@ -1173,7 +1173,7 @@ class _DiaryEmptyState extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.format_quote_rounded,
+                        Icon(Icons.format_quote_rounded,
                             size: 18, color: AppColors.forest400),
                         const SizedBox(width: 10),
                         Expanded(
@@ -1185,7 +1185,7 @@ class _DiaryEmptyState extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Icon(Icons.arrow_forward_rounded,
+                        Icon(Icons.arrow_forward_rounded,
                             size: 16, color: AppColors.stone400),
                       ],
                     ),
@@ -1233,7 +1233,7 @@ class _JournalCard extends ConsumerWidget {
           borderRadius: AppRadius.lg,
         ),
         child:
-            const Icon(Icons.delete_outline_rounded, color: AppColors.honey500),
+            Icon(Icons.delete_outline_rounded, color: AppColors.honey500),
       ),
       confirmDismiss: (_) async {
         return await showDialog<bool>(
@@ -1291,7 +1291,7 @@ class _JournalCard extends ConsumerWidget {
                     Container(
                       width: 3,
                       height: 3,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.stone300,
                         shape: BoxShape.circle,
                       ),
@@ -1308,7 +1308,7 @@ class _JournalCard extends ConsumerWidget {
                   ],
                   if (entry.locked) ...[
                     const SizedBox(width: 8),
-                    const Icon(Icons.lock, size: 12, color: AppColors.honey500),
+                    Icon(Icons.lock, size: 12, color: AppColors.honey500),
                   ],
                   const Spacer(),
                   Text(
@@ -1324,7 +1324,7 @@ class _JournalCard extends ConsumerWidget {
               if (entry.locked)
                 Row(
                   children: [
-                    const Icon(Icons.lock_outline,
+                    Icon(Icons.lock_outline,
                         size: 14, color: AppColors.stone400),
                     const SizedBox(width: 6),
                     Text(
@@ -1341,7 +1341,7 @@ class _JournalCard extends ConsumerWidget {
                 // so the card doesn't look broken or accidentally blank.
                 Row(
                   children: [
-                    const Icon(Icons.edit_note_rounded,
+                    Icon(Icons.edit_note_rounded,
                         size: 14, color: AppColors.stone400),
                     const SizedBox(width: 6),
                     Text(
@@ -1713,7 +1713,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded,
+                  icon: Icon(Icons.close_rounded,
                       color: AppColors.stone400),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -1920,15 +1920,15 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                       fillColor: AppColors.stone50,
                       border: OutlineInputBorder(
                         borderRadius: AppRadius.lg,
-                        borderSide: const BorderSide(color: AppColors.stone100),
+                        borderSide: BorderSide(color: AppColors.stone100),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: AppRadius.lg,
-                        borderSide: const BorderSide(color: AppColors.stone100),
+                        borderSide: BorderSide(color: AppColors.stone100),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: AppRadius.lg,
-                        borderSide: const BorderSide(
+                        borderSide: BorderSide(
                             color: AppColors.forest400, width: 1.5),
                       ),
                       contentPadding: const EdgeInsets.all(14),
@@ -1991,7 +1991,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                             isDense: true,
                             hintStyle: AppTextStyles.bodySmall
                                 .copyWith(color: AppColors.stone300),
-                            prefixIcon: const Icon(Icons.tag_rounded,
+                            prefixIcon: Icon(Icons.tag_rounded,
                                 size: 16, color: AppColors.stone400),
                             filled: true,
                             fillColor: AppColors.stone50,
@@ -2000,12 +2000,12 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                             border: OutlineInputBorder(
                               borderRadius: AppRadius.sm,
                               borderSide:
-                                  const BorderSide(color: AppColors.stone100),
+                                  BorderSide(color: AppColors.stone100),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: AppRadius.sm,
                               borderSide:
-                                  const BorderSide(color: AppColors.stone100),
+                                  BorderSide(color: AppColors.stone100),
                             ),
                           ),
                         ),
@@ -2130,7 +2130,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.format_quote_rounded,
+                Icon(Icons.format_quote_rounded,
                     size: 16, color: AppColors.forest500),
                 const SizedBox(width: 8),
                 Expanded(
@@ -2293,7 +2293,7 @@ class _DraftRestoreBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.history_edu_rounded,
+          Icon(Icons.history_edu_rounded,
               size: 18, color: AppColors.honey600),
           const SizedBox(width: 10),
           Expanded(
@@ -2480,7 +2480,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone400)),
 
-            const Divider(
+            Divider(
               height: 32,
               indent: 20,
               endIndent: 20,
@@ -2578,16 +2578,16 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                 fillColor: AppColors.stone50,
                 border: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
-                  borderSide: const BorderSide(color: AppColors.stone100),
+                  borderSide: BorderSide(color: AppColors.stone100),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppRadius.lg,
                   borderSide:
-                      const BorderSide(color: AppColors.forest400, width: 1.5),
+                      BorderSide(color: AppColors.forest400, width: 1.5),
                 ),
                 contentPadding: const EdgeInsets.all(14),
               ),
@@ -2642,7 +2642,7 @@ class _AffirmCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [AppColors.forest50, Color(0xFFF0F7F3)],
@@ -2654,7 +2654,7 @@ class _AffirmCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.format_quote_rounded,
+            Icon(Icons.format_quote_rounded,
                 size: 32, color: AppColors.forest200),
             const SizedBox(height: 12),
             Text(
@@ -2707,7 +2707,7 @@ class _CustomAffirmRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.star_rounded, size: 16, color: AppColors.honey400),
+          Icon(Icons.star_rounded, size: 16, color: AppColors.honey400),
           const SizedBox(width: 10),
           Expanded(
             child: Text(text,
@@ -2716,7 +2716,7 @@ class _CustomAffirmRow extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onDelete,
-            child: const Icon(Icons.close_rounded,
+            child: Icon(Icons.close_rounded,
                 size: 18, color: AppColors.stone300),
           ),
         ],
@@ -2929,7 +2929,7 @@ class _BoardHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [AppColors.mintChip, AppColors.forest50],
@@ -2942,11 +2942,11 @@ class _BoardHeader extends StatelessWidget {
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.forest100,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.auto_awesome_rounded,
+            child: Icon(Icons.auto_awesome_rounded,
                 size: 22, color: AppColors.forest600),
           ),
           const SizedBox(width: 12),
@@ -3122,11 +3122,11 @@ class _VisionEmptyState extends StatelessWidget {
             child: Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.forest50,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.auto_awesome_rounded,
+              child: Icon(Icons.auto_awesome_rounded,
                   size: 34, color: AppColors.forest500),
             ),
           ),
@@ -3187,7 +3187,7 @@ class _VisionEmptyState extends StatelessWidget {
                               .copyWith(color: AppColors.stone800),
                         ),
                       ),
-                      const Icon(Icons.add_rounded,
+                      Icon(Icons.add_rounded,
                           size: 18, color: AppColors.stone400),
                     ],
                   ),
@@ -3319,7 +3319,7 @@ class _VisionCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.touch_app_outlined,
+                              Icon(Icons.touch_app_outlined,
                                   size: 11, color: AppColors.stone300),
                               const SizedBox(width: 3),
                               Text('Tap to open',
@@ -3639,11 +3639,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                   child: Container(
                     width: 32,
                     height: 32,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.stone100,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close_rounded,
+                    child: Icon(Icons.close_rounded,
                         size: 17, color: AppColors.stone500),
                   ),
                 ),
@@ -3891,7 +3891,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.event_rounded,
+                Icon(Icons.event_rounded,
                     size: 18, color: AppColors.stone400),
                 const SizedBox(width: 10),
                 Expanded(
@@ -3907,7 +3907,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                 ),
                 if (_targetDate != null)
                   IconButton(
-                    icon: const Icon(Icons.clear_rounded,
+                    icon: Icon(Icons.clear_rounded,
                         size: 18, color: AppColors.stone400),
                     onPressed: () => setState(() => _targetDate = null),
                   ),
@@ -3956,7 +3956,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.add_photo_alternate_outlined,
+                    Icon(Icons.add_photo_alternate_outlined,
                         size: 22, color: AppColors.stone400),
                     const SizedBox(width: 10),
                     Text(
@@ -4032,7 +4032,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded,
+                    icon: Icon(Icons.close_rounded,
                         size: 18, color: AppColors.stone400),
                     onPressed: () => _removeMilestone(i),
                   ),
@@ -4121,15 +4121,15 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         fillColor: AppColors.stone50,
         border: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.stone100),
+          borderSide: BorderSide(color: AppColors.stone100),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.stone100),
+          borderSide: BorderSide(color: AppColors.stone100),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.lg,
-          borderSide: const BorderSide(color: AppColors.forest400, width: 1.5),
+          borderSide: BorderSide(color: AppColors.forest400, width: 1.5),
         ),
         contentPadding: const EdgeInsets.all(14),
       );
@@ -4274,7 +4274,7 @@ class _ZenTab extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.format_quote_rounded,
+                    Icon(Icons.format_quote_rounded,
                         size: 20, color: AppColors.forest400),
                     const SizedBox(width: 8),
                     Text(
@@ -4427,7 +4427,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
     if (_saved) {
       return Row(
         children: [
-          const Icon(Icons.check_circle_rounded,
+          Icon(Icons.check_circle_rounded,
               size: 18, color: AppColors.forest500),
           const SizedBox(width: 8),
           Expanded(
@@ -4437,7 +4437,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
           ),
           GestureDetector(
             onTap: () => setState(() => _saved = false),
-            child: const Icon(Icons.edit_outlined,
+            child: Icon(Icons.edit_outlined,
                 size: 16, color: AppColors.stone300),
           ),
         ],
@@ -4523,7 +4523,7 @@ class _ReflectionPromptsState extends State<_ReflectionPrompts> {
           },
           child: Row(
             children: [
-              const Icon(Icons.refresh_rounded,
+              Icon(Icons.refresh_rounded,
                   size: 16, color: AppColors.forest500),
               const SizedBox(width: 6),
               Text('Next prompt',
@@ -4570,7 +4570,7 @@ class _ThreeGoodThingsState extends State<_ThreeGoodThings> {
               Container(
                 width: 24,
                 height: 24,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.honeySoft,
                   shape: BoxShape.circle,
                 ),
@@ -4664,14 +4664,14 @@ class _MindfulMoment extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.air_rounded,
+                  Icon(Icons.air_rounded,
                       size: 16, color: AppColors.forest600),
                   const SizedBox(width: 7),
                   Text('Open guided breathing in Your Toolkit',
                       style: AppTextStyles.labelSmall
                           .copyWith(color: AppColors.forest700)),
                   const SizedBox(width: 4),
-                  const Icon(Icons.chevron_right_rounded,
+                  Icon(Icons.chevron_right_rounded,
                       size: 15, color: AppColors.forest500),
                 ],
               ),
@@ -4683,14 +4683,14 @@ class _MindfulMoment extends StatelessWidget {
             onTap: () => context.go('/emergency'),
             child: Row(
               children: [
-                const Icon(Icons.air_rounded,
+                Icon(Icons.air_rounded,
                     size: 14, color: AppColors.forest400),
                 const SizedBox(width: 6),
                 Text('More breathing exercises in Your Toolkit',
                     style: AppTextStyles.labelSmall
                         .copyWith(color: AppColors.forest600)),
                 const SizedBox(width: 3),
-                const Icon(Icons.chevron_right_rounded,
+                Icon(Icons.chevron_right_rounded,
                     size: 14, color: AppColors.forest500),
               ],
             ),

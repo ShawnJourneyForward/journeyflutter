@@ -27,7 +27,7 @@ class _ToolkitExercise {
   final String route; // empty = no navigation (informational only)
 }
 
-const _kToolkitExercises = [
+final _kToolkitExercises = [
   _ToolkitExercise(
     label: 'Box Breathing',
     sub: 'Guided 4-4-4-4 breath cycle',
@@ -233,7 +233,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                               width: 32,
                               height: 32,
                               margin: const EdgeInsets.only(top: 6),
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 color: AppColors.forest50,
                                 shape: BoxShape.circle,
                               ),
@@ -263,17 +263,17 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                   contentPadding: const EdgeInsets.all(12),
                                   border: OutlineInputBorder(
                                     borderRadius: AppRadius.lg,
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                         color: AppColors.stone100),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: AppRadius.lg,
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                         color: AppColors.stone100),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: AppRadius.lg,
-                                    borderSide: const BorderSide(
+                                    borderSide: BorderSide(
                                         color: AppColors.forest600, width: 1.5),
                                   ),
                                 ),
@@ -299,7 +299,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.add_link_rounded,
+                                      Icon(Icons.add_link_rounded,
                                           size: 15, color: AppColors.forest400),
                                       const SizedBox(width: 5),
                                       Text('Link a Toolkit exercise',
@@ -329,7 +329,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded,
+                  Icon(Icons.info_outline_rounded,
                       size: 16, color: AppColors.forest500),
                   const SizedBox(width: 10),
                   Expanded(
@@ -350,7 +350,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                 onPressed: _dirty ? _save : null,
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest700,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.onForest,
                   disabledBackgroundColor: AppColors.stone200,
                   disabledForegroundColor: AppColors.stone500,
                   minimumSize: const Size.fromHeight(52),
@@ -407,7 +407,7 @@ class _ExerciseLinkChip extends StatelessWidget {
         const SizedBox(width: 4),
         GestureDetector(
           onTap: onRemove,
-          child: const Icon(Icons.close_rounded,
+          child: Icon(Icons.close_rounded,
               size: 16, color: AppColors.stone400),
         ),
       ],
@@ -449,7 +449,7 @@ class _ExercisePickerSheet extends StatelessWidget {
                     color: AppColors.stone100,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close_rounded,
+                  child: Icon(Icons.close_rounded,
                       size: 16, color: AppColors.stone500),
                 ),
               ),
@@ -571,7 +571,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
     return Container(
       margin: const EdgeInsets.only(top: 80),
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.card,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
