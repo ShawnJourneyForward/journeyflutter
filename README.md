@@ -3,8 +3,8 @@
 A compassionate, privacy-first sobriety companion built with Flutter.
 Designed for Android using the **Stillwater Aesthetic System** — calm, warm, and human.
 
-**Current version:** 5.9.0+1
-**Latest release APK:** `build/app/outputs/flutter-apk/app-release.apk` (~76 MB, built locally — produce a signed AAB for Play Store submission)
+**Current version:** 6.1.0+2
+**Latest release APK:** `build/app/outputs/flutter-apk/app-release.apk` (~77 MB, built locally — produce a signed AAB for Play Store submission)
 
 ---
 
@@ -95,7 +95,6 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `theme_mode` | Plain prefs | `'system'` / `'light'` / `'dark'` — read synchronously before the first frame |
 | `safety_modal_seen` | Plain prefs | One-time first-launch safety note + medical disclaimer flag |
 | `last_backup_date` | Plain prefs | ISO timestamp stamped on successful export — drives the milestone-time backup nudge (never / >14 days stale) |
-| `supporter_thanks` | Plain prefs | Set after a tip-jar purchase completes (v6.1) |
 | `has_profile` | Plain prefs | Sentinel "1" so the synchronous router redirect can answer "is there a profile?" without awaiting encrypted storage |
 | `profile_sober_date` | Plain prefs | Mirror of `profile.soberDate` so the home-screen widget can render the streak without touching encrypted storage |
 | `lockMethod` | Plain prefs | `'pin'` / `'biometric'` / `'none'` — read synchronously by the GoRouter lock-gate redirect |
@@ -137,7 +136,6 @@ Sensitive collections live in **`EncryptedStore`** — Android Keystore-backed `
 | `/heatmap` | `HeatmapScreen` | 13-week activity heatmap |
 | `/slip-support` | `SlipSupportScreen` | Urge surfing and slip support flow |
 | `/urge-timer` | `UrgeTimerScreen` | "Ride the Wave" — auto-starting 10-min urge countdown with breathing visual; every ride (full or ended early via "I'm steady now") records an `UrgeRide` win. Reachable while locked (LockGate allowlist) and targeted by the SOS widget |
-| `/supporter` | `SupporterScreen` | Tip jar (v6.1) — three consumable "coffee" Play Billing products (`supporter_coffee_small/_medium/_large`, must be created in Play Console). Degrades to a kind "not available" card if the store/products are missing. Nothing unlocks — tips are thank-yous only |
 
 ### Utility Screens
 

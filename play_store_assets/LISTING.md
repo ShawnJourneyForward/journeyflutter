@@ -69,8 +69,7 @@ PRIVATE BY ARCHITECTURE
 • No analytics, no trackers, no ads. We can't see your data. Nobody can.
 
 Journey Forward is built by one person in recovery's corner, and it's
-free forever. If it helps you, there's a small tip jar — but every
-feature is already yours.
+free forever. Every feature is already yours.
 
 One day at a time. Onward.
 
@@ -90,7 +89,7 @@ crisis, contact your local emergency number.
 • Dark mode
 • Backup reminders at milestones so your streak is never lost
 • South African crisis lines, expanded
-• Optional tip jar — the app stays free forever
+• Free forever — no ads, no account, no paywall
 ```
 
 ---
@@ -102,24 +101,13 @@ crisis, contact your local emergency number.
 | Category | Health & Fitness (app) |
 | Tags | Self-care, Habit tracking |
 | Health apps declaration | "Mental and behavioural health" → app includes self-help/wellness content; in-app disclaimer is shown on first launch (safety modal) |
-| Data safety | No data collected, no data shared. (All data on-device; optional user-initiated backup export is user-controlled sharing.) Note: with Play Billing, payment is processed by Google Play, not the app — still "no data collected" by the app itself. |
+| Data safety | No data collected, no data shared. (All data on-device; optional user-initiated backup export is user-controlled sharing.) |
 | Ads | No ads |
+| In-app purchases | None |
 | Content rating questionnaire | Reference to alcohol/tobacco/drugs in a recovery/health context — answer truthfully; typically lands Teen/Mature 17+ depending on questionnaire branch |
 | Target audience | 18+ |
+| Privacy policy URL | https://journeyforward.app/ |
 | Login credentials for review | None needed (no account) |
-
-## In-app products to create (Monetize → Products → In-app products)
-
-| Product ID | Type | Suggested price (ZAR) | Name |
-|---|---|---|---|
-| `supporter_coffee_small` | Consumable (managed product) | R29.99 | A coffee |
-| `supporter_coffee_medium` | Consumable (managed product) | R59.99 | A big coffee |
-| `supporter_coffee_large` | Consumable (managed product) | R119.99 | Coffee for the week |
-
-The app hides the tip jar gracefully until these exist and the app is
-published to at least an internal testing track (Play Billing does not
-work on local/sideloaded builds — "isn't available right now" is expected
-when testing the APK directly).
 
 ## Asset inventory
 
