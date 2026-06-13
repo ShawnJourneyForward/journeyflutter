@@ -1714,7 +1714,7 @@ class _MeditationTabState extends State<_MeditationTab>
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: selected ? AppColors.forest50 : Colors.white,
+                      color: selected ? AppColors.forest50 : AppColors.card,
                       borderRadius: AppRadius.lg,
                       border: Border.all(
                         color:
@@ -2158,7 +2158,7 @@ class _HaltTabState extends State<_HaltTab> {
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: checked ? AppColors.honey50 : Colors.white,
+                          color: checked ? AppColors.honey50 : AppColors.card,
                           borderRadius: AppRadius.lg,
                           border: Border.all(
                             color: checked

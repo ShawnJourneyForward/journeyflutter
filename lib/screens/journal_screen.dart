@@ -1695,7 +1695,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
         maxHeight: MediaQuery.sizeOf(context).height * 0.90,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: AppRadius.xl,
       ),
       child: Column(
@@ -2552,7 +2552,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottom),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.card,
           borderRadius: AppRadius.xl,
         ),
         child: Column(
@@ -2701,7 +2701,7 @@ class _CustomAffirmRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: AppRadius.md,
         border: Border.all(color: AppColors.stone100),
       ),

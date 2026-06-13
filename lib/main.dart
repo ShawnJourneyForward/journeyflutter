@@ -39,7 +39,6 @@ import 'screens/heatmap_screen.dart';
 import 'screens/pre_craving_plan_screen.dart';
 import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
-import 'screens/supporter_screen.dart';
 import 'screens/urge_timer_screen.dart';
 import 'screens/weekly_care_summary_screen.dart';
 
@@ -552,10 +551,6 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/privacy',
         builder: (_, __) => const PrivacyScreen(),
-      ),
-      GoRoute(
-        path: '/supporter',
-        builder: (_, __) => const SupporterScreen(),
       ),
       GoRoute(
         path: '/future-letter',

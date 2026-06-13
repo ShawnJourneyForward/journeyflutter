@@ -301,6 +301,34 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
+  // ─── Swipe-to-delete confirmation ───────────────────────────────────────────
+
+  Future<bool> _showDeleteConfirm(BuildContext context) async {
+    H.medium();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text('Delete entry?', style: AppTextStyles.titleMedium),
+        content: Text('This cannot be undone.', style: AppTextStyles.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel',
+                style: AppTextStyles.labelLarge.copyWith(color: AppColors.stone600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Delete',
+                style: AppTextStyles.labelLarge.copyWith(color: AppColors.blush500)),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
+  }
+
   // ─── Filter chip row ─────────────────────────────────────────────────────────
 
   Widget _buildFilterChips({
@@ -1418,17 +1446,122 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                       card = _buildGratitudeCard(
                                           entry.data as GratitudeEntry);
                                     case _EntryType.craving:
-                                      card = _buildCravingCard(
-                                          entry.data as CravingEntry);
+                                      final cravingEntry =
+                                          entry.data as CravingEntry;
+                                      card = Dismissible(
+                                        key: Key('craving_${cravingEntry.id}'),
+                                        direction: DismissDirection.endToStart,
+                                        background: Container(
+                                          alignment: Alignment.centerRight,
+                                          padding:
+                                              const EdgeInsets.only(right: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.blush50,
+                                            borderRadius: AppRadius.xl,
+                                          ),
+                                          child: Icon(
+                                              Icons.delete_outline_rounded,
+                                              color: AppColors.blush500,
+                                              size: 20),
+                                        ),
+                                        confirmDismiss: (_) =>
+                                            _showDeleteConfirm(context),
+                                        onDismissed: (_) {
+                                          H.medium();
+                                          ref
+                                              .read(cravingProvider.notifier)
+                                              .delete(cravingEntry.id);
+                                        },
+                                        child: _buildCravingCard(cravingEntry),
+                                      );
                                     case _EntryType.thought:
-                                      card = _buildThoughtCard(
-                                          entry.data as ThoughtEntry);
+                                      final thoughtEntry =
+                                          entry.data as ThoughtEntry;
+                                      card = Dismissible(
+                                        key: Key('thought_${thoughtEntry.id}'),
+                                        direction: DismissDirection.endToStart,
+                                        background: Container(
+                                          alignment: Alignment.centerRight,
+                                          padding:
+                                              const EdgeInsets.only(right: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.blush50,
+                                            borderRadius: AppRadius.xl,
+                                          ),
+                                          child: Icon(
+                                              Icons.delete_outline_rounded,
+                                              color: AppColors.blush500,
+                                              size: 20),
+                                        ),
+                                        confirmDismiss: (_) =>
+                                            _showDeleteConfirm(context),
+                                        onDismissed: (_) {
+                                          H.medium();
+                                          ref
+                                              .read(thoughtProvider.notifier)
+                                              .delete(thoughtEntry.id);
+                                        },
+                                        child: _buildThoughtCard(thoughtEntry),
+                                      );
                                     case _EntryType.exercise:
-                                      card = _buildActivityCard(
-                                          entry.data as ActivityEntry);
+                                      final activityEntry =
+                                          entry.data as ActivityEntry;
+                                      card = Dismissible(
+                                        key: Key('activity_${activityEntry.id}'),
+                                        direction: DismissDirection.endToStart,
+                                        background: Container(
+                                          alignment: Alignment.centerRight,
+                                          padding:
+                                              const EdgeInsets.only(right: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.blush50,
+                                            borderRadius: AppRadius.xl,
+                                          ),
+                                          child: Icon(
+                                              Icons.delete_outline_rounded,
+                                              color: AppColors.blush500,
+                                              size: 20),
+                                        ),
+                                        confirmDismiss: (_) =>
+                                            _showDeleteConfirm(context),
+                                        onDismissed: (_) {
+                                          H.medium();
+                                          ref
+                                              .read(activityProvider.notifier)
+                                              .delete(activityEntry.id);
+                                        },
+                                        child:
+                                            _buildActivityCard(activityEntry),
+                                      );
                                     case _EntryType.sleep:
-                                      card = _buildSleepCard(
-                                          entry.data as SleepEntry);
+                                      final sleepEntry =
+                                          entry.data as SleepEntry;
+                                      card = Dismissible(
+                                        key: Key('sleep_${sleepEntry.id}'),
+                                        direction: DismissDirection.endToStart,
+                                        background: Container(
+                                          alignment: Alignment.centerRight,
+                                          padding:
+                                              const EdgeInsets.only(right: 20),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.blush50,
+                                            borderRadius: AppRadius.xl,
+                                          ),
+                                          child: Icon(
+                                              Icons.delete_outline_rounded,
+                                              color: AppColors.blush500,
+                                              size: 20),
+                                        ),
+                                        confirmDismiss: (_) =>
+                                            _showDeleteConfirm(context),
+                                        onDismissed: (_) {
+                                          H.medium();
+                                          ref
+                                              .read(sleepProvider.notifier)
+                                              .delete(sleepEntry.id);
+                                        },
+                                        child: _buildSleepCard(sleepEntry),
+                                      );
                                     case _EntryType.slip:
                                       card = _buildSlipCard(entry.data as Slip);
                                   }

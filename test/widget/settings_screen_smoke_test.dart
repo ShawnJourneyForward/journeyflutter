@@ -52,6 +52,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(versionTapTarget, findsOneWidget);
-    expect(find.text('Version 5.8.0'), findsOneWidget);
+    expect(find.text('Version 6.1.0'), findsOneWidget);
   });
 }

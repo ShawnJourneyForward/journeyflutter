@@ -52,7 +52,7 @@ List<T> _safeParseList<T>(
 /// Parse a stored ISO-8601 date string with a safe fallback so a single bad
 /// value does not throw out of a `fromJson` factory.
 DateTime _safeParseDate(String? raw) =>
-    raw == null ? DateTime.now() : (DateTime.tryParse(raw) ?? DateTime.now());
+    raw == null ? DateTime(2000) : (DateTime.tryParse(raw) ?? DateTime(2000));
 
 /// Nullable variant: returns null for null/invalid input instead of `now()`.
 /// Used for genuinely optional date fields (e.g. vision target date).
@@ -340,9 +340,13 @@ class GratitudeNotifier extends AsyncNotifier<String?> {
         ? (jsonDecode(raw) as List<dynamic>).cast<Map<String, dynamic>>()
         : <Map<String, dynamic>>[];
 
+    // Upsert: remove any existing entry for today before adding the new one
+    // so calling add() twice on the same day replaces rather than duplicates.
+    final today = _today();
+    list.removeWhere((m) => m['date'] == today);
     list.add({
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'date': _today(),
+      'date': today,
       'text': text,
     });
     await EncryptedStore.write(_key, jsonEncode(list));
@@ -629,6 +633,8 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[JournalNotifier] write error: $e');
       });
 
   /// Edit an existing entry. Stamps `editedAt` so the UI can show that a
@@ -661,6 +667,8 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[JournalNotifier] write error: $e');
       });
 
   /// Flip the locked flag without touching `editedAt` — locking isn't an
@@ -677,6 +685,8 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[JournalNotifier] write error: $e');
       });
 
   Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
@@ -687,6 +697,8 @@ class JournalNotifier extends AsyncNotifier<List<JournalEntry>> {
           jsonEncode(updated.map((e) => e.toJson()).toList()),
         );
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[JournalNotifier] write error: $e');
       });
 }
 
@@ -1383,6 +1395,18 @@ class CravingNotifier extends AsyncNotifier<List<CravingEntry>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[CravingNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.where((e) => e.id != id).toList();
+        await EncryptedStore.write(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[CravingNotifier] write error: $e');
       });
 }
 
@@ -1475,6 +1499,8 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[IntentionNotifier] write error: $e');
       });
 
   /// Stamp the evening review on today's intention.
@@ -1498,6 +1524,8 @@ class IntentionNotifier extends AsyncNotifier<List<DailyIntention>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[IntentionNotifier] write error: $e');
       });
 }
 
@@ -1627,6 +1655,8 @@ class RecoveryCapitalNotifier extends AsyncNotifier<List<RecoveryCapitalWeek>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[RecoveryCapitalNotifier] write error: $e');
       });
 }
 
@@ -1733,6 +1763,18 @@ class ThoughtNotifier extends AsyncNotifier<List<ThoughtEntry>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[ThoughtNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.where((e) => e.id != id).toList();
+        await EncryptedStore.write(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[ThoughtNotifier] write error: $e');
       });
 }
 
@@ -1825,6 +1867,18 @@ class ActivityNotifier extends AsyncNotifier<List<ActivityEntry>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[ActivityNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.where((e) => e.id != id).toList();
+        await EncryptedStore.write(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[ActivityNotifier] write error: $e');
       });
 }
 
@@ -1905,6 +1959,18 @@ class SleepNotifier extends AsyncNotifier<List<SleepEntry>> {
         await EncryptedStore.write(
             _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
         state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[SleepNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.where((e) => e.id != id).toList();
+        await EncryptedStore.write(
+            _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+        state = AsyncData(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[SleepNotifier] write error: $e');
       });
 }
 

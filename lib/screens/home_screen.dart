@@ -377,6 +377,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _editingPledge = false;
   bool _editingGratitude = false;
 
+  // Per-session caches: quote and missions are deterministic for a given day,
+  // so there is no need to re-allocate their backing lists on every build.
+  String? _cachedQuote;
+  List<String>? _cachedMissions;
+
   // Fires at local midnight to clear today's saved state from the screen.
   Timer? _midnightTimer;
 
@@ -486,7 +491,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final todayGratitude = ref.watch(gratitudeProvider).valueOrNull;
     final goalToggles = ref.watch(weeklyGoalTogglesProvider);
     final missionToggles = ref.watch(missionTogglesProvider);
-    final missions = _dailyMissions(l10n);
+    final missions = _cachedMissions ??= _dailyMissions(l10n);
 
     return profileAsync.when(
       loading: () => Scaffold(
@@ -612,7 +617,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           RepaintBoundary(
-            child: _TodaysReminderCard(quote: _dailyQuote(l10n)),
+            child: _TodaysReminderCard(quote: _cachedQuote ??= _dailyQuote(l10n)),
           ),
           RepaintBoundary(
             child: _RecoveryBanner(

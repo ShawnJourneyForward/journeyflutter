@@ -55,7 +55,6 @@ dependencies:
   # ── Utilities ─────────────────────────────────────────────────────────────────
   url_launcher: ^6.3.1            # crisis lines call buttons, recovery group links
   intl: ^0.20.2                   # date formatting, en-ZA locale for ZAR amounts
-  in_app_purchase: ^3.2.3
 
 dev_dependencies:
   flutter_test:

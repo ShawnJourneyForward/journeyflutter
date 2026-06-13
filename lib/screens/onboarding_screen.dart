@@ -849,7 +849,7 @@ class _DateStepState extends State<_DateStep> {
         colorScheme: ColorScheme.light(
           primary: AppColors.forest600,
           onPrimary: Colors.white,
-          surface: Colors.white,
+          surface: AppColors.card,
           onSurface: AppColors.stone800,
         ),
       );
@@ -911,7 +911,7 @@ class _DateStepState extends State<_DateStep> {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 borderRadius: AppRadius.xl,
                 border: Border.all(color: AppColors.stone100),
                 boxShadow: AppShadows.card,
@@ -958,7 +958,7 @@ class _DateStepState extends State<_DateStep> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 borderRadius: AppRadius.xl,
                 border: Border.all(color: AppColors.stone100),
                 boxShadow: AppShadows.card,
@@ -1687,7 +1687,7 @@ class _TimePicker extends StatelessWidget {
               colorScheme: ColorScheme.light(
                   primary: AppColors.forest600,
                   onPrimary: Colors.white,
-                  surface: Colors.white,
+                  surface: AppColors.card,
                   onSurface: AppColors.stone800),
             ),
             child: child!,

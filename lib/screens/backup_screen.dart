@@ -111,7 +111,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       // Stamp the backup date (plain pref — not sensitive) so the home
       // screen's milestone-time nudge knows the streak is protected.
       if (shareResult.status != ShareResultStatus.dismissed) {
-        final prefs = await SharedPreferences.getInstance();
+        final prefs = await ref.read(prefsProvider.future);
         await prefs.setString(
             'last_backup_date', DateTime.now().toIso8601String());
       }
@@ -316,7 +316,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       }
 
       final data = parsed['data'] as Map<String, dynamic>;
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await ref.read(prefsProvider.future);
 
       // ── Transactional restore ───────────────────────────────────────────
       // Trust matters more than throughput on this path. If any single

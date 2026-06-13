@@ -337,7 +337,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   // ── Lock method ───────────────────────────────────────────────────────────
 
   Future<void> _setLockNone(UserProfile p) async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.read(prefsProvider.future);
     await prefs.setString('lockMethod', 'none');
     // Delete both the modern (v2 salted) and legacy unsalted PIN hashes.
     await _storage.delete(key: PinHash.storageKey);
@@ -366,7 +366,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
       );
       if (!authenticated) return;
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await ref.read(prefsProvider.future);
       await prefs.setString('lockMethod', 'biometric');
       await _storage.delete(key: PinHash.storageKey);
       await _storage.delete(key: PinHash.legacyKey);
@@ -397,7 +397,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // This is what makes a 4-digit PIN's hash impractical to brute-force
     // even if the secure-storage blob ever leaks.
     await PinHash.writeNew(_storage, pin);
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.read(prefsProvider.future);
     await prefs.setString('lockMethod', 'pin');
     await ref
         .read(profileProvider.notifier)
@@ -417,7 +417,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _editNotifications() async {
     H.light();
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.read(prefsProvider.future);
     TimeOfDay parseTime(String s) {
       final parts = s.split(':');
       return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
@@ -1083,7 +1083,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Version 5.8.0',
+                      'Version 6.1.0',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.stone400,
                       ),
@@ -2063,14 +2063,6 @@ class _MoreCard extends ConsumerWidget {
                 icon: Icons.privacy_tip_outlined,
                 label: l10n.settingsPrivacyLabel,
                 onTap: () => context.push('/privacy'),
-                borderBottom: true,
-              ),
-              _SettingsRow(
-                icon: Icons.coffee_outlined,
-                iconColor: AppColors.honey600,
-                label: 'Support Journey Forward',
-                value: 'Free forever — tips welcome, never required',
-                onTap: () => context.push('/supporter'),
               ),
             ],
           ),
@@ -2204,7 +2196,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                           decoration: BoxDecoration(
                             color: _notificationsEnabled!
                                 ? AppColors.forest50
-                                : const Color(0xFFFFEDED),
+                                : AppColors.blush50,
                             borderRadius: AppRadius.sm,
                           ),
                           child: Icon(
@@ -2214,7 +2206,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                             size: 18,
                             color: _notificationsEnabled!
                                 ? AppColors.forest700
-                                : const Color(0xFFB91C1C),
+                                : AppColors.blush700,
                           ),
                         ),
                         const SizedBox(width: 14),

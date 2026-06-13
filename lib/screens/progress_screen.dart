@@ -178,10 +178,6 @@ class _StreakTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    // Watch the per-second provider so the live D:H:M:S counter ticks in
-    // sync with the home screen. The outer `stats` (from soberDaysProvider)
-    // is fine for milestone math which only changes at midnight.
-    final liveStats = ref.watch(soberStatsProvider) ?? stats;
     final milestoneLabels = {
       1: l10n.progressMilestoneLabel1,
       2: l10n.progressMilestoneLabel2,
@@ -225,19 +221,10 @@ class _StreakTab extends ConsumerWidget {
                     style: AppTextStyles.labelSmall.copyWith(
                         color: AppColors.forest600, letterSpacing: 1.0)),
                 const SizedBox(height: 8),
-                // D : H : M : S — ticks every second from soberStatsProvider
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _CounterUnit(value: liveStats?.days ?? 0, label: 'DAYS'),
-                    _Colon(),
-                    _CounterUnit(value: liveStats?.hours ?? 0, label: 'HRS'),
-                    _Colon(),
-                    _CounterUnit(value: liveStats?.minutes ?? 0, label: 'MIN'),
-                    _Colon(),
-                    _CounterUnit(value: liveStats?.seconds ?? 0, label: 'SEC'),
-                  ],
-                ),
+                // D : H : M : S — ticks every second from soberStatsProvider.
+                // Isolated in _LiveDHMSRow so only those digits rebuild each
+                // second, not the entire _StreakTab tree.
+                RepaintBoundary(child: _LiveDHMSRow(fallback: stats)),
               ],
             ),
           ),
@@ -540,6 +527,33 @@ class _HealingTimelineCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Live D:H:M:S counter ──────────────────────────────────────────────────
+// Isolated ConsumerWidget so only these digits rebuild every second.
+// The parent _StreakTab stays static; milestone math uses the slower
+// soberDaysProvider (midnight cadence) passed down as [fallback].
+
+class _LiveDHMSRow extends ConsumerWidget {
+  const _LiveDHMSRow({required this.fallback});
+  final SoberStats? fallback;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final liveStats = ref.watch(soberStatsProvider) ?? fallback;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _CounterUnit(value: liveStats?.days ?? 0, label: 'DAYS'),
+        _Colon(),
+        _CounterUnit(value: liveStats?.hours ?? 0, label: 'HRS'),
+        _Colon(),
+        _CounterUnit(value: liveStats?.minutes ?? 0, label: 'MIN'),
+        _Colon(),
+        _CounterUnit(value: liveStats?.seconds ?? 0, label: 'SEC'),
+      ],
     );
   }
 }

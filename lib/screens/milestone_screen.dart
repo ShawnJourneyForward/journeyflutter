@@ -409,28 +409,6 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
             else
               const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // ── Quiet supporter line — the one moment a tip ask feels right:
-            // right after the app helped mark a milestone. Text-only, easy to
-            // ignore, never blocks anything.
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
-                child: Center(
-                  child: TextButton.icon(
-                    onPressed: () => context.push('/supporter'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.stone400,
-                    ),
-                    icon: const Icon(Icons.coffee_outlined, size: 15),
-                    label: Text(
-                      'Free forever. If it\'s helping, you can buy me a coffee.',
-                      style: AppTextStyles.caption
-                          .copyWith(color: AppColors.stone400),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
