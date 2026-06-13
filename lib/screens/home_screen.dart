@@ -371,6 +371,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isFirstLaunch = false;
   bool _milestonesChecked = false;
   bool _safetyModalChecked = false;
+  bool _plantPrecached = false;
   bool _redirectingToOnboarding = false;
 
   // Edit-override flags: let user tap a saved card to re-enter input mode.
@@ -543,6 +544,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               .addPostFrameCallback((_) => _maybeShowSafetyModal());
         }
 
+        // Pre-decode the hero plant at display size so the first scroll/paint
+        // isn't blocked on an image decode. ResizeImage form + width match the
+        // on-screen decode in _BlendedPlant so the cache key is identical.
+        if (!_plantPrecached) {
+          _plantPrecached = true;
+          final plantAsset = PlantLogic.getPlantAssetForElapsed(
+              stats?.elapsed ?? Duration.zero);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            precacheImage(
+              ResizeImage(AssetImage(plantAsset),
+                  width: _plantCacheWidth(context)),
+              context,
+            );
+          });
+        }
+
         final pledgedToday = profile.lastPledgeDate == _today();
 
         // Build the card list once so the SliverList delegate can index it.
@@ -632,8 +650,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           body: SafeArea(
             child: CustomScrollView(
               physics: const ClampingScrollPhysics(),
-              // Generous cache so the hero card stays warm when scrolled past.
-              cacheExtent: 800,
+              // Generous cache so the 470px hero + the cards just past it stay
+              // warm on short flicks/reversals — avoids re-rasterizing the
+              // hero and ~12 card shadows every time they re-enter view.
+              cacheExtent: 1400,
               slivers: [
                 // Header pins in its own sliver so the avatar tap target is
                 // always cheap to hit-test and the header never participates
@@ -1059,6 +1079,15 @@ class _TimeSoberLabel extends StatelessWidget {
 // to the previous ShaderMask, but it avoids the saveLayer a ShaderMask
 // forces — that saveLayer was the biggest raster cost on the home screen
 // when the hero card rasterized mid-scroll.
+/// Decode width for the hero plant. The plant displays inside the arch at
+/// roughly 320 logical px, so decoding the 720×883 source down to this size
+/// shrinks the GPU texture and the raster-cache entry — the hero's first
+/// raster mid-flick is the single most expensive paint on the home screen.
+/// Shared by the on-screen decode (_BlendedPlant) and the precache in
+/// _HomeScreenState so their image-cache keys match (no double decode).
+int _plantCacheWidth(BuildContext context) =>
+    (320 * MediaQuery.devicePixelRatioOf(context)).round();
+
 class _BlendedPlant extends StatelessWidget {
   const _BlendedPlant({required this.asset, required this.label});
   final String asset;
@@ -1074,6 +1103,7 @@ class _BlendedPlant extends StatelessWidget {
           asset,
           fit: BoxFit.contain,
           semanticLabel: label,
+          cacheWidth: _plantCacheWidth(context),
         ),
         Positioned.fill(
           child: IgnorePointer(
