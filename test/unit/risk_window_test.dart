@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:journey_forward/providers/app_providers.dart';
 import 'package:journey_forward/utils/craving_insights.dart';
-import 'package:journey_forward/utils/journey_types.dart';
 
 CravingEntry _at(int hour, [int day = 1]) => CravingEntry(
       id: 'c$day-$hour-${DateTime(2026, 1, day, hour).millisecondsSinceEpoch}',
@@ -54,28 +53,6 @@ void main() {
       expect(w, isNotNull);
       expect(w!.startHour, 23);
       expect(w.label, '11 PM–2 AM');
-    });
-  });
-
-  group('journeyTypeFor', () {
-    test('resolves known slugs', () {
-      expect(journeyTypeFor('alcohol').slug, 'alcohol');
-      expect(journeyTypeFor('gambling').slug, 'gambling');
-    });
-
-    test('falls back to other for unknown/empty/null', () {
-      expect(journeyTypeFor('').slug, 'other');
-      expect(journeyTypeFor(null).slug, 'other');
-      expect(journeyTypeFor('floomp').slug, 'other');
-    });
-
-    test('every type has an ascending, non-empty benefit timeline', () {
-      for (final t in kJourneyTypes) {
-        expect(t.benefits, isNotEmpty, reason: t.slug);
-        final days = t.benefits.map((b) => b.day).toList();
-        final sorted = [...days]..sort();
-        expect(days, sorted, reason: '${t.slug} timeline must be ascending');
-      }
     });
   });
 }

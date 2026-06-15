@@ -19,6 +19,14 @@ import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 
+/// True while the Home list is actively scrolling (drag or fling-settle). The
+/// live seconds counter (_LiveCounter) watches this and stops subscribing to
+/// the per-second soberStatsProvider while it's true, so its once-a-second
+/// rebuild can never land on a scroll frame — the cause of the slow-drag
+/// jitter. Flipped exactly once at scroll start and once at scroll end (never
+/// per frame), so the flag itself costs nothing.
+final _homeScrollingProvider = StateProvider<bool>((ref) => false);
+
 // ─── Daily quotes (indexed by day-of-year mod pool size) ─────────────────────
 
 List<String> _buildQuotes(AppLocalizations l10n) => [
@@ -648,7 +656,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Scaffold(
           backgroundColor: AppColors.stone50,
           body: SafeArea(
-            child: CustomScrollView(
+            // Freeze the live counter while the list is actively scrolling so
+            // its once-a-second rebuild can't land on a scroll frame (the
+            // slow-drag jitter). One flag flip at scroll start, one at scroll
+            // end — nothing happens per frame.
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (n) {
+                if (n is ScrollStartNotification) {
+                  ref.read(_homeScrollingProvider.notifier).state = true;
+                } else if (n is ScrollEndNotification) {
+                  ref.read(_homeScrollingProvider.notifier).state = false;
+                }
+                return false;
+              },
+              child: CustomScrollView(
               physics: const ClampingScrollPhysics(),
               // Generous cache so the 470px hero + the cards just past it stay
               // warm on short flicks/reversals — avoids re-rasterizing the
@@ -690,6 +711,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ],
+            ),
             ),
           ),
         );
@@ -978,8 +1000,6 @@ class _SerenityCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const _TimeSoberLabel(),
-                  const SizedBox(height: 10),
                   const _LiveCounter(),
                 ],
               ),
@@ -1040,9 +1060,12 @@ class _HeroCardHeader extends StatelessWidget {
   }
 }
 
-// ─── "TIME SOBER" caption with leaf flourishes ──────────────────────────────
+// ─── "TIME SOBER" / "STARTS IN" caption with leaf flourishes ────────────────
+// `countdown` is true while the user's quit date is still in the future — the
+// counter below it then shows time remaining instead of time elapsed.
 class _TimeSoberLabel extends StatelessWidget {
-  const _TimeSoberLabel();
+  const _TimeSoberLabel({required this.countdown});
+  final bool countdown;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -1053,7 +1076,7 @@ class _TimeSoberLabel extends StatelessWidget {
         Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
         const SizedBox(width: 8),
         Text(
-          'TIME SOBER',
+          countdown ? 'STARTS IN' : 'TIME SOBER',
           style: AppTextStyles.overline.copyWith(
             color: AppColors.stone500,
             letterSpacing: 2.4,
@@ -1396,41 +1419,59 @@ class _LiveCounter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(soberStatsProvider);
-    final days = stats?.days ?? 0;
-    final hours = stats?.hours ?? 0;
-    final minutes = stats?.minutes ?? 0;
-    final seconds = stats?.seconds ?? 0;
+    // Tick only when this counter is on the active tab (TickerMode is false for
+    // an off-stage IndexedStack branch) AND the Home list isn't mid-scroll.
+    // When paused, read the last value without subscribing — no rebuild fires
+    // until we're visible and still again.
+    final live = TickerMode.of(context) && !ref.watch(_homeScrollingProvider);
+    final stats =
+        live ? ref.watch(soberStatsProvider) : ref.read(soberStatsProvider);
+    // Before the quit date arrives we count DOWN to day one; after, we count
+    // UP. The label flips with us — both are rendered here so the flip lands on
+    // the same per-second frame as the digits (and pauses together on scroll).
+    final countdown = stats?.isCountdown ?? false;
+    final days = countdown ? (stats?.untilDays ?? 0) : (stats?.days ?? 0);
+    final hours = countdown ? (stats?.untilHours ?? 0) : (stats?.hours ?? 0);
+    final minutes =
+        countdown ? (stats?.untilMinutes ?? 0) : (stats?.minutes ?? 0);
+    final seconds =
+        countdown ? (stats?.untilSeconds ?? 0) : (stats?.seconds ?? 0);
 
     return RepaintBoundary(
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: _CounterTile(
-              value: '$days',
-              label: days == 1 ? 'DAY' : 'DAYS',
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _CounterTile(
-              value: '$hours',
-              label: hours == 1 ? 'HOUR' : 'HOURS',
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _CounterTile(
-              value: '$minutes',
-              label: minutes == 1 ? 'MINUTE' : 'MINUTES',
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _CounterTile(
-              value: '$seconds',
-              label: seconds == 1 ? 'SECOND' : 'SECONDS',
-            ),
+          _TimeSoberLabel(countdown: countdown),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _CounterTile(
+                  value: '$days',
+                  label: days == 1 ? 'DAY' : 'DAYS',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CounterTile(
+                  value: '$hours',
+                  label: hours == 1 ? 'HOUR' : 'HOURS',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CounterTile(
+                  value: '$minutes',
+                  label: minutes == 1 ? 'MINUTE' : 'MINUTES',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CounterTile(
+                  value: '$seconds',
+                  label: seconds == 1 ? 'SECOND' : 'SECONDS',
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -26,10 +26,10 @@ companion that never asks for an account, never shows an ad, never sells
 your data, and never puts your streak behind a paywall. Everything works
 offline, everything stays on your phone, and everything is free. Forever.
 
-WHATEVER YOU'RE STEPPING AWAY FROM
-Alcohol, smoking, vaping, cannabis, gambling, pornography — or your own
-journey. Pick yours and the app speaks to it, including a healing timeline
-of what your body and mind are doing right now: day 3, day 14, day 90.
+START WHEN YOU'RE READY
+Already sober? Your clock starts the day you chose. Not there yet? Set a
+future quit date and watch the countdown to day one — a commitment you can
+see every time you open the app.
 
 WHEN AN URGE HITS
 • Ride the Wave — a 10-minute urge timer with a breathing visual. Urges
@@ -79,13 +79,12 @@ speak to a doctor before stopping — withdrawal can be dangerous. In a
 crisis, contact your local emergency number.
 ```
 
-## Release notes — v6.1 (500 chars max)
+## Release notes — v6.2 (500 chars max)
 
 ```
-• Pick your journey: alcohol, smoking, vaping, cannabis, gambling and more
-• Your healing timeline — what your body is doing right now, day by day
-• Your tender hours — see when cravings cluster and plan for them
+• New: set a future quit date and count down to day one
 • Ride the Wave urge timer + SOS home-screen widget
+• Your tender hours — see when cravings cluster and plan for them
 • Dark mode
 • Backup reminders at milestones so your streak is never lost
 • South African crisis lines, expanded

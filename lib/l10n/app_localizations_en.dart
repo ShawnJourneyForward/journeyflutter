@@ -192,10 +192,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onbDateSub =>
-      'If you\'re starting today, leave it as today. You can change this anytime.';
+      'Already started? Pick that day. Planning ahead? Choose a future date and we\'ll count down to it. You can change this anytime.';
 
   @override
-  String get onbDatePickerHelp => 'When did you get sober?';
+  String get onbDatePickerHelp => 'Choose your start date';
 
   @override
   String get onbSoberSince => 'Sober since';

@@ -27,14 +27,33 @@ class EncryptedStore {
   static const FlutterSecureStorage _storage =
       FlutterSecureStorage(aOptions: _options, iOptions: _ios);
 
-  /// Read a value (decrypts via Keystore). Returns null if absent.
+  /// Read a value (decrypts via Keystore). Returns null only if the key is
+  /// genuinely absent.
+  ///
+  /// CRITICAL for data safety: a *transient* Keystore / EncryptedSharedPreferences
+  /// failure (notably right after an APK replace, when the Android Keystore can
+  /// be briefly unavailable) must NOT be mistaken for "no data". If a collection
+  /// loaded empty on a transient read error, the user's next add/edit would
+  /// persist that empty list and silently wipe their history. So we retry with a
+  /// short backoff to let the transient window self-heal before concluding the
+  /// key is absent. (An absent key returns null WITHOUT throwing, so this adds
+  /// zero delay to the happy path or to genuinely-missing keys.)
   static Future<String?> read(String key) async {
-    try {
-      return await _storage.read(key: key);
-    } catch (e) {
-      debugPrint('[EncryptedStore] read($key) failed: $e');
-      return null;
+    Object? lastError;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await _storage.read(key: key);
+      } catch (e) {
+        lastError = e;
+        debugPrint(
+            '[EncryptedStore] read($key) attempt ${attempt + 1} failed: $e');
+        if (attempt < 2) {
+          await Future.delayed(Duration(milliseconds: 120 * (attempt + 1)));
+        }
+      }
     }
+    debugPrint('[EncryptedStore] read($key) gave up after retries: $lastError');
+    return null;
   }
 
   /// Write a value (encrypts via Keystore).

@@ -264,16 +264,20 @@ Content that sits on a forest-filled control should use `AppColors.onForest`
 Because tokens are no longer compile-time consts, new code must not reference
 `AppColors`/`AppTextStyles` inside `const` expressions.
 
-### Journey types & healing timeline (v6.1)
+### Future quit date & countdown (v6.2)
 
-Onboarding asks "What are you stepping away from?" (optional, tap-to-deselect;
-changeable later via Settings → Journey focus). The choice is stored as
-`UserProfile.journeyType` — a `kJourneyTypes` slug from
-`lib/utils/journey_types.dart` (alcohol, smoking, vaping, cannabis, gambling,
-pornography, other) — and drives the per-type **healing timeline card** on the
-Progress → Journey tab. Unknown/empty slugs fall back to the generic 'other'
-timeline, so pre-v6.1 profiles need no migration. Timeline copy is gentle
-("many people"), with an explicit "patterns, not promises" footer.
+`soberDate` may be set to a future day — the onboarding date step and
+Settings → your sober date both allow dates up to a year out. While
+`now < soberDate`, `SoberStats.compute` sets `isCountdown` and exposes
+`untilStart` (plus `untilDays/Hours/Minutes/Seconds`); the count-up fields
+stay clamped to 0 so every other consumer (plant, milestones, savings)
+behaves as if sobriety hasn't started — because it hasn't. The home counter
+(`_LiveCounter`) renders the remaining time and flips its caption to
+"STARTS IN". The moment `now >= soberDate` the flag clears and the normal
+sober count-up takes over with no migration or write needed.
+
+This is a sobriety app: there is no addiction-type selector. (The v6.1
+"journey types" / per-type healing timeline was removed in v6.2.)
 
 ### Risk windows (v6.1)
 

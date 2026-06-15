@@ -21,10 +21,6 @@ class UserProfile {
   final List<String> cons;
   final String lockMethod; // 'none' | 'biometric' | 'pin'
   final bool hapticsEnabled;
-  // What the user is stepping away from — a kJourneyTypes slug ('alcohol',
-  // 'smoking', ...). Empty string = chosen before v6.1 / prefers not to say;
-  // journeyTypeFor() falls back to the generic 'other' timeline.
-  final String journeyType;
   final List<int> firedMilestoneDays;
   final List<double> firedSavingsTiers;
   // Pre-craving plan: 3 short steps the user has pre-committed to running
@@ -60,7 +56,6 @@ class UserProfile {
     this.cons = const [],
     this.lockMethod = 'none',
     this.hapticsEnabled = true,
-    this.journeyType = '',
     this.firedMilestoneDays = const [],
     this.firedSavingsTiers = const [],
     this.preCravingPlan = const [],
@@ -79,41 +74,43 @@ class UserProfile {
         pledgeStreak: j['pledgeStreak'] as int? ?? 0,
         lastPledgeDate: j['lastPledgeDate'] as String? ?? '',
         lastPledgeText: j['lastPledgeText'] as String?,
-        emergencyContact: j['emergencyContact'] != null
+        // Defensive parsing: never let one mistyped element throw out of
+        // fromJson and orphan the WHOLE profile (which would drop the user to
+        // onboarding with their streak "gone" until a code fix). `whereType`
+        // silently skips wrong-typed elements; numbers are coerced. This is the
+        // same robustness the collection lists already have via _safeParseList.
+        emergencyContact: j['emergencyContact'] is Map
             ? EmergencyContact.fromJson(
-                j['emergencyContact'] as Map<String, dynamic>)
+                (j['emergencyContact'] as Map).cast<String, dynamic>())
             : null,
         savingsGoal: (j['savingsGoal'] as num?)?.toDouble(),
         savingsGoalName: j['savingsGoalName'] as String?,
-        weeklyGoals: (j['weeklyGoals'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList() ??
-            [],
-        myReasons: (j['myReasons'] as List<dynamic>?)
-                ?.map((e) => e as String)
-                .toList() ??
-            [],
-        pros: (j['pros'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-            [],
-        cons: (j['cons'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-            [],
+        weeklyGoals:
+            (j['weeklyGoals'] as List<dynamic>?)?.whereType<String>().toList() ??
+                [],
+        myReasons:
+            (j['myReasons'] as List<dynamic>?)?.whereType<String>().toList() ??
+                [],
+        pros: (j['pros'] as List<dynamic>?)?.whereType<String>().toList() ?? [],
+        cons: (j['cons'] as List<dynamic>?)?.whereType<String>().toList() ?? [],
         lockMethod: j['lockMethod'] as String? ?? 'none',
         hapticsEnabled: j['hapticsEnabled'] as bool? ?? true,
-        journeyType: j['journeyType'] as String? ?? '',
         firedMilestoneDays: (j['firedMilestoneDays'] as List<dynamic>?)
-                ?.map((e) => e as int)
+                ?.whereType<num>()
+                .map((e) => e.toInt())
                 .toList() ??
             [],
         firedSavingsTiers: (j['firedSavingsTiers'] as List<dynamic>?)
-                ?.map((e) => (e as num).toDouble())
+                ?.whereType<num>()
+                .map((e) => e.toDouble())
                 .toList() ??
             [],
         preCravingPlan: (j['preCravingPlan'] as List<dynamic>?)
-                ?.map((e) => e as String)
+                ?.whereType<String>()
                 .toList() ??
             const [],
         preCravingLinks: (j['preCravingLinks'] as List<dynamic>?)
-                ?.map((e) => e as String)
+                ?.whereType<String>()
                 .toList() ??
             const [],
         highContrast: (j['highContrast'] as bool?) ?? false,
@@ -139,7 +136,6 @@ class UserProfile {
         'cons': cons,
         'lockMethod': lockMethod,
         'hapticsEnabled': hapticsEnabled,
-        'journeyType': journeyType,
         'firedMilestoneDays': firedMilestoneDays,
         'firedSavingsTiers': firedSavingsTiers,
         'preCravingPlan': preCravingPlan,
@@ -168,7 +164,6 @@ class UserProfile {
     List<String>? cons,
     String? lockMethod,
     bool? hapticsEnabled,
-    String? journeyType,
     List<int>? firedMilestoneDays,
     List<double>? firedSavingsTiers,
     List<String>? preCravingPlan,
@@ -201,7 +196,6 @@ class UserProfile {
         cons: cons ?? this.cons,
         lockMethod: lockMethod ?? this.lockMethod,
         hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
-        journeyType: journeyType ?? this.journeyType,
         firedMilestoneDays: firedMilestoneDays ?? this.firedMilestoneDays,
         firedSavingsTiers: firedSavingsTiers ?? this.firedSavingsTiers,
         preCravingPlan: preCravingPlan ?? this.preCravingPlan,
@@ -216,8 +210,10 @@ class EmergencyContact {
   final String phone;
   const EmergencyContact({required this.name, required this.phone});
 
-  factory EmergencyContact.fromJson(Map<String, dynamic> j) =>
-      EmergencyContact(name: j['name'] as String, phone: j['phone'] as String);
+  factory EmergencyContact.fromJson(Map<String, dynamic> j) => EmergencyContact(
+        name: j['name'] as String? ?? '',
+        phone: j['phone'] as String? ?? '',
+      );
 
   Map<String, dynamic> toJson() => {'name': name, 'phone': phone};
 }
@@ -234,6 +230,22 @@ class SoberStats {
   final double moneySaved;
   final Duration elapsed;
 
+  // ── Future quit-date countdown ──────────────────────────────────────────────
+  // When the user picks a quit date that hasn't arrived yet, soberDate is in the
+  // future. In that window `isCountdown` is true and `untilStart` is the time
+  // remaining until day one. The count-up fields above stay clamped to 0 so
+  // every existing consumer (plant, milestones, savings…) keeps behaving as if
+  // sobriety hasn't started — because it hasn't. Only the home counter opts in
+  // to displaying the countdown. The moment now >= soberDate the flag flips off
+  // and the normal count-up takes over with no migration or write needed.
+  final bool isCountdown;
+  final Duration untilStart;
+
+  int get untilDays => untilStart.inDays;
+  int get untilHours => untilStart.inHours.remainder(24);
+  int get untilMinutes => untilStart.inMinutes.remainder(60);
+  int get untilSeconds => untilStart.inSeconds.remainder(60);
+
   const SoberStats({
     required this.days,
     required this.hours,
@@ -243,13 +255,19 @@ class SoberStats {
     required this.breaths,
     required this.moneySaved,
     required this.elapsed,
+    this.isCountdown = false,
+    this.untilStart = Duration.zero,
   });
 
   static SoberStats compute(UserProfile profile, DateTime now) {
     final soberDate = DateTime.tryParse(profile.soberDate) ?? now;
     final elapsed = now.difference(soberDate);
+    final isCountdown = elapsed.isNegative;
+    final untilStart = isCountdown ? soberDate.difference(now) : Duration.zero;
     final total = elapsed.inSeconds.clamp(0, 999999999);
     return SoberStats(
+      isCountdown: isCountdown,
+      untilStart: untilStart,
       days: elapsed.inDays.clamp(0, 99999),
       hours: elapsed.inHours.remainder(24).clamp(0, 23),
       minutes: elapsed.inMinutes.remainder(60).clamp(0, 59),

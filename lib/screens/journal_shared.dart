@@ -598,7 +598,13 @@ class JournalReauth {
   JournalReauth._();
 
   static final _auth = LocalAuthentication();
-  static const _storage = FlutterSecureStorage();
+  // MUST match the options the PIN hash is WRITTEN with (onboarding / lock /
+  // settings all use encryptedSharedPreferences:true). On Android the two
+  // backends are separate stores, so a bare FlutterSecureStorage() here would
+  // read null and silently treat the user as "no PIN set" for per-entry unlock.
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   /// One-shot re-auth. Caller passes [context] so we can show the PIN dialog
   /// fallback ourselves; no callback hell required.

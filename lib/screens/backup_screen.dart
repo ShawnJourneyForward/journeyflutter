@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
@@ -329,10 +328,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       //   2. Stage the incoming writes in memory (sanitised profile etc.).
       //   3. Apply all writes. If any throws, restore every key from the
       //      snapshot and surface the error — no data loss.
-      //   4. Only after every write has succeeded, delete the keys that
-      //      were present pre-restore but absent from the backup. This
-      //      gives the user the "true replace" semantics they expect
-      //      without risking the half-restored failure mode.
+      //   Restore is ADDITIVE: keys absent from the backup are left untouched,
+      //   so restoring an older or partial export can never erase data the
+      //   backup simply didn't contain (e.g. collections added in a later app
+      //   version). A restore can only add or update — never delete.
 
       // 1. Snapshot
       final snapshot = <String, String?>{};
@@ -399,15 +398,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         return;
       }
 
-      // 4. All writes succeeded — now apply true-replace semantics by
-      // deleting keys that existed before but weren't in the backup. Safe
-      // to do last: if this step somehow fails, the user still has the
-      // restored data plus a few stale extras (not a loss).
-      final restoredKeys = writes.keys.toSet();
-      for (final key in _exportKeys) {
-        if (restoredKeys.contains(key)) continue;
-        await EncryptedStore.delete(key);
-      }
+      // Restore is additive (see header note): we deliberately do NOT delete
+      // keys that exist on-device but are missing from the backup. Restoring an
+      // older/partial backup must never silently erase newer data. A restore
+      // overwrites what the backup contains and leaves everything else intact.
 
       // Remove any legacy plaintext data and stale lockMethod from prefs.
       await prefs.remove('profile');

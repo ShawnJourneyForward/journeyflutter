@@ -425,13 +425,13 @@ abstract class AppLocalizations {
   /// No description provided for @onbDateSub.
   ///
   /// In en, this message translates to:
-  /// **'If you\'re starting today, leave it as today. You can change this anytime.'**
+  /// **'Already started? Pick that day. Planning ahead? Choose a future date and we\'ll count down to it. You can change this anytime.'**
   String get onbDateSub;
 
   /// No description provided for @onbDatePickerHelp.
   ///
   /// In en, this message translates to:
-  /// **'When did you get sober?'**
+  /// **'Choose your start date'**
   String get onbDatePickerHelp;
 
   /// No description provided for @onbSoberSince.
