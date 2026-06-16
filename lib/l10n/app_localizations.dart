@@ -5491,6 +5491,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ride the wave — most urges pass in minutes'**
   String get toolkitUrgeCardSubtitle;
+
+  /// Settings row label and dialog title for choosing the app language
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// Language picker option: follow the device's language setting
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settingsLanguageSystem;
 }
 
 class _AppLocalizationsDelegate

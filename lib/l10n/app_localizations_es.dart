@@ -3002,4 +3002,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get toolkitUrgeCardSubtitle =>
       'Ride the wave — most urges pass in minutes';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageSystem => 'System default';
 }

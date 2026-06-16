@@ -9,6 +9,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'l10n/app_localizations.dart';
+import 'l10n/app_locales.dart';
 import 'providers/app_providers.dart';
 import 'theme/app_theme.dart';
 import 'utils/haptic_service.dart';
@@ -147,6 +148,7 @@ void main() async {
         prefs.getString('profile') != null;
     lockMethod = prefs.getString('lockMethod') ?? 'none';
     initialThemeModeRaw = prefs.getString(ThemeModeNotifier.prefsKey);
+    initialLocaleRaw = prefs.getString(LocaleNotifier.prefsKey);
   } catch (e) {
     // If prefs are unreadable we fall through to onboarding rather than
     // blanking. _prefsCache stays null; the router redirect handles that.
@@ -347,11 +349,13 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // Only English is shipped as a real translation. The other .arb files
-      // (af/es/pt/zu) currently mirror English verbatim — exposing them would
-      // mislead users who pick their language and get English back. Restore
-      // here once a locale has a genuine translation pass.
-      supportedLocales: const [Locale('en')],
+      // Language is driven by lib/l10n/app_locales.dart (kSupportedLanguages),
+      // so the picker and the framework can never drift apart. `locale` null =
+      // follow the device; the Settings → Language picker overrides it. To add
+      // a language: drop a translated app_<code>.arb in lib/l10n, run
+      // `flutter gen-l10n`, and add one entry to kSupportedLanguages.
+      locale: ref.watch(localeProvider),
+      supportedLocales: kSupportedLocales,
       routerConfig: _router,
     );
   }

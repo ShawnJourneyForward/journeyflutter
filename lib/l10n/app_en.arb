@@ -1,9 +1,7 @@
 {
   "@@locale": "en",
-
   "appTitle": "Journey Forward",
-  "@appTitle": { "description": "Application name" },
-
+  "@appTitle": {"description": "Application name"},
   "navHome": "Home",
   "@navHome": {},
   "navProgress": "Progress",
@@ -14,7 +12,6 @@
   "@navJournal": {},
   "navProfile": "Profile",
   "@navProfile": {},
-
   "commonSave": "Save",
   "@commonSave": {},
   "commonCancel": "Cancel",
@@ -32,18 +29,11 @@
   "commonCopied": "Copied to clipboard",
   "@commonCopied": {},
   "commonDays": "{count, plural, =1{1 day} other{{count} days}}",
-  "@commonDays": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@commonDays": {"placeholders": {"count": {"type": "int"}}},
   "commonMinutes": "{count} minutes",
-  "@commonMinutes": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@commonMinutes": {"placeholders": {"count": {"type": "int"}}},
   "commonMin": "{count} min",
-  "@commonMin": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-
+  "@commonMin": {"placeholders": {"count": {"type": "int"}}},
   "lockAppName": "Journey Forward",
   "@lockAppName": {},
   "lockAuthenticateSubtitle": "Authenticate to continue",
@@ -72,14 +62,8 @@
   "@lockAuthFailed": {},
   "lockNotEnrolled": "No biometrics enrolled. Use your device PIN.",
   "@lockNotEnrolled": {},
-
   "onbStepIndicator": "Step {step} of {total}",
-  "@onbStepIndicator": {
-    "placeholders": {
-      "step": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
+  "@onbStepIndicator": {"placeholders": {"step": {"type": "int"}, "total": {"type": "int"}}},
   "onbContinue": "Continue",
   "@onbContinue": {},
   "onbBeginMyJourney": "Begin my journey",
@@ -129,9 +113,7 @@
   "onbSoberSince": "Sober since",
   "@onbSoberSince": {},
   "onbDaysOfCourage": "{count} days of courage",
-  "@onbDaysOfCourage": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@onbDaysOfCourage": {"placeholders": {"count": {"type": "int"}}},
   "onbDaysOfCourageLabel": "days of courage",
   "@onbDaysOfCourageLabel": {},
   "onbSpendHeadline": "What did\nalcohol cost you?",
@@ -141,12 +123,7 @@
   "onbSpendAmountHint": "Amount per day",
   "@onbSpendAmountHint": {},
   "onbSpendSavingsPreview": "In 30 days you'd save {currency}{amount}",
-  "@onbSpendSavingsPreview": {
-    "placeholders": {
-      "currency": { "type": "String" },
-      "amount": { "type": "String" }
-    }
-  },
+  "@onbSpendSavingsPreview": {"placeholders": {"currency": {"type": "String"}, "amount": {"type": "String"}}},
   "onbSpendSkipNote": "You can always add this later in your profile settings.",
   "@onbSpendSkipNote": {},
   "onbSecurityHeadline": "Protect\nyour space.",
@@ -204,40 +181,25 @@
   "onbNotifChangeAnytime": "You can change these anytime in Settings.",
   "@onbNotifChangeAnytime": {},
   "onbFinishReadyWithName": "You're ready, {name}! 🌿",
-  "@onbFinishReadyWithName": {
-    "placeholders": { "name": { "type": "String" } }
-  },
+  "@onbFinishReadyWithName": {"placeholders": {"name": {"type": "String"}}},
   "onbFinishReady": "You're ready! 🌿",
   "@onbFinishReady": {},
   "onbFinishBodyDays": "You've already been on this journey for {days, plural, =1{1 day} other{{days} days}}. Every single one matters.",
-  "@onbFinishBodyDays": {
-    "placeholders": { "days": { "type": "int" } }
-  },
+  "@onbFinishBodyDays": {"placeholders": {"days": {"type": "int"}}},
   "onbFinishBodyToday": "Your journey starts right now. You've got this.",
   "@onbFinishBodyToday": {},
   "onbFinishPrivacyNote": "Your journey lives only on this device — private, secure, and completely yours.",
   "@onbFinishPrivacyNote": {},
-
   "homeFriendFallback": "friend",
   "@homeFriendFallback": {},
   "homeGreetingFirst": "Hi {name},",
-  "@homeGreetingFirst": {
-    "placeholders": {
-      "name": {"type": "String"}
-    }
-  },
+  "@homeGreetingFirst": {"placeholders": {"name": {"type": "String"}}},
   "homeGreetingReturning": "Welcome back, {name}.",
-  "@homeGreetingReturning": {
-    "placeholders": {
-      "name": {"type": "String"}
-    }
-  },
+  "@homeGreetingReturning": {"placeholders": {"name": {"type": "String"}}},
   "homeTagline": "Every day forward is a win.",
   "@homeTagline": {},
   "homeErrorPrefix": "Error: {message}",
-  "@homeErrorPrefix": {
-    "placeholders": { "message": { "type": "String" } }
-  },
+  "@homeErrorPrefix": {"placeholders": {"message": {"type": "String"}}},
   "homeDaysSober": "DAYS SOBER",
   "@homeDaysSober": {},
   "homeDaysLabel": "days",
@@ -251,18 +213,9 @@
   "homeMoneyInvesting": "You're investing in\nyour future self.",
   "@homeMoneyInvesting": {},
   "homeMoneyGoalSavedOf": "{saved} saved of {goal} goal",
-  "@homeMoneyGoalSavedOf": {
-    "placeholders": {
-      "saved": { "type": "String" },
-      "goal": { "type": "String" }
-    }
-  },
+  "@homeMoneyGoalSavedOf": {"placeholders": {"saved": {"type": "String"}, "goal": {"type": "String"}}},
   "homeMoneyGoalPercent": "{percent}% complete",
-  "@homeMoneyGoalPercent": {
-    "placeholders": {
-      "percent": { "type": "int" }
-    }
-  },
+  "@homeMoneyGoalPercent": {"placeholders": {"percent": {"type": "int"}}},
   "homeMoneyGoalClear": "Clear goal",
   "@homeMoneyGoalClear": {},
   "homeMyReasonTitle": "My Reason",
@@ -292,9 +245,7 @@
   "homePledgeHint": "e.g., Today I choose clarity.",
   "@homePledgeHint": {},
   "homePledgeCalmDays": "{count} calm days kept",
-  "@homePledgeCalmDays": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@homePledgeCalmDays": {"placeholders": {"count": {"type": "int"}}},
   "homeDailyGratitude": "DAILY GRATITUDE",
   "@homeDailyGratitude": {},
   "homeGratitudeHint": "e.g., I'm grateful for\nanother fresh start.",
@@ -308,12 +259,7 @@
   "homeMissionsSubtitle": "Small acts of care for today.",
   "@homeMissionsSubtitle": {},
   "homeMissionsProgress": "{done} of {total} complete",
-  "@homeMissionsProgress": {
-    "placeholders": {
-      "done": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
+  "@homeMissionsProgress": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
   "homeDailyCheckIn": "DAILY CHECK-IN",
   "@homeDailyCheckIn": {},
   "homeCheckInCraving": "Craving",
@@ -357,17 +303,13 @@
   "homeCravingIntensityLabel": "Intensity",
   "@homeCravingIntensityLabel": {},
   "homeCravingIntensityValue": "{value} / 10",
-  "@homeCravingIntensityValue": {
-    "placeholders": { "value": { "type": "int" } }
-  },
+  "@homeCravingIntensityValue": {"placeholders": {"value": {"type": "int"}}},
   "homeCravingTriggerQuestion": "What triggered it?",
   "@homeCravingTriggerQuestion": {},
   "homeCravingDurationQuestion": "How long did it last?",
   "@homeCravingDurationQuestion": {},
   "homeCravingDurationValue": "{minutes} minutes",
-  "@homeCravingDurationValue": {
-    "placeholders": { "minutes": { "type": "int" } }
-  },
+  "@homeCravingDurationValue": {"placeholders": {"minutes": {"type": "int"}}},
   "homeCravingNotesHint": "Notes (optional) - e.g., passed a bar on the way home.",
   "@homeCravingNotesHint": {},
   "homeSaveCraving": "Save craving",
@@ -413,9 +355,7 @@
   "homeActivityDurationLabel": "Duration",
   "@homeActivityDurationLabel": {},
   "homeActivityDurationValue": "{minutes} min",
-  "@homeActivityDurationValue": {
-    "placeholders": { "minutes": { "type": "int" } }
-  },
+  "@homeActivityDurationValue": {"placeholders": {"minutes": {"type": "int"}}},
   "homeActivityNotesHint": "Notes (optional) - e.g., walked after dinner and felt steadier.",
   "@homeActivityNotesHint": {},
   "homeSaveActivity": "Save activity",
@@ -427,9 +367,7 @@
   "homeSleepHoursLabel": "Hours slept",
   "@homeSleepHoursLabel": {},
   "homeSleepHoursValue": "{hours} hrs",
-  "@homeSleepHoursValue": {
-    "placeholders": { "hours": { "type": "String" } }
-  },
+  "@homeSleepHoursValue": {"placeholders": {"hours": {"type": "String"}}},
   "homeSleepQualityLabel": "Sleep quality",
   "@homeSleepQualityLabel": {},
   "homeSleepFactorsQuestion": "What affected your sleep?",
@@ -512,7 +450,6 @@
   "@homeToneNeutral": {},
   "homeTonePositive": "Positive",
   "@homeTonePositive": {},
-
   "homeQuote0": "Every sober day is an act of love for your future self.",
   "@homeQuote0": {},
   "homeQuote1": "You do not have to feel ready. You only have to begin.",
@@ -613,7 +550,6 @@
   "@homeQuote48": {},
   "homeQuote49": "Keep going. Every step still counts.",
   "@homeQuote49": {},
-
   "homeMission0": "Drink a full glass of water slowly.",
   "@homeMission0": {},
   "homeMission1": "Take a 10-minute walk outside.",
@@ -734,7 +670,6 @@
   "@homeMission58": {},
   "homeMission59": "Remind yourself: small steps still count.",
   "@homeMission59": {},
-
   "journalTitle": "My Journal",
   "@journalTitle": {},
   "journalTabJournal": "Journal",
@@ -745,7 +680,6 @@
   "@journalTabVision": {},
   "journalTabZen": "Zen",
   "@journalTabZen": {},
-
   "journalAffirm0": "I am worthy of love and belonging.",
   "@journalAffirm0": {},
   "journalAffirm1": "I choose recovery every single day.",
@@ -776,7 +710,6 @@
   "@journalAffirm13": {},
   "journalAffirm14": "I am becoming the person I want to be.",
   "@journalAffirm14": {},
-
   "zenQuote0": "The present moment is the only time over which we have dominion.",
   "@zenQuote0": {},
   "zenQuoteAuthor0": "Thich Nhat Hanh",
@@ -897,13 +830,10 @@
   "@zenQuote29": {},
   "zenQuoteAuthor29": "Anonymous",
   "@zenQuoteAuthor29": {},
-
   "progressTitle": "Progress",
   "@progressTitle": {},
   "progressDaysChip": "{days} days",
-  "@progressDaysChip": {
-    "placeholders": { "days": { "type": "int" } }
-  },
+  "@progressDaysChip": {"placeholders": {"days": {"type": "int"}}},
   "progressTabJourney": "Journey",
   "@progressTabJourney": {},
   "progressTabInsights": "Insights",
@@ -940,12 +870,10 @@
   "@progressMilestoneLabel730": {},
   "progressMilestoneLabel1095": "Three Years",
   "@progressMilestoneLabel1095": {},
-
   "insightsTitle": "Insights",
   "@insightsTitle": {},
   "insights7DayView": "7-day view",
   "@insights7DayView": {},
-
   "milestoneScreenTitle": "Milestones",
   "@milestoneScreenTitle": {},
   "milestoneOneDay": "One Day",
@@ -1002,7 +930,6 @@
   "@milestoneOneYearShort": {},
   "milestoneOneYearBenefit": "One year. This is a profound milestone. Many people describe genuine, lasting changes in how they feel and how they relate to themselves. The cumulative gains of a year without alcohol are real — and they are yours.",
   "@milestoneOneYearBenefit": {},
-
   "recoveryTitle": "The Healing Timeline",
   "@recoveryTitle": {},
   "recoverySubtitle": "How your mind and body are restoring themselves",
@@ -1010,17 +937,9 @@
   "recoveryHeroLabel": "YOUR BODY TODAY",
   "@recoveryHeroLabel": {},
   "recoveryDaysSober": "{days, plural, =1{1 day sober} other{{days} days sober}}",
-  "@recoveryDaysSober": {
-    "placeholders": { "days": { "type": "int" } }
-  },
+  "@recoveryDaysSober": {"placeholders": {"days": {"type": "int"}}},
   "recoveryMilestonesReached": "{achieved} of {total} milestones reached",
-  "@recoveryMilestonesReached": {
-    "placeholders": {
-      "achieved": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
-
+  "@recoveryMilestonesReached": {"placeholders": {"achieved": {"type": "int"}, "total": {"type": "int"}}},
   "recoveryM1Label": "12 Hours",
   "@recoveryM1Label": {},
   "recoveryM1Title": "The Reset Begins",
@@ -1109,7 +1028,6 @@
   "@recoveryM11Body": {},
   "recoveryM11System": "Whole Body Renewal",
   "@recoveryM11System": {},
-
   "emergencyHomeTitle": "Calm Toolkit",
   "@emergencyHomeTitle": {},
   "emergencyHomeSubtitle": "What do you need right now?",
@@ -1130,7 +1048,6 @@
   "@emergencyPlayTapeTitle": {},
   "emergencyMindfulnessTitle": "Mindfulness",
   "@emergencyMindfulnessTitle": {},
-
   "breathPatternBoxName": "Box",
   "@breathPatternBoxName": {},
   "breathPatternBoxDesc": "Equal sides — focus and calm",
@@ -1191,7 +1108,6 @@
   "@breathPatternNightName": {},
   "breathPatternNightDesc": "Pre-sleep wind-down",
   "@breathPatternNightDesc": {},
-
   "breathPhaseInhale": "Inhale",
   "@breathPhaseInhale": {},
   "breathPhaseHold": "Hold",
@@ -1199,10 +1115,7 @@
   "breathPhaseExhale": "Exhale",
   "@breathPhaseExhale": {},
   "breathCycleCount": "{count} cycles",
-  "@breathCycleCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-
+  "@breathCycleCount": {"placeholders": {"count": {"type": "int"}}},
   "cbtGuide0Title": "Challenge the Thought",
   "@cbtGuide0Title": {},
   "cbtGuide0Step0": "Write down the thought that's troubling you.",
@@ -1265,7 +1178,6 @@
   "@cbtGuide4Step3": {},
   "cbtGuide4Step4": "Act from that identity for the next hour.",
   "@cbtGuide4Step4": {},
-
   "haltH": "H",
   "@haltH": {},
   "haltHungry": "Hungry",
@@ -1290,7 +1202,6 @@
   "@haltTired": {},
   "haltTiredAdvice": "Rest before responding. Exhaustion lowers your defenses.",
   "@haltTiredAdvice": {},
-
   "mindful0Title": "5-4-3-2-1",
   "@mindful0Title": {},
   "mindful0Desc": "5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste.",
@@ -1315,7 +1226,6 @@
   "@mindful5Title": {},
   "mindful5Desc": "Press your feet into the floor. Feel the weight of your body. You are here. You are safe.",
   "@mindful5Desc": {},
-
   "crisisTitle": "Crisis Lines",
   "@crisisTitle": {},
   "crisisTooltipBack": "Back",
@@ -1337,9 +1247,7 @@
   "crisisTooltipCopy": "Copy",
   "@crisisTooltipCopy": {},
   "crisisLinesCount": "{count, plural, =1{1 line} other{{count} lines}}",
-  "@crisisLinesCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@crisisLinesCount": {"placeholders": {"count": {"type": "int"}}},
   "crisisWithdrawal0": "Seizures or convulsions",
   "@crisisWithdrawal0": {},
   "crisisWithdrawal1": "Hallucinations (seeing or hearing things)",
@@ -1354,7 +1262,6 @@
   "@crisisWithdrawal5": {},
   "crisisWithdrawal6": "Extreme sweating or clamminess",
   "@crisisWithdrawal6": {},
-
   "settingsTitle": "Profile",
   "@settingsTitle": {},
   "settingsYourName": "Your name",
@@ -1403,7 +1310,6 @@
   "@settingsEmergencyContactLabel": {},
   "settingsChangePinLabel": "Change PIN",
   "@settingsChangePinLabel": {},
-
   "groupsTitle": "Support Groups",
   "@groupsTitle": {},
   "groupsSubtitle": "You don't have to do this alone",
@@ -1412,7 +1318,6 @@
   "@groupsIntroNote": {},
   "groupsVisitWebsite": "Visit website",
   "@groupsVisitWebsite": {},
-
   "groupAaName": "Alcoholics Anonymous",
   "@groupAaName": {},
   "groupAaTagline": "AA",
@@ -1443,7 +1348,6 @@
   "@groupNaApproach": {},
   "groupNaRegions": "Worldwide",
   "@groupNaRegions": {},
-
   "historyTitle": "History",
   "@historyTitle": {},
   "historyToday": "Today",
@@ -1482,7 +1386,6 @@
   "@historyMoodHard": {},
   "historyMoodCrisis": "Crisis",
   "@historyMoodCrisis": {},
-
   "puzzleTitle": "Calm Activities",
   "@puzzleTitle": {},
   "puzzleActivity0Label": "Slow Count",
@@ -1515,13 +1418,10 @@
   "@puzzleActivity4Desc": {},
   "puzzleActivity4Duration": "1 min",
   "@puzzleActivity4Duration": {},
-
   "cbtScreenTitle": "Thought Reframe",
   "@cbtScreenTitle": {},
   "cbtStepIndicator": "Step {step} of 4",
-  "@cbtStepIndicator": {
-    "placeholders": { "step": { "type": "int" } }
-  },
+  "@cbtStepIndicator": {"placeholders": {"step": {"type": "int"}}},
   "cbtStep0Title": "What's the thought?",
   "@cbtStep0Title": {},
   "cbtStep0Subtitle": "Write the automatic thought exactly as it appeared — raw, unfiltered. Don't judge it yet.",
@@ -1608,7 +1508,6 @@
   "@cbtNextButton": {},
   "cbtReviewButton": "Review",
   "@cbtReviewButton": {},
-
   "heatmapTitle": "Activity Heatmap",
   "@heatmapTitle": {},
   "heatmapSubtitle": "13 weeks of your recovery journey",
@@ -1616,12 +1515,7 @@
   "heatmapActiveDaysLabel": "ACTIVE DAYS",
   "@heatmapActiveDaysLabel": {},
   "heatmapActiveDaysCount": "{active} of {total} days",
-  "@heatmapActiveDaysCount": {
-    "placeholders": {
-      "active": { "type": "int" },
-      "total": { "type": "int" }
-    }
-  },
+  "@heatmapActiveDaysCount": {"placeholders": {"active": {"type": "int"}, "total": {"type": "int"}}},
   "heatmapWhatCountsLabel": "WHAT COUNTS",
   "@heatmapWhatCountsLabel": {},
   "heatmapCategoryJournal": "Journal",
@@ -1635,24 +1529,11 @@
   "heatmapNothingLogged": "Nothing was logged this day.",
   "@heatmapNothingLogged": {},
   "heatmapIntensityFormat": "Intensity {intensity}/10",
-  "@heatmapIntensityFormat": {
-    "placeholders": { "intensity": { "type": "int" } }
-  },
+  "@heatmapIntensityFormat": {"placeholders": {"intensity": {"type": "int"}}},
   "heatmapActivityFormat": "{activity} · {minutes} min",
-  "@heatmapActivityFormat": {
-    "placeholders": {
-      "activity": { "type": "String" },
-      "minutes": { "type": "int" }
-    }
-  },
+  "@heatmapActivityFormat": {"placeholders": {"activity": {"type": "String"}, "minutes": {"type": "int"}}},
   "heatmapSleepFormat": "{hours}h · quality {quality}/5",
-  "@heatmapSleepFormat": {
-    "placeholders": {
-      "hours": { "type": "String" },
-      "quality": { "type": "int" }
-    }
-  },
-
+  "@heatmapSleepFormat": {"placeholders": {"hours": {"type": "String"}, "quality": {"type": "int"}}},
   "slipSupportTitle": "In this moment",
   "@slipSupportTitle": {},
   "slipSupportTemporary": "This feeling is temporary.",
@@ -1714,9 +1595,7 @@
   "slipSupportIntensityIntense": "Intense",
   "@slipSupportIntensityIntense": {},
   "slipSupportCravingIntensityFormat": "{intensity} / 10",
-  "@slipSupportCravingIntensityFormat": {
-    "placeholders": { "intensity": { "type": "int" } }
-  },
+  "@slipSupportCravingIntensityFormat": {"placeholders": {"intensity": {"type": "int"}}},
   "slipSupportLogCravingButton": "Log craving",
   "@slipSupportLogCravingButton": {},
   "slipSupportCravingLoggedTitle": "Craving logged.",
@@ -1729,7 +1608,6 @@
   "@slipSupportCrisisLinesAvailable": {},
   "slipSupportViewLinesButton": "View lines",
   "@slipSupportViewLinesButton": {},
-
   "slipLogTitle": "Slip Log",
   "@slipLogTitle": {},
   "slipLogSubtitle": "Your journey, without judgment",
@@ -1743,10 +1621,7 @@
   "slipLogNoNote": "No note recorded.",
   "@slipLogNoNote": {},
   "slipLogStreakBadge": "{count, plural, =1{1 day sober} other{{count} days sober}}",
-  "@slipLogStreakBadge": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-
+  "@slipLogStreakBadge": {"placeholders": {"count": {"type": "int"}}},
   "backupTitle": "Backup & Restore",
   "@backupTitle": {},
   "backupExportTitle": "Export backup",
@@ -1791,7 +1666,6 @@
   "@backupRestoreFailed": {},
   "backupRestoredSuccess": "Backup restored. Your app lock has been cleared — set a new PIN in Settings if needed. Restart to apply.",
   "@backupRestoredSuccess": {},
-
   "privacyTitle": "Privacy Policy",
   "@privacyTitle": {},
   "privacyAbsoluteHeadline": "Your privacy is absolute.",
@@ -1834,7 +1708,6 @@
   "@privacyPolicyUpdates": {},
   "privacyPolicyUpdatesBody": "If this privacy policy changes, the update will be included in a new app version. Since we collect no data, changes will only reflect improvements in transparency or new features added to the app.",
   "@privacyPolicyUpdatesBody": {},
-
   "weeklySummaryTitle": "Weekly Care Summary",
   "@weeklySummaryTitle": {},
   "weeklySummarySubtitle": "A private summary to share with someone you trust.",
@@ -1878,18 +1751,13 @@
   "weeklySummaryNoActivity": "No care entries were recorded for this period. A quiet week still counts.",
   "@weeklySummaryNoActivity": {},
   "weeklySummaryCareDays": "You returned to your care practices on {count} {count, plural, =1{day} other{days}} this week.",
-  "@weeklySummaryCareDays": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@weeklySummaryCareDays": {"placeholders": {"count": {"type": "int"}}},
   "weeklySummaryMostUsed": "Most used support: {support}",
-  "@weeklySummaryMostUsed": {
-    "placeholders": { "support": { "type": "String" } }
-  },
+  "@weeklySummaryMostUsed": {"placeholders": {"support": {"type": "String"}}},
   "weeklySummaryQuietWeek": "A quiet week of showing up still counts.",
   "@weeklySummaryQuietWeek": {},
   "weeklySummaryAppName": "Journey Forward",
   "@weeklySummaryAppName": {},
-
   "safetyModalTitle": "Before you begin",
   "@safetyModalTitle": {},
   "safetyModalBody": "Journey Forward is a companion for your recovery — a private place to track, reflect, and find steadying tools. It is not a medical device and does not provide medical advice, diagnosis, or treatment.",
@@ -1902,7 +1770,6 @@
   "@safetyModalCrisisButton": {},
   "safetyModalDismiss": "I understand",
   "@safetyModalDismiss": {},
-
   "urgeTimerTitle": "Ride the Wave",
   "@urgeTimerTitle": {},
   "urgeTimerSubtitle": "Urges feel overwhelming, then they pass — usually within minutes. You don't have to fight this one. Just stay with it.",
@@ -1922,13 +1789,15 @@
   "urgeTimerCompleteBody": "You stayed with it, and it passed. That's exactly how this is done.",
   "@urgeTimerCompleteBody": {},
   "urgeTimerWins": "{count, plural, =1{1 urge outlasted} other{{count} urges outlasted}}",
-  "@urgeTimerWins": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "@urgeTimerWins": {"placeholders": {"count": {"type": "int"}}},
   "urgeTimerDone": "Done",
   "@urgeTimerDone": {},
   "toolkitUrgeCardTitle": "Craving right now?",
   "@toolkitUrgeCardTitle": {},
   "toolkitUrgeCardSubtitle": "Ride the wave — most urges pass in minutes",
-  "@toolkitUrgeCardSubtitle": {}
+  "@toolkitUrgeCardSubtitle": {},
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {"description": "Settings row label and dialog title for choosing the app language"},
+  "settingsLanguageSystem": "System default",
+  "@settingsLanguageSystem": {"description": "Language picker option: follow the device's language setting"}
 }

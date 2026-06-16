@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show ThemeMode;
+import 'package:flutter/material.dart' show ThemeMode, Locale;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -2254,6 +2254,39 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+
+// ─── App language (locale) ────────────────────────────────────────────────────
+
+/// Raw 'app_locale' pref: a language code ('en','af',…) or null = follow the
+/// device language. Read by main() from the cached SharedPreferences before
+/// runApp so the very first frame is already in the right language.
+String? initialLocaleRaw;
+
+class LocaleNotifier extends Notifier<Locale?> {
+  static const prefsKey = 'app_locale';
+
+  /// null/empty → follow the device language (MaterialApp resolves it against
+  /// supportedLocales).
+  static Locale? fromRaw(String? raw) =>
+      (raw == null || raw.isEmpty) ? null : Locale(raw);
+
+  @override
+  Locale? build() => fromRaw(initialLocaleRaw);
+
+  /// Pass null to follow the device language.
+  Future<void> set(Locale? locale) async {
+    state = locale;
+    final prefs = await SharedPreferences.getInstance();
+    if (locale == null) {
+      await prefs.remove(prefsKey);
+    } else {
+      await prefs.setString(prefsKey, locale.languageCode);
+    }
+  }
+}
+
+final localeProvider =
+    NotifierProvider<LocaleNotifier, Locale?>(LocaleNotifier.new);
 
 // ─── CBT thought records (full version) ───────────────────────────────────────
 

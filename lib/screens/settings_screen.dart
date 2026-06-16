@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/app_locales.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
@@ -2276,6 +2277,17 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   onTap: _editAppearance,
                   borderBottom: true,
                 ),
+                // Language row. Hidden until a second language is enabled in
+                // kSupportedLanguages — a one-option picker is pointless. It
+                // lights up automatically the moment a real translation lands.
+                if (kSupportedLanguages.length > 1)
+                  _SettingsRow(
+                    icon: Icons.language_outlined,
+                    label: AppLocalizations.of(context).settingsLanguage,
+                    value: _languageValueLabel(),
+                    onTap: _editLanguage,
+                    borderBottom: true,
+                  ),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -2404,6 +2416,62 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
     if (picked != null) {
       H.selection();
       await ref.read(themeModeProvider.notifier).set(picked);
+    }
+  }
+
+  /// Display value for the Language settings row — the chosen language's
+  /// endonym, or "System default" when following the device.
+  String _languageValueLabel() {
+    final code = ref.watch(localeProvider)?.languageCode;
+    if (code != null) {
+      for (final lang in kSupportedLanguages) {
+        if (lang.locale.languageCode == code) return lang.nativeName;
+      }
+    }
+    return AppLocalizations.of(context).settingsLanguageSystem;
+  }
+
+  Future<void> _editLanguage() async {
+    final l10n = AppLocalizations.of(context);
+    // '' represents "follow the device language" (null locale).
+    final current = ref.read(localeProvider)?.languageCode ?? '';
+    final picked = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text(l10n.settingsLanguage, style: AppTextStyles.titleMedium),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              value: '',
+              groupValue: current,
+              onChanged: (v) => Navigator.pop(ctx, v),
+              title: Text(l10n.settingsLanguageSystem,
+                  style: AppTextStyles.bodyMedium),
+              activeColor: AppColors.forest600,
+              dense: true,
+            ),
+            for (final lang in kSupportedLanguages)
+              RadioListTile<String>(
+                value: lang.locale.languageCode,
+                groupValue: current,
+                onChanged: (v) => Navigator.pop(ctx, v),
+                title: Text(lang.nativeName, style: AppTextStyles.bodyMedium),
+                activeColor: AppColors.forest600,
+                dense: true,
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked != null && picked != current) {
+      H.selection();
+      await ref
+          .read(localeProvider.notifier)
+          .set(picked.isEmpty ? null : Locale(picked));
     }
   }
 }
