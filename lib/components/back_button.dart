@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 
@@ -50,7 +51,7 @@ class LuxuryBackButton extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
       splashRadius: 24,
-      tooltip: tooltip ?? 'Back',
+      tooltip: tooltip ?? AppLocalizations.of(context).commonBack,
       icon: Icon(
         Icons.arrow_back_ios_new_rounded,
         size: 22,

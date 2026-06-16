@@ -3448,4 +3448,72 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get trDistDisqualifyingPositivePrompt =>
       'Why would that achievement count if a friend did it?';
+
+  @override
+  String get commonRead => 'Read';
+
+  @override
+  String get commonPlan => 'Plan';
+
+  @override
+  String get commonUndo => 'Undo';
+
+  @override
+  String get strengthCardTitle => 'Today\'s strength';
+
+  @override
+  String strengthHardDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hard days',
+      one: '1 hard day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get strengthLetterTitle => 'A letter is waiting for you';
+
+  @override
+  String strengthLetterSub(int day) {
+    return 'You sealed it on day $day. Open it.';
+  }
+
+  @override
+  String strengthPatternTitle(String weekday, String time) {
+    return '${weekday}s, $time';
+  }
+
+  @override
+  String strengthPatternSub(int count, int total) {
+    return '$count of your $total cravings cluster here. Plan a ritual.';
+  }
+
+  @override
+  String get strengthHardRecorded => 'Hard day recorded';
+
+  @override
+  String get strengthHardAsk => 'Staying sober on a hard day?';
+
+  @override
+  String get strengthHardRecordedSub =>
+      'Time sober counts the days. This records the hard ones.';
+
+  @override
+  String get strengthHardAskSub =>
+      'Mark it — being present on a hard day is real recovery.';
+
+  @override
+  String get strengthMarkIt => 'Mark it';
+
+  @override
+  String get strengthHardLogged =>
+      'Logged. Staying present on a hard day matters.';
+
+  @override
+  String get strengthWriteFirst => 'Write a letter to future you';
+
+  @override
+  String get strengthWriteAnother => 'Write another letter';
 }

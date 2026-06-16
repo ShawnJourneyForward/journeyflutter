@@ -6217,6 +6217,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Why would that achievement count if a friend did it?'**
   String get trDistDisqualifyingPositivePrompt;
+
+  /// Generic Read action button
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get commonRead;
+
+  /// Generic Plan action button
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get commonPlan;
+
+  /// Generic Undo action button
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get commonUndo;
+
+  /// Home 'Today's strength' card title
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s strength'**
+  String get strengthCardTitle;
+
+  /// Badge: how many hard days have been recorded
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hard day} other{{count} hard days}}'**
+  String strengthHardDays(int count);
+
+  /// Strength card: an unopened future letter is ready
+  ///
+  /// In en, this message translates to:
+  /// **'A letter is waiting for you'**
+  String get strengthLetterTitle;
+
+  /// Strength card subtitle for a ready letter
+  ///
+  /// In en, this message translates to:
+  /// **'You sealed it on day {day}. Open it.'**
+  String strengthLetterSub(int day);
+
+  /// Strength card: detected craving cluster, e.g. 'Mondays, 6-8pm'. {weekday} is a day name, {time} a time range.
+  ///
+  /// In en, this message translates to:
+  /// **'{weekday}s, {time}'**
+  String strengthPatternTitle(String weekday, String time);
+
+  /// Strength card: craving cluster detail
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of your {total} cravings cluster here. Plan a ritual.'**
+  String strengthPatternSub(int count, int total);
+
+  /// Strength card: hard day already marked today
+  ///
+  /// In en, this message translates to:
+  /// **'Hard day recorded'**
+  String get strengthHardRecorded;
+
+  /// Strength card: prompt to mark a hard day
+  ///
+  /// In en, this message translates to:
+  /// **'Staying sober on a hard day?'**
+  String get strengthHardAsk;
+
+  /// Strength card subtitle when a hard day is recorded
+  ///
+  /// In en, this message translates to:
+  /// **'Time sober counts the days. This records the hard ones.'**
+  String get strengthHardRecordedSub;
+
+  /// Strength card subtitle prompting to mark a hard day
+  ///
+  /// In en, this message translates to:
+  /// **'Mark it — being present on a hard day is real recovery.'**
+  String get strengthHardAskSub;
+
+  /// Strength card action: mark today as a hard day
+  ///
+  /// In en, this message translates to:
+  /// **'Mark it'**
+  String get strengthMarkIt;
+
+  /// Snackbar after marking a hard day
+  ///
+  /// In en, this message translates to:
+  /// **'Logged. Staying present on a hard day matters.'**
+  String get strengthHardLogged;
+
+  /// Strength card link: write a first future letter
+  ///
+  /// In en, this message translates to:
+  /// **'Write a letter to future you'**
+  String get strengthWriteFirst;
+
+  /// Strength card link: write another future letter
+  ///
+  /// In en, this message translates to:
+  /// **'Write another letter'**
+  String get strengthWriteAnother;
 }
 
 class _AppLocalizationsDelegate

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -23,6 +24,7 @@ class TodaysStrengthCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final letters = ref.watch(futureLetterProvider).valueOrNull ?? const [];
     final hardDays = ref.watch(hardDayProvider).valueOrNull ?? const [];
     final pattern = ref.watch(cravingPatternProvider);
@@ -48,7 +50,7 @@ class TodaysStrengthCard extends ConsumerWidget {
               Icon(Icons.shield_outlined,
                   size: 18, color: AppColors.forest600),
               const SizedBox(width: 8),
-              Text("Today's strength",
+              Text(l10n.strengthCardTitle,
                   style: AppTextStyles.titleSmall
                       .copyWith(color: AppColors.forest700)),
               const Spacer(),
@@ -60,8 +62,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                     color: AppColors.honey50,
                     borderRadius: AppRadius.pill,
                   ),
-                  child: Text(
-                      '$markedCount hard ${markedCount == 1 ? 'day' : 'days'}',
+                  child: Text(l10n.strengthHardDays(markedCount),
                       style: AppTextStyles.caption
                           .copyWith(color: AppColors.honey600, fontSize: 10)),
                 ),
@@ -73,10 +74,9 @@ class TodaysStrengthCard extends ConsumerWidget {
               icon: Icons.mark_email_unread_outlined,
               colour: AppColors.honey600,
               bg: AppColors.honey50,
-              title: 'A letter is waiting for you',
-              subtitle:
-                  'You sealed it on day ${unopenedReady.first.unlockDay}. Open it.',
-              actionLabel: 'Read',
+              title: l10n.strengthLetterTitle,
+              subtitle: l10n.strengthLetterSub(unopenedReady.first.unlockDay),
+              actionLabel: l10n.commonRead,
               onTap: () => context.push('/future-letter'),
             )
           else if (pattern != null)
@@ -84,10 +84,11 @@ class TodaysStrengthCard extends ConsumerWidget {
               icon: Icons.insights_outlined,
               colour: AppColors.forest700,
               bg: AppColors.forest50,
-              title: '${pattern.weekdayLabel}s, ${pattern.timeLabel}',
-              subtitle:
-                  '${pattern.count} of your ${pattern.totalCravings} cravings cluster here. Plan a ritual.',
-              actionLabel: 'Plan',
+              title: l10n.strengthPatternTitle(
+                  pattern.weekdayLabel, pattern.timeLabel),
+              subtitle: l10n.strengthPatternSub(
+                  pattern.count, pattern.totalCravings),
+              actionLabel: l10n.commonPlan,
               onTap: () => context.push('/pre-craving-plan'),
             )
           else
@@ -98,12 +99,12 @@ class TodaysStrengthCard extends ConsumerWidget {
               colour: markedToday ? AppColors.forest600 : AppColors.honey600,
               bg: markedToday ? AppColors.forest50 : AppColors.honey50,
               title: markedToday
-                  ? 'Hard day recorded'
-                  : 'Staying sober on a hard day?',
+                  ? l10n.strengthHardRecorded
+                  : l10n.strengthHardAsk,
               subtitle: markedToday
-                  ? 'Time sober counts the days. This records the hard ones.'
-                  : 'Mark it — being present on a hard day is real recovery.',
-              actionLabel: markedToday ? 'Undo' : 'Mark it',
+                  ? l10n.strengthHardRecordedSub
+                  : l10n.strengthHardAskSub,
+              actionLabel: markedToday ? l10n.commonUndo : l10n.strengthMarkIt,
               onTap: () async {
                 H.medium();
                 if (markedToday) {
@@ -119,7 +120,7 @@ class TodaysStrengthCard extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                          'Logged. Staying present on a hard day matters.',
+                          l10n.strengthHardLogged,
                           style: AppTextStyles.bodySmall
                               .copyWith(color: Colors.white)),
                       backgroundColor: AppColors.forest600,
@@ -146,8 +147,8 @@ class TodaysStrengthCard extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Text(
                       letters.isEmpty
-                          ? 'Write a letter to future you'
-                          : 'Write another letter',
+                          ? l10n.strengthWriteFirst
+                          : l10n.strengthWriteAnother,
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.stone600),
                     ),
