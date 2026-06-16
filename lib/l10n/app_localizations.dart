@@ -5827,6 +5827,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use day {day}'**
   String letterUseDay(int day);
+
+  /// Generic dismiss/acknowledge button
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get commonGotIt;
+
+  /// Button: start a new CBT thought record
+  ///
+  /// In en, this message translates to:
+  /// **'New record'**
+  String get trNewRecord;
+
+  /// Thought-record screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Thought record'**
+  String get trTitle;
+
+  /// Thought-record screen subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Catch a thought. Spot the distortion. Walk it through evidence. Land on something truer.'**
+  String get trSubtitle;
+
+  /// Confirm dialog: delete a thought record
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this record?'**
+  String get trDeleteTitle;
+
+  /// Empty state title, thought records
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet'**
+  String get trEmptyTitle;
+
+  /// Empty state body, thought records
+  ///
+  /// In en, this message translates to:
+  /// **'When a thought hooks you, walk it through this. Most users find one record changes their whole week.'**
+  String get trEmptyBody;
+
+  /// Empty-state button: start a thought record
+  ///
+  /// In en, this message translates to:
+  /// **'Start a record'**
+  String get trStartRecord;
+
+  /// Mood change badge on a record card; {value} is a signed number like +3 or -2
+  ///
+  /// In en, this message translates to:
+  /// **'{value} mood'**
+  String trMoodDelta(String value);
+
+  /// Record card mini-label
+  ///
+  /// In en, this message translates to:
+  /// **'Situation'**
+  String get trLabelSituation;
+
+  /// Record card mini-label
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic thought'**
+  String get trLabelAutoThought;
+
+  /// Record card mini-label
+  ///
+  /// In en, this message translates to:
+  /// **'Reframe'**
+  String get trLabelReframe;
+
+  /// Validation: automatic thought is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Catch the thought first'**
+  String get trCatchFirst;
+
+  /// Button: save the thought record
+  ///
+  /// In en, this message translates to:
+  /// **'Save record'**
+  String get trSaveRecord;
+
+  /// Thought-record step 1 title
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s the situation?'**
+  String get trStep0Title;
+
+  /// Thought-record step 1 subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Where were you, who with, what was happening?'**
+  String get trStep0Sub;
+
+  /// Thought-record step 1 field hint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Saturday night. Home alone. Old playlist came on.'**
+  String get trStep0Hint;
+
+  /// Thought-record step 2 title
+  ///
+  /// In en, this message translates to:
+  /// **'Catch the thought'**
+  String get trStep1Title;
+
+  /// Thought-record step 2 subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'The exact automatic thought, word-for-word.'**
+  String get trStep1Sub;
+
+  /// Thought-record step 2 field hint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. \"I\'ll never be able to enjoy a weekend sober.\"'**
+  String get trStep1Hint;
+
+  /// Label above the before-mood slider
+  ///
+  /// In en, this message translates to:
+  /// **'Mood right now'**
+  String get trMoodNow;
+
+  /// Label above the after-mood slider
+  ///
+  /// In en, this message translates to:
+  /// **'Mood after writing this'**
+  String get trMoodAfter;
+
+  /// Mood slider value label
+  ///
+  /// In en, this message translates to:
+  /// **'{value} / 10'**
+  String trMoodScale(int value);
+
+  /// Thought-record step 3 title
+  ///
+  /// In en, this message translates to:
+  /// **'Which distortions fit?'**
+  String get trStep2Title;
+
+  /// Thought-record step 3 subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Pick any that ring true — the label takes the sting out.'**
+  String get trStep2Sub;
+
+  /// Label before a reframe prompt in the distortion detail dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Try asking:'**
+  String get trTryAsking;
+
+  /// Thought-record step 4 title
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh the evidence'**
+  String get trStep3Title;
+
+  /// Thought-record step 4 subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Like a courtroom — what supports the thought, what doesn\'t?'**
+  String get trStep3Sub;
+
+  /// Label above the evidence-for field
+  ///
+  /// In en, this message translates to:
+  /// **'For the thought'**
+  String get trEvidenceFor;
+
+  /// Evidence-for field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Facts that suggest the thought is true'**
+  String get trEvidenceForHint;
+
+  /// Label above the evidence-against field
+  ///
+  /// In en, this message translates to:
+  /// **'Against the thought'**
+  String get trEvidenceAgainst;
+
+  /// Evidence-against field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Facts that contradict or soften it'**
+  String get trEvidenceAgainstHint;
+
+  /// Thought-record step 5 title
+  ///
+  /// In en, this message translates to:
+  /// **'Land somewhere truer'**
+  String get trStep4Title;
+
+  /// Thought-record step 5 subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Not \"positive thinking\" — a fairer, more accurate version.'**
+  String get trStep4Sub;
+
+  /// Thought-record step 5 field hint
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. \"This is hard right now. I\'ve had sober Saturdays before. One is coming again.\"'**
+  String get trStep4Hint;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'All-or-nothing'**
+  String get trDistAllOrNothingName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Seeing things in black and white — anything less than perfect is failure.'**
+  String get trDistAllOrNothingDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Where on the spectrum is the truth actually sitting?'**
+  String get trDistAllOrNothingPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Catastrophizing'**
+  String get trDistCatastrophizingName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Expecting the worst possible outcome and treating it as certain.'**
+  String get trDistCatastrophizingDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'What is the most likely outcome, not the worst possible one?'**
+  String get trDistCatastrophizingPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Overgeneralization'**
+  String get trDistOvergeneralizationName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'One bad event becomes a never-ending pattern of defeat.'**
+  String get trDistOvergeneralizationDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Is this really \"always\" / \"never,\" or is it just this once?'**
+  String get trDistOvergeneralizationPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Mind reading'**
+  String get trDistMindReadingName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Assuming you know what others are thinking about you.'**
+  String get trDistMindReadingDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'What evidence do I actually have for that assumption?'**
+  String get trDistMindReadingPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'\"Should\" statements'**
+  String get trDistShouldName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Beating yourself up with \"should,\" \"must,\" \"ought to.\" Drives shame.'**
+  String get trDistShouldDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Replace \"I should\" with \"I would like to\" — does it land softer?'**
+  String get trDistShouldPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional reasoning'**
+  String get trDistEmotionalReasoningName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Believing something is true because it FEELS true.'**
+  String get trDistEmotionalReasoningDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Feelings are data, not verdicts. What do the facts say?'**
+  String get trDistEmotionalReasoningPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Personalization'**
+  String get trDistPersonalizationName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Blaming yourself for things that aren\'t entirely your fault.'**
+  String get trDistPersonalizationDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'What other factors contributed — was this all on me?'**
+  String get trDistPersonalizationPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Mental filter'**
+  String get trDistMentalFilterName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Focusing only on the negative and screening out the positive.'**
+  String get trDistMentalFilterDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'What good has happened today that I\'m discounting?'**
+  String get trDistMentalFilterPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Labeling'**
+  String get trDistLabelingName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Attaching a global label to yourself: \"I\'m a failure,\" \"I\'m broken.\"'**
+  String get trDistLabelingDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Separate the behaviour from the person. What would I tell a friend?'**
+  String get trDistLabelingPrompt;
+
+  /// Cognitive distortion name
+  ///
+  /// In en, this message translates to:
+  /// **'Disqualifying the positive'**
+  String get trDistDisqualifyingPositiveName;
+
+  /// Cognitive distortion description
+  ///
+  /// In en, this message translates to:
+  /// **'Telling yourself good things \"don\'t count.\"'**
+  String get trDistDisqualifyingPositiveDesc;
+
+  /// Cognitive distortion reframe prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Why would that achievement count if a friend did it?'**
+  String get trDistDisqualifyingPositivePrompt;
 }
 
 class _AppLocalizationsDelegate

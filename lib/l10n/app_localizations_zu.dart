@@ -3221,4 +3221,231 @@ class AppLocalizationsZu extends AppLocalizations {
   String letterUseDay(int day) {
     return 'Use day $day';
   }
+
+  @override
+  String get commonGotIt => 'Got it';
+
+  @override
+  String get trNewRecord => 'New record';
+
+  @override
+  String get trTitle => 'Thought record';
+
+  @override
+  String get trSubtitle =>
+      'Catch a thought. Spot the distortion. Walk it through evidence. Land on something truer.';
+
+  @override
+  String get trDeleteTitle => 'Delete this record?';
+
+  @override
+  String get trEmptyTitle => 'No records yet';
+
+  @override
+  String get trEmptyBody =>
+      'When a thought hooks you, walk it through this. Most users find one record changes their whole week.';
+
+  @override
+  String get trStartRecord => 'Start a record';
+
+  @override
+  String trMoodDelta(String value) {
+    return '$value mood';
+  }
+
+  @override
+  String get trLabelSituation => 'Situation';
+
+  @override
+  String get trLabelAutoThought => 'Automatic thought';
+
+  @override
+  String get trLabelReframe => 'Reframe';
+
+  @override
+  String get trCatchFirst => 'Catch the thought first';
+
+  @override
+  String get trSaveRecord => 'Save record';
+
+  @override
+  String get trStep0Title => 'What\'s the situation?';
+
+  @override
+  String get trStep0Sub => 'Where were you, who with, what was happening?';
+
+  @override
+  String get trStep0Hint =>
+      'e.g. Saturday night. Home alone. Old playlist came on.';
+
+  @override
+  String get trStep1Title => 'Catch the thought';
+
+  @override
+  String get trStep1Sub => 'The exact automatic thought, word-for-word.';
+
+  @override
+  String get trStep1Hint =>
+      'e.g. \"I\'ll never be able to enjoy a weekend sober.\"';
+
+  @override
+  String get trMoodNow => 'Mood right now';
+
+  @override
+  String get trMoodAfter => 'Mood after writing this';
+
+  @override
+  String trMoodScale(int value) {
+    return '$value / 10';
+  }
+
+  @override
+  String get trStep2Title => 'Which distortions fit?';
+
+  @override
+  String get trStep2Sub =>
+      'Pick any that ring true — the label takes the sting out.';
+
+  @override
+  String get trTryAsking => 'Try asking:';
+
+  @override
+  String get trStep3Title => 'Weigh the evidence';
+
+  @override
+  String get trStep3Sub =>
+      'Like a courtroom — what supports the thought, what doesn\'t?';
+
+  @override
+  String get trEvidenceFor => 'For the thought';
+
+  @override
+  String get trEvidenceForHint => 'Facts that suggest the thought is true';
+
+  @override
+  String get trEvidenceAgainst => 'Against the thought';
+
+  @override
+  String get trEvidenceAgainstHint => 'Facts that contradict or soften it';
+
+  @override
+  String get trStep4Title => 'Land somewhere truer';
+
+  @override
+  String get trStep4Sub =>
+      'Not \"positive thinking\" — a fairer, more accurate version.';
+
+  @override
+  String get trStep4Hint =>
+      'e.g. \"This is hard right now. I\'ve had sober Saturdays before. One is coming again.\"';
+
+  @override
+  String get trDistAllOrNothingName => 'All-or-nothing';
+
+  @override
+  String get trDistAllOrNothingDesc =>
+      'Seeing things in black and white — anything less than perfect is failure.';
+
+  @override
+  String get trDistAllOrNothingPrompt =>
+      'Where on the spectrum is the truth actually sitting?';
+
+  @override
+  String get trDistCatastrophizingName => 'Catastrophizing';
+
+  @override
+  String get trDistCatastrophizingDesc =>
+      'Expecting the worst possible outcome and treating it as certain.';
+
+  @override
+  String get trDistCatastrophizingPrompt =>
+      'What is the most likely outcome, not the worst possible one?';
+
+  @override
+  String get trDistOvergeneralizationName => 'Overgeneralization';
+
+  @override
+  String get trDistOvergeneralizationDesc =>
+      'One bad event becomes a never-ending pattern of defeat.';
+
+  @override
+  String get trDistOvergeneralizationPrompt =>
+      'Is this really \"always\" / \"never,\" or is it just this once?';
+
+  @override
+  String get trDistMindReadingName => 'Mind reading';
+
+  @override
+  String get trDistMindReadingDesc =>
+      'Assuming you know what others are thinking about you.';
+
+  @override
+  String get trDistMindReadingPrompt =>
+      'What evidence do I actually have for that assumption?';
+
+  @override
+  String get trDistShouldName => '\"Should\" statements';
+
+  @override
+  String get trDistShouldDesc =>
+      'Beating yourself up with \"should,\" \"must,\" \"ought to.\" Drives shame.';
+
+  @override
+  String get trDistShouldPrompt =>
+      'Replace \"I should\" with \"I would like to\" — does it land softer?';
+
+  @override
+  String get trDistEmotionalReasoningName => 'Emotional reasoning';
+
+  @override
+  String get trDistEmotionalReasoningDesc =>
+      'Believing something is true because it FEELS true.';
+
+  @override
+  String get trDistEmotionalReasoningPrompt =>
+      'Feelings are data, not verdicts. What do the facts say?';
+
+  @override
+  String get trDistPersonalizationName => 'Personalization';
+
+  @override
+  String get trDistPersonalizationDesc =>
+      'Blaming yourself for things that aren\'t entirely your fault.';
+
+  @override
+  String get trDistPersonalizationPrompt =>
+      'What other factors contributed — was this all on me?';
+
+  @override
+  String get trDistMentalFilterName => 'Mental filter';
+
+  @override
+  String get trDistMentalFilterDesc =>
+      'Focusing only on the negative and screening out the positive.';
+
+  @override
+  String get trDistMentalFilterPrompt =>
+      'What good has happened today that I\'m discounting?';
+
+  @override
+  String get trDistLabelingName => 'Labeling';
+
+  @override
+  String get trDistLabelingDesc =>
+      'Attaching a global label to yourself: \"I\'m a failure,\" \"I\'m broken.\"';
+
+  @override
+  String get trDistLabelingPrompt =>
+      'Separate the behaviour from the person. What would I tell a friend?';
+
+  @override
+  String get trDistDisqualifyingPositiveName => 'Disqualifying the positive';
+
+  @override
+  String get trDistDisqualifyingPositiveDesc =>
+      'Telling yourself good things \"don\'t count.\"';
+
+  @override
+  String get trDistDisqualifyingPositivePrompt =>
+      'Why would that achievement count if a friend did it?';
 }

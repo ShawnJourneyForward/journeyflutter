@@ -3,6 +3,8 @@
 // → distortion → evidence → reframe → outcome) that therapists actually
 // prescribe.
 
+import '../l10n/app_localizations.dart';
+
 class ThoughtRecord {
   final String id;
   final DateTime date;
@@ -148,4 +150,50 @@ class CognitiveDistortion {
     }
     return null;
   }
+
+  // ── Localised accessors ────────────────────────────────────────────────────
+  // The const data above is the English source of truth; these resolve a
+  // translated string by code at display time, falling back to English for any
+  // unknown code.
+  String localizedName(AppLocalizations l) => switch (code) {
+        'all_or_nothing' => l.trDistAllOrNothingName,
+        'catastrophizing' => l.trDistCatastrophizingName,
+        'overgeneralization' => l.trDistOvergeneralizationName,
+        'mind_reading' => l.trDistMindReadingName,
+        'should' => l.trDistShouldName,
+        'emotional_reasoning' => l.trDistEmotionalReasoningName,
+        'personalization' => l.trDistPersonalizationName,
+        'mental_filter' => l.trDistMentalFilterName,
+        'labeling' => l.trDistLabelingName,
+        'disqualifying_positive' => l.trDistDisqualifyingPositiveName,
+        _ => name,
+      };
+
+  String localizedDescription(AppLocalizations l) => switch (code) {
+        'all_or_nothing' => l.trDistAllOrNothingDesc,
+        'catastrophizing' => l.trDistCatastrophizingDesc,
+        'overgeneralization' => l.trDistOvergeneralizationDesc,
+        'mind_reading' => l.trDistMindReadingDesc,
+        'should' => l.trDistShouldDesc,
+        'emotional_reasoning' => l.trDistEmotionalReasoningDesc,
+        'personalization' => l.trDistPersonalizationDesc,
+        'mental_filter' => l.trDistMentalFilterDesc,
+        'labeling' => l.trDistLabelingDesc,
+        'disqualifying_positive' => l.trDistDisqualifyingPositiveDesc,
+        _ => description,
+      };
+
+  String localizedReframePrompt(AppLocalizations l) => switch (code) {
+        'all_or_nothing' => l.trDistAllOrNothingPrompt,
+        'catastrophizing' => l.trDistCatastrophizingPrompt,
+        'overgeneralization' => l.trDistOvergeneralizationPrompt,
+        'mind_reading' => l.trDistMindReadingPrompt,
+        'should' => l.trDistShouldPrompt,
+        'emotional_reasoning' => l.trDistEmotionalReasoningPrompt,
+        'personalization' => l.trDistPersonalizationPrompt,
+        'mental_filter' => l.trDistMentalFilterPrompt,
+        'labeling' => l.trDistLabelingPrompt,
+        'disqualifying_positive' => l.trDistDisqualifyingPositivePrompt,
+        _ => reframePrompt,
+      };
 }

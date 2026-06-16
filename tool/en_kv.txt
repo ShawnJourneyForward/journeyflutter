@@ -1,0 +1,969 @@
+appTitle	Journey Forward
+navHome	Home
+navProgress	Progress
+navToolkit	Toolkit
+navJournal	Journal
+navProfile	Profile
+commonSave	Save
+commonCancel	Cancel
+commonContinue	Continue
+commonBack	Back
+commonNext	Next
+commonRestore	Restore
+commonClear	Clear
+commonCopied	Copied to clipboard
+commonDays	{count, plural, =1{1 day} other{{count} days}}
+commonMinutes	{count} minutes
+commonMin	{count} min
+lockAppName	Journey Forward
+lockAuthenticateSubtitle	Authenticate to continue
+lockTapToAuthenticate	Tap to authenticate
+lockEnterYourPin	Enter your PIN
+lockUsePinInstead	Use PIN instead
+lockIncorrectPin	Incorrect PIN. Try again.
+lockBiometricsNotAvailable	Biometrics not available on this device.
+lockAuthCancelled	Authentication cancelled.
+lockUnlockReason	Unlock Journey Forward
+lockTooManyAttempts	Too many attempts. Try again later.
+lockPermanentlyLockedOut	Biometrics locked. Restart your device.
+lockBiometricsUnavailable	Biometrics unavailable.
+lockAuthFailed	Authentication failed.
+lockNotEnrolled	No biometrics enrolled. Use your device PIN.
+onbStepIndicator	Step {step} of {total}
+onbContinue	Continue
+onbBeginMyJourney	Begin my journey
+onbLetsBegin	Let's begin
+onbWelcomeTitle	A new chapter
+begins.
+onbWelcomeBody	Journey Forward is your private, on-device companion for building a sober life — one day at a time.
+onbPrivacy100OnDevice	100% on-device
+onbPrivacy100OnDeviceSub	Your data stays on this phone unless you choose to export it
+onbPrivacyNoAccount	No account needed
+onbPrivacyNoAccountSub	No email, no sign-up, no cloud
+onbPrivacyZeroTracking	Zero tracking
+onbPrivacyZeroTrackingSub	No analytics, no ads, no data collection
+onbNameHeadline	What should
+we call you?
+onbNameSub	Your name stays private — only shown within this app.
+onbNameHint	Your name
+onbJourneyTitle	What are you stepping away from?
+onbJourneySub	This helps Journey Forward speak to your journey — your healing timeline, your milestones. You can skip it or change it any time in Settings.
+onbJourneyPrivacyNote	Like everything in this app, your answer never leaves your phone.
+homeBackupNudge	Beautiful milestone — a 2-minute backup keeps it safe forever.
+homeBackupNudgeAction	Back up
+onbNameError	Please enter your name.
+onbDateHeadline	When did your
+journey begin?
+onbDateSub	Already started? Pick that day. Planning ahead? Choose a future date and we'll count down to it. You can change this anytime.
+onbDatePickerHelp	Choose your start date
+onbSoberSince	Sober since
+onbDaysOfCourage	{count} days of courage
+onbDaysOfCourageLabel	days of courage
+onbSpendHeadline	What did
+alcohol cost you?
+onbSpendSub	Your daily spend lets us show how much you're reclaiming. Leave it at 0 to skip — this calculation stays on your device.
+onbSpendAmountHint	Amount per day
+onbSpendSavingsPreview	In 30 days you'd save {currency}{amount}
+onbSpendSkipNote	You can always add this later in your profile settings.
+onbSecurityHeadline	Protect
+your space.
+onbSecuritySub	Lock methods run 100% on-device — your PIN never touches a server.
+onbSecurityNoLockLabel	No lock
+onbSecurityNoLockSub	Open straight to your journey
+onbSecurityBiometricLabel	Biometric
+onbSecurityBiometricSub	Face ID or fingerprint — fastest and most private
+onbSecurityPinLabel	4-digit PIN
+onbSecurityPinSub	Your PIN is salted, hashed, and stored in your device's encrypted storage
+onbPinCreateHeadline	Create
+your PIN.
+onbPinConfirmHeadline	Confirm
+your PIN.
+onbPinCreateSub	Your PIN is salted and hashed, then stored in your device's encrypted storage — never in plaintext, never in the cloud.
+onbPinConfirmSub	Enter the same 4 digits to confirm.
+onbPinConfirmButton	Confirm PIN
+onbPinDigitsError	Enter all 4 digits.
+onbPinMismatchError	PINs don't match. Try again.
+onbNotifHeadline	Daily
+support.
+onbNotifSub	All notifications are local — your phone generates them, no server involved.
+onbNotifPrivacyNote	Notifications fire from your device. No push servers. No data leaves your phone.
+onbNotifMorningLabel	Morning motivation
+onbNotifMorningSub	A daily affirmation to start strong
+onbNotifEveningLabel	Evening check-in
+onbNotifEveningSub	An evening reminder to reflect
+onbNotifMilestonesLabel	Milestone alerts
+onbNotifMilestonesSub	Celebrate 1 day, 1 week, 30 days…
+onbNotifMorningTime	Morning time
+onbNotifEveningTime	Evening time
+onbNotifChangeAnytime	You can change these anytime in Settings.
+onbFinishReadyWithName	You're ready, {name}! 🌿
+onbFinishReady	You're ready! 🌿
+onbFinishBodyDays	You've already been on this journey for {days, plural, =1{1 day} other{{days} days}}. Every single one matters.
+onbFinishBodyToday	Your journey starts right now. You've got this.
+onbFinishPrivacyNote	Your journey lives only on this device — private, secure, and completely yours.
+homeFriendFallback	friend
+homeGreetingFirst	Hi {name},
+homeGreetingReturning	Welcome back, {name}.
+homeTagline	Every day forward is a win.
+homeErrorPrefix	Error: {message}
+homeDaysSober	DAYS SOBER
+homeDaysLabel	days
+homeSerenityTagline	A clearer mind.
+A stronger you.
+homeMoneyReclaimed	MONEY
+RECLAIMED
+homeMoneyAllTime	All time
+homeMoneyInvesting	You're investing in
+your future self.
+homeMoneyGoalSavedOf	{saved} saved of {goal} goal
+homeMoneyGoalPercent	{percent}% complete
+homeMoneyGoalClear	Clear goal
+homeMyReasonTitle	My Reason
+homeMyReasonRotates	rotates daily
+homeMyReasonAddPrompt	Add your reasons
+in Profile
+homeYourJourney	YOUR JOURNEY
+homeJourneySubtitle	Milestones are ahead. Keep going.
+homeMilestoneNode0Label	First hours
+homeMilestoneNode1Label	Clear morning
+homeMilestoneNode2Label	Energy returns
+homeMilestoneNode3Label	Mind healing
+homeMilestoneNode4Label	A new chapter
+homeMilestoneTimingDone	done
+homeDailyPledge	DAILY PLEDGE
+homePledgeHint	e.g., Today I choose clarity.
+homePledgeCalmDays	{count} calm days kept
+homeDailyGratitude	DAILY GRATITUDE
+homeGratitudeHint	e.g., I'm grateful for
+another fresh start.
+homeGratitudeLoggedToday	Logged today
+homeWeeklyGoals	Weekly Goals
+homeDailyMissions	TODAY'S STEPS
+homeMissionsSubtitle	Small acts of care for today.
+homeMissionsProgress	{done} of {total} complete
+homeDailyCheckIn	DAILY CHECK-IN
+homeCheckInCraving	Craving
+homeCheckInThought	Thought
+homeCheckInActivity	Activity
+homeCheckInSleep	Sleep
+homeQuittingTimeline	QUITTING TIMELINE
+homeRecoveryBannerSub0	See what's happening in your body
+homeRecoveryBannerSub1	Your body is already healing
+homeRecoveryBannerSub2	Your brain chemistry is shifting
+homeRecoveryBannerSub3	Your body has had a real break from the load
+homeRecoveryBannerSub4	You are building real momentum
+homeEditProfile	Edit Profile
+homeProfileNameLabel	Name
+homeProfileNameHint	Your name
+homeSoberSince	Sober since
+homeProfileDailySpend	Daily spend
+homeProfileSpendHint	0
+homeCravingSheetTitle	Log a craving
+homeCravingSheetSubtitle	Noticing the shape of a craving helps you understand the pattern without obeying it.
+homeCravingStrengthQuestion	How strong was the craving?
+homeCravingIntensityLabel	Intensity
+homeCravingIntensityValue	{value} / 10
+homeCravingTriggerQuestion	What triggered it?
+homeCravingDurationQuestion	How long did it last?
+homeCravingDurationValue	{minutes} minutes
+homeCravingNotesHint	Notes (optional) - e.g., passed a bar on the way home.
+homeSaveCraving	Save craving
+homeThoughtSheetTitle	Log a thought
+homeThoughtSheetSubtitle	Noticing thoughts about alcohol is normal. Logging them helps reveal the pattern.
+homeThoughtWhatQuestion	What was the thought?
+homeThoughtWriteHint	Write the thought in your own words.
+homeThoughtStrengthQuestion	How strong was the thought?
+homeThoughtTriggerQuestion	What triggered the thought?
+homeThoughtDurationQuestion	How long did it last?
+homeThoughtToneLabel	Tone
+homeThoughtNotesHint	Notes (optional) - e.g., saw an ad and noticed the thought arrive.
+homeSaveThought	Save thought
+homeActivitySheetTitle	Log activity
+homeActivitySheetSubtitle	Movement can shift the nervous system. Capture enough detail to see what truly helps.
+homeActivityTypeQuestion	What did you do?
+homeActivityTypeWalk	Walk
+homeActivityTypeExercise	Exercise
+homeActivityTypeYoga	Yoga
+homeActivityTypeOther	Other
+homeActivityEffortQuestion	How much effort did it take?
+homeActivityOutcomeQuestion	How did you feel after?
+homeActivityDurationLabel	Duration
+homeActivityDurationValue	{minutes} min
+homeActivityNotesHint	Notes (optional) - e.g., walked after dinner and felt steadier.
+homeSaveActivity	Save activity
+homeSleepSheetTitle	Log sleep
+homeSleepSheetSubtitle	Sleep is one of the clearest signals in recovery. Small details help reveal the trend.
+homeSleepHoursLabel	Hours slept
+homeSleepHoursValue	{hours} hrs
+homeSleepQualityLabel	Sleep quality
+homeSleepFactorsQuestion	What affected your sleep?
+homeSleepNotesHint	Notes (optional) - e.g., woke at 3am with cravings, fell back asleep.
+homeSaveSleep	Save sleep
+homeSeverityBrief	Brief
+homeSeverityMild	Mild
+homeSeverityModerate	Moderate
+homeSeverityStrong	Strong
+homeSeverityConsuming	Consuming
+homeTriggerStress	Stress
+homeTriggerSocial	Social
+homeTriggerBoredom	Boredom
+homeTriggerTimeOfDay	Time of day
+homeTriggerCelebration	Celebration
+homeTriggerSadness	Sadness
+homeTriggerLocation	Location
+homeTriggerMemory	Memory
+homeTriggerHungry	Hungry
+homeTriggerAngry	Angry
+homeTriggerTired	Tired
+homeEffortGentle	Light
+homeEffortModerate	Moderate
+homeEffortStrong	Strong
+homeOutcomeCalmer	Calmer
+homeOutcomeClearer	Clearer
+homeOutcomeEnergized	Energized
+homeOutcomeSame	Same
+homeSleepQualityPoor	Poor
+homeSleepQualityFair	Fair
+homeSleepQualityOK	OK
+homeSleepQualityGood	Good
+homeSleepQualityGreat	Great
+homeSleepFactorRestless	Restless
+homeSleepFactorWokeOften	Woke often
+homeSleepFactorDreams	Dreams
+homeSleepFactorStress	Stress
+homeSleepFactorCravings	Cravings
+homeSleepFactorLateCaffeine	Late caffeine
+homeToneNegative	Negative
+homeToneNeutral	Neutral
+homeTonePositive	Positive
+homeQuote0	Every sober day is an act of love for your future self.
+homeQuote1	You do not have to feel ready. You only have to begin.
+homeQuote2	Healing is allowed to be quiet.
+homeQuote3	One calm choice can change the shape of a day.
+homeQuote4	You are not starting over. You are starting wiser.
+homeQuote5	Recovery is not linear, but it is still real.
+homeQuote6	Even a difficult sober day is proof that you are choosing yourself.
+homeQuote7	The version of you that kept going is still here.
+homeQuote8	Strength can look like softness.
+homeQuote9	Clarity is built one honest moment at a time.
+homeQuote10	You have survived hard days before. Today is another step forward.
+homeQuote11	Cravings are temporary. Your progress is still here.
+homeQuote12	Each morning is another chance to care for yourself.
+homeQuote13	Progress does not need to be perfect to be meaningful.
+homeQuote14	You are becoming someone you can trust.
+homeQuote15	Small choices become a safer life.
+homeQuote16	Peace is not rushed. It is practised.
+homeQuote17	You are allowed to outgrow what once numbed you.
+homeQuote18	The urge will pass. Your dignity can remain.
+homeQuote19	Recovery is a return to yourself.
+homeQuote20	You are not behind. You are healing at human speed.
+homeQuote21	A softer life is still a strong life.
+homeQuote22	Your future self is being protected by today's choices.
+homeQuote23	You can pause. You can breathe. You can choose again.
+homeQuote24	Every honest day is part of the way forward.
+homeQuote25	You do not need to punish yourself to change.
+homeQuote26	The quiet work counts.
+homeQuote27	Your nervous system is learning safety again.
+homeQuote28	You are worthy of care before you feel strong.
+homeQuote29	Let today be simple. Let today be enough.
+homeQuote30	One breath can become one minute. One minute can become one day.
+homeQuote31	You are not your craving. You are the one witnessing it.
+homeQuote32	You can build a life that no longer asks you to escape it.
+homeQuote33	There is strength in staying.
+homeQuote34	Healing begins where shame loses its voice.
+homeQuote35	You are allowed to need support.
+homeQuote36	The path forward is yours — one step at a time.
+homeQuote37	Your progress is not erased by a hard moment.
+homeQuote38	Choose the next right thing, not the perfect thing.
+homeQuote39	Sobriety is not a punishment. It is protection.
+homeQuote40	You are learning how to come home to yourself.
+homeQuote41	The life you want is built in ordinary moments.
+homeQuote42	You can be proud without being finished.
+homeQuote43	Nothing about healing needs to be loud to be real.
+homeQuote44	Your peace is worth protecting.
+homeQuote45	A craving is a wave, not a command.
+homeQuote46	You are building evidence that you can trust yourself.
+homeQuote47	Today does not need to be conquered. It only needs to be lived.
+homeQuote48	There is still time to become someone new.
+homeQuote49	Keep going. Every step still counts.
+homeMission0	Drink a full glass of water slowly.
+homeMission1	Take a 10-minute walk outside.
+homeMission2	Write down three things you are grateful for.
+homeMission3	Send a kind message to someone you trust.
+homeMission4	Do five minutes of slow breathing.
+homeMission5	Read a few pages of something calming.
+homeMission6	Eat one nourishing meal without distractions.
+homeMission7	Prepare for an earlier, softer night.
+homeMission8	Do one kind thing for yourself today.
+homeMission9	Sit in silence for three minutes.
+homeMission10	Write one honest sentence in your journal.
+homeMission11	Put your phone away for one quiet hour.
+homeMission12	Stretch your shoulders, neck, and back.
+homeMission13	Listen to music that steadies you.
+homeMission14	Tidy one small area of your space.
+homeMission15	Step outside and notice the sky.
+homeMission16	Say "I am allowed to heal" three times.
+homeMission17	Make yourself something warm to drink.
+homeMission18	Reach out to your support network.
+homeMission19	Honour the progress you have made today.
+homeMission20	Take five slow breaths before your next decision.
+homeMission21	Write down one trigger you noticed today.
+homeMission22	Write down one thing that helped you today.
+homeMission23	Place one comforting item near your bed.
+homeMission24	Wash your face slowly and mindfully.
+homeMission25	Spend 10 minutes away from screens.
+homeMission26	Prepare tomorrow's first small task.
+homeMission27	Let one room feel a little lighter.
+homeMission28	Notice one thing your body needs.
+homeMission29	Choose a meal that supports your energy.
+homeMission30	Read one recovery note or affirmation.
+homeMission31	Save one emergency support number somewhere visible.
+homeMission32	Write a short note to your future self.
+homeMission33	Take a warm shower or bath.
+homeMission34	Breathe through a craving without judging it.
+homeMission35	Name the emotion underneath the urge.
+homeMission36	Do one thing slowly on purpose.
+homeMission37	Put clean water beside your bed.
+homeMission38	Open a window and take three deep breaths.
+homeMission39	Write down one reason you are continuing.
+homeMission40	Spend five minutes in natural light.
+homeMission41	Make your bed with care.
+homeMission42	Delete or mute one digital trigger.
+homeMission43	Choose rest before exhaustion.
+homeMission44	Write one sentence that begins: "Today I protected…"
+homeMission45	Notice one moment of peace, however small.
+homeMission46	Thank yourself for staying present.
+homeMission47	Do a 10-minute reset of your space.
+homeMission48	Choose one boundary that supports your recovery.
+homeMission49	Let yourself pause before reacting.
+homeMission50	Write down one thing you are learning about yourself.
+homeMission51	Prepare a simple comfort plan for tonight.
+homeMission52	Place your hand on your chest and breathe slowly.
+homeMission53	Drink tea, water, or something calming without rushing.
+homeMission54	Spend a few minutes with a plant, pet, or quiet object.
+homeMission55	Write down one thing you do not need to carry today.
+homeMission56	Take a short walk without headphones.
+homeMission57	Do one practical task you have been avoiding.
+homeMission58	End the day by naming one quiet victory.
+homeMission59	Remind yourself: small steps still count.
+journalTitle	My Journal
+journalTabJournal	Journal
+journalTabAffirm	Affirm
+journalTabVision	Vision
+journalTabZen	Zen
+journalAffirm0	I am worthy of love and belonging.
+journalAffirm1	I choose recovery every single day.
+journalAffirm2	My past does not define my future.
+journalAffirm3	I am getting stronger with each passing moment.
+journalAffirm4	I deserve peace, health, and happiness.
+journalAffirm5	I am proud of how far I have come.
+journalAffirm6	I have the strength to overcome challenges.
+journalAffirm7	Today I choose myself.
+journalAffirm8	I am healing and growing every day.
+journalAffirm9	I am not alone in this journey.
+journalAffirm10	My sobriety is my greatest achievement.
+journalAffirm11	I release what no longer serves me.
+journalAffirm12	I am capable of change.
+journalAffirm13	Every sober day is a victory.
+journalAffirm14	I am becoming the person I want to be.
+zenQuote0	The present moment is the only time over which we have dominion.
+zenQuoteAuthor0	Thich Nhat Hanh
+zenQuote1	You don't have to control your thoughts. You just have to stop letting them control you.
+zenQuoteAuthor1	Dan Millman
+zenQuote2	Peace is not the absence of conflict, but the ability to cope with it.
+zenQuoteAuthor2	Mahatma Gandhi
+zenQuote3	Recovery is not a race. You don't have to feel guilty if it takes you longer than you thought it would.
+zenQuoteAuthor3	Anonymous
+zenQuote4	Every day is a new beginning. Take a deep breath, smile, and start again.
+zenQuoteAuthor4	Anonymous
+zenQuote5	The wound is the place where the Light enters you.
+zenQuoteAuthor5	Rumi
+zenQuote6	You are enough just as you are.
+zenQuoteAuthor6	Meghan Markle
+zenQuote7	Healing is not linear.
+zenQuoteAuthor7	Anonymous
+zenQuote8	What lies behind us and what lies before us are tiny matters compared to what lies within us.
+zenQuoteAuthor8	Ralph Waldo Emerson
+zenQuote9	You have been assigned this mountain to show others it can be moved.
+zenQuoteAuthor9	Mel Robbins
+zenQuote10	It does not matter how slowly you go as long as you do not stop.
+zenQuoteAuthor10	Confucius
+zenQuote11	The hardest step she ever took was to blindly trust in who she was.
+zenQuoteAuthor11	Atticus
+zenQuote12	One day at a time — this is enough. Do not look back and grieve over the past, for it is gone.
+zenQuoteAuthor12	Ida Scott Taylor
+zenQuote13	Rock bottom became the solid foundation on which I rebuilt my life.
+zenQuoteAuthor13	J.K. Rowling
+zenQuote14	Be patient with yourself. You are a child of the universe.
+zenQuoteAuthor14	Max Ehrmann
+zenQuote15	In the middle of every difficulty lies opportunity.
+zenQuoteAuthor15	Albert Einstein
+zenQuote16	Your present circumstances don't determine where you can go; they merely determine where you start.
+zenQuoteAuthor16	Nido Qubein
+zenQuote17	The secret of getting ahead is getting started.
+zenQuoteAuthor17	Mark Twain
+zenQuote18	You are braver than you believe, stronger than you seem, and smarter than you think.
+zenQuoteAuthor18	A.A. Milne
+zenQuote19	Don't watch the clock; do what it does. Keep going.
+zenQuoteAuthor19	Sam Levenson
+zenQuote20	Accept yourself, love yourself, and keep moving forward.
+zenQuoteAuthor20	Roy T. Bennett
+zenQuote21	The journey of a thousand miles begins with one step.
+zenQuoteAuthor21	Lao Tzu
+zenQuote22	You can't go back and change the beginning, but you can start where you are and change the ending.
+zenQuoteAuthor22	C.S. Lewis
+zenQuote23	Strength does not come from physical capacity. It comes from an indomitable will.
+zenQuoteAuthor23	Mahatma Gandhi
+zenQuote24	Every moment is a fresh beginning.
+zenQuoteAuthor24	T.S. Eliot
+zenQuote25	Just when the caterpillar thought the world was ending, he turned into a butterfly.
+zenQuoteAuthor25	Proverb
+zenQuote26	Courage doesn't always roar. Sometimes courage is the quiet voice at the end of the day saying, I will try again tomorrow.
+zenQuoteAuthor26	Mary Anne Radmacher
+zenQuote27	The only way out is through.
+zenQuoteAuthor27	Robert Frost
+zenQuote28	You are not your past. You are the lessons you've learned from it.
+zenQuoteAuthor28	Anonymous
+zenQuote29	Progress, not perfection.
+zenQuoteAuthor29	Anonymous
+progressTitle	Progress
+progressDaysChip	{days} days
+progressTabJourney	Journey
+progressTabInsights	Insights
+progressMilestoneLabel1	First Day
+progressMilestoneLabel2	Two Days
+progressMilestoneLabel3	Three Days
+progressMilestoneLabel5	Five Days
+progressMilestoneLabel7	One Week
+progressMilestoneLabel10	Ten Days
+progressMilestoneLabel14	Two Weeks
+progressMilestoneLabel21	Three Weeks
+progressMilestoneLabel30	One Month
+progressMilestoneLabel60	Two Months
+progressMilestoneLabel90	Three Months
+progressMilestoneLabel100	100 Days
+progressMilestoneLabel180	Six Months
+progressMilestoneLabel365	One Year
+progressMilestoneLabel730	Two Years
+progressMilestoneLabel1095	Three Years
+insightsTitle	Insights
+insights7DayView	7-day view
+milestoneScreenTitle	Milestones
+milestoneOneDay	One Day
+milestoneOneDayShort	1 Day
+milestoneOneDayBenefit	One full day. Alcohol typically clears from the body within this window. For many people, tonight's sleep — though sometimes restless — feels different from the nights that came before.
+milestoneThreeDays	Three Days
+milestoneThreeDaysShort	3 Days
+milestoneThreeDaysBenefit	Most alcohol metabolites have left your body. The brain's GABA system is recalibrating — this can bring restlessness, but it means your nervous system is finding its natural balance again. Hydration is improving.
+milestoneOneWeek	One Week
+milestoneOneWeekShort	1 Week
+milestoneOneWeekBenefit	One full week. Many people start to notice sharper thinking, more natural energy, and better hydration around this stage. Your body has had a meaningful stretch of recovery time.
+milestoneTwoWeeks	Two Weeks
+milestoneTwoWeeksShort	2 Weeks
+milestoneTwoWeeksBenefit	Two weeks. For many people, anxiety begins to stabilise and sleep deepens. The early-recovery storm often starts to soften here, though every person's timeline is different.
+milestoneOneMonth	One Month
+milestoneOneMonthShort	1 Month
+milestoneOneMonthBenefit	One month. Many people describe meaningful gains in clarity and emotional steadiness at this point. Cravings can become easier to observe without acting on them.
+milestoneTwoMonths	Two Months
+milestoneTwoMonthsShort	2 Months
+milestoneTwoMonthsBenefit	Two months. Research suggests the prefrontal cortex — responsible for decisions, impulse control, and empathy — begins to recover meaningfully around this stage. Many people see improvements in cholesterol levels. You are physically and neurologically different from who you were.
+milestoneThreeMonths	Three Months
+milestoneThreeMonthsShort	3 Months
+milestoneThreeMonthsBenefit	Three months. Skin can look clearer, sleep can feel deeper, and concentration often continues to sharpen. You have built real momentum.
+milestoneSixMonths	Six Months
+milestoneSixMonthsShort	6 Months
+milestoneSixMonthsBenefit	Six months. Many people report that around this point, sobriety has begun to feel like part of who they are — not just a goal they're chasing.
+milestoneOneYear	One Year
+milestoneOneYearShort	1 Year
+milestoneOneYearBenefit	One year. This is a profound milestone. Many people describe genuine, lasting changes in how they feel and how they relate to themselves. The cumulative gains of a year without alcohol are real — and they are yours.
+recoveryTitle	The Healing Timeline
+recoverySubtitle	How your mind and body are restoring themselves
+recoveryHeroLabel	YOUR BODY TODAY
+recoveryDaysSober	{days, plural, =1{1 day sober} other{{days} days sober}}
+recoveryMilestonesReached	{achieved} of {total} milestones reached
+recoveryM1Label	12 Hours
+recoveryM1Title	The Reset Begins
+recoveryM1Body	Your body begins adjusting to the absence of alcohol. Hydration, sleep pressure, blood sugar, and stress hormones may feel unsettled as your system begins to rebalance.
+recoveryM1System	Total Body
+recoveryM2Label	24 Hours
+recoveryM2Title	Restoring Rhythm
+recoveryM2Body	For many people, the body's basic rhythms — heart rate, hydration, sleep — start to shift as it adjusts. This can feel calming for some and uncomfortable for others.
+recoveryM2System	Cardiovascular System
+recoveryM3Label	48 Hours
+recoveryM3Title	The Pivot Point
+recoveryM3Body	For people who were drinking heavily, this can be one of the highest-risk windows for withdrawal symptoms. Your nervous system may feel overstimulated as it works to rebalance.
+recoveryM3System	Central Nervous System
+recoveryM4Label	3 Days
+recoveryM4Title	Clearing the System
+recoveryM4Body	For many people, the most intense early physical adjustment begins to ease around this point, though recovery is individual and some symptoms can continue.
+recoveryM4System	Total Body
+recoveryM5Label	1 Week
+recoveryM5Title	Deepening Rest
+recoveryM5Body	Restorative sleep often begins to return. Hydration, appetite, and daily energy may start to feel more stable, although sleep and mood can still fluctuate.
+recoveryM5System	Brain & Sleep Cycles
+recoveryM6Label	2 Weeks
+recoveryM6Title	Finding Balance
+recoveryM6Body	Physical stamina may begin to return as sleep, appetite, hydration, and daily rhythm become more stable.
+recoveryM6System	Energy & Digestion
+recoveryM7Label	1 Month
+recoveryM7Title	Meaningful Relief
+recoveryM7Body	Your body has had a meaningful stretch of relief from the strain of alcohol. Many people notice steadier energy, clearer thinking, and improved sleep around this stage.
+recoveryM7System	Liver & Vital Organs
+recoveryM8Label	3 Months
+recoveryM8Title	Restoring Joy
+recoveryM8Body	Your body may feel more resilient as sleep, nourishment, movement, and reduced alcohol strain begin working together.
+recoveryM8System	Neurochemistry
+recoveryM9Label	6 Months
+recoveryM9Title	True Resilience
+recoveryM9Body	Many people notice a steadier baseline by this stage. Stress may feel more manageable, sleep may feel more reliable.
+recoveryM9System	Nervous System
+recoveryM10Label	1 Year
+recoveryM10Title	A New Baseline
+recoveryM10Body	For many people, the long-term load on energy, sleep, and mood is meaningfully lighter after a year without alcohol.
+recoveryM10System	Whole Body
+recoveryM11Label	2 Years & Beyond
+recoveryM11Title	Lasting Vitality
+recoveryM11Body	The benefits of reduced alcohol strain can continue to deepen over time, supporting your body, mind, relationships, and daily sense of stability.
+recoveryM11System	Whole Body Renewal
+emergencyHomeTitle	Calm Toolkit
+emergencyHomeSubtitle	What do you need right now?
+emergencyBreathingTitle	Breathing
+emergencyMeditationTitle	Meditation
+emergencyCBTTitle	CBT Guides
+emergencyReasonsTitle	My Reasons
+emergencyHALTTitle	HALT Check
+emergencyUrgeTimerTitle	Urge Timer
+emergencyPlayTapeTitle	Play the Tape
+emergencyMindfulnessTitle	Mindfulness
+breathPatternBoxName	Box
+breathPatternBoxDesc	Equal sides — focus and calm
+breathPattern478Name	4-7-8
+breathPattern478Desc	Deep relaxation and sleep
+breathPatternCalmName	Calm
+breathPatternCalmDesc	Quick anxiety reset
+breathPatternPowerName	Power
+breathPatternPowerDesc	Energy and alertness
+breathPatternResetName	Reset
+breathPatternResetDesc	Instant stress relief
+breathPatternTriangleName	Triangle
+breathPatternTriangleDesc	Simple three-phase balance
+breathPatternAnchorName	Anchor
+breathPatternAnchorDesc	Grounding in difficult moments
+breathPatternRescueName	Rescue
+breathPatternRescueDesc	Panic and high anxiety
+breathPatternOceanName	Ocean
+breathPatternOceanDesc	Wave-like natural rhythm
+breathPatternMorningName	Morning
+breathPatternMorningDesc	Wake up and energise
+breathPatternCoherentName	Coherent
+breathPatternCoherentDesc	Heart-rate variability balance
+breathPattern628Name	6-2-8
+breathPattern628Desc	Deep parasympathetic activation
+breathPatternSquarePlusName	Square+
+breathPatternSquarePlusDesc	Extended box for deep calm
+breathPatternWarriorName	Warrior
+breathPatternWarriorDesc	Strength and determination
+breathPatternNightName	Night
+breathPatternNightDesc	Pre-sleep wind-down
+breathPhaseInhale	Inhale
+breathPhaseHold	Hold
+breathPhaseExhale	Exhale
+breathCycleCount	{count} cycles
+cbtGuide0Title	Challenge the Thought
+cbtGuide0Step0	Write down the thought that's troubling you.
+cbtGuide0Step1	Ask: Is this thought based on fact or feeling?
+cbtGuide0Step2	What evidence supports this thought? What contradicts it?
+cbtGuide0Step3	What would you say to a friend having this thought?
+cbtGuide0Step4	Write a more balanced version of the thought.
+cbtGuide0Step5	Notice how you feel after reframing it.
+cbtGuide1Title	Surf the Urge
+cbtGuide1Step0	Recognise the urge — name it: "I notice a craving."
+cbtGuide1Step1	Don't fight it. Observe it like a wave.
+cbtGuide1Step2	Notice where you feel it in your body.
+cbtGuide1Step3	Breathe slowly. The wave will peak and pass.
+cbtGuide1Step4	Remind yourself: urges always pass within 20–30 minutes.
+cbtGuide2Title	Cost-Benefit Check
+cbtGuide2Step0	List the short-term benefits of drinking.
+cbtGuide2Step1	List the short-term costs of drinking.
+cbtGuide2Step2	List the long-term benefits of staying sober.
+cbtGuide2Step3	List the long-term costs of drinking.
+cbtGuide2Step4	Which column weighs more to your future self?
+cbtGuide3Title	Trigger Action Plan
+cbtGuide3Step0	Identify the trigger: person, place, feeling, or time.
+cbtGuide3Step1	What has worked before in similar moments?
+cbtGuide3Step2	Who can you call or text right now?
+cbtGuide3Step3	What activity can you do for the next 20 minutes?
+cbtGuide3Step4	Write your commitment: "When X happens, I will Y."
+cbtGuide4Title	Identity Shift
+cbtGuide4Step0	Describe the person you are becoming.
+cbtGuide4Step1	What values guide that person?
+cbtGuide4Step2	What would that person do right now?
+cbtGuide4Step3	Write: "I am someone who..."
+cbtGuide4Step4	Act from that identity for the next hour.
+haltH	H
+haltHungry	Hungry
+haltHungryAdvice	Eat something nourishing before making any decisions.
+haltA	A
+haltAngry	Angry
+haltAngryAdvice	Breathe first. Anger distorts judgment. Pause for 10 minutes.
+haltL	L
+haltLonely	Lonely
+haltLonelyAdvice	Reach out to one person. Connection is medicine.
+haltT	T
+haltTired	Tired
+haltTiredAdvice	Rest before responding. Exhaustion lowers your defenses.
+mindful0Title	5-4-3-2-1
+mindful0Desc	5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste.
+mindful1Title	One Breath
+mindful1Desc	Take the longest, slowest breath of your day right now. Feel your lungs expand fully.
+mindful2Title	Body Check
+mindful2Desc	Starting from your feet, slowly scan upward. Notice tension without judging it.
+mindful3Title	The Observer
+mindful3Desc	Step back from your thoughts. Watch them like clouds passing — you are the sky, not the clouds.
+mindful4Title	Label It
+mindful4Desc	Name what you're feeling: "Anxiety is here." Naming it reduces its power.
+mindful5Title	Present Anchor
+mindful5Desc	Press your feet into the floor. Feel the weight of your body. You are here. You are safe.
+crisisTitle	Crisis Lines
+crisisTooltipBack	Back
+crisisEmergencyHeadline	In immediate danger? Call emergency services
+crisisWithdrawalTitle	Alcohol withdrawal can be dangerous
+crisisWithdrawalTapHint	Tap to see warning signs
+crisisSectionHeader	CRISIS LINES
+crisisSeekMedical	Seek immediate medical attention if you experience:
+crisisCallEmergency	If you experience any of these, call emergency services immediately. Do not try to manage alone.
+crisisTooltipCall	Call
+crisisTooltipCopy	Copy
+crisisLinesCount	{count, plural, =1{1 line} other{{count} lines}}
+crisisWithdrawal0	Seizures or convulsions
+crisisWithdrawal1	Hallucinations (seeing or hearing things)
+crisisWithdrawal2	Severe tremors (whole-body shaking)
+crisisWithdrawal3	Confusion or disorientation
+crisisWithdrawal4	High fever (above 38.5 C / 101 F)
+crisisWithdrawal5	Rapid heart rate (above 100 bpm)
+crisisWithdrawal6	Extreme sweating or clamminess
+settingsTitle	Profile
+settingsYourName	Your name
+settingsNameHint	e.g. Alex
+settingsSavingsGoalDialogTitle	Savings goal
+settingsGoalNameHint	Goal name (e.g. Holiday)
+settingsTargetAmountHint	Target amount
+settingsEmergencyContactDialogTitle	Emergency contact
+settingsContactNameHint	Name
+settingsContactPhoneHint	Phone number
+settingsSoberDateLabel	Sober date
+settingsDailySpendLabel	Daily spend
+settingsLockMethodLabel	App lock
+settingsNotificationsLabel	Notifications
+settingsPrivacyLabel	Privacy policy
+settingsBackupLabel	Backup & restore
+settingsHistoryLabel	Full history
+settingsInsightsLabel	Insights
+settingsGroupsLabel	Support groups
+settingsHeatmapLabel	Activity heatmap
+settingsWeeklyGoalsLabel	Weekly goals
+settingsMyReasonsLabel	My reasons
+settingsSavingsGoalLabel	Savings goal
+settingsEmergencyContactLabel	Emergency contact
+settingsChangePinLabel	Change PIN
+groupsTitle	Support Groups
+groupsSubtitle	You don't have to do this alone
+groupsIntroNote	Peer support is one of the strongest predictors of long-term recovery. Tap any group to visit their website.
+groupsVisitWebsite	Visit website
+groupAaName	Alcoholics Anonymous
+groupAaTagline	AA
+groupAaDesc	The original peer-led fellowship. Meetings worldwide — in-person and online. Based on 12 steps and mutual support. Free and anonymous.
+groupAaApproach	12-step · Peer support · Spiritual
+groupAaRegions	Worldwide · South Africa: aa.org.za
+groupSmartName	SMART Recovery
+groupSmartTagline	Self-Management & Recovery Training
+groupSmartDesc	Science-based alternative to 12-step. Uses CBT and motivational techniques. No spiritual component required. In-person and online meetings globally.
+groupSmartApproach	CBT-based · Evidence-based · Non-spiritual
+groupSmartRegions	Worldwide · South Africa: smartrecovery.org.za
+groupNaName	Narcotics Anonymous
+groupNaTagline	NA
+groupNaDesc	Peer-led 12-step fellowship for people recovering from drug addiction. Meetings in most cities and online. Free and welcoming to all.
+groupNaApproach	12-step · Peer support · Drug-focused
+groupNaRegions	Worldwide
+historyTitle	History
+historyToday	Today
+historyYesterday	Yesterday
+historySearchHint	Search entries…
+historyFilterAll	All
+historyFilterJournal	Journal
+historyFilterGratitude	Gratitude
+historyFilterCravings	Cravings
+historyFilterThoughts	Thoughts
+historyFilterActivity	Activity
+historyFilterSleep	Sleep
+historyFilterSlips	Slips
+historyEmpty	No entries yet
+historyEmptySub	Your logs will appear here as you use the app.
+historyMoodGreat	Great
+historyMoodGood	Good
+historyMoodOkay	Okay
+historyMoodHard	Hard day
+historyMoodCrisis	Crisis
+puzzleTitle	Calm Activities
+puzzleActivity0Label	Slow Count
+puzzleActivity0Desc	Count backwards — it interrupts anxious thought loops.
+puzzleActivity0Duration	2 – 5 min
+puzzleActivity1Label	Gratitude Shuffle
+puzzleActivity1Desc	Tap for a new gratitude prompt until one lands.
+puzzleActivity1Duration	2 min
+puzzleActivity2Label	Memory Match
+puzzleActivity2Desc	Flip cards to find pairs. Focusing the mind calms it.
+puzzleActivity2Duration	5 min
+puzzleActivity3Label	Strength Compass
+puzzleActivity3Desc	Rate your recovery strengths and see where you are today.
+puzzleActivity3Duration	3 min
+puzzleActivity4Label	Now Moment
+puzzleActivity4Desc	Notice · Feel · Choose — a mindful 60-second reset.
+puzzleActivity4Duration	1 min
+cbtScreenTitle	Thought Reframe
+cbtStepIndicator	Step {step} of 4
+cbtStep0Title	What's the thought?
+cbtStep0Subtitle	Write the automatic thought exactly as it appeared — raw, unfiltered. Don't judge it yet.
+cbtStep0HintText	e.g. "I've already ruined everything. What's the point?"
+cbtEducation	CBT works by carefully examining the thoughts that drive distress — not to dismiss them, but to understand them more clearly.
+cbtStep1Title	Spot the pattern
+cbtStep1Subtitle	Does this thought follow a recognisable pattern? Tap the one that fits best.
+cbtDistortionAllOrNothing	All-or-nothing thinking
+cbtDistortionAllOrNothingExample	"If I'm not perfect, I've completely failed."
+cbtDistortionCatastrophising	Catastrophising
+cbtDistortionCatastrophisingExample	"This will ruin everything forever."
+cbtDistortionMindReading	Mind reading
+cbtDistortionMindReadingExample	"Everyone must think I'm weak."
+cbtDistortionEmotionalReasoning	Emotional reasoning
+cbtDistortionEmotionalReasoningExample	"I feel hopeless, so the situation must be hopeless."
+cbtDistortionShouldStatements	Should statements
+cbtDistortionShouldStatementsExample	"I should be further along by now."
+cbtDistortionPersonalisation	Personalisation
+cbtDistortionPersonalisationExample	"This is all my fault."
+cbtDistortionOvergeneralisation	Overgeneralisation
+cbtDistortionOvergeneralisationExample	"This always happens to me."
+cbtDistortionNoneOfAbove	None of the above
+cbtDistortionNoneOfAboveExample	The thought doesn't fit a specific pattern.
+cbtStep2Title	Test the evidence
+cbtStep2Subtitle	Look at the thought like a scientist. What's the actual evidence for and against it?
+cbtEvidenceForLabel	Evidence FOR the thought
+cbtEvidenceForHint	What facts support it? (It's ok if there are some.)
+cbtEvidenceAgainstLabel	Evidence AGAINST the thought
+cbtEvidenceAgainstHint	What facts challenge it? What am I ignoring?
+cbtStep3Title	A more balanced view
+cbtStep3Subtitle	Based on the evidence, write a thought that's more realistic and kind. It doesn't have to be positive — just fairer.
+cbtReframeHintText	e.g. "I've had a hard time, but I've also made real progress. One difficult moment doesn't erase that."
+cbtOriginalThoughtLabel	Original thought
+cbtSummaryTitle	Your reframe
+cbtPatternIdentifiedLabel	Pattern identified
+cbtEvidenceForSummaryLabel	Evidence for
+cbtEvidenceAgainstSummaryLabel	Evidence against
+cbtStartOverButton	Start over
+cbtSaveToJournalButton	Save to journal
+cbtSavedTitle	Saved.
+cbtSavedMessage	That took courage. Questioning a thought is one of the most powerful things you can do.
+cbtReframeAnotherButton	Reframe another thought
+cbtNextButton	Next
+cbtReviewButton	Review
+heatmapTitle	Activity Heatmap
+heatmapSubtitle	13 weeks of your recovery journey
+heatmapActiveDaysLabel	ACTIVE DAYS
+heatmapActiveDaysCount	{active} of {total} days
+heatmapWhatCountsLabel	WHAT COUNTS
+heatmapCategoryJournal	Journal
+heatmapCategoryCraving	Craving
+heatmapCategoryActivity	Activity
+heatmapCategorySleep	Sleep
+heatmapNothingLogged	Nothing was logged this day.
+heatmapIntensityFormat	Intensity {intensity}/10
+heatmapActivityFormat	{activity} · {minutes} min
+heatmapSleepFormat	{hours}h · quality {quality}/5
+slipSupportTitle	In this moment
+slipSupportTemporary	This feeling is temporary.
+slipSupportCravingWaves	Cravings are like waves — they rise, they peak, and they pass. Most last 15 to 20 minutes. You don't have to act on this.
+slipSupportHaltHeader	HALT CHECK
+slipSupportHaltQuestion	Strong cravings are often signals for something else. Are you feeling any of these right now?
+slipSupportHaltHungry	Hungry
+slipSupportHaltAngry	Angry
+slipSupportHaltLonely	Lonely
+slipSupportHaltTired	Tired
+slipSupportHaltAdviceHungry	Eat something small and nourishing.
+slipSupportHaltAdviceAngry	Write it down or take a walk to release it.
+slipSupportHaltAdviceLonely	Text or call someone you trust.
+slipSupportHaltAdviceTired	Rest. Even a 10-minute lie-down helps.
+slipSupportRideItOutHeader	RIDE IT OUT
+slipSupportUrgeSurfingTitle	Urge surfing
+slipSupportUrgeSurfingDesc	Instead of fighting the craving, observe it like a wave you're riding. Notice where you feel it in your body. Breathe into it. Let it be there without acting on it.
+slipSupportBoxBreathingTitle	Box breathing
+slipSupportBoxBreathingInstructions	In for 4 · Hold for 4 · Out for 4 · Hold for 4. Repeat until the wave softens.
+slipSupportRightNowHeader	RIGHT NOW
+slipSupportThingsYouCanDo	Things you can do this minute
+slipSupportDistraction0	Drink a glass of cold water
+slipSupportDistraction1	Step outside for two minutes
+slipSupportDistraction2	Call or text someone you trust
+slipSupportDistraction3	Put on a song that shifts your mood
+slipSupportDistraction4	Write down what you're feeling
+slipSupportLogHeader	LOG THIS MOMENT
+slipSupportRateCravingTitle	Rate this craving
+slipSupportRateCravingDesc	Logging it helps you see patterns. You're not judged — just witnessed.
+slipSupportIntensityMild	Mild
+slipSupportIntensityIntense	Intense
+slipSupportCravingIntensityFormat	{intensity} / 10
+slipSupportLogCravingButton	Log craving
+slipSupportCravingLoggedTitle	Craving logged.
+slipSupportCravingLoggedMessage	You noticed it. You named it. That's the work.
+slipSupportNeedToTalk	Need to talk to someone?
+slipSupportCrisisLinesAvailable	Crisis lines are available 24/7.
+slipSupportViewLinesButton	View lines
+slipLogTitle	Slip Log
+slipLogSubtitle	Your journey, without judgment
+slipLogInfoText	Slips are information, not failure. Each record here is evidence that you kept going.
+slipLogEmpty	No slips recorded
+slipLogEmptySubtitle	Your recovery journey is continuing.
+slipLogNoNote	No note recorded.
+slipLogStreakBadge	{count, plural, =1{1 day sober} other{{count} days sober}}
+backupTitle	Backup & Restore
+backupExportTitle	Export backup
+backupExportDesc	Save all your journal entries, gratitude logs, slip records, and profile data. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.
+backupExportButton	Export now
+backupRestoreTitle	Restore from backup
+backupRestoreDesc	Pick a previously exported backup file. Your current data will be fully replaced.
+backupRestoreButton	Choose backup file
+backupWhatsIncludedTitle	What's included
+backupItemProfile	Profile & sober date
+backupItemJournal	Journal entries
+backupItemGratitude	Gratitude entries
+backupItemSlipLog	Slip log
+backupItemSecurity	Security setting
+backupItemVisionBoard	Vision board
+backupItemAffirmations	Custom affirmations
+backupPrivacyWarning	Encrypted backups (.jfwbk) require your passphrase to open. Plain JSON backups are unencrypted — store them somewhere only you can access. Restore fully replaces the data in this app — any entries you've made since the backup will be overwritten. Vision-board photos themselves aren't bundled into the backup file (only the references); if you restore on a new device, you may need to re-attach those images.
+backupConfirmTitle	Restore backup?
+backupConfirmMessage	This will replace your current data with the backup file. This cannot be undone.
+backupExportFailed	Export failed. Please try again.
+backupInvalidFile	This file is not a Journey Forward backup.
+backupRestoreFailed	Restore failed — the file may be corrupted.
+backupRestoredSuccess	Backup restored. Your app lock has been cleared — set a new PIN in Settings if needed. Restart to apply.
+privacyTitle	Privacy Policy
+privacyAbsoluteHeadline	Your privacy is absolute.
+privacyCommitment	Journey Forward stores everything on your device only. No data is ever sent to any server.
+privacyAllDataOnDevice	All data stays on your device
+privacyAllDataOnDeviceBody	Every piece of information you enter — your sober date, journal entries, gratitude notes, slip records, and profile — is stored locally on your device using the operating system's standard app storage. Nothing is transmitted to any external server, cloud service, or third party at any time.
+privacyNoInternet	No internet connection required
+privacyNoInternetBody	Journey Forward works fully offline. All fonts and assets are bundled inside the app. The app itself makes no network requests. If you tap a link to a crisis line, support group, or external resource, your device will open it in your system browser — outside of the app and subject to that site's own privacy policy.
+privacyNoAnalytics	No analytics or tracking
+privacyNoAnalyticsBody	There are no analytics SDKs, crash reporters, or usage trackers in this app. We do not collect any data about how you use the app, how often you open it, or what features you use.
+privacyEmergencyContacts	Emergency contacts
+privacyEmergencyContactsBody	If you add an emergency contact, their name and phone number are stored only on your device as part of your profile. This information is never shared, synced, or backed up automatically.
+privacyBackupRestore	Backup & restore
+privacyBackupRestoreBody	When you export a backup, a file is created and shared via your device's share sheet — the same way you share photos. You can choose an encrypted backup (.jfwbk, protected by your passphrase) or a plain JSON file. Journey Forward does not receive or store this file. You control where it goes.
+privacyPINBiometric	PIN and biometric lock
+privacyPINBiometricBody	If you enable a PIN, it is salted and run through a slow key-derivation hash (PBKDF2-style), then stored in your device's encrypted storage — never as plaintext. Biometric unlock uses your device's native biometric system; Journey Forward never accesses or stores your biometric data.
+privacyHowToDelete	How to delete your data
+privacyHowToDeleteBody	To permanently delete all your data, simply uninstall the app. All data stored by Journey Forward is removed when the app is uninstalled. There is no account to delete because there is no account — only data on your device.
+privacyChildrenPrivacy	Children's privacy
+privacyChildrenPrivacyBody	Journey Forward is designed for adults aged 18 and over. The app is not directed at children and does not knowingly collect any information from anyone under the age of 18.
+privacyPolicyUpdates	Policy updates
+privacyPolicyUpdatesBody	If this privacy policy changes, the update will be included in a new app version. Since we collect no data, changes will only reflect improvements in transparency or new features added to the app.
+weeklySummaryTitle	Weekly Care Summary
+weeklySummarySubtitle	A private summary to share with someone you trust.
+weeklySummaryThisWeek	This week
+weeklySummaryLastWeek	Last week
+weeklySummaryCustomRange	Custom range
+weeklySummaryCareRecorded	Care recorded
+weeklySummaryJournalEntries	Journal entries
+weeklySummaryCravingSupport	Craving support used
+weeklySummaryThoughtExercises	Thought exercises
+weeklySummaryMovement	Movement / activity
+weeklySummarySleepLogs	Sleep logs
+weeklySummaryDailyGratitude	Daily gratitude
+weeklySummaryDailyPledge	Daily pledge
+weeklySummaryReflection	Reflection
+weeklySummaryPrivacyNote	Privacy note
+weeklySummaryPrivacyNoteBody	This summary was created on your device and shared only because you chose to share it.
+weeklySummaryShareWarning	This summary may contain personal recovery information. Only share it with someone you trust.
+weeklySummarySharePdf	Share Summary
+weeklySummaryEdit	Edit
+weeklySummaryPdfError	Couldn't create the PDF right now. Please try again.
+weeklySummaryNoActivity	No care entries were recorded for this period. A quiet week still counts.
+weeklySummaryCareDays	You returned to your care practices on {count} {count, plural, =1{day} other{days}} this week.
+weeklySummaryMostUsed	Most used support: {support}
+weeklySummaryQuietWeek	A quiet week of showing up still counts.
+weeklySummaryAppName	Journey Forward
+safetyModalTitle	Before you begin
+safetyModalBody	Journey Forward is a companion for your recovery — a private place to track, reflect, and find steadying tools. It is not a medical device and does not provide medical advice, diagnosis, or treatment.
+safetyModalWithdrawal	If you are stopping alcohol or certain medications, withdrawal can be medically serious. Please talk to a doctor or healthcare professional about doing it safely.
+safetyModalCrisis	And if you are ever in crisis, you deserve immediate human support — helplines are always one tap away.
+safetyModalCrisisButton	View crisis helplines
+safetyModalDismiss	I understand
+urgeTimerTitle	Ride the Wave
+urgeTimerSubtitle	Urges feel overwhelming, then they pass — usually within minutes. You don't have to fight this one. Just stay with it.
+urgeTimerPhaseRising	Notice it like a wave — rising, cresting, falling.
+urgeTimerPhaseCresting	You're not fighting it. You're outlasting it.
+urgeTimerPhaseFalling	It's already losing strength. Stay with yourself.
+urgeTimerImSteady	I'm steady now
+urgeTimerOpenPlan	Open my plan
+urgeTimerCompleteTitle	The wave passed
+urgeTimerCompleteBody	You stayed with it, and it passed. That's exactly how this is done.
+urgeTimerWins	{count, plural, =1{1 urge outlasted} other{{count} urges outlasted}}
+urgeTimerDone	Done
+toolkitUrgeCardTitle	Craving right now?
+toolkitUrgeCardSubtitle	Ride the wave — most urges pass in minutes
+settingsLanguage	Language
+settingsLanguageSystem	System default
+commonDelete	Delete
+commonHours	{count, plural, =1{1 hour} other{{count} hours}}
+meetingsTitle	Meetings
+meetingsSubtitle	Plan recovery meetings, sponsor calls, and therapy sessions. Get a quiet reminder before each one.
+meetingsNew	New meeting
+meetingsAdd	Add meeting
+meetingsUpcoming	Upcoming
+meetingsPast	Past
+meetingsDeleteTitle	Delete meeting?
+meetingsDeleteBody	This will remove "{title}" from your schedule.
+meetingsEmptyTitle	No meetings yet
+meetingsEmptyBody	Tap "New meeting" to schedule your first one. We'll quietly remind you before it starts.
+meetingsEdit	Edit meeting
+meetingsFieldName	Name
+meetingsFieldDate	Date
+meetingsFieldTime	Time
+meetingsFieldWhere	Where (optional)
+meetingsFieldNotes	Notes (optional)
+meetingsNameHint	e.g. AA Monday night
+meetingsWhereHint	Zoom, church hall, etc.
+meetingsNotesHint	Anything to remember
+meetingsNameRequired	Please give your meeting a name
+meetingsRemindToggle	Remind me before
+meetingsRemindOn	A quiet notification will fire {label} early.
+meetingsRemindOff	No reminder will be sent.
+meetingsHowEarly	How early?
+meetingsSaveChanges	Save changes
+meetingsReminderChip	🔔 {label} before
+letterWrite	Write a letter
+letterTitle	Letters to future you
+letterSubtitle	Write today. Open later. Your future self gets to hear from the version of you who started this.
+letterReady	Ready to open
+letterSealed	Sealed
+letterEmptyTitle	No letters yet
+letterEmptyBody	Tap below to write your first sealed letter. Pick day 30, 90, or 365 — and meet yourself there.
+letterSealedUntil	Sealed until day {day}
+letterOpenMe	Open me — day {day}
+letterTomorrow	Tomorrow
+letterDaysToGo	{count, plural, =1{1 day to go} other{{count} days to go}}
+letterWritten	written {date}
+letterAlreadyRead	Already read · tap to re-open
+letterNewSeal	New — tap to break the seal
+letterFromPast	Day {day} · from past you
+letterWrittenFull	Written {date}
+letterWriteFirst	Write something first
+letterWriterTitle	Letter to future you
+letterUnlocks	Unlocks day {day} · {date}
+letterDayChip	Day {day}
+letterCustom	Custom
+letterBodyHint	Dear future me…
+
+What do you want to remember about who you are right now? What do you want them to know you survived?
+letterSeal	Seal letter
+letterCustomDayTitle	Custom day
+letterCustomDaysFromSober	{count, plural, =1{1 day from your sober date} other{{count} days from your sober date}}
+letterUseDay	Use day {day}

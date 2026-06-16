@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
 import '../models/thought_record.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
@@ -20,6 +21,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(thoughtRecordProvider);
     final records = async.valueOrNull ?? [];
 
@@ -32,7 +34,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
           elevation: 2,
           onPressed: () => _openEditor(context, ref),
           icon: const Icon(Icons.add_rounded),
-          label: const Text('New record'),
+          label: Text(l10n.trNewRecord),
         ),
       ),
       body: SafeArea(
@@ -49,7 +51,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Thought record',
+              child: Text(l10n.trTitle,
                   style: AppTextStyles.greetingSerif.copyWith(
                       fontSize: 30,
                       color: AppColors.forestDark,
@@ -59,7 +61,7 @@ class ThoughtRecordScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16),
               child: Text(
-                'Catch a thought. Spot the distortion. Walk it through evidence. Land on something truer.',
+                l10n.trSubtitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500, height: 1.4),
               ),
@@ -80,20 +82,20 @@ class ThoughtRecordScreen extends ConsumerWidget {
                             backgroundColor: AppColors.card,
                             shape: const RoundedRectangleBorder(
                                 borderRadius: AppRadius.xxl),
-                            title: Text('Delete this record?',
+                            title: Text(l10n.trDeleteTitle,
                                 style: AppTextStyles.titleMedium),
                             actions: [
                               TextButton(
                                 onPressed: () =>
                                     Navigator.of(context).pop(false),
-                                child: const Text('Cancel'),
+                                child: Text(l10n.commonCancel),
                               ),
                               FilledButton(
                                 onPressed: () =>
                                     Navigator.of(context).pop(true),
                                 style: FilledButton.styleFrom(
                                     backgroundColor: AppColors.blush500),
-                                child: const Text('Delete'),
+                                child: Text(l10n.commonDelete),
                               ),
                             ],
                           ),
@@ -129,6 +131,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xxl,
       padding: const EdgeInsets.all(28),
@@ -143,12 +146,12 @@ class _EmptyState extends StatelessWidget {
                 size: 32, color: AppColors.forest600),
           ),
           const SizedBox(height: 16),
-          Text('No records yet',
+          Text(l10n.trEmptyTitle,
               style: AppTextStyles.titleMedium
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 6),
           Text(
-            'When a thought hooks you, walk it through this. Most users find one record changes their whole week.',
+            l10n.trEmptyBody,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
           ),
@@ -156,7 +159,7 @@ class _EmptyState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('Start a record'),
+            label: Text(l10n.trStartRecord),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
               foregroundColor: AppColors.onForest,
@@ -177,6 +180,7 @@ class _RecordCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final delta = (record.moodAfter != null && record.moodBefore != null)
         ? (record.moodAfter! - record.moodBefore!)
         : null;
@@ -201,7 +205,7 @@ class _RecordCard extends StatelessWidget {
                     borderRadius: AppRadius.pill,
                   ),
                   child: Text(
-                    delta >= 0 ? '+$delta mood' : '$delta mood',
+                    l10n.trMoodDelta(delta >= 0 ? '+$delta' : '$delta'),
                     style: AppTextStyles.caption.copyWith(
                       color:
                           delta >= 0 ? AppColors.forest700 : AppColors.honey600,
@@ -218,13 +222,13 @@ class _RecordCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           if (record.situation.isNotEmpty) ...[
-            _MiniLabel('Situation'),
+            _MiniLabel(l10n.trLabelSituation),
             Text(record.situation,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone700)),
             const SizedBox(height: 10),
           ],
-          _MiniLabel('Automatic thought'),
+          _MiniLabel(l10n.trLabelAutoThought),
           Text('"${record.automaticThought}"',
               style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.stone800, fontStyle: FontStyle.italic)),
@@ -234,7 +238,7 @@ class _RecordCard extends StatelessWidget {
               spacing: 6,
               runSpacing: 6,
               children: record.distortions
-                  .map((c) => CognitiveDistortion.byCode(c)?.name)
+                  .map((c) => CognitiveDistortion.byCode(c)?.localizedName(l10n))
                   .whereType<String>()
                   .map((name) => Container(
                         padding: const EdgeInsets.symmetric(
@@ -252,7 +256,7 @@ class _RecordCard extends StatelessWidget {
           ],
           if (record.reframe.isNotEmpty) ...[
             const SizedBox(height: 12),
-            _MiniLabel('Reframe'),
+            _MiniLabel(l10n.trLabelReframe),
             Text(record.reframe,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.forest700)),
@@ -309,9 +313,10 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     if (_thought.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Catch the thought first',
+        content: Text(l10n.trCatchFirst,
             style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
         backgroundColor: AppColors.stone600,
         behavior: SnackBarBehavior.floating,
@@ -337,6 +342,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -386,7 +392,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                               H.selection();
                               setState(() => _step--);
                             },
-                      child: const Text('Back'),
+                      child: Text(l10n.commonBack),
                     ),
                   ),
                 if (_step > 0) const SizedBox(width: 10),
@@ -415,7 +421,10 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2.4),
                           )
-                        : Text(_step == _stepCount - 1 ? 'Save record' : 'Next',
+                        : Text(
+                            _step == _stepCount - 1
+                                ? l10n.trSaveRecord
+                                : l10n.commonNext,
                             style: AppTextStyles.labelLarge
                                 .copyWith(color: Colors.white)),
                   ),
@@ -429,25 +438,24 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
   }
 
   Widget _buildStep() {
+    final l10n = AppLocalizations.of(context);
     switch (_step) {
       case 0:
         return _StepBlock(
-          title: 'What\'s the situation?',
-          subtitle: 'Where were you, who with, what was happening?',
-          child: _field(_situation,
-              hint: 'e.g. Saturday night. Home alone. Old playlist came on.'),
+          title: l10n.trStep0Title,
+          subtitle: l10n.trStep0Sub,
+          child: _field(_situation, hint: l10n.trStep0Hint),
         );
       case 1:
         return _StepBlock(
-          title: 'Catch the thought',
-          subtitle: 'The exact automatic thought, word-for-word.',
+          title: l10n.trStep1Title,
+          subtitle: l10n.trStep1Sub,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _field(_thought,
-                  hint: 'e.g. "I\'ll never be able to enjoy a weekend sober."'),
+              _field(_thought, hint: l10n.trStep1Hint),
               const SizedBox(height: 14),
-              Text('Mood right now',
+              Text(l10n.trMoodNow,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone500)),
               Slider(
@@ -455,7 +463,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                 min: 1,
                 max: 10,
                 divisions: 9,
-                label: '$_moodBefore / 10',
+                label: l10n.trMoodScale(_moodBefore),
                 onChanged: (v) => setState(() => _moodBefore = v.round()),
               ),
             ],
@@ -463,8 +471,8 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
         );
       case 2:
         return _StepBlock(
-          title: 'Which distortions fit?',
-          subtitle: 'Pick any that ring true — the label takes the sting out.',
+          title: l10n.trStep2Title,
+          subtitle: l10n.trStep2Sub,
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -486,22 +494,22 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                       backgroundColor: AppColors.card,
                       shape: const RoundedRectangleBorder(
                           borderRadius: AppRadius.xxl),
-                      title: Text(d.name,
+                      title: Text(d.localizedName(l10n),
                           style: AppTextStyles.titleSmall
                               .copyWith(color: AppColors.forest700)),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(d.description,
+                          Text(d.localizedDescription(l10n),
                               style: AppTextStyles.bodyMedium
                                   .copyWith(color: AppColors.stone700)),
                           const SizedBox(height: 12),
-                          Text('Try asking:',
+                          Text(l10n.trTryAsking,
                               style: AppTextStyles.caption
                                   .copyWith(color: AppColors.stone500)),
                           const SizedBox(height: 4),
-                          Text(d.reframePrompt,
+                          Text(d.localizedReframePrompt(l10n),
                               style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.forest700,
                                   fontStyle: FontStyle.italic)),
@@ -510,7 +518,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Got it'),
+                          child: Text(l10n.commonGotIt),
                         ),
                       ],
                     ),
@@ -526,7 +534,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                       color: sel ? AppColors.forest700 : AppColors.stone200,
                     ),
                   ),
-                  child: Text(d.name,
+                  child: Text(d.localizedName(l10n),
                       style: AppTextStyles.labelMedium.copyWith(
                           color: sel ? Colors.white : AppColors.stone600)),
                 ),
@@ -536,41 +544,35 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
         );
       case 3:
         return _StepBlock(
-          title: 'Weigh the evidence',
-          subtitle:
-              'Like a courtroom — what supports the thought, what doesn\'t?',
+          title: l10n.trStep3Title,
+          subtitle: l10n.trStep3Sub,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('For the thought',
+              Text(l10n.trEvidenceFor,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone500)),
               const SizedBox(height: 4),
-              _field(_evidenceFor,
-                  hint: 'Facts that suggest the thought is true'),
+              _field(_evidenceFor, hint: l10n.trEvidenceForHint),
               const SizedBox(height: 12),
-              Text('Against the thought',
+              Text(l10n.trEvidenceAgainst,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone500)),
               const SizedBox(height: 4),
-              _field(_evidenceAgainst,
-                  hint: 'Facts that contradict or soften it'),
+              _field(_evidenceAgainst, hint: l10n.trEvidenceAgainstHint),
             ],
           ),
         );
       case 4:
         return _StepBlock(
-          title: 'Land somewhere truer',
-          subtitle:
-              'Not "positive thinking" — a fairer, more accurate version.',
+          title: l10n.trStep4Title,
+          subtitle: l10n.trStep4Sub,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _field(_reframe,
-                  hint:
-                      'e.g. "This is hard right now. I\'ve had sober Saturdays before. One is coming again."'),
+              _field(_reframe, hint: l10n.trStep4Hint),
               const SizedBox(height: 14),
-              Text('Mood after writing this',
+              Text(l10n.trMoodAfter,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone500)),
               Slider(
@@ -578,7 +580,7 @@ class _EditorSheetState extends ConsumerState<_EditorSheet> {
                 min: 1,
                 max: 10,
                 divisions: 9,
-                label: '$_moodAfter / 10',
+                label: l10n.trMoodScale(_moodAfter),
                 onChanged: (v) => setState(() => _moodAfter = v.round()),
               ),
             ],
