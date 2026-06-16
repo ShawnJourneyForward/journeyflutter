@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
 import '../models/future_letter.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
@@ -20,6 +21,7 @@ class FutureLetterScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(futureLetterProvider);
     final letters = async.valueOrNull ?? [];
     final now = DateTime.now();
@@ -35,7 +37,7 @@ class FutureLetterScreen extends ConsumerWidget {
           elevation: 2,
           onPressed: () => _openWriter(context, ref),
           icon: const Icon(Icons.edit_outlined),
-          label: const Text('Write a letter'),
+          label: Text(l10n.letterWrite),
         ),
       ),
       body: SafeArea(
@@ -52,7 +54,7 @@ class FutureLetterScreen extends ConsumerWidget {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Letters to future you',
+              child: Text(l10n.letterTitle,
                   style: AppTextStyles.greetingSerif.copyWith(
                       fontSize: 30,
                       color: AppColors.forestDark,
@@ -62,7 +64,7 @@ class FutureLetterScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16),
               child: Text(
-                'Write today. Open later. Your future self gets to hear from the version of you who started this.',
+                l10n.letterSubtitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500, height: 1.4),
               ),
@@ -72,7 +74,7 @@ class FutureLetterScreen extends ConsumerWidget {
               _EmptyState(onWrite: () => _openWriter(context, ref))
             else ...[
               if (unlocked.isNotEmpty) ...[
-                _SectionLabel('Ready to open · ${unlocked.length}'),
+                _SectionLabel('${l10n.letterReady} · ${unlocked.length}'),
                 const SizedBox(height: 10),
                 ...unlocked.map((l) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -84,7 +86,7 @@ class FutureLetterScreen extends ConsumerWidget {
                 const SizedBox(height: 14),
               ],
               if (sealed.isNotEmpty) ...[
-                _SectionLabel('Sealed · ${sealed.length}'),
+                _SectionLabel('${l10n.letterSealed} · ${sealed.length}'),
                 const SizedBox(height: 10),
                 ...sealed.map((l) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -134,6 +136,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xxl,
       padding: const EdgeInsets.all(28),
@@ -148,12 +151,12 @@ class _EmptyState extends StatelessWidget {
                 size: 32, color: AppColors.honey600),
           ),
           const SizedBox(height: 16),
-          Text('No letters yet',
+          Text(l10n.letterEmptyTitle,
               style: AppTextStyles.titleMedium
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 6),
           Text(
-            'Tap below to write your first sealed letter. Pick day 30, 90, or 365 — and meet yourself there.',
+            l10n.letterEmptyBody,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
           ),
@@ -161,7 +164,7 @@ class _EmptyState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onWrite,
             icon: const Icon(Icons.edit_outlined, size: 18),
-            label: const Text('Write a letter'),
+            label: Text(l10n.letterWrite),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
               foregroundColor: AppColors.onForest,
@@ -201,6 +204,7 @@ class _LetterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isSealed = onTap == null;
     final now = DateTime.now();
     final daysToGo = letter.unlockAt.difference(now).inDays;
@@ -237,8 +241,8 @@ class _LetterCard extends StatelessWidget {
                   children: [
                     Text(
                       isSealed
-                          ? 'Sealed until day ${letter.unlockDay}'
-                          : 'Open me — day ${letter.unlockDay}',
+                          ? l10n.letterSealedUntil(letter.unlockDay)
+                          : l10n.letterOpenMe(letter.unlockDay),
                       style: AppTextStyles.titleSmall.copyWith(
                           color: isSealed
                               ? AppColors.stone500
@@ -247,10 +251,10 @@ class _LetterCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       isSealed
-                          ? '${daysToGo == 0 ? 'Tomorrow' : '$daysToGo day${daysToGo == 1 ? '' : 's'} to go'} · written ${DateFormat('d MMM').format(letter.writtenAt)}'
+                          ? '${daysToGo == 0 ? l10n.letterTomorrow : l10n.letterDaysToGo(daysToGo)} · ${l10n.letterWritten(DateFormat('d MMM').format(letter.writtenAt))}'
                           : letter.opened
-                              ? 'Already read · tap to re-open'
-                              : 'New — tap to break the seal',
+                              ? l10n.letterAlreadyRead
+                              : l10n.letterNewSeal,
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.stone500),
                     ),
@@ -276,6 +280,7 @@ class _LetterReader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Dialog(
       backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
@@ -291,7 +296,7 @@ class _LetterReader extends StatelessWidget {
                 Icon(Icons.mark_email_read_outlined,
                     color: AppColors.honey600),
                 const SizedBox(width: 8),
-                Text('Day ${letter.unlockDay} · from past you',
+                Text(l10n.letterFromPast(letter.unlockDay),
                     style: AppTextStyles.titleSmall
                         .copyWith(color: AppColors.forest700)),
                 const Spacer(),
@@ -303,7 +308,8 @@ class _LetterReader extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Written ${DateFormat('EEE d MMM yyyy').format(letter.writtenAt)}',
+              l10n.letterWrittenFull(
+                  DateFormat('EEE d MMM yyyy').format(letter.writtenAt)),
               style: AppTextStyles.caption.copyWith(color: AppColors.stone500),
             ),
             const SizedBox(height: 16),
@@ -347,10 +353,11 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final body = _ctrl.text.trim();
     if (body.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Write something first',
+        content: Text(l10n.letterWriteFirst,
             style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
         backgroundColor: AppColors.stone600,
         behavior: SnackBarBehavior.floating,
@@ -372,6 +379,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final unlockOn = widget.soberDate.add(Duration(days: _day));
     return Padding(
       padding:
@@ -399,12 +407,13 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                   ),
                 ),
               ),
-              Text('Letter to future you',
+              Text(l10n.letterWriterTitle,
                   style: AppTextStyles.titleLarge
                       .copyWith(color: AppColors.forest700)),
               const SizedBox(height: 8),
               Text(
-                'Unlocks day $_day · ${DateFormat('EEE d MMM yyyy').format(unlockOn)}',
+                l10n.letterUnlocks(
+                    _day, DateFormat('EEE d MMM yyyy').format(unlockOn)),
                 style:
                     AppTextStyles.caption.copyWith(color: AppColors.stone500),
               ),
@@ -430,7 +439,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                                 sel ? AppColors.forest700 : AppColors.stone200,
                           ),
                         ),
-                        child: Text('Day $d',
+                        child: Text(l10n.letterDayChip(d),
                             style: AppTextStyles.labelMedium.copyWith(
                                 color:
                                     sel ? Colors.white : AppColors.stone600)),
@@ -471,8 +480,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone800),
                 decoration: InputDecoration(
-                  hintText:
-                      'Dear future me…\n\nWhat do you want to remember about who you are right now? What do you want them to know you survived?',
+                  hintText: l10n.letterBodyHint,
                   hintStyle: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.stone300),
                   filled: true,
@@ -512,7 +520,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2.4),
                         )
-                      : Text('Seal letter',
+                      : Text(l10n.letterSeal,
                           style: AppTextStyles.labelLarge
                               .copyWith(color: Colors.white)),
                 ),
@@ -537,14 +545,15 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
       backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-      title: Text('Custom day', style: AppTextStyles.titleMedium),
+      title: Text(l10n.letterCustomDayTitle, style: AppTextStyles.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('$_value days from your sober date',
+          Text(l10n.letterCustomDaysFromSober(_value),
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600)),
           Slider(
@@ -552,7 +561,7 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
             min: 7,
             max: 1825, // 5 years
             divisions: 1818,
-            label: '$_value days',
+            label: l10n.commonDays(_value),
             onChanged: (v) => setState(() => _value = v.round()),
           ),
         ],
@@ -560,14 +569,14 @@ class _CustomDayPickerState extends State<_CustomDayPicker> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Cancel',
+          child: Text(l10n.commonCancel,
               style: AppTextStyles.labelMedium
                   .copyWith(color: AppColors.stone500)),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_value),
           style: FilledButton.styleFrom(backgroundColor: AppColors.forest700),
-          child: Text('Use day $_value',
+          child: Text(l10n.letterUseDay(_value),
               style: AppTextStyles.labelMedium
                   .copyWith(color: AppColors.onForest)),
         ),

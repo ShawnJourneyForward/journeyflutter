@@ -5671,6 +5671,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🔔 {label} before'**
   String meetingsReminderChip(String label);
+
+  /// Button: start writing a letter to your future self
+  ///
+  /// In en, this message translates to:
+  /// **'Write a letter'**
+  String get letterWrite;
+
+  /// Future-letters screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Letters to future you'**
+  String get letterTitle;
+
+  /// Future-letters screen subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Write today. Open later. Your future self gets to hear from the version of you who started this.'**
+  String get letterSubtitle;
+
+  /// Section header for letters that can be opened now (count appended after)
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to open'**
+  String get letterReady;
+
+  /// Section header for still-sealed letters (count appended after)
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed'**
+  String get letterSealed;
+
+  /// Empty state title on the future-letters screen
+  ///
+  /// In en, this message translates to:
+  /// **'No letters yet'**
+  String get letterEmptyTitle;
+
+  /// Empty state body on the future-letters screen
+  ///
+  /// In en, this message translates to:
+  /// **'Tap below to write your first sealed letter. Pick day 30, 90, or 365 — and meet yourself there.'**
+  String get letterEmptyBody;
+
+  /// Letter card title when still sealed; {day} is the sobriety day it unlocks
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed until day {day}'**
+  String letterSealedUntil(int day);
+
+  /// Letter card title when ready to open
+  ///
+  /// In en, this message translates to:
+  /// **'Open me — day {day}'**
+  String letterOpenMe(int day);
+
+  /// Letter unlocks tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get letterTomorrow;
+
+  /// Days remaining until a sealed letter unlocks
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day to go} other{{count} days to go}}'**
+  String letterDaysToGo(int count);
+
+  /// Lowercase, appears mid-sentence after '·'; {date} is a short date like '5 Jun'
+  ///
+  /// In en, this message translates to:
+  /// **'written {date}'**
+  String letterWritten(String date);
+
+  /// Letter card subtitle for an opened letter
+  ///
+  /// In en, this message translates to:
+  /// **'Already read · tap to re-open'**
+  String get letterAlreadyRead;
+
+  /// Letter card subtitle for a newly-unlocked unopened letter
+  ///
+  /// In en, this message translates to:
+  /// **'New — tap to break the seal'**
+  String get letterNewSeal;
+
+  /// Letter reader dialog header
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day} · from past you'**
+  String letterFromPast(int day);
+
+  /// Letter reader: when it was written; {date} is a full date
+  ///
+  /// In en, this message translates to:
+  /// **'Written {date}'**
+  String letterWrittenFull(String date);
+
+  /// Validation: letter body is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Write something first'**
+  String get letterWriteFirst;
+
+  /// Title of the letter-writing sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Letter to future you'**
+  String get letterWriterTitle;
+
+  /// Writer sheet: when the letter will unlock
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocks day {day} · {date}'**
+  String letterUnlocks(int day, String date);
+
+  /// Preset chip choosing which sobriety day the letter unlocks
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}'**
+  String letterDayChip(int day);
+
+  /// Chip: choose a custom unlock day
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get letterCustom;
+
+  /// Placeholder text in the letter body field
+  ///
+  /// In en, this message translates to:
+  /// **'Dear future me…\n\nWhat do you want to remember about who you are right now? What do you want them to know you survived?'**
+  String get letterBodyHint;
+
+  /// Button: save and seal the letter
+  ///
+  /// In en, this message translates to:
+  /// **'Seal letter'**
+  String get letterSeal;
+
+  /// Title of the custom-day picker dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Custom day'**
+  String get letterCustomDayTitle;
+
+  /// Custom-day picker: how many days after the sober date
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day from your sober date} other{{count} days from your sober date}}'**
+  String letterCustomDaysFromSober(int count);
+
+  /// Button: confirm the custom unlock day
+  ///
+  /// In en, this message translates to:
+  /// **'Use day {day}'**
+  String letterUseDay(int day);
 }
 
 class _AppLocalizationsDelegate

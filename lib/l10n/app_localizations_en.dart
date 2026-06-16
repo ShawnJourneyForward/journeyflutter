@@ -3109,4 +3109,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String meetingsReminderChip(String label) {
     return '🔔 $label before';
   }
+
+  @override
+  String get letterWrite => 'Write a letter';
+
+  @override
+  String get letterTitle => 'Letters to future you';
+
+  @override
+  String get letterSubtitle =>
+      'Write today. Open later. Your future self gets to hear from the version of you who started this.';
+
+  @override
+  String get letterReady => 'Ready to open';
+
+  @override
+  String get letterSealed => 'Sealed';
+
+  @override
+  String get letterEmptyTitle => 'No letters yet';
+
+  @override
+  String get letterEmptyBody =>
+      'Tap below to write your first sealed letter. Pick day 30, 90, or 365 — and meet yourself there.';
+
+  @override
+  String letterSealedUntil(int day) {
+    return 'Sealed until day $day';
+  }
+
+  @override
+  String letterOpenMe(int day) {
+    return 'Open me — day $day';
+  }
+
+  @override
+  String get letterTomorrow => 'Tomorrow';
+
+  @override
+  String letterDaysToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days to go',
+      one: '1 day to go',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String letterWritten(String date) {
+    return 'written $date';
+  }
+
+  @override
+  String get letterAlreadyRead => 'Already read · tap to re-open';
+
+  @override
+  String get letterNewSeal => 'New — tap to break the seal';
+
+  @override
+  String letterFromPast(int day) {
+    return 'Day $day · from past you';
+  }
+
+  @override
+  String letterWrittenFull(String date) {
+    return 'Written $date';
+  }
+
+  @override
+  String get letterWriteFirst => 'Write something first';
+
+  @override
+  String get letterWriterTitle => 'Letter to future you';
+
+  @override
+  String letterUnlocks(int day, String date) {
+    return 'Unlocks day $day · $date';
+  }
+
+  @override
+  String letterDayChip(int day) {
+    return 'Day $day';
+  }
+
+  @override
+  String get letterCustom => 'Custom';
+
+  @override
+  String get letterBodyHint =>
+      'Dear future me…\n\nWhat do you want to remember about who you are right now? What do you want them to know you survived?';
+
+  @override
+  String get letterSeal => 'Seal letter';
+
+  @override
+  String get letterCustomDayTitle => 'Custom day';
+
+  @override
+  String letterCustomDaysFromSober(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days from your sober date',
+      one: '1 day from your sober date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String letterUseDay(int day) {
+    return 'Use day $day';
+  }
 }
