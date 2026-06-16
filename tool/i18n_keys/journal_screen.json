@@ -1,0 +1,723 @@
+{
+  "journalMoodLoggedSnack": {
+    "en": "Mood logged. Tap the card to add words.",
+    "desc": "Snackbar shown after the user logs a quick mood with no body text yet."
+  },
+  "journalReauthViewEntry": {
+    "en": "View this entry",
+    "desc": "Reason shown in the biometric/PIN re-auth prompt when opening a locked journal entry."
+  },
+  "journalFilterEmptyTitle": {
+    "en": "Nothing matches",
+    "desc": "Title of the empty state when no journal entries match the active filter/search."
+  },
+  "journalFilterEmptySubtitle": {
+    "en": "Try a different filter or clear the search.",
+    "desc": "Subtitle of the journal filter empty state."
+  },
+  "journalNewEntryTitle": {
+    "en": "New entry",
+    "desc": "Header of the bottom sheet that lets the user choose what kind of journal entry to write."
+  },
+  "journalNewEntrySubtitle": {
+    "en": "Pick how you want to write today.",
+    "desc": "Subtitle under the New entry chooser header."
+  },
+  "journalPlainEntryTitle": {
+    "en": "Plain entry",
+    "desc": "Title of the option that opens a blank journal entry."
+  },
+  "journalPlainEntrySubtitle": {
+    "en": "A blank page for your thoughts. Mood, tags, optional prompt.",
+    "desc": "Description of the plain journal entry option."
+  },
+  "journalDailyReflectionTitle": {
+    "en": "Daily reflection",
+    "desc": "Title of the option that opens the guided daily-reflection template."
+  },
+  "journalDailyReflectionSubtitle": {
+    "en": "A guided page: gratitude, anchors, wins, cravings, intention.",
+    "desc": "Description of the guided daily reflection option."
+  },
+  "journalBadgeNew": {
+    "en": "New",
+    "desc": "Small 'New' badge on the daily reflection option."
+  },
+  "journalCrisisTitleCrisis": {
+    "en": "I see you. Want a hand?",
+    "desc": "Heading of the support sheet shown after a fresh entry with a 'crisis' mood."
+  },
+  "journalCrisisTitleHard": {
+    "en": "That sounds heavy.",
+    "desc": "Heading of the support sheet shown after a fresh entry with a 'hard' mood."
+  },
+  "journalCrisisBodyCrisis": {
+    "en": "Saving your entry helped. A short calm exercise can take it from here.",
+    "desc": "Body of the support sheet for a crisis-mood entry."
+  },
+  "journalCrisisBodyHard": {
+    "en": "You wrote it down — that already counts. A 60-second thought record can help if you want it.",
+    "desc": "Body of the support sheet for a hard-mood entry."
+  },
+  "journalCrisisCalmRoomLabel": {
+    "en": "Open the calm room",
+    "desc": "Action label routing the user to the calm/emergency toolkit."
+  },
+  "journalCrisisCalmRoomDetail": {
+    "en": "Breath work, grounding, and one safe action.",
+    "desc": "Detail line under the 'Open the calm room' action."
+  },
+  "journalCrisisThoughtRecordLabel": {
+    "en": "Try a thought record",
+    "desc": "Action label routing the user to the CBT thought-record tool."
+  },
+  "journalCrisisThoughtRecordDetail": {
+    "en": "Name the thought, weigh the evidence, reframe it.",
+    "desc": "Detail line under the 'Try a thought record' action."
+  },
+  "journalCrisisDismiss": {
+    "en": "I'm okay for now",
+    "desc": "Dismiss button on the post-entry crisis support sheet."
+  },
+  "journalBucketThisWeek": {
+    "en": "This week",
+    "desc": "Section header grouping journal entries from the last 7 days."
+  },
+  "journalBucketLastWeek": {
+    "en": "Last week",
+    "desc": "Section header grouping journal entries from 8-14 days ago."
+  },
+  "journalBucketEarlierThisMonth": {
+    "en": "Earlier this month",
+    "desc": "Section header grouping older journal entries within the current month."
+  },
+  "journalWritingStreak": {
+    "en": "{count, plural, =1{1 day writing} other{{count} day writing streak}}",
+    "desc": "Journal writing streak label shown in the diary header.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalQuickMoodPrompt": {
+    "en": "How are you right now?",
+    "desc": "Prompt on the one-tap quick-mood pill."
+  },
+  "journalOnThisDay": {
+    "en": "{count, plural, =1{On this day, 1 year ago} other{On this day, {count} years ago}}",
+    "desc": "Label on the 'on this day' memory card showing how many years ago an entry was written.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalEchoLockedEntry": {
+    "en": "A locked entry",
+    "desc": "Placeholder text for a locked entry shown in the 'on this day' card."
+  },
+  "journalEchoMoodCheckIn": {
+    "en": "A mood check-in",
+    "desc": "Placeholder text for a body-less mood entry shown in the 'on this day' card."
+  },
+  "journalEchoMore": {
+    "en": "{count, plural, =1{+1 more from this day} other{+{count} more from this day}}",
+    "desc": "Counter showing how many more entries exist from the same day in the 'on this day' card.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalFilterAll": {
+    "en": "All",
+    "desc": "Filter chip showing all journal entries (also reused on the vision board)."
+  },
+  "journalFilterToday": {
+    "en": "Today",
+    "desc": "Filter chip showing only today's journal entries."
+  },
+  "journalFilterHard": {
+    "en": "Hard",
+    "desc": "Filter chip showing hard/crisis-mood journal entries."
+  },
+  "journalFilterWins": {
+    "en": "Wins",
+    "desc": "Filter chip showing good/great-mood journal entries."
+  },
+  "journalFilterLocked": {
+    "en": "Locked",
+    "desc": "Filter chip showing locked journal entries."
+  },
+  "journalSearchHint": {
+    "en": "Search your entries…",
+    "desc": "Hint text in the journal search field."
+  },
+  "journalEmptyTitle": {
+    "en": "A place for the unfiltered you",
+    "desc": "Title of the journal empty state (no entries yet)."
+  },
+  "journalEmptySubtitle": {
+    "en": "Pick a door — or tap + to start with a blank page.",
+    "desc": "Subtitle of the journal empty state."
+  },
+  "journalBlankPageButton": {
+    "en": "Start with a blank page",
+    "desc": "Button to open a blank journal entry from the empty state."
+  },
+  "journalDeleteEntryTitle": {
+    "en": "Delete entry?",
+    "desc": "Title of the confirmation dialog when swiping to delete a journal entry."
+  },
+  "journalDeleteEntryBody": {
+    "en": "This cannot be undone.",
+    "desc": "Body of the delete-entry confirmation dialog."
+  },
+  "journalCardLockedHint": {
+    "en": "Locked entry · tap to unlock",
+    "desc": "Hint shown in place of the body on a locked journal card."
+  },
+  "journalCardMoodCheckInHint": {
+    "en": "Mood check-in · tap to add words",
+    "desc": "Hint shown on a body-less mood-only journal card."
+  },
+  "journalCardDateToday": {
+    "en": "Today {time}",
+    "desc": "Date label on a journal card written today, including the time of day.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "journalEditEntryTitle": {
+    "en": "Edit Entry",
+    "desc": "Header of the journal entry sheet when editing an existing entry."
+  },
+  "journalTodaysEntryTitle": {
+    "en": "Today's Entry",
+    "desc": "Header of the journal entry sheet when creating a new entry."
+  },
+  "journalMoodQuestion": {
+    "en": "How are you feeling?",
+    "desc": "Label above the primary mood picker in the entry sheet."
+  },
+  "journalSubMoodSpecific": {
+    "en": "A little more specific?",
+    "desc": "Label above the sub-mood picker when the primary mood is 'great'."
+  },
+  "journalSubMoodUnderneath": {
+    "en": "What's underneath?",
+    "desc": "Label above the sub-mood picker for non-great moods."
+  },
+  "journalMindQuestion": {
+    "en": "What's on your mind?",
+    "desc": "Label above the journal body text field."
+  },
+  "journalVoiceStop": {
+    "en": "Stop",
+    "desc": "Button label to stop voice dictation in the entry sheet."
+  },
+  "journalVoiceSpeak": {
+    "en": "Speak",
+    "desc": "Button label to start voice dictation in the entry sheet."
+  },
+  "journalVoiceUnavailable": {
+    "en": "Voice input is unavailable. Check microphone permission in Settings.",
+    "desc": "Snackbar shown when voice input cannot be initialised."
+  },
+  "journalBodyHint": {
+    "en": "Write freely — no one else will see this...",
+    "desc": "Hint text in the journal body text field."
+  },
+  "journalTagsLabel": {
+    "en": "Tags",
+    "desc": "Label above the tag picker in the entry sheet."
+  },
+  "journalAddTagHint": {
+    "en": "Add a tag…",
+    "desc": "Hint text in the new-tag input field."
+  },
+  "journalAdd": {
+    "en": "Add",
+    "desc": "Button to add a new tag or affirmation."
+  },
+  "journalLockedEntryLabel": {
+    "en": "Locked entry",
+    "desc": "Lock-toggle title when the entry is locked."
+  },
+  "journalLockEntryLabel": {
+    "en": "Lock this entry",
+    "desc": "Lock-toggle title when the entry is unlocked."
+  },
+  "journalLockEntryHint": {
+    "en": "Hidden from the list. Re-auth required to view.",
+    "desc": "Explanation under the lock-this-entry toggle."
+  },
+  "journalSaveChanges": {
+    "en": "Save Changes",
+    "desc": "Save button when editing an existing journal entry or vision item."
+  },
+  "journalSaveEntry": {
+    "en": "Save Entry",
+    "desc": "Save button when creating a new journal entry."
+  },
+  "journalSuggestedPrompt": {
+    "en": "Suggested: {prompt}",
+    "desc": "Headline of the collapsed prompt strip showing a suggested journaling prompt.",
+    "placeholders": {
+      "prompt": {
+        "type": "String"
+      }
+    }
+  },
+  "journalSuggestedTag": {
+    "en": "· suggested",
+    "desc": "Small tag marking the smart-default journaling prompt category."
+  },
+  "journalDraftFrom": {
+    "en": "Unsaved draft from {age}",
+    "desc": "Title of the draft-restore banner; {age} is a relative time like '5m ago'.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "journalDraftChars": {
+    "en": "{mood} · {count} chars",
+    "desc": "Subtitle of the draft-restore banner showing the draft mood and character count.",
+    "placeholders": {
+      "mood": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalDraftDiscard": {
+    "en": "Discard",
+    "desc": "Button to discard an unsaved journal draft."
+  },
+  "journalAgeMomentAgo": {
+    "en": "a moment ago",
+    "desc": "Relative time for a draft saved less than a minute ago."
+  },
+  "journalAgeMinutesAgo": {
+    "en": "{count}m ago",
+    "desc": "Relative time for a draft saved N minutes ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalAgeHoursAgo": {
+    "en": "{count}h ago",
+    "desc": "Relative time for a draft saved N hours ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalAgeYesterday": {
+    "en": "yesterday",
+    "desc": "Relative time for a draft saved more than a day ago."
+  },
+  "journalPersonalCard0": {
+    "en": "{name}, you are doing harder things than most people will ever try.",
+    "desc": "Personalised affirmation card addressing the user by name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journalPersonalCard1": {
+    "en": "{name}, your sober self is the realest version of you.",
+    "desc": "Personalised affirmation card addressing the user by name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journalPersonalCard2": {
+    "en": "{name}, this moment is enough. You are enough.",
+    "desc": "Personalised affirmation card addressing the user by name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journalPersonalCard3": {
+    "en": "{name}, the version of you a year from now is rooting for today's you.",
+    "desc": "Personalised affirmation card addressing the user by name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "journalPersonalGratitudeCard": {
+    "en": "You wrote this: \"{gratitude}\" — that's still true.",
+    "desc": "Affirmation card mirroring back a recent gratitude the user wrote.",
+    "placeholders": {
+      "gratitude": {
+        "type": "String"
+      }
+    }
+  },
+  "journalSwipeHint": {
+    "en": "Swipe for more affirmations",
+    "desc": "Hint under the swipeable affirmation card."
+  },
+  "journalYourAffirmations": {
+    "en": "Your affirmations",
+    "desc": "Section header for the user's custom affirmations list."
+  },
+  "journalTapToAddAffirmation": {
+    "en": "Tap + to add your own",
+    "desc": "Empty-state hint when the user has no custom affirmations."
+  },
+  "journalAddAffirmationTitle": {
+    "en": "Add Affirmation",
+    "desc": "Header of the add-affirmation bottom sheet."
+  },
+  "journalAffirmationHint": {
+    "en": "I am...",
+    "desc": "Hint text in the add-affirmation input field."
+  },
+  "visionFilterEmptyTitle": {
+    "en": "Nothing here yet",
+    "desc": "Title of the vision-board empty state when no items match the active filter."
+  },
+  "visionFilterEmptySubtitle": {
+    "en": "Try a different filter, or add a new dream.",
+    "desc": "Subtitle of the vision-board filter empty state."
+  },
+  "visionBoardTitle": {
+    "en": "Your Vision Board",
+    "desc": "Title of the vision board header banner."
+  },
+  "visionBoardEmptyTagline": {
+    "en": "Visualise the life ahead of you",
+    "desc": "Tagline shown in the vision board header when there are no items."
+  },
+  "visionDreamCount": {
+    "en": "{count, plural, =1{1 dream} other{{count} dreams}}",
+    "desc": "Count of dreams on the vision board, shown in the header subtitle.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "visionPinnedCount": {
+    "en": "{count} pinned",
+    "desc": "Count of pinned dreams in the vision board header subtitle.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "visionAchievedCount": {
+    "en": "{count} achieved",
+    "desc": "Count of achieved dreams in the vision board header subtitle.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "visionFilterActive": {
+    "en": "Active",
+    "desc": "Vision board filter chip for active (not-yet-achieved) dreams."
+  },
+  "visionFilterPinned": {
+    "en": "Pinned",
+    "desc": "Vision board filter chip for pinned dreams."
+  },
+  "visionFilterAchieved": {
+    "en": "Achieved",
+    "desc": "Vision board filter chip for achieved dreams."
+  },
+  "visionEmptyTitle": {
+    "en": "What does your life ahead look like?",
+    "desc": "Title of the vision board empty state (no items yet)."
+  },
+  "visionEmptySubtitle": {
+    "en": "Start with one of these — or tap + for a blank canvas.",
+    "desc": "Subtitle of the vision board empty state."
+  },
+  "visionBlankDreamButton": {
+    "en": "Start with a blank dream",
+    "desc": "Button to add a blank vision item from the empty state."
+  },
+  "visionTapToOpen": {
+    "en": "Tap to open",
+    "desc": "Hint on a vision card without milestones, prompting the user to open it."
+  },
+  "visionRemoveDreamTitle": {
+    "en": "Remove this dream?",
+    "desc": "Title of the confirm dialog when long-pressing to delete a vision item."
+  },
+  "visionKeep": {
+    "en": "Keep",
+    "desc": "Button to cancel removing a vision item."
+  },
+  "visionRemove": {
+    "en": "Remove",
+    "desc": "Button to confirm removing a vision item."
+  },
+  "visionEditDreamTitle": {
+    "en": "Edit Dream",
+    "desc": "Header of the vision edit sheet when editing an existing item."
+  },
+  "visionAddDreamTitle": {
+    "en": "Add a Dream",
+    "desc": "Header of the vision edit sheet when adding a new item."
+  },
+  "visionAddToBoard": {
+    "en": "Add to Vision Board",
+    "desc": "Primary button to save a new vision item."
+  },
+  "visionRemoveThisDream": {
+    "en": "Remove this dream",
+    "desc": "Secondary button to delete a vision item from the edit sheet."
+  },
+  "visionDreamTitleLabel": {
+    "en": "Dream title",
+    "desc": "Field label for the vision item title."
+  },
+  "visionDreamTitleHint": {
+    "en": "e.g. Be more present for my family",
+    "desc": "Hint text for the vision item title field."
+  },
+  "visionNotesLabel": {
+    "en": "Notes (optional)",
+    "desc": "Field label for the optional vision item notes."
+  },
+  "visionNotesHint": {
+    "en": "Anything to remember…",
+    "desc": "Hint text for the vision item notes field."
+  },
+  "visionWhyLabel": {
+    "en": "Why this matters (optional)",
+    "desc": "Field label for the optional 'why it matters' field."
+  },
+  "visionWhyHint": {
+    "en": "When this matters most, why does it matter?",
+    "desc": "Hint text for the 'why it matters' field."
+  },
+  "visionCategoryLabel": {
+    "en": "Category",
+    "desc": "Field label for the vision item category picker."
+  },
+  "visionChooseIcon": {
+    "en": "Choose your icon",
+    "desc": "Field label for the vision item icon picker."
+  },
+  "visionTargetDateLabel": {
+    "en": "Target date (optional)",
+    "desc": "Field label for the optional vision item target date."
+  },
+  "visionTargetDatePlaceholder": {
+    "en": "Pick a date to work toward",
+    "desc": "Placeholder shown when no target date is set."
+  },
+  "visionPhotosLabel": {
+    "en": "Photos help you feel it (up to 4)",
+    "desc": "Field label for the vision item photo picker."
+  },
+  "visionAddFirstPhoto": {
+    "en": "Add your first photo",
+    "desc": "Button label to add the first photo to a vision item."
+  },
+  "visionAddAnotherPhoto": {
+    "en": "Add another ({count}/4)",
+    "desc": "Button label to add another photo, showing how many of 4 are used.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "visionPhotosPrivacyNote": {
+    "en": "Photos are stored on this device only — they never leave your phone.",
+    "desc": "Privacy note under the vision item photo picker."
+  },
+  "visionStepsLabel": {
+    "en": "Small concrete steps",
+    "desc": "Field label for the vision item milestones/steps."
+  },
+  "visionStepsDescription": {
+    "en": "Break the dream into 3–6 tiny wins. Check them off as life moves.",
+    "desc": "Description under the vision item steps label."
+  },
+  "visionNoStepsYet": {
+    "en": "No steps yet — add one below.",
+    "desc": "Empty-state text when a vision item has no milestones."
+  },
+  "visionStepHint": {
+    "en": "e.g. Walk 20 minutes today",
+    "desc": "Hint text for the add-milestone input field."
+  },
+  "visionAffirmationLabel": {
+    "en": "Affirmation",
+    "desc": "Field label for the vision item affirmation."
+  },
+  "visionAffirmationDescription": {
+    "en": "\"I am…\" beats \"I want to…\" — the brain hears it as already real.",
+    "desc": "Description under the vision item affirmation label."
+  },
+  "visionAffirmationHint": {
+    "en": "I am present, patient, and proud of how I show up.",
+    "desc": "Hint text for the vision item affirmation field."
+  },
+  "visionSuggestFromTitle": {
+    "en": "Suggest from title",
+    "desc": "Button that auto-suggests an affirmation from the dream title."
+  },
+  "visionTabVision": {
+    "en": "Vision",
+    "desc": "Tab label for the vision details tab in the edit sheet."
+  },
+  "visionTabPhotos": {
+    "en": "Photos",
+    "desc": "Tab label for the photos tab in the vision edit sheet."
+  },
+  "visionTabSteps": {
+    "en": "Steps",
+    "desc": "Tab label for the milestones/steps tab in the vision edit sheet."
+  },
+  "visionTabAffirm": {
+    "en": "Affirm",
+    "desc": "Tab label for the affirmation tab in the vision edit sheet."
+  },
+  "zenTodaysReflection": {
+    "en": "Today's Reflection",
+    "desc": "Overline label above the daily zen quote."
+  },
+  "zenMorningIntention": {
+    "en": "Morning Intention",
+    "desc": "Section title for the morning intention widget in the Zen tab."
+  },
+  "zenReflectionPrompts": {
+    "en": "Reflection Prompts",
+    "desc": "Section title for the evening reflection prompts in the Zen tab."
+  },
+  "zenThreeGoodThings": {
+    "en": "Three Good Things",
+    "desc": "Section title for the gratitude widget in the Zen tab."
+  },
+  "zenMindfulMoment": {
+    "en": "Mindful Moment",
+    "desc": "Section title for the breathing reminder in the Zen tab."
+  },
+  "zenIntentionPrompt0": {
+    "en": "Today I intend to…",
+    "desc": "Rotating hint for the morning intention field."
+  },
+  "zenIntentionPrompt1": {
+    "en": "My focus for today is…",
+    "desc": "Rotating hint for the morning intention field."
+  },
+  "zenIntentionPrompt2": {
+    "en": "I will show up for myself by…",
+    "desc": "Rotating hint for the morning intention field."
+  },
+  "zenIntentionPrompt3": {
+    "en": "One thing I'm grateful for right now is…",
+    "desc": "Rotating hint for the morning intention field."
+  },
+  "zenSetIntention": {
+    "en": "Set",
+    "desc": "Button to save the morning intention."
+  },
+  "zenReflectionPrompt0": {
+    "en": "What went well today?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt1": {
+    "en": "What challenged me, and how did I handle it?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt2": {
+    "en": "What am I most proud of today?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt3": {
+    "en": "How did I take care of myself today?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt4": {
+    "en": "What would I do differently tomorrow?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt5": {
+    "en": "Who or what am I grateful for right now?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt6": {
+    "en": "What did I learn about myself today?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenReflectionPrompt7": {
+    "en": "How did I show up for my sobriety today?",
+    "desc": "Evening reflection prompt."
+  },
+  "zenNextPrompt": {
+    "en": "Next prompt",
+    "desc": "Button to cycle to the next evening reflection prompt."
+  },
+  "zenGoodThingHint": {
+    "en": "Something good today…",
+    "desc": "Hint text in each of the three good-things gratitude fields."
+  },
+  "zenExercise0Title": {
+    "en": "5-4-3-2-1 Grounding",
+    "desc": "Title of a mindful-moment grounding exercise."
+  },
+  "zenExercise0Desc": {
+    "en": "Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.",
+    "desc": "Description of the 5-4-3-2-1 grounding exercise."
+  },
+  "zenExercise1Title": {
+    "en": "Box Breath",
+    "desc": "Title of a mindful-moment breathing exercise."
+  },
+  "zenExercise1Desc": {
+    "en": "Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.",
+    "desc": "Description of the box breath exercise."
+  },
+  "zenExercise2Title": {
+    "en": "Body Scan",
+    "desc": "Title of a mindful-moment body scan exercise."
+  },
+  "zenExercise2Desc": {
+    "en": "Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.",
+    "desc": "Description of the body scan exercise."
+  },
+  "zenExercise3Title": {
+    "en": "Gratitude Breath",
+    "desc": "Title of a mindful-moment gratitude breathing exercise."
+  },
+  "zenExercise3Desc": {
+    "en": "With each inhale, think of something you're grateful for. With each exhale, let go of what doesn't serve you.",
+    "desc": "Description of the gratitude breath exercise."
+  },
+  "zenOpenGuidedBreathing": {
+    "en": "Open guided breathing in Your Toolkit",
+    "desc": "Link to the guided breathing tool for exercises that have a guided version."
+  },
+  "zenMoreBreathingExercises": {
+    "en": "More breathing exercises in Your Toolkit",
+    "desc": "Link to more breathing exercises for exercises without a guided version."
+  }
+}

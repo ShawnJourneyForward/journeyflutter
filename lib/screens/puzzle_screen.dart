@@ -83,11 +83,11 @@ List<_ActivityDef> _buildActivities(AppLocalizations l10n) => [
       ),
       _ActivityDef(
         id: _Activity.colorCalm,
-        label: 'Colour Calm',
-        description: 'Tap the expanding circles and let your mind follow.',
+        label: l10n.puzzleActivity5Label,
+        description: l10n.puzzleActivity5Desc,
         icon: Icons.circle_outlined,
         color: AppColors.forest400,
-        duration: '3 min',
+        duration: l10n.puzzleActivity5Duration,
       ),
     ];
 
@@ -173,10 +173,10 @@ class _HomeView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Mindful Activities',
+                  Text(l10n.puzzleHomeTitle,
                       style: AppTextStyles.titleLarge
                           .copyWith(color: AppColors.forest700)),
-                  Text('Short exercises to calm and refocus',
+                  Text(l10n.puzzleHomeSubtitle,
                       style: AppTextStyles.bodySmall),
                 ],
               ),
@@ -275,10 +275,11 @@ class _CountdownViewState extends State<_CountdownView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       children: [
-        _BackHeader(title: 'Slow Count', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity0Label, onBack: widget.onBack),
         const SizedBox(height: 12),
         LuxuryCard(
           backgroundColor: AppColors.forest800,
@@ -286,7 +287,7 @@ class _CountdownViewState extends State<_CountdownView> {
           child: Column(
             children: [
               Text(
-                'Counting backwards by 3 interrupts anxiety\nand brings you into the present.',
+                l10n.puzzleCountdownIntro,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.forest200, height: 1.5),
                 textAlign: TextAlign.center,
@@ -310,7 +311,7 @@ class _CountdownViewState extends State<_CountdownView> {
                             Icon(Icons.check_rounded,
                                 color: AppColors.honey400, size: 36),
                             const SizedBox(height: 6),
-                            Text('Done!',
+                            Text(l10n.puzzleCountdownDone,
                                 style: AppTextStyles.titleMedium
                                     .copyWith(color: AppColors.honey300)),
                           ])
@@ -322,7 +323,7 @@ class _CountdownViewState extends State<_CountdownView> {
               ),
               const SizedBox(height: 28),
               Text(
-                _done ? 'Tap to restart' : 'Tap to subtract 3',
+                _done ? l10n.puzzleCountdownRestart : l10n.puzzleCountdownSubtract,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.forest300),
               ),
@@ -343,23 +344,25 @@ class _CountdownViewState extends State<_CountdownView> {
 
 // ─── 2. Gratitude Shuffle ─────────────────────────────────────────────────────
 
-const _gratitudePrompts = [
-  'Something in nature I noticed today…',
-  'A person who has shown me kindness…',
-  'A simple pleasure I often overlook…',
-  'Something my body does for me every day…',
-  'A memory that still makes me smile…',
-  'Something I\'ve learned in the past year…',
-  'A challenge that made me stronger…',
-  'A small comfort that I appreciate…',
-  'Someone who believed in me when I didn\'t…',
-  'A moment of peace I\'ve experienced…',
-  'A skill or talent I\'m glad I have…',
-  'Something I\'m looking forward to…',
-  'A kindness I showed someone recently…',
-  'Something that made me laugh recently…',
-  'A place that brings me peace…',
-];
+List<String> _gratitudePrompts(AppLocalizations l10n) => [
+      l10n.puzzleGratitudePrompt0,
+      l10n.puzzleGratitudePrompt1,
+      l10n.puzzleGratitudePrompt2,
+      l10n.puzzleGratitudePrompt3,
+      l10n.puzzleGratitudePrompt4,
+      l10n.puzzleGratitudePrompt5,
+      l10n.puzzleGratitudePrompt6,
+      l10n.puzzleGratitudePrompt7,
+      l10n.puzzleGratitudePrompt8,
+      l10n.puzzleGratitudePrompt9,
+      l10n.puzzleGratitudePrompt10,
+      l10n.puzzleGratitudePrompt11,
+      l10n.puzzleGratitudePrompt12,
+      l10n.puzzleGratitudePrompt13,
+      l10n.puzzleGratitudePrompt14,
+    ];
+
+const _gratitudePromptCount = 15;
 
 class _GratitudeShuffleView extends StatefulWidget {
   const _GratitudeShuffleView({required this.onBack});
@@ -377,7 +380,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
   void _shuffle() {
     H.light();
     setState(() {
-      _index = _rng.nextInt(_gratitudePrompts.length);
+      _index = _rng.nextInt(_gratitudePromptCount);
       _controller.clear();
     });
   }
@@ -390,10 +393,11 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       children: [
-        _BackHeader(title: 'Gratitude Shuffle', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity1Label, onBack: widget.onBack),
         const SizedBox(height: 12),
         LuxuryCard(
           backgroundColor: AppColors.honeySoft,
@@ -404,7 +408,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
                 color: AppColors.honey600, size: 28),
             const SizedBox(height: 16),
             Text(
-              _gratitudePrompts[_index],
+              _gratitudePrompts(l10n)[_index],
               style: AppTextStyles.headlineSerif.copyWith(
                   color: AppColors.stone800, fontSize: 19, height: 1.45),
               textAlign: TextAlign.center,
@@ -415,7 +419,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
               maxLines: 4,
               style: AppTextStyles.bodyMedium,
               decoration: InputDecoration(
-                hintText: 'Write your reflection here…',
+                hintText: l10n.puzzleReflectionHint,
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone400),
                 filled: true,
@@ -439,7 +443,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
               child: OutlinedButton.icon(
                 onPressed: _shuffle,
                 icon: const Icon(Icons.shuffle_rounded, size: 18),
-                label: const Text('Shuffle prompt'),
+                label: Text(l10n.puzzleShufflePrompt),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.honey600,
                   side: BorderSide(color: AppColors.honey300),
@@ -532,15 +536,16 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       children: [
-        _BackHeader(title: 'Memory Match', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity2Label, onBack: widget.onBack),
         const SizedBox(height: 4),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(children: [
-            Text('Moves: $_moves',
+            Text(l10n.puzzleMemoryMoves(_moves),
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500)),
             const Spacer(),
@@ -550,7 +555,7 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
                 setState(_newGame);
               },
               icon: const Icon(Icons.refresh_rounded, size: 16),
-              label: const Text('New game'),
+              label: Text(l10n.puzzleNewGame),
               style: TextButton.styleFrom(
                   foregroundColor: AppColors.forest600,
                   textStyle: AppTextStyles.labelMedium),
@@ -566,18 +571,18 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
             child: Column(children: [
               const Text('🎉', style: TextStyle(fontSize: 36)),
               const SizedBox(height: 8),
-              Text('Well done!',
+              Text(l10n.puzzleWellDone,
                   style: AppTextStyles.titleMedium
                       .copyWith(color: AppColors.forest700)),
               const SizedBox(height: 4),
-              Text('Completed in $_moves moves',
+              Text(l10n.puzzleCompletedInMoves(_moves),
                   style: AppTextStyles.bodySmall),
               const SizedBox(height: 14),
               FilledButton(
                 onPressed: () => setState(_newGame),
                 style: FilledButton.styleFrom(
                     backgroundColor: AppColors.forest600),
-                child: const Text('Play again'),
+                child: Text(l10n.puzzlePlayAgain),
               ),
             ]),
           ),
@@ -629,16 +634,27 @@ class _MemoryMatchViewState extends State<_MemoryMatchView> {
 
 // ─── 4. Strength Compass ──────────────────────────────────────────────────────
 
-const _strengths = [
-  ('Courage', Icons.bolt_outlined),
-  ('Patience', Icons.hourglass_empty_outlined),
-  ('Honesty', Icons.verified_outlined),
-  ('Resilience', Icons.autorenew_rounded),
-  ('Gratitude', Icons.spa_outlined),
-  ('Hope', Icons.wb_sunny_outlined),
-  ('Connection', Icons.people_outline_rounded),
-  ('Purpose', Icons.flag_outlined),
+const _strengthIcons = [
+  Icons.bolt_outlined,
+  Icons.hourglass_empty_outlined,
+  Icons.verified_outlined,
+  Icons.autorenew_rounded,
+  Icons.spa_outlined,
+  Icons.wb_sunny_outlined,
+  Icons.people_outline_rounded,
+  Icons.flag_outlined,
 ];
+
+List<String> _strengthLabels(AppLocalizations l10n) => [
+      l10n.puzzleStrength0,
+      l10n.puzzleStrength1,
+      l10n.puzzleStrength2,
+      l10n.puzzleStrength3,
+      l10n.puzzleStrength4,
+      l10n.puzzleStrength5,
+      l10n.puzzleStrength6,
+      l10n.puzzleStrength7,
+    ];
 
 class _StrengthCompassView extends StatefulWidget {
   const _StrengthCompassView({required this.onBack});
@@ -653,18 +669,18 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final strengthLabels = _strengthLabels(l10n);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       children: [
-        _BackHeader(title: 'Strength Compass', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity3Label, onBack: widget.onBack),
         const SizedBox(height: 8),
-        Text(
-            'How strong does each feel today? '
-            'This is just for you — there\'s no right answer.',
+        Text(l10n.puzzleStrengthIntro,
             style:
                 AppTextStyles.bodyMedium.copyWith(color: AppColors.stone600)),
         const SizedBox(height: 16),
-        for (int i = 0; i < _strengths.length; i++) ...[
+        for (int i = 0; i < strengthLabels.length; i++) ...[
           SolidCard(
             borderRadius: AppRadius.xl,
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
@@ -672,11 +688,11 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Icon(_strengths[i].$2, size: 18, color: AppColors.forest600),
+                  Icon(_strengthIcons[i], size: 18, color: AppColors.forest600),
                   const SizedBox(width: 8),
-                  Text(_strengths[i].$1, style: AppTextStyles.titleSmall),
+                  Text(strengthLabels[i], style: AppTextStyles.titleSmall),
                   const Spacer(),
-                  Text('${_ratings[i].round()}/5',
+                  Text(l10n.puzzleStrengthRating(_ratings[i].round()),
                       style: AppTextStyles.labelMedium
                           .copyWith(color: AppColors.forest600)),
                 ]),
@@ -702,8 +718,7 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
           backgroundColor: AppColors.mintChip,
           padding: const EdgeInsets.all(16),
           child: Text(
-            'Wherever you rated yourself today — you showed up. '
-            'That alone is strength.',
+            l10n.puzzleStrengthAffirmation,
             style: AppTextStyles.bodySerif.copyWith(
                 color: AppColors.forest700,
                 fontStyle: FontStyle.italic,
@@ -718,26 +733,19 @@ class _StrengthCompassViewState extends State<_StrengthCompassView> {
 
 // ─── 5. Now Moment ────────────────────────────────────────────────────────────
 
-const _nowSteps = [
-  (
-    'Notice',
-    'Look around you right now. Name 3 things you can see without judging them. '
-        'Just see them as they are.',
-    Icons.visibility_outlined,
-  ),
-  (
-    'Feel',
-    'Place both feet flat on the floor. Feel the weight of your body. '
-        'Notice one sensation in your body right now — warmth, tension, breath.',
-    Icons.accessibility_new_outlined,
-  ),
-  (
-    'Choose',
-    'You have arrived in this moment. '
-        'What is one small, kind thing you can do for yourself in the next 10 minutes?',
-    Icons.touch_app_outlined,
-  ),
+const _nowStepIcons = [
+  Icons.visibility_outlined,
+  Icons.accessibility_new_outlined,
+  Icons.touch_app_outlined,
 ];
+
+List<(String, String)> _nowSteps(AppLocalizations l10n) => [
+      (l10n.puzzleNowStep0Title, l10n.puzzleNowStep0Body),
+      (l10n.puzzleNowStep1Title, l10n.puzzleNowStep1Body),
+      (l10n.puzzleNowStep2Title, l10n.puzzleNowStep2Body),
+    ];
+
+const _nowStepCount = 3;
 
 class _NowMomentView extends StatefulWidget {
   const _NowMomentView({required this.onBack});
@@ -752,19 +760,21 @@ class _NowMomentViewState extends State<_NowMomentView> {
 
   @override
   Widget build(BuildContext context) {
-    final step = _nowSteps[_step];
-    final isLast = _step == _nowSteps.length - 1;
+    final l10n = AppLocalizations.of(context);
+    final steps = _nowSteps(l10n);
+    final step = steps[_step];
+    final isLast = _step == steps.length - 1;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       children: [
-        _BackHeader(title: 'Now Moment', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity4Label, onBack: widget.onBack),
         const SizedBox(height: 20),
         // Progress dots
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(
-              _nowSteps.length,
+              _nowStepCount,
               (i) => AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: i == _step ? 24 : 8,
@@ -791,7 +801,8 @@ class _NowMomentViewState extends State<_NowMomentView> {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.forest500),
                 ),
-                child: Icon(step.$3, color: AppColors.forest300, size: 28),
+                child: Icon(_nowStepIcons[_step],
+                    color: AppColors.forest300, size: 28),
               ),
               const SizedBox(height: 20),
               Text(step.$1,
@@ -820,7 +831,7 @@ class _NowMomentViewState extends State<_NowMomentView> {
                     shape: const RoundedRectangleBorder(
                         borderRadius: AppRadius.lg),
                   ),
-                  child: Text(isLast ? 'Complete' : 'Continue',
+                  child: Text(isLast ? l10n.puzzleComplete : l10n.commonContinue,
                       style: AppTextStyles.labelLarge
                           .copyWith(color: Colors.white)),
                 ),
@@ -889,13 +900,14 @@ class _ColorCalmViewState extends State<_ColorCalmView>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        _BackHeader(title: 'Colour Calm', onBack: widget.onBack),
+        _BackHeader(title: l10n.puzzleActivity5Label, onBack: widget.onBack),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'Tap anywhere. Breathe with the circles.',
+            l10n.puzzleColorIntro,
             style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone500),
           ),
         ),
@@ -916,7 +928,7 @@ class _ColorCalmViewState extends State<_ColorCalmView>
                     // Ambient text
                     Center(
                       child: _ripples.isEmpty
-                          ? Text('Tap anywhere',
+                          ? Text(l10n.puzzleColorTapAnywhere,
                               style: AppTextStyles.bodyMedium
                                   .copyWith(color: AppColors.forest600))
                           : const SizedBox.shrink(),

@@ -222,12 +222,13 @@ class _JournalTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final entries = ref.watch(journalProvider);
 
     return entries.when(
       loading: () => Center(
           child: CircularProgressIndicator(color: AppColors.forest600)),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (e, _) => Center(child: Text(l10n.homeErrorPrefix(e.toString()))),
       data: (allEntries) {
         final filtered = ref.watch(filteredJournalProvider);
         final streak = ref.watch(journalStreakProvider);
@@ -270,7 +271,7 @@ class _JournalTab extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                'Mood logged. Tap the card to add words.',
+                                l10n.journalMoodLoggedSnack,
                                 style: AppTextStyles.bodySmall
                                     .copyWith(color: Colors.white)),
                             backgroundColor: AppColors.forest700,
@@ -323,8 +324,8 @@ class _JournalTab extends ConsumerWidget {
                       padding: const EdgeInsets.all(40),
                       child: _EmptyState(
                         icon: Icons.filter_alt_off_outlined,
-                        title: 'Nothing matches',
-                        subtitle: 'Try a different filter or clear the search.',
+                        title: l10n.journalFilterEmptyTitle,
+                        subtitle: l10n.journalFilterEmptySubtitle,
                       ),
                     ),
                   )
@@ -333,7 +334,7 @@ class _JournalTab extends ConsumerWidget {
                     // Group entries into date buckets and flatten into a list
                     // of headers + entries. Done inline so the SliverList
                     // builder stays a simple list lookup.
-                    final items = _bucketEntries(filtered);
+                    final items = _bucketEntries(filtered, l10n);
                     return SliverPadding(
                       padding: const EdgeInsets.fromLTRB(24, 4, 24, 110),
                       sliver: SliverList(
@@ -400,8 +401,8 @@ class _JournalTab extends ConsumerWidget {
       BuildContext context, WidgetRef ref, JournalEntry entry) async {
     H.selection();
     if (entry.locked) {
-      final ok =
-          await JournalReauth.require(context, reason: 'View this entry');
+      final ok = await JournalReauth.require(context,
+          reason: AppLocalizations.of(context).journalReauthViewEntry);
       if (!ok || !context.mounted) return;
     }
     if (!context.mounted) return;
@@ -469,6 +470,7 @@ class _JournalTab extends ConsumerWidget {
   // option while the journaller-by-habit can still hit a blank page fast.
   void _chooseEntryKind(BuildContext context, WidgetRef ref) {
     H.medium();
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.card,
@@ -495,11 +497,11 @@ class _JournalTab extends ConsumerWidget {
                     ),
                   ),
                 ),
-                Text('New entry',
+                Text(l10n.journalNewEntryTitle,
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.forest700)),
                 const SizedBox(height: 4),
-                Text('Pick how you want to write today.',
+                Text(l10n.journalNewEntrySubtitle,
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.stone500)),
                 const SizedBox(height: 18),
@@ -508,9 +510,8 @@ class _JournalTab extends ConsumerWidget {
                   tint: AppColors.mintChip,
                   border: AppColors.forest100,
                   accent: AppColors.forest600,
-                  title: 'Plain entry',
-                  subtitle:
-                      'A blank page for your thoughts. Mood, tags, optional prompt.',
+                  title: l10n.journalPlainEntryTitle,
+                  subtitle: l10n.journalPlainEntrySubtitle,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     _showEntrySheet(context, ref);
@@ -522,10 +523,9 @@ class _JournalTab extends ConsumerWidget {
                   tint: AppColors.honey50,
                   border: AppColors.honey100,
                   accent: AppColors.honey600,
-                  title: 'Daily reflection',
-                  subtitle:
-                      'A guided page: gratitude, anchors, wins, cravings, intention.',
-                  badge: 'New',
+                  title: l10n.journalDailyReflectionTitle,
+                  subtitle: l10n.journalDailyReflectionSubtitle,
+                  badge: l10n.journalBadgeNew,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     Navigator.of(context).push(MaterialPageRoute(
@@ -544,6 +544,7 @@ class _JournalTab extends ConsumerWidget {
   // ── After a fresh entry, route hard/crisis moods to existing support ──
   void _maybeOfferCrisisPath(BuildContext context, String mood) {
     if (mood != 'hard' && mood != 'crisis') return;
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.card,
@@ -568,16 +569,16 @@ class _JournalTab extends ConsumerWidget {
               ),
               Text(
                 mood == 'crisis'
-                    ? 'I see you. Want a hand?'
-                    : 'That sounds heavy.',
+                    ? l10n.journalCrisisTitleCrisis
+                    : l10n.journalCrisisTitleHard,
                 style: AppTextStyles.titleLarge
                     .copyWith(color: AppColors.forest700),
               ),
               const SizedBox(height: 6),
               Text(
                 mood == 'crisis'
-                    ? 'Saving your entry helped. A short calm exercise can take it from here.'
-                    : 'You wrote it down — that already counts. A 60-second thought record can help if you want it.',
+                    ? l10n.journalCrisisBodyCrisis
+                    : l10n.journalCrisisBodyHard,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone600),
               ),
@@ -585,8 +586,8 @@ class _JournalTab extends ConsumerWidget {
               if (mood == 'crisis')
                 _CrisisAction(
                   icon: Icons.self_improvement_rounded,
-                  label: 'Open the calm room',
-                  detail: 'Breath work, grounding, and one safe action.',
+                  label: l10n.journalCrisisCalmRoomLabel,
+                  detail: l10n.journalCrisisCalmRoomDetail,
                   onTap: () {
                     Navigator.pop(ctx);
                     context.go('/emergency');
@@ -595,8 +596,8 @@ class _JournalTab extends ConsumerWidget {
               else
                 _CrisisAction(
                   icon: Icons.psychology_outlined,
-                  label: 'Try a thought record',
-                  detail: 'Name the thought, weigh the evidence, reframe it.',
+                  label: l10n.journalCrisisThoughtRecordLabel,
+                  detail: l10n.journalCrisisThoughtRecordDetail,
                   onTap: () {
                     Navigator.pop(ctx);
                     context.go('/cbt');
@@ -611,7 +612,7 @@ class _JournalTab extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   child: Text(
-                    "I'm okay for now",
+                    l10n.journalCrisisDismiss,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.stone500),
                   ),
@@ -638,7 +639,7 @@ class _JournalTab extends ConsumerWidget {
 //
 // Designed to be cheap — a single linear pass.
 
-List<Object> _bucketEntries(List<JournalEntry> entries) {
+List<Object> _bucketEntries(List<JournalEntry> entries, AppLocalizations l10n) {
   if (entries.isEmpty) return const [];
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
@@ -648,12 +649,12 @@ List<Object> _bucketEntries(List<JournalEntry> entries) {
 
   String bucketFor(DateTime d) {
     final day = DateTime(d.year, d.month, d.day);
-    if (day == today) return 'Today';
-    if (day == yesterday) return 'Yesterday';
-    if (day.isAfter(sevenAgo)) return 'This week';
-    if (day.isAfter(fourteenAgo)) return 'Last week';
+    if (day == today) return l10n.historyToday;
+    if (day == yesterday) return l10n.historyYesterday;
+    if (day.isAfter(sevenAgo)) return l10n.journalBucketThisWeek;
+    if (day.isAfter(fourteenAgo)) return l10n.journalBucketLastWeek;
     if (d.year == now.year && d.month == now.month) {
-      return 'Earlier this month';
+      return l10n.journalBucketEarlierThisMonth;
     }
     return DateFormat('MMMM y').format(d);
   }
@@ -767,6 +768,7 @@ class _DiaryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final hasEcho = echoes.isNotEmpty;
     if (streak == 0 && !hasEcho) return const SizedBox.shrink();
     return Padding(
@@ -781,7 +783,7 @@ class _DiaryHeader extends StatelessWidget {
                     size: 16, color: AppColors.honey500),
                 const SizedBox(width: 6),
                 Text(
-                  streak == 1 ? '1 day writing' : '$streak day writing streak',
+                  l10n.journalWritingStreak(streak),
                   style: AppTextStyles.labelMedium
                       .copyWith(color: AppColors.forest700),
                 ),
@@ -810,6 +812,7 @@ class _QuickMoodPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
       child: Container(
@@ -823,7 +826,7 @@ class _QuickMoodPill extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'How are you right now?',
+                l10n.journalQuickMoodPrompt,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.stone600),
               ),
@@ -860,6 +863,7 @@ class _OnThisDayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final first = echoes.first;
     final years = DateTime.now().year - first.date.year;
     final mood = moodFor(first.mood);
@@ -897,18 +901,16 @@ class _OnThisDayCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    years == 1
-                        ? 'On this day, 1 year ago'
-                        : 'On this day, $years years ago',
+                    l10n.journalOnThisDay(years),
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.forest700),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     first.locked
-                        ? 'A locked entry'
+                        ? l10n.journalEchoLockedEntry
                         : first.text.trim().isEmpty
-                            ? 'A mood check-in'
+                            ? l10n.journalEchoMoodCheckIn
                             : first.text,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.stone600,
@@ -922,7 +924,7 @@ class _OnThisDayCard extends StatelessWidget {
                   if (echoes.length > 1) ...[
                     const SizedBox(height: 4),
                     Text(
-                      '+${echoes.length - 1} more from this day',
+                      l10n.journalEchoMore(echoes.length - 1),
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.stone400),
                     ),
@@ -975,6 +977,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
       child: Column(
@@ -987,15 +990,15 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _chip(JournalFilterMode.all, 'All'),
+                      _chip(JournalFilterMode.all, l10n.journalFilterAll),
                       const SizedBox(width: 6),
-                      _chip(JournalFilterMode.today, 'Today'),
+                      _chip(JournalFilterMode.today, l10n.journalFilterToday),
                       const SizedBox(width: 6),
-                      _chip(JournalFilterMode.hard, 'Hard'),
+                      _chip(JournalFilterMode.hard, l10n.journalFilterHard),
                       const SizedBox(width: 6),
-                      _chip(JournalFilterMode.wins, 'Wins'),
+                      _chip(JournalFilterMode.wins, l10n.journalFilterWins),
                       const SizedBox(width: 6),
-                      _chip(JournalFilterMode.locked, 'Locked'),
+                      _chip(JournalFilterMode.locked, l10n.journalFilterLocked),
                     ],
                   ),
                 ),
@@ -1026,7 +1029,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
               decoration: InputDecoration(
-                hintText: 'Search your entries…',
+                hintText: l10n.journalSearchHint,
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone300),
                 prefixIcon: Icon(Icons.search_rounded,
@@ -1117,6 +1120,7 @@ class _DiaryEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final starters = starterPromptsForEmptyState();
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
@@ -1139,7 +1143,7 @@ class _DiaryEmptyState extends StatelessWidget {
           const SizedBox(height: 18),
           Center(
             child: Text(
-              'A place for the unfiltered you',
+              l10n.journalEmptyTitle,
               style: AppTextStyles.titleMedium
                   .copyWith(color: AppColors.forest700),
               textAlign: TextAlign.center,
@@ -1148,7 +1152,7 @@ class _DiaryEmptyState extends StatelessWidget {
           const SizedBox(height: 6),
           Center(
             child: Text(
-              'Pick a door — or tap + to start with a blank page.',
+              l10n.journalEmptySubtitle,
               style:
                   AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
               textAlign: TextAlign.center,
@@ -1197,7 +1201,7 @@ class _DiaryEmptyState extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onBlank,
               icon: const Icon(Icons.edit_outlined, size: 16),
-              label: const Text('Start with a blank page'),
+              label: Text(l10n.journalBlankPageButton),
               style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
             ),
           ),
@@ -1219,6 +1223,7 @@ class _JournalCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final mood = moodFor(entry.mood);
 
     return Dismissible(
@@ -1239,22 +1244,22 @@ class _JournalCard extends ConsumerWidget {
         return await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text('Delete entry?',
+            title: Text(l10n.journalDeleteEntryTitle,
                 style: AppTextStyles.titleMedium
                     .copyWith(color: AppColors.stone800)),
-            content: Text('This cannot be undone.',
+            content: Text(l10n.journalDeleteEntryBody,
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone500)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: Text('Cancel',
+                child: Text(l10n.commonCancel,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.stone500)),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text('Delete',
+                child: Text(l10n.commonDelete,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.honey500)),
               ),
@@ -1312,7 +1317,7 @@ class _JournalCard extends ConsumerWidget {
                   ],
                   const Spacer(),
                   Text(
-                    _formatDate(entry.date),
+                    _formatDate(entry.date, l10n),
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.stone400),
                   ),
@@ -1328,7 +1333,7 @@ class _JournalCard extends ConsumerWidget {
                         size: 14, color: AppColors.stone400),
                     const SizedBox(width: 6),
                     Text(
-                      'Locked entry · tap to unlock',
+                      l10n.journalCardLockedHint,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.stone500,
                         fontStyle: FontStyle.italic,
@@ -1345,7 +1350,7 @@ class _JournalCard extends ConsumerWidget {
                         size: 14, color: AppColors.stone400),
                     const SizedBox(width: 6),
                     Text(
-                      'Mood check-in · tap to add words',
+                      l10n.journalCardMoodCheckInHint,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.stone500,
                         fontStyle: FontStyle.italic,
@@ -1396,16 +1401,16 @@ class _JournalCard extends ConsumerWidget {
     );
   }
 
-  String _formatDate(DateTime dt) {
+  String _formatDate(DateTime dt, AppLocalizations l10n) {
     final now = DateTime.now();
     if (dt.year == now.year && dt.month == now.month && dt.day == now.day) {
-      return 'Today ${DateFormat('h:mm a').format(dt)}';
+      return l10n.journalCardDateToday(DateFormat('h:mm a').format(dt));
     }
     final yesterday = now.subtract(const Duration(days: 1));
     if (dt.year == yesterday.year &&
         dt.month == yesterday.month &&
         dt.day == yesterday.day) {
-      return 'Yesterday';
+      return l10n.historyYesterday;
     }
     return DateFormat('MMM d').format(dt);
   }
@@ -1577,7 +1582,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-            'Voice input is unavailable. Check microphone permission in Settings.',
+            AppLocalizations.of(context).journalVoiceUnavailable,
             style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
         backgroundColor: AppColors.stone600,
         behavior: SnackBarBehavior.floating,
@@ -1680,6 +1685,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final usedTags = ref.watch(allJournalTagsProvider);
     final suggestedTags = <String>{
@@ -1707,7 +1713,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
             child: Row(
               children: [
                 Text(
-                  _isEdit ? 'Edit Entry' : "Today's Entry",
+                  _isEdit ? l10n.journalEditEntryTitle : l10n.journalTodaysEntryTitle,
                   style: AppTextStyles.titleLarge
                       .copyWith(color: AppColors.forest700),
                 ),
@@ -1747,7 +1753,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                   const SizedBox(height: 14),
 
                   // ── Primary mood ───────────────────────────────────────
-                  Text('How are you feeling?',
+                  Text(l10n.journalMoodQuestion,
                       style: AppTextStyles.labelMedium
                           .copyWith(color: AppColors.stone500)),
                   const SizedBox(height: 8),
@@ -1811,8 +1817,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               children: [
                                 Text(
                                   _mood == 'great'
-                                      ? 'A little more specific?'
-                                      : 'What\'s underneath?',
+                                      ? l10n.journalSubMoodSpecific
+                                      : l10n.journalSubMoodUnderneath,
                                   style: AppTextStyles.labelMedium
                                       .copyWith(color: AppColors.stone500),
                                 ),
@@ -1864,7 +1870,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                   // ── Text field + voice ─────────────────────────────────
                   Row(
                     children: [
-                      Text("What's on your mind?",
+                      Text(l10n.journalMindQuestion,
                           style: AppTextStyles.labelMedium
                               .copyWith(color: AppColors.stone500)),
                       const Spacer(),
@@ -1892,7 +1898,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                _listening ? 'Stop' : 'Speak',
+                                _listening ? l10n.journalVoiceStop : l10n.journalVoiceSpeak,
                                 style: AppTextStyles.labelSmall.copyWith(
                                     color: _listening
                                         ? Colors.white
@@ -1913,7 +1919,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.stone800, height: 1.5),
                     decoration: InputDecoration(
-                      hintText: 'Write freely — no one else will see this...',
+                      hintText: l10n.journalBodyHint,
                       hintStyle: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone300),
                       filled: true,
@@ -1938,7 +1944,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                   const SizedBox(height: 18),
 
                   // ── Tags ───────────────────────────────────────────────
-                  Text('Tags',
+                  Text(l10n.journalTagsLabel,
                       style: AppTextStyles.labelMedium
                           .copyWith(color: AppColors.stone500)),
                   const SizedBox(height: 8),
@@ -1987,7 +1993,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                           style: AppTextStyles.bodySmall
                               .copyWith(color: AppColors.stone800),
                           decoration: InputDecoration(
-                            hintText: 'Add a tag…',
+                            hintText: l10n.journalAddTagHint,
                             isDense: true,
                             hintStyle: AppTextStyles.bodySmall
                                 .copyWith(color: AppColors.stone300),
@@ -2013,7 +2019,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                       const SizedBox(width: 6),
                       TextButton(
                         onPressed: _addNewTag,
-                        child: const Text('Add'),
+                        child: Text(l10n.journalAdd),
                       ),
                     ],
                   ),
@@ -2044,13 +2050,13 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  _locked ? 'Locked entry' : 'Lock this entry',
+                                  _locked ? l10n.journalLockedEntryLabel : l10n.journalLockEntryLabel,
                                   style: AppTextStyles.labelMedium
                                       .copyWith(color: AppColors.stone700),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  'Hidden from the list. Re-auth required to view.',
+                                  l10n.journalLockEntryHint,
                                   style: AppTextStyles.bodySmall
                                       .copyWith(color: AppColors.stone400),
                                 ),
@@ -2087,7 +2093,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(
-                  _isEdit ? 'Save Changes' : 'Save Entry',
+                  _isEdit ? l10n.journalSaveChanges : l10n.journalSaveEntry,
                   style: AppTextStyles.labelLarge.copyWith(color: Colors.white),
                 ),
               ),
@@ -2100,6 +2106,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
 
   // ── Prompt strip — collapsed by default, expand to pick ────────────────
   Widget _buildPromptStrip() {
+    final l10n = AppLocalizations.of(context);
     final activePrompt = _promptId == null ? null : promptById(_promptId!);
     // Smart default: when the user hasn't picked a prompt yet, surface one
     // appropriate to the time of day and their most recent mood.
@@ -2114,7 +2121,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
     );
     final suggestedPrompt = dailyPromptFor(suggestedCategory);
     final headlineText =
-        activePrompt?.text ?? 'Suggested: ${suggestedPrompt.text}';
+        activePrompt?.text ?? l10n.journalSuggestedPrompt(suggestedPrompt.text);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2225,7 +2232,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                           if (isSuggested) ...[
                                             const SizedBox(width: 6),
                                             Text(
-                                              '· suggested',
+                                              l10n.journalSuggestedTag,
                                               style: AppTextStyles.overline
                                                   .copyWith(
                                                 color: AppColors.stone400,
@@ -2282,6 +2289,7 @@ class _DraftRestoreBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final age = DateTime.now().difference(draft.savedAt);
     final mood = moodFor(draft.mood);
     return Container(
@@ -2301,7 +2309,7 @@ class _DraftRestoreBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Unsaved draft from ${_ageLabel(age)}',
+                  l10n.journalDraftFrom(_ageLabel(age, l10n)),
                   style: AppTextStyles.labelMedium
                       .copyWith(color: AppColors.stone700),
                 ),
@@ -2312,7 +2320,7 @@ class _DraftRestoreBanner extends StatelessWidget {
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        '${mood.label} · ${draft.text.length} chars',
+                        l10n.journalDraftChars(mood.label, draft.text.length),
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone500),
                         overflow: TextOverflow.ellipsis,
@@ -2331,7 +2339,7 @@ class _DraftRestoreBanner extends StatelessWidget {
               minimumSize: const Size(0, 32),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text('Discard'),
+            child: Text(l10n.journalDraftDiscard),
           ),
           TextButton(
             onPressed: onRestore,
@@ -2341,18 +2349,18 @@ class _DraftRestoreBanner extends StatelessWidget {
               minimumSize: const Size(0, 32),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text('Restore'),
+            child: Text(l10n.commonRestore),
           ),
         ],
       ),
     );
   }
 
-  String _ageLabel(Duration age) {
-    if (age.inMinutes < 1) return 'a moment ago';
-    if (age.inMinutes < 60) return '${age.inMinutes}m ago';
-    if (age.inHours < 24) return '${age.inHours}h ago';
-    return 'yesterday';
+  String _ageLabel(Duration age, AppLocalizations l10n) {
+    if (age.inMinutes < 1) return l10n.journalAgeMomentAgo;
+    if (age.inMinutes < 60) return l10n.journalAgeMinutesAgo(age.inMinutes);
+    if (age.inHours < 24) return l10n.journalAgeHoursAgo(age.inHours);
+    return l10n.journalAgeYesterday;
   }
 }
 
@@ -2376,22 +2384,23 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
   // These rotate daily (day-of-year mod) so the user doesn't see the same
   // one every time but they don't feel random either. Empty list when there
   // is no name + no gratitude — keeps the existing affirmation flow intact.
-  List<String> _personalCards(String? name, List<String> gratitudes) {
+  List<String> _personalCards(
+      String? name, List<String> gratitudes, AppLocalizations l10n) {
     final out = <String>[];
     if (name != null && name.trim().isNotEmpty) {
       final n = name.trim();
       out.addAll([
-        '$n, you are doing harder things than most people will ever try.',
-        '$n, your sober self is the realest version of you.',
-        '$n, this moment is enough. You are enough.',
-        '$n, the version of you a year from now is rooting for today\'s you.',
+        l10n.journalPersonalCard0(n),
+        l10n.journalPersonalCard1(n),
+        l10n.journalPersonalCard2(n),
+        l10n.journalPersonalCard3(n),
       ]);
     }
     // Pull from recent gratitudes — turn the user's own words into a mirror.
     for (final g in gratitudes.take(3)) {
       final clean = g.trim();
       if (clean.length > 4 && clean.length < 80) {
-        out.add('You wrote this: "$clean" — that\'s still true.');
+        out.add(l10n.journalPersonalGratitudeCard(clean));
       }
     }
     return out;
@@ -2421,6 +2430,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
     final personal = _personalCards(
       profile?.username,
       pastGratitudes.map((g) => g.text).toList(),
+      l10n,
     );
     final all = _allAffirmations(personal, custom, defaults);
 
@@ -2476,7 +2486,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
             const SizedBox(height: 12),
 
             // Swipe hint
-            Text('Swipe for more affirmations',
+            Text(l10n.journalSwipeHint,
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone400)),
 
@@ -2492,7 +2502,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Text('Your affirmations',
+                  Text(l10n.journalYourAffirmations,
                       style: AppTextStyles.titleMedium
                           .copyWith(color: AppColors.stone700)),
                   const Spacer(),
@@ -2508,7 +2518,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
               child: custom.isEmpty
                   ? Center(
                       child: Text(
-                        'Tap + to add your own',
+                        l10n.journalTapToAddAffirmation,
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone400),
                       ),
@@ -2540,6 +2550,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
   }
 
   void _showAddSheet(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     // Dispose the controller after the sheet closes — without this, every
@@ -2559,7 +2570,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Add Affirmation',
+            Text(l10n.journalAddAffirmationTitle,
                 style: AppTextStyles.titleLarge
                     .copyWith(color: AppColors.forest700)),
             const SizedBox(height: 14),
@@ -2571,7 +2582,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
               decoration: InputDecoration(
-                hintText: 'I am...',
+                hintText: l10n.journalAffirmationHint,
                 hintStyle: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone300),
                 filled: true,
@@ -2608,7 +2619,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
-                child: Text('Add',
+                child: Text(l10n.journalAdd,
                     style:
                         AppTextStyles.labelLarge.copyWith(color: Colors.white)),
               ),
@@ -2744,6 +2755,7 @@ class _VisionTabState extends ConsumerState<_VisionTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ref = this.ref;
     final items = ref.watch(visionBoardProvider).valueOrNull ?? const [];
 
@@ -2820,8 +2832,8 @@ class _VisionTabState extends ConsumerState<_VisionTab> {
                   padding: const EdgeInsets.all(40),
                   child: _EmptyState(
                     icon: Icons.filter_alt_off_outlined,
-                    title: 'Nothing here yet',
-                    subtitle: 'Try a different filter, or add a new dream.',
+                    title: l10n.visionFilterEmptyTitle,
+                    subtitle: l10n.visionFilterEmptySubtitle,
                   ),
                 ),
               )
@@ -2926,6 +2938,7 @@ class _BoardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -2954,13 +2967,13 @@ class _BoardHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Your Vision Board',
+                Text(l10n.visionBoardTitle,
                     style: AppTextStyles.titleSmall
                         .copyWith(color: AppColors.forest700)),
                 Text(
                   total == 0
-                      ? 'Visualise the life ahead of you'
-                      : _subtitle(total, pinnedCount, achievedCount),
+                      ? l10n.visionBoardEmptyTagline
+                      : _subtitle(total, pinnedCount, achievedCount, l10n),
                   style: AppTextStyles.bodySmall
                       .copyWith(color: AppColors.stone500),
                 ),
@@ -2972,11 +2985,11 @@ class _BoardHeader extends StatelessWidget {
     );
   }
 
-  String _subtitle(int total, int pinned, int achieved) {
+  String _subtitle(int total, int pinned, int achieved, AppLocalizations l10n) {
     final parts = <String>[
-      '$total dream${total == 1 ? '' : 's'}',
-      if (pinned > 0) '$pinned pinned',
-      if (achieved > 0) '$achieved achieved',
+      l10n.visionDreamCount(total),
+      if (pinned > 0) l10n.visionPinnedCount(pinned),
+      if (achieved > 0) l10n.visionAchievedCount(achieved),
     ];
     return parts.join(' · ');
   }
@@ -3002,19 +3015,23 @@ class _FilterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _filterChip('All', allCount, _VisionFilter.all),
+            _filterChip(l10n.journalFilterAll, allCount, _VisionFilter.all),
             const SizedBox(width: 8),
-            _filterChip('Active', activeCount, _VisionFilter.active),
+            _filterChip(
+                l10n.visionFilterActive, activeCount, _VisionFilter.active),
             const SizedBox(width: 8),
-            _filterChip('Pinned', pinnedCount, _VisionFilter.pinned),
+            _filterChip(
+                l10n.visionFilterPinned, pinnedCount, _VisionFilter.pinned),
             const SizedBox(width: 8),
-            _filterChip('Achieved', achievedCount, _VisionFilter.achieved),
+            _filterChip(l10n.visionFilterAchieved, achievedCount,
+                _VisionFilter.achieved),
           ],
         ),
       ),
@@ -3112,6 +3129,7 @@ class _VisionEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       child: Column(
@@ -3133,7 +3151,7 @@ class _VisionEmptyState extends StatelessWidget {
           const SizedBox(height: 18),
           Center(
             child: Text(
-              'What does your life ahead look like?',
+              l10n.visionEmptyTitle,
               style: AppTextStyles.titleMedium
                   .copyWith(color: AppColors.forest700),
               textAlign: TextAlign.center,
@@ -3142,7 +3160,7 @@ class _VisionEmptyState extends StatelessWidget {
           const SizedBox(height: 6),
           Center(
             child: Text(
-              'Start with one of these — or tap + for a blank canvas.',
+              l10n.visionEmptySubtitle,
               style:
                   AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
               textAlign: TextAlign.center,
@@ -3200,7 +3218,7 @@ class _VisionEmptyState extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onBlank,
               icon: const Icon(Icons.edit_outlined, size: 16),
-              label: const Text('Start with a blank dream'),
+              label: Text(l10n.visionBlankDreamButton),
               style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
             ),
           ),
@@ -3226,6 +3244,7 @@ class _VisionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final accent = visionAccent(item);
     final opt = visionOptionFor(item.emoji);
     final hasPhoto =
@@ -3322,7 +3341,7 @@ class _VisionCard extends StatelessWidget {
                               Icon(Icons.touch_app_outlined,
                                   size: 11, color: AppColors.stone300),
                               const SizedBox(width: 3),
-                              Text('Tap to open',
+                              Text(l10n.visionTapToOpen,
                                   style: TextStyle(
                                       fontSize: 10,
                                       color: AppColors.stone300,
@@ -3377,11 +3396,12 @@ class _VisionCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
-        title: Text('Remove this dream?',
+        title: Text(l10n.visionRemoveDreamTitle,
             style:
                 AppTextStyles.titleMedium.copyWith(color: AppColors.stone800)),
         content: Text(item.title,
@@ -3389,7 +3409,7 @@ class _VisionCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Keep',
+            child: Text(l10n.visionKeep,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.stone500)),
           ),
@@ -3398,7 +3418,7 @@ class _VisionCard extends StatelessWidget {
               Navigator.pop(ctx);
               onDelete();
             },
-            child: Text('Remove',
+            child: Text(l10n.visionRemove,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.blush600)),
           ),
@@ -3610,6 +3630,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       constraints: BoxConstraints(
@@ -3629,7 +3650,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
               children: [
                 Expanded(
                   child: Text(
-                    _isEdit ? 'Edit Dream' : 'Add a Dream',
+                    _isEdit ? l10n.visionEditDreamTitle : l10n.visionAddDreamTitle,
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.forest700),
                   ),
@@ -3684,7 +3705,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                       shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
                     ),
                     child: Text(
-                      _isEdit ? 'Save Changes' : 'Add to Vision Board',
+                      _isEdit ? l10n.journalSaveChanges : l10n.visionAddToBoard,
                       style: AppTextStyles.labelLarge
                           .copyWith(color: Colors.white),
                     ),
@@ -3704,7 +3725,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                         shape:
                             RoundedRectangleBorder(borderRadius: AppRadius.lg),
                       ),
-                      child: Text('Remove this dream',
+                      child: Text(l10n.visionRemoveThisDream,
                           style: AppTextStyles.labelMedium
                               .copyWith(color: AppColors.blush600)),
                     ),
@@ -3734,10 +3755,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   // ── Tab: Vision (title, description, icon, category, date) ───────────────
   Widget _buildVisionTab() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Dream title'),
+        _label(l10n.visionDreamTitleLabel),
         const SizedBox(height: 6),
         TextField(
           controller: _titleCtrl,
@@ -3745,10 +3767,10 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           textInputAction: TextInputAction.next,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
           decoration: _fieldDecor(
-              'e.g. Be more present for my family', Icons.title_rounded),
+              l10n.visionDreamTitleHint, Icons.title_rounded),
         ),
         const SizedBox(height: 14),
-        _label('Notes (optional)'),
+        _label(l10n.visionNotesLabel),
         const SizedBox(height: 6),
         TextField(
           controller: _descCtrl,
@@ -3756,10 +3778,10 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           maxLines: 3,
           minLines: 2,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-          decoration: _fieldDecor('Anything to remember…', Icons.notes_rounded),
+          decoration: _fieldDecor(l10n.visionNotesHint, Icons.notes_rounded),
         ),
         const SizedBox(height: 14),
-        _label('Why this matters (optional)'),
+        _label(l10n.visionWhyLabel),
         const SizedBox(height: 6),
         TextField(
           controller: _whyCtrl,
@@ -3767,11 +3789,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           maxLines: 3,
           minLines: 2,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
-          decoration: _fieldDecor('When this matters most, why does it matter?',
+          decoration: _fieldDecor(l10n.visionWhyHint,
               Icons.psychology_outlined),
         ),
         const SizedBox(height: 18),
-        _label('Category'),
+        _label(l10n.visionCategoryLabel),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -3816,7 +3838,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           }).toList(),
         ),
         const SizedBox(height: 18),
-        _label('Choose your icon'),
+        _label(l10n.visionChooseIcon),
         const SizedBox(height: 10),
         GridView.count(
           crossAxisCount: 5,
@@ -3877,7 +3899,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           }).toList(),
         ),
         const SizedBox(height: 18),
-        _label('Target date (optional)'),
+        _label(l10n.visionTargetDateLabel),
         const SizedBox(height: 6),
         InkWell(
           borderRadius: AppRadius.lg,
@@ -3897,7 +3919,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                 Expanded(
                   child: Text(
                     _targetDate == null
-                        ? 'Pick a date to work toward'
+                        ? l10n.visionTargetDatePlaceholder
                         : DateFormat.yMMMMd().format(_targetDate!),
                     style: AppTextStyles.bodyMedium.copyWith(
                         color: _targetDate == null
@@ -3921,10 +3943,11 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   // ── Tab: Photos ──────────────────────────────────────────────────────────
   Widget _buildPhotoTab() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Photos help you feel it (up to 4)'),
+        _label(l10n.visionPhotosLabel),
         const SizedBox(height: 10),
         if (_imagePaths.isNotEmpty)
           GridView.count(
@@ -3961,8 +3984,8 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     const SizedBox(width: 10),
                     Text(
                       _imagePaths.isEmpty
-                          ? 'Add your first photo'
-                          : 'Add another (${_imagePaths.length}/4)',
+                          ? l10n.visionAddFirstPhoto
+                          : l10n.visionAddAnotherPhoto(_imagePaths.length),
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone500),
                     ),
@@ -3973,7 +3996,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           ),
         const SizedBox(height: 12),
         Text(
-          'Photos are stored on this device only — they never leave your phone.',
+          l10n.visionPhotosPrivacyNote,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
         ),
       ],
@@ -3982,20 +4005,21 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   // ── Tab: Milestones ──────────────────────────────────────────────────────
   Widget _buildMilestonesTab() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Small concrete steps'),
+        _label(l10n.visionStepsLabel),
         const SizedBox(height: 6),
         Text(
-          'Break the dream into 3–6 tiny wins. Check them off as life moves.',
+          l10n.visionStepsDescription,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 14),
         if (_milestones.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text('No steps yet — add one below.',
+            child: Text(l10n.visionNoStepsYet,
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone400)),
           )
@@ -4051,7 +4075,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone800),
                 decoration: _fieldDecor(
-                    'e.g. Walk 20 minutes today', Icons.add_task_rounded),
+                    l10n.visionStepHint, Icons.add_task_rounded),
               ),
             ),
             const SizedBox(width: 8),
@@ -4074,13 +4098,14 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   // ── Tab: Affirmation ─────────────────────────────────────────────────────
   Widget _buildAffirmationTab() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Your present-tense reframe'),
+        _label(l10n.visionAffirmationLabel),
         const SizedBox(height: 6),
         Text(
-          '"I am…" beats "I want to…" — the brain hears it as already real.',
+          l10n.visionAffirmationDescription,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 14),
@@ -4092,7 +4117,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           style: AppTextStyles.bodyMedium
               .copyWith(color: AppColors.stone800, fontStyle: FontStyle.italic),
           decoration: _fieldDecor(
-              'I am present, patient, and proud of how I show up.',
+              l10n.visionAffirmationHint,
               Icons.format_quote_rounded),
         ),
         const SizedBox(height: 10),
@@ -4101,7 +4126,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           child: TextButton.icon(
             onPressed: _suggestAffirmation,
             icon: const Icon(Icons.auto_awesome_rounded, size: 16),
-            label: const Text('Suggest from title'),
+            label: Text(l10n.visionSuggestFromTitle),
             style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
           ),
         ),
@@ -4144,11 +4169,12 @@ class _SheetTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tabs = <(_SheetTab, IconData, String)>[
-      (_SheetTab.vision, Icons.auto_awesome_rounded, 'Vision'),
-      (_SheetTab.photo, Icons.image_outlined, 'Photos'),
-      (_SheetTab.milestones, Icons.flag_outlined, 'Steps'),
-      (_SheetTab.affirmation, Icons.format_quote_rounded, 'Affirm'),
+    final l10n = AppLocalizations.of(context);
+    final tabs = <(_SheetTab, IconData, String)>[
+      (_SheetTab.vision, Icons.auto_awesome_rounded, l10n.visionTabVision),
+      (_SheetTab.photo, Icons.image_outlined, l10n.visionTabPhotos),
+      (_SheetTab.milestones, Icons.flag_outlined, l10n.visionTabSteps),
+      (_SheetTab.affirmation, Icons.format_quote_rounded, l10n.visionTabAffirm),
     ];
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -4278,7 +4304,7 @@ class _ZenTab extends StatelessWidget {
                         size: 20, color: AppColors.forest400),
                     const SizedBox(width: 8),
                     Text(
-                      'Today\'s Reflection',
+                      l10n.zenTodaysReflection,
                       style: AppTextStyles.overline,
                     ),
                   ],
@@ -4308,7 +4334,7 @@ class _ZenTab extends StatelessWidget {
 
           // Morning intention
           _ZenSection(
-            title: 'Morning Intention',
+            title: l10n.zenMorningIntention,
             icon: Icons.light_mode_outlined,
             color: AppColors.honey500,
             child: const _IntentionWidget(),
@@ -4318,7 +4344,7 @@ class _ZenTab extends StatelessWidget {
 
           // Evening reflection prompts
           _ZenSection(
-            title: 'Reflection Prompts',
+            title: l10n.zenReflectionPrompts,
             icon: Icons.nights_stay_outlined,
             color: AppColors.forest600,
             child: const _ReflectionPrompts(),
@@ -4328,7 +4354,7 @@ class _ZenTab extends StatelessWidget {
 
           // Gratitude section
           _ZenSection(
-            title: 'Three Good Things',
+            title: l10n.zenThreeGoodThings,
             icon: Icons.spa_outlined,
             color: AppColors.honey500,
             child: const _ThreeGoodThings(),
@@ -4338,7 +4364,7 @@ class _ZenTab extends StatelessWidget {
 
           // Breathing reminder
           _ZenSection(
-            title: 'Mindful Moment',
+            title: l10n.zenMindfulMoment,
             icon: Icons.air_rounded,
             color: AppColors.forest400,
             child: const _MindfulMoment(),
@@ -4403,17 +4429,18 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
   final _ctrl = TextEditingController();
   bool _saved = false;
 
-  static const _prompts = [
-    'Today I intend to…',
-    'My focus for today is…',
-    'I will show up for myself by…',
-    'One thing I\'m grateful for right now is…',
-  ];
+  List<String> _prompts(AppLocalizations l10n) => [
+        l10n.zenIntentionPrompt0,
+        l10n.zenIntentionPrompt1,
+        l10n.zenIntentionPrompt2,
+        l10n.zenIntentionPrompt3,
+      ];
 
-  String get _hint {
+  String _hint(AppLocalizations l10n) {
+    final prompts = _prompts(l10n);
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
-    return _prompts[dayOfYear % _prompts.length];
+    return prompts[dayOfYear % prompts.length];
   }
 
   @override
@@ -4424,6 +4451,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_saved) {
       return Row(
         children: [
@@ -4451,7 +4479,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
             textCapitalization: TextCapitalization.sentences,
             style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
-              hintText: _hint,
+              hintText: _hint(l10n),
               hintStyle:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.stone300),
               border: InputBorder.none,
@@ -4474,7 +4502,7 @@ class _IntentionWidgetState extends State<_IntentionWidget> {
               borderRadius: AppRadius.md,
               border: Border.all(color: AppColors.honey200),
             ),
-            child: Text('Set',
+            child: Text(l10n.zenSetIntention,
                 style: AppTextStyles.labelSmall
                     .copyWith(color: AppColors.honey600)),
           ),
@@ -4494,24 +4522,26 @@ class _ReflectionPrompts extends StatefulWidget {
 class _ReflectionPromptsState extends State<_ReflectionPrompts> {
   int _current = 0;
 
-  static const _prompts = [
-    'What went well today?',
-    'What challenged me, and how did I handle it?',
-    'What am I most proud of today?',
-    'How did I take care of myself today?',
-    'What would I do differently tomorrow?',
-    'Who or what am I grateful for right now?',
-    'What did I learn about myself today?',
-    'How did I show up for my sobriety today?',
-  ];
+  List<String> _prompts(AppLocalizations l10n) => [
+        l10n.zenReflectionPrompt0,
+        l10n.zenReflectionPrompt1,
+        l10n.zenReflectionPrompt2,
+        l10n.zenReflectionPrompt3,
+        l10n.zenReflectionPrompt4,
+        l10n.zenReflectionPrompt5,
+        l10n.zenReflectionPrompt6,
+        l10n.zenReflectionPrompt7,
+      ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prompts = _prompts(l10n);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _prompts[_current],
+          prompts[_current],
           style: AppTextStyles.bodyMedium
               .copyWith(color: AppColors.stone600, height: 1.5),
         ),
@@ -4519,14 +4549,14 @@ class _ReflectionPromptsState extends State<_ReflectionPrompts> {
         GestureDetector(
           onTap: () {
             H.selection();
-            setState(() => _current = (_current + 1) % _prompts.length);
+            setState(() => _current = (_current + 1) % prompts.length);
           },
           child: Row(
             children: [
               Icon(Icons.refresh_rounded,
                   size: 16, color: AppColors.forest500),
               const SizedBox(width: 6),
-              Text('Next prompt',
+              Text(l10n.zenNextPrompt,
                   style: AppTextStyles.labelSmall
                       .copyWith(color: AppColors.forest600)),
             ],
@@ -4561,6 +4591,7 @@ class _ThreeGoodThingsState extends State<_ThreeGoodThings> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: List.generate(3, (i) {
         return Padding(
@@ -4590,7 +4621,7 @@ class _ThreeGoodThingsState extends State<_ThreeGoodThings> {
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.stone800),
                   decoration: InputDecoration(
-                    hintText: 'Something good today…',
+                    hintText: l10n.zenGoodThingHint,
                     hintStyle: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.stone300),
                     border: InputBorder.none,
@@ -4610,34 +4641,36 @@ class _ThreeGoodThingsState extends State<_ThreeGoodThings> {
 class _MindfulMoment extends StatelessWidget {
   const _MindfulMoment();
 
-  static const _exercises = [
-    (
-      '5-4-3-2-1 Grounding',
-      'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.',
-      false,
-    ),
-    (
-      'Box Breath',
-      'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.',
-      true, // has guided exercise in Toolkit
-    ),
-    (
-      'Body Scan',
-      'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.',
-      false,
-    ),
-    (
-      'Gratitude Breath',
-      'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.',
-      true,
-    ),
-  ];
+  List<(String, String, bool)> _exercises(AppLocalizations l10n) => [
+        (
+          l10n.zenExercise0Title,
+          l10n.zenExercise0Desc,
+          false,
+        ),
+        (
+          l10n.zenExercise1Title,
+          l10n.zenExercise1Desc,
+          true, // has guided exercise in Toolkit
+        ),
+        (
+          l10n.zenExercise2Title,
+          l10n.zenExercise2Desc,
+          false,
+        ),
+        (
+          l10n.zenExercise3Title,
+          l10n.zenExercise3Desc,
+          true,
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final exercises = _exercises(l10n);
     final dayOfYear =
         DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
-    final (title, desc, hasGuided) = _exercises[dayOfYear % _exercises.length];
+    final (title, desc, hasGuided) = exercises[dayOfYear % exercises.length];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -4667,7 +4700,7 @@ class _MindfulMoment extends StatelessWidget {
                   Icon(Icons.air_rounded,
                       size: 16, color: AppColors.forest600),
                   const SizedBox(width: 7),
-                  Text('Open guided breathing in Your Toolkit',
+                  Text(l10n.zenOpenGuidedBreathing,
                       style: AppTextStyles.labelSmall
                           .copyWith(color: AppColors.forest700)),
                   const SizedBox(width: 4),
@@ -4686,7 +4719,7 @@ class _MindfulMoment extends StatelessWidget {
                 Icon(Icons.air_rounded,
                     size: 14, color: AppColors.forest400),
                 const SizedBox(width: 6),
-                Text('More breathing exercises in Your Toolkit',
+                Text(l10n.zenMoreBreathingExercises,
                     style: AppTextStyles.labelSmall
                         .copyWith(color: AppColors.forest600)),
                 const SizedBox(width: 3),

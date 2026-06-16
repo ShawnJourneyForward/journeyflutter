@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -35,6 +36,7 @@ class JournalDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final list = ref.watch(journalProvider).valueOrNull ?? const [];
     final entry = list.firstWhere(
       (e) => e.id == entryId,
@@ -62,7 +64,9 @@ class JournalDetailScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: entry.locked ? 'Unlock entry' : 'Lock entry',
+            tooltip: entry.locked
+                ? l10n.journalDetailUnlockEntry
+                : l10n.journalDetailLockEntry,
             icon: Icon(
               entry.locked ? Icons.lock : Icons.lock_open_outlined,
               color: entry.locked ? AppColors.honey500 : AppColors.stone600,
@@ -71,7 +75,7 @@ class JournalDetailScreen extends ConsumerWidget {
               if (entry.locked) {
                 // Locking → unlocking removes the safeguard, so re-auth first.
                 final ok = await JournalReauth.require(context,
-                    reason: 'Unlock this entry');
+                    reason: l10n.journalDetailUnlockThisEntry);
                 if (!ok || !context.mounted) return;
               }
               H.medium();
@@ -79,7 +83,7 @@ class JournalDetailScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            tooltip: 'Edit',
+            tooltip: l10n.journalDetailEdit,
             icon: const Icon(Icons.edit_outlined),
             onPressed: () {
               H.selection();
@@ -87,7 +91,7 @@ class JournalDetailScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            tooltip: 'Delete',
+            tooltip: l10n.commonDelete,
             icon: const Icon(Icons.delete_outline_rounded),
             onPressed: () => _confirmDelete(context, ref, entry),
           ),
@@ -114,7 +118,7 @@ class JournalDetailScreen extends ConsumerWidget {
             if (entry.editedAt != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Edited ${_relativeAgo(entry.editedAt!)}',
+                l10n.journalDetailEdited(_relativeAgo(l10n, entry.editedAt!)),
                 style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.stone400, fontStyle: FontStyle.italic),
               ),
@@ -158,7 +162,7 @@ class JournalDetailScreen extends ConsumerWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'A quick mood check-in. Tap edit to add words when you\'re ready.',
+                        l10n.journalDetailQuickMoodInvite,
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone500),
                       ),
@@ -179,9 +183,9 @@ class JournalDetailScreen extends ConsumerWidget {
             // ── On-this-day echoes ──────────────────────────────────────
             if (onThisDay.isNotEmpty) ...[
               const SizedBox(height: 32),
-              const _SectionLabel(
+              _SectionLabel(
                 icon: Icons.history_rounded,
-                label: 'On this day, earlier',
+                label: l10n.journalDetailOnThisDayEarlier,
               ),
               const SizedBox(height: 10),
               ...onThisDay.take(3).map((e) => _EchoCard(
@@ -197,25 +201,26 @@ class JournalDetailScreen extends ConsumerWidget {
 
   Future<void> _confirmDelete(
       BuildContext context, WidgetRef ref, JournalEntry entry) async {
+    final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
-        title: Text('Delete this entry?',
+        title: Text(l10n.journalDetailDeleteTitle,
             style:
                 AppTextStyles.titleMedium.copyWith(color: AppColors.stone800)),
-        content: Text('This cannot be undone.',
+        content: Text(l10n.journalDetailDeleteBody,
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Keep',
+            child: Text(l10n.journalDetailKeep,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.stone500)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Delete',
+            child: Text(l10n.commonDelete,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.blush600)),
           ),
@@ -233,8 +238,8 @@ class JournalDetailScreen extends ConsumerWidget {
   Future<void> _openEcho(BuildContext context, JournalEntry echo) async {
     H.selection();
     if (echo.locked) {
-      final ok =
-          await JournalReauth.require(context, reason: 'Open this entry');
+      final ok = await JournalReauth.require(context,
+          reason: AppLocalizations.of(context).journalDetailOpenThisEntry);
       if (!ok || !context.mounted) return;
     }
     if (!context.mounted) return;
@@ -243,11 +248,11 @@ class JournalDetailScreen extends ConsumerWidget {
     ));
   }
 
-  String _relativeAgo(DateTime dt) {
+  String _relativeAgo(AppLocalizations l10n, DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inMinutes < 60) return l10n.journalDetailMinutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.journalDetailHoursAgo(diff.inHours);
+    if (diff.inDays < 7) return l10n.journalDetailDaysAgo(diff.inDays);
     return DateFormat.yMMMd().format(dt);
   }
 }
@@ -385,6 +390,7 @@ class _EchoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final mood = moodFor(entry.mood);
     final years = DateTime.now().year - entry.date.year;
     return InkWell(
@@ -414,7 +420,7 @@ class _EchoCard extends StatelessWidget {
                 ],
                 const Spacer(),
                 Text(
-                  years == 1 ? '1 year ago' : '$years years ago',
+                  l10n.journalDetailYearsAgo(years),
                   style: AppTextStyles.bodySmall
                       .copyWith(color: AppColors.stone400),
                 ),
@@ -423,9 +429,9 @@ class _EchoCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               entry.locked
-                  ? 'Locked entry · tap to unlock'
+                  ? l10n.journalDetailLockedEntryTapToUnlock
                   : entry.text.trim().isEmpty
-                      ? 'Mood check-in (no words)'
+                      ? l10n.journalDetailMoodCheckInNoWords
                       : entry.text,
               style: AppTextStyles.bodySmall.copyWith(
                 color: (entry.locked || entry.text.trim().isEmpty)

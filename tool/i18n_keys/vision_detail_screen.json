@@ -1,0 +1,81 @@
+{
+  "visionPinCapReached": {
+    "en": "You can pin up to 3 dreams — unpin one to make room.",
+    "desc": "Snackbar shown when the user tries to pin a vision item but already has the maximum of 3 pinned."
+  },
+  "visionMarkedAchievedToast": {
+    "en": "Marked achieved. Beautiful.",
+    "desc": "Snackbar confirming a vision/dream item was marked as achieved."
+  },
+  "visionUnpinTooltip": {
+    "en": "Unpin",
+    "desc": "Tooltip on the pin icon button when the vision item is currently pinned; tapping unpins it."
+  },
+  "visionPinTooltip": {
+    "en": "Pin to home",
+    "desc": "Tooltip on the pin icon button when the vision item is not pinned; tapping pins it to the home screen."
+  },
+  "visionMoveToActiveTooltip": {
+    "en": "Move back to active",
+    "desc": "Tooltip on the achieved-toggle icon button when the vision item is achieved; tapping returns it to active goals."
+  },
+  "visionMarkAchievedTooltip": {
+    "en": "Mark achieved",
+    "desc": "Tooltip on the achieved-toggle icon button to mark the vision item as achieved."
+  },
+  "visionEditTooltip": {
+    "en": "Edit",
+    "desc": "Tooltip on the edit icon button for a vision item."
+  },
+  "visionAchievedBanner": {
+    "en": "You achieved this. Beautiful.",
+    "desc": "Banner text shown at the top of an achieved vision item when no achieved date is recorded."
+  },
+  "visionAchievedOnDate": {
+    "en": "Achieved on {date}",
+    "desc": "Banner text on an achieved vision item showing the date it was achieved.",
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "visionDaysPastTarget": {
+    "en": "{count}d past target",
+    "desc": "Chip label for a vision item whose target date has passed; {count} is the number of days past the target.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "visionTargetToday": {
+    "en": "Today",
+    "desc": "Chip label shown when a vision item's target date is today."
+  },
+  "visionDaysToGo": {
+    "en": "{count, plural, =1{1 day to go} other{{count} days to go}}",
+    "desc": "Chip label counting down the days remaining until a vision item's target date.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "visionPinnedChip": {
+    "en": "Pinned",
+    "desc": "Chip label indicating a vision item is pinned to the home screen."
+  },
+  "visionAffirmationLabel": {
+    "en": "Affirmation",
+    "desc": "Section heading above the affirmation text on the vision detail screen."
+  },
+  "visionMilestonesLabel": {
+    "en": "Milestones",
+    "desc": "Section heading for the milestone checklist on a vision item."
+  },
+  "visionMilestonesComplete": {
+    "en": "{done} of {total} complete",
+    "desc": "Progress subtitle showing how many milestones are completed out of the total.",
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "visionWhyItMattersHeading": {
+    "en": "Why this matters",
+    "desc": "Heading for the 'why it matters' prose card on the vision detail screen."
+  },
+  "visionNotesHeading": {
+    "en": "Notes",
+    "desc": "Heading for the description/notes prose card on the vision detail screen."
+  }
+}

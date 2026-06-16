@@ -14,6 +14,7 @@ class CrisisLine {
     required this.number,
     required this.description,
     required this.hours,
+    this.alwaysOn = false,
     this.isTextOnly = false,
   });
 
@@ -21,6 +22,9 @@ class CrisisLine {
   final String number;
   final String description;
   final String hours;
+
+  /// True for lines that operate 24/7 (drives the "always on" badge styling).
+  final bool alwaysOn;
 
   /// True for text/SMS lines where a phone call is not applicable.
   final bool isTextOnly;
@@ -40,250 +44,274 @@ class CrisisRegion {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const _regions = <CrisisRegion>[
-  CrisisRegion(
-    label: 'International / US',
-    lines: [
-      CrisisLine(
-        name: '988 Suicide & Crisis Lifeline',
-        number: '988',
-        description: 'US mental health & substance use crisis — call or text',
-        hours: '24/7',
+List<CrisisRegion> _regions(AppLocalizations l10n) => <CrisisRegion>[
+      CrisisRegion(
+        label: l10n.crisisRegionInternationalUs,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLine988Name,
+            number: '988',
+            description: l10n.crisisLine988Desc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSamhsaName,
+            number: '1-800-662-4357',
+            description: l10n.crisisLineSamhsaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineCrisisTextName,
+            number: l10n.crisisLineCrisisTextNumber,
+            description: l10n.crisisLineCrisisTextDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+            isTextOnly: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineAaGeneralName,
+            number: '1-800-839-1686',
+            description: l10n.crisisLineAaGeneralDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSmartUsName,
+            number: '1-440-951-5357',
+            description: l10n.crisisLineSmartUsDesc,
+            hours: l10n.crisisHoursBusiness,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'SAMHSA Helpline',
-        number: '1-800-662-4357',
-        description: 'Free, confidential substance abuse help',
-        hours: '24/7',
+      CrisisRegion(
+        label: l10n.crisisRegionUkIreland,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineAaUkName,
+            number: '0800 9177 650',
+            description: l10n.crisisLineAaUkDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineDrinklineName,
+            number: '0300 123 1110',
+            description: l10n.crisisLineDrinklineDesc,
+            hours: l10n.crisisHoursMonFri,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSamaritansName,
+            number: '116 123',
+            description: l10n.crisisLineSamaritansDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineFrankName,
+            number: '0300 123 6600',
+            description: l10n.crisisLineFrankDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineAaIrelandName,
+            number: '01 842 0700',
+            description: l10n.crisisLineAaIrelandDesc,
+            hours: l10n.crisisHoursOffice,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'Crisis Text Line',
-        number: 'Text HOME to 741741',
-        description: 'Text-based crisis support',
-        hours: '24/7',
-        isTextOnly: true,
+      CrisisRegion(
+        label: l10n.crisisRegionSouthAfrica,
+        initiallyExpanded: true,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineSadagSuicideName,
+            number: '0800 567 567',
+            description: l10n.crisisLineSadagSuicideDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSadagSubstanceName,
+            number: '0800 12 13 14',
+            description: l10n.crisisLineSadagSubstanceDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSadagSmsName,
+            number: '32312',
+            description: l10n.crisisLineSadagSmsDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+            isTextOnly: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineAaSaName,
+            number: '0861 435 722',
+            description: l10n.crisisLineAaSaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineLifelineSaName,
+            number: '0861 322 322',
+            description: l10n.crisisLineLifelineSaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineFamsaName,
+            number: '011 975 7106',
+            description: l10n.crisisLineFamsaDesc,
+            hours: l10n.crisisHoursOffice,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSancaName,
+            number: '011 892 3829',
+            description: l10n.crisisLineSancaDesc,
+            hours: l10n.crisisHoursOffice,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'AA General Service',
-        number: '1-800-839-1686',
-        description: 'Alcoholics Anonymous support',
-        hours: '24/7',
+      CrisisRegion(
+        label: l10n.crisisRegionAustralia,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineAaAustraliaName,
+            number: '1300 22 2222',
+            description: l10n.crisisLineAaAustraliaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineBeyondBlueName,
+            number: '1300 22 4636',
+            description: l10n.crisisLineBeyondBlueDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineLifelineAuName,
+            number: '13 11 14',
+            description: l10n.crisisLineLifelineAuDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineTurningPointName,
+            number: '1800 888 236',
+            description: l10n.crisisLineTurningPointDesc,
+            hours: l10n.crisisHoursBusiness,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSmartAuName,
+            number: '1300 392 088',
+            description: l10n.crisisLineSmartAuDesc,
+            hours: l10n.crisisHoursBusiness,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'SMART Recovery',
-        number: '1-440-951-5357',
-        description: 'Science-based recovery support',
-        hours: 'Business hours',
+      CrisisRegion(
+        label: l10n.crisisRegionCanada,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineCrisisServicesCanadaName,
+            number: '1-833-456-4566',
+            description: l10n.crisisLineCrisisServicesCanadaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineCamhName,
+            number: '1-800-463-2338',
+            description: l10n.crisisLineCamhDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineAaCanadaName,
+            number: '1-800-268-8833',
+            description: l10n.crisisLineAaCanadaDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineConnexOntarioName,
+            number: '1-866-531-2600',
+            description: l10n.crisisLineConnexOntarioDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+        ],
       ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'UK / Ireland',
-    lines: [
-      CrisisLine(
-        name: 'AA United Kingdom',
-        number: '0800 9177 650',
-        description: 'Alcoholics Anonymous UK',
-        hours: '24/7',
+      CrisisRegion(
+        label: l10n.crisisRegionNewZealand,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineAaNzName,
+            number: '0800 229 6757',
+            description: l10n.crisisLineAaNzDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineLifelineNzName,
+            number: '0800 543 354',
+            description: l10n.crisisLineLifelineNzDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineNeedToTalkName,
+            number: '1737',
+            description: l10n.crisisLineNeedToTalkDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineAlcoholDrugNzName,
+            number: '0800 787 797',
+            description: l10n.crisisLineAlcoholDrugNzDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'Drinkline',
-        number: '0300 123 1110',
-        description: 'National alcohol helpline',
-        hours: 'Mon-Fri 9am-8pm',
+      CrisisRegion(
+        label: l10n.crisisRegionEurope,
+        lines: [
+          CrisisLine(
+            name: l10n.crisisLineGermanyDhsName,
+            number: '+49 2381 9015-0',
+            description: l10n.crisisLineGermanyDhsDesc,
+            hours: l10n.crisisHoursOffice,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineFranceEcouteName,
+            number: '0 980 980 930',
+            description: l10n.crisisLineFranceEcouteDesc,
+            hours: l10n.crisisHours247,
+            alwaysOn: true,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineNetherlandsJellinekName,
+            number: '088 505 1220',
+            description: l10n.crisisLineNetherlandsJellinekDesc,
+            hours: l10n.crisisHoursBusiness,
+          ),
+          CrisisLine(
+            name: l10n.crisisLineSpainAaName,
+            number: '91 445 1232',
+            description: l10n.crisisLineSpainAaDesc,
+            hours: l10n.crisisHoursOffice,
+          ),
+        ],
       ),
-      CrisisLine(
-        name: 'Samaritans',
-        number: '116 123',
-        description: 'Emotional support in crisis',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Frank',
-        number: '0300 123 6600',
-        description: 'Drug and alcohol helpline',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'AA Ireland',
-        number: '01 842 0700',
-        description: 'Alcoholics Anonymous Ireland',
-        hours: 'Office hours',
-      ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'South Africa',
-    initiallyExpanded: true,
-    lines: [
-      CrisisLine(
-        name: 'Suicide Crisis Helpline',
-        number: '0800 567 567',
-        description: 'SADAG 24-hour suicide crisis line',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'SADAG Substance Abuse',
-        number: '0800 12 13 14',
-        description: 'South African Depression and Anxiety Group',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'SADAG SMS Line',
-        number: '32312',
-        description: 'Text-based support',
-        hours: '24/7',
-        isTextOnly: true,
-      ),
-      CrisisLine(
-        name: 'AA South Africa',
-        number: '0861 435 722',
-        description: 'Alcoholics Anonymous SA',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Lifeline South Africa',
-        number: '0861 322 322',
-        description: 'Crisis counselling',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'FAMSA',
-        number: '011 975 7106',
-        description: 'Family and Marriage Society of SA',
-        hours: 'Office hours',
-      ),
-      CrisisLine(
-        name: 'SANCA',
-        number: '011 892 3829',
-        description: 'SA National Council on Alcoholism',
-        hours: 'Office hours',
-      ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'Australia',
-    lines: [
-      CrisisLine(
-        name: 'AA Australia',
-        number: '1300 22 2222',
-        description: 'Alcoholics Anonymous Australia',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Beyond Blue',
-        number: '1300 22 4636',
-        description: 'Mental health support',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Lifeline Australia',
-        number: '13 11 14',
-        description: 'Crisis support',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Turning Point',
-        number: '1800 888 236',
-        description: 'Alcohol and drug treatment',
-        hours: 'Business hours',
-      ),
-      CrisisLine(
-        name: 'SMART Recovery AU',
-        number: '1300 392 088',
-        description: 'Science-based recovery',
-        hours: 'Business hours',
-      ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'Canada',
-    lines: [
-      CrisisLine(
-        name: 'Crisis Services Canada',
-        number: '1-833-456-4566',
-        description: 'National crisis line',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'CAMH',
-        number: '1-800-463-2338',
-        description: 'Centre for Addiction and Mental Health',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'AA Canada',
-        number: '1-800-268-8833',
-        description: 'Alcoholics Anonymous Canada',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'ConnexOntario',
-        number: '1-866-531-2600',
-        description: 'Mental health and addictions',
-        hours: '24/7',
-      ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'New Zealand',
-    lines: [
-      CrisisLine(
-        name: 'AA New Zealand',
-        number: '0800 229 6757',
-        description: 'Alcoholics Anonymous NZ',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Lifeline NZ',
-        number: '0800 543 354',
-        description: 'Crisis support',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Need to Talk',
-        number: '1737',
-        description: 'Free call or text',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Alcohol Drug Helpline',
-        number: '0800 787 797',
-        description: 'Alcohol and drug support',
-        hours: '24/7',
-      ),
-    ],
-  ),
-  CrisisRegion(
-    label: 'Europe',
-    lines: [
-      CrisisLine(
-        name: 'Germany — DHS',
-        number: '+49 2381 9015-0',
-        description: 'Deutsche Hauptstelle fuer Suchtfragen',
-        hours: 'Office hours',
-      ),
-      CrisisLine(
-        name: 'France — Ecoute Alcool',
-        number: '0 980 980 930',
-        description: 'National alcohol helpline',
-        hours: '24/7',
-      ),
-      CrisisLine(
-        name: 'Netherlands — Jellinek',
-        number: '088 505 1220',
-        description: 'Addiction treatment',
-        hours: 'Business hours',
-      ),
-      CrisisLine(
-        name: 'Spain — AA Espana',
-        number: '91 445 1232',
-        description: 'Alcoholics Anonymous Spain',
-        hours: 'Office hours',
-      ),
-    ],
-  ),
-];
+    ];
 
 List<String> _buildWithdrawalSymptoms(AppLocalizations l10n) => [
       l10n.crisisWithdrawal0,
@@ -336,6 +364,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.stone50,
       body: SafeArea(
@@ -355,10 +384,9 @@ class _CrisisScreenState extends State<CrisisScreen> {
                   const SizedBox(height: AppSpacing.md),
                   _buildWithdrawalWarning(),
                   const SizedBox(height: AppSpacing.lg),
-                  _buildSectionHeader(
-                      AppLocalizations.of(context).crisisSectionHeader),
+                  _buildSectionHeader(l10n.crisisSectionHeader),
                   const SizedBox(height: AppSpacing.sm),
-                  ..._regions.map((r) => _buildRegionTile(r)),
+                  ..._regions(l10n).map((r) => _buildRegionTile(r)),
                 ],
               ),
             ),
@@ -704,7 +732,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
   // ── Crisis line row ────────────────────────────────────────────────────────
 
   Widget _buildCrisisLineRow(CrisisLine line) {
-    final bool alwaysOn = line.hours == '24/7';
+    final bool alwaysOn = line.alwaysOn;
 
     return Padding(
       padding: const EdgeInsets.symmetric(

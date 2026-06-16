@@ -3517,4 +3517,3475 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get strengthWriteAnother => 'Write another letter';
+
+  @override
+  String get puzzleActivity5Label => 'Colour Calm';
+
+  @override
+  String get puzzleActivity5Desc =>
+      'Tap the expanding circles and let your mind follow.';
+
+  @override
+  String get puzzleActivity5Duration => '3 min';
+
+  @override
+  String get puzzleHomeTitle => 'Mindful Activities';
+
+  @override
+  String get puzzleHomeSubtitle => 'Short exercises to calm and refocus';
+
+  @override
+  String get puzzleCountdownIntro =>
+      'Counting backwards by 3 interrupts anxiety\nand brings you into the present.';
+
+  @override
+  String get puzzleCountdownDone => 'Done!';
+
+  @override
+  String get puzzleCountdownRestart => 'Tap to restart';
+
+  @override
+  String get puzzleCountdownSubtract => 'Tap to subtract 3';
+
+  @override
+  String get puzzleGratitudePrompt0 => 'Something in nature I noticed today…';
+
+  @override
+  String get puzzleGratitudePrompt1 => 'A person who has shown me kindness…';
+
+  @override
+  String get puzzleGratitudePrompt2 => 'A simple pleasure I often overlook…';
+
+  @override
+  String get puzzleGratitudePrompt3 =>
+      'Something my body does for me every day…';
+
+  @override
+  String get puzzleGratitudePrompt4 => 'A memory that still makes me smile…';
+
+  @override
+  String get puzzleGratitudePrompt5 =>
+      'Something I\'ve learned in the past year…';
+
+  @override
+  String get puzzleGratitudePrompt6 => 'A challenge that made me stronger…';
+
+  @override
+  String get puzzleGratitudePrompt7 => 'A small comfort that I appreciate…';
+
+  @override
+  String get puzzleGratitudePrompt8 =>
+      'Someone who believed in me when I didn\'t…';
+
+  @override
+  String get puzzleGratitudePrompt9 => 'A moment of peace I\'ve experienced…';
+
+  @override
+  String get puzzleGratitudePrompt10 => 'A skill or talent I\'m glad I have…';
+
+  @override
+  String get puzzleGratitudePrompt11 => 'Something I\'m looking forward to…';
+
+  @override
+  String get puzzleGratitudePrompt12 => 'A kindness I showed someone recently…';
+
+  @override
+  String get puzzleGratitudePrompt13 =>
+      'Something that made me laugh recently…';
+
+  @override
+  String get puzzleGratitudePrompt14 => 'A place that brings me peace…';
+
+  @override
+  String get puzzleReflectionHint => 'Write your reflection here…';
+
+  @override
+  String get puzzleShufflePrompt => 'Shuffle prompt';
+
+  @override
+  String puzzleMemoryMoves(int count) {
+    return 'Moves: $count';
+  }
+
+  @override
+  String get puzzleNewGame => 'New game';
+
+  @override
+  String get puzzleWellDone => 'Well done!';
+
+  @override
+  String puzzleCompletedInMoves(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Completed in $count moves',
+      one: 'Completed in 1 move',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get puzzlePlayAgain => 'Play again';
+
+  @override
+  String get puzzleStrengthIntro =>
+      'How strong does each feel today? This is just for you — there\'s no right answer.';
+
+  @override
+  String get puzzleStrength0 => 'Courage';
+
+  @override
+  String get puzzleStrength1 => 'Patience';
+
+  @override
+  String get puzzleStrength2 => 'Honesty';
+
+  @override
+  String get puzzleStrength3 => 'Resilience';
+
+  @override
+  String get puzzleStrength4 => 'Gratitude';
+
+  @override
+  String get puzzleStrength5 => 'Hope';
+
+  @override
+  String get puzzleStrength6 => 'Connection';
+
+  @override
+  String get puzzleStrength7 => 'Purpose';
+
+  @override
+  String puzzleStrengthRating(int value) {
+    return '$value/5';
+  }
+
+  @override
+  String get puzzleStrengthAffirmation =>
+      'Wherever you rated yourself today — you showed up. That alone is strength.';
+
+  @override
+  String get puzzleNowStep0Title => 'Notice';
+
+  @override
+  String get puzzleNowStep0Body =>
+      'Look around you right now. Name 3 things you can see without judging them. Just see them as they are.';
+
+  @override
+  String get puzzleNowStep1Title => 'Feel';
+
+  @override
+  String get puzzleNowStep1Body =>
+      'Place both feet flat on the floor. Feel the weight of your body. Notice one sensation in your body right now — warmth, tension, breath.';
+
+  @override
+  String get puzzleNowStep2Title => 'Choose';
+
+  @override
+  String get puzzleNowStep2Body =>
+      'You have arrived in this moment. What is one small, kind thing you can do for yourself in the next 10 minutes?';
+
+  @override
+  String get puzzleComplete => 'Complete';
+
+  @override
+  String get puzzleColorIntro => 'Tap anywhere. Breathe with the circles.';
+
+  @override
+  String get puzzleColorTapAnywhere => 'Tap anywhere';
+
+  @override
+  String get backupShareSubject => 'Journey Forward Backup';
+
+  @override
+  String get backupShareSubjectEncrypted =>
+      'Journey Forward Backup (encrypted)';
+
+  @override
+  String get backupProtectTitle => 'Protect your backup?';
+
+  @override
+  String get backupEnterPassphraseTitle => 'Enter backup passphrase';
+
+  @override
+  String get backupProtectDesc =>
+      'Set a passphrase to encrypt the backup file. Without it, anyone with the file can read your journal.';
+
+  @override
+  String get backupEnterPassphraseDesc =>
+      'This file is encrypted. Type the passphrase you used when exporting.';
+
+  @override
+  String get backupPassphraseLabel => 'Passphrase';
+
+  @override
+  String get backupConfirmPassphraseLabel => 'Confirm passphrase';
+
+  @override
+  String get backupSkipPlainJson => 'Skip (plain JSON)';
+
+  @override
+  String get backupPassphraseEmptyError => 'Passphrase cannot be empty.';
+
+  @override
+  String get backupPassphraseMismatchError => 'Passphrases do not match.';
+
+  @override
+  String get backupPassphraseTooShortError =>
+      'Use at least 8 characters — longer is safer.';
+
+  @override
+  String get backupEncryptButton => 'Encrypt';
+
+  @override
+  String get backupUnlockButton => 'Unlock';
+
+  @override
+  String cbtReframeNotePrefix(String reframe) {
+    return 'Reframe: $reframe';
+  }
+
+  @override
+  String get crisisRegionInternationalUs => 'International / US';
+
+  @override
+  String get crisisRegionUkIreland => 'UK / Ireland';
+
+  @override
+  String get crisisRegionSouthAfrica => 'South Africa';
+
+  @override
+  String get crisisRegionAustralia => 'Australia';
+
+  @override
+  String get crisisRegionCanada => 'Canada';
+
+  @override
+  String get crisisRegionNewZealand => 'New Zealand';
+
+  @override
+  String get crisisRegionEurope => 'Europe';
+
+  @override
+  String get crisisHours247 => '24/7';
+
+  @override
+  String get crisisHoursBusiness => 'Business hours';
+
+  @override
+  String get crisisHoursOffice => 'Office hours';
+
+  @override
+  String get crisisHoursMonFri => 'Mon-Fri 9am-8pm';
+
+  @override
+  String get crisisLine988Name => '988 Suicide & Crisis Lifeline';
+
+  @override
+  String get crisisLine988Desc =>
+      'US mental health & substance use crisis — call or text';
+
+  @override
+  String get crisisLineSamhsaName => 'SAMHSA Helpline';
+
+  @override
+  String get crisisLineSamhsaDesc => 'Free, confidential substance abuse help';
+
+  @override
+  String get crisisLineCrisisTextName => 'Crisis Text Line';
+
+  @override
+  String get crisisLineCrisisTextNumber => 'Text HOME to 741741';
+
+  @override
+  String get crisisLineCrisisTextDesc => 'Text-based crisis support';
+
+  @override
+  String get crisisLineAaGeneralName => 'AA General Service';
+
+  @override
+  String get crisisLineAaGeneralDesc => 'Alcoholics Anonymous support';
+
+  @override
+  String get crisisLineSmartUsName => 'SMART Recovery';
+
+  @override
+  String get crisisLineSmartUsDesc => 'Science-based recovery support';
+
+  @override
+  String get crisisLineAaUkName => 'AA United Kingdom';
+
+  @override
+  String get crisisLineAaUkDesc => 'Alcoholics Anonymous UK';
+
+  @override
+  String get crisisLineDrinklineName => 'Drinkline';
+
+  @override
+  String get crisisLineDrinklineDesc => 'National alcohol helpline';
+
+  @override
+  String get crisisLineSamaritansName => 'Samaritans';
+
+  @override
+  String get crisisLineSamaritansDesc => 'Emotional support in crisis';
+
+  @override
+  String get crisisLineFrankName => 'Frank';
+
+  @override
+  String get crisisLineFrankDesc => 'Drug and alcohol helpline';
+
+  @override
+  String get crisisLineAaIrelandName => 'AA Ireland';
+
+  @override
+  String get crisisLineAaIrelandDesc => 'Alcoholics Anonymous Ireland';
+
+  @override
+  String get crisisLineSadagSuicideName => 'Suicide Crisis Helpline';
+
+  @override
+  String get crisisLineSadagSuicideDesc => 'SADAG 24-hour suicide crisis line';
+
+  @override
+  String get crisisLineSadagSubstanceName => 'SADAG Substance Abuse';
+
+  @override
+  String get crisisLineSadagSubstanceDesc =>
+      'South African Depression and Anxiety Group';
+
+  @override
+  String get crisisLineSadagSmsName => 'SADAG SMS Line';
+
+  @override
+  String get crisisLineSadagSmsDesc => 'Text-based support';
+
+  @override
+  String get crisisLineAaSaName => 'AA South Africa';
+
+  @override
+  String get crisisLineAaSaDesc => 'Alcoholics Anonymous SA';
+
+  @override
+  String get crisisLineLifelineSaName => 'Lifeline South Africa';
+
+  @override
+  String get crisisLineLifelineSaDesc => 'Crisis counselling';
+
+  @override
+  String get crisisLineFamsaName => 'FAMSA';
+
+  @override
+  String get crisisLineFamsaDesc => 'Family and Marriage Society of SA';
+
+  @override
+  String get crisisLineSancaName => 'SANCA';
+
+  @override
+  String get crisisLineSancaDesc => 'SA National Council on Alcoholism';
+
+  @override
+  String get crisisLineAaAustraliaName => 'AA Australia';
+
+  @override
+  String get crisisLineAaAustraliaDesc => 'Alcoholics Anonymous Australia';
+
+  @override
+  String get crisisLineBeyondBlueName => 'Beyond Blue';
+
+  @override
+  String get crisisLineBeyondBlueDesc => 'Mental health support';
+
+  @override
+  String get crisisLineLifelineAuName => 'Lifeline Australia';
+
+  @override
+  String get crisisLineLifelineAuDesc => 'Crisis support';
+
+  @override
+  String get crisisLineTurningPointName => 'Turning Point';
+
+  @override
+  String get crisisLineTurningPointDesc => 'Alcohol and drug treatment';
+
+  @override
+  String get crisisLineSmartAuName => 'SMART Recovery AU';
+
+  @override
+  String get crisisLineSmartAuDesc => 'Science-based recovery';
+
+  @override
+  String get crisisLineCrisisServicesCanadaName => 'Crisis Services Canada';
+
+  @override
+  String get crisisLineCrisisServicesCanadaDesc => 'National crisis line';
+
+  @override
+  String get crisisLineCamhName => 'CAMH';
+
+  @override
+  String get crisisLineCamhDesc => 'Centre for Addiction and Mental Health';
+
+  @override
+  String get crisisLineAaCanadaName => 'AA Canada';
+
+  @override
+  String get crisisLineAaCanadaDesc => 'Alcoholics Anonymous Canada';
+
+  @override
+  String get crisisLineConnexOntarioName => 'ConnexOntario';
+
+  @override
+  String get crisisLineConnexOntarioDesc => 'Mental health and addictions';
+
+  @override
+  String get crisisLineAaNzName => 'AA New Zealand';
+
+  @override
+  String get crisisLineAaNzDesc => 'Alcoholics Anonymous NZ';
+
+  @override
+  String get crisisLineLifelineNzName => 'Lifeline NZ';
+
+  @override
+  String get crisisLineLifelineNzDesc => 'Crisis support';
+
+  @override
+  String get crisisLineNeedToTalkName => 'Need to Talk';
+
+  @override
+  String get crisisLineNeedToTalkDesc => 'Free call or text';
+
+  @override
+  String get crisisLineAlcoholDrugNzName => 'Alcohol Drug Helpline';
+
+  @override
+  String get crisisLineAlcoholDrugNzDesc => 'Alcohol and drug support';
+
+  @override
+  String get crisisLineGermanyDhsName => 'Germany — DHS';
+
+  @override
+  String get crisisLineGermanyDhsDesc =>
+      'Deutsche Hauptstelle fuer Suchtfragen';
+
+  @override
+  String get crisisLineFranceEcouteName => 'France — Ecoute Alcool';
+
+  @override
+  String get crisisLineFranceEcouteDesc => 'National alcohol helpline';
+
+  @override
+  String get crisisLineNetherlandsJellinekName => 'Netherlands — Jellinek';
+
+  @override
+  String get crisisLineNetherlandsJellinekDesc => 'Addiction treatment';
+
+  @override
+  String get crisisLineSpainAaName => 'Spain — AA Espana';
+
+  @override
+  String get crisisLineSpainAaDesc => 'Alcoholics Anonymous Spain';
+
+  @override
+  String get dailyIntentionSetTitle => 'Set today\'s intention';
+
+  @override
+  String get dailyIntentionEditTitle => 'Edit today\'s intention';
+
+  @override
+  String get dailyIntentionSubtitle =>
+      'One small thing for your recovery today.';
+
+  @override
+  String get dailyIntentionHint => 'e.g. Call my sponsor before noon.';
+
+  @override
+  String get dailyIntentionSaveButton => 'Save intention';
+
+  @override
+  String get dailySaving => 'Saving…';
+
+  @override
+  String get dailyReviewTitle => 'How did today go?';
+
+  @override
+  String get dailyReviewPrompt => 'This morning you said:';
+
+  @override
+  String get dailyReviewDidIt => 'Did it';
+
+  @override
+  String get dailyReviewPartly => 'Partly';
+
+  @override
+  String get dailyReviewNotYet => 'Not yet';
+
+  @override
+  String get dailyCapitalTitle => 'Recovery capital this week';
+
+  @override
+  String get dailyCapitalConnected => 'Connected with someone supportive';
+
+  @override
+  String get dailyCapitalPhysical => 'Moved my body';
+
+  @override
+  String get dailyCapitalSlept => 'Slept enough most nights';
+
+  @override
+  String get dailyCapitalHelpfulPlace => 'Spent time somewhere that helps me';
+
+  @override
+  String get dailyCapitalMeaningful => 'Did something meaningful to me';
+
+  @override
+  String get dailyCapitalNoteHint => 'A note for future-you (optional)';
+
+  @override
+  String get dailyCapitalSaveButton => 'Save this week';
+
+  @override
+  String get emergencyCloseGuide => '✕ Close';
+
+  @override
+  String get cbtGuideThoughtsHint => 'Your thoughts…';
+
+  @override
+  String cbtGuideStepCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reasonsWhyHeading => 'Why I\'m doing this.';
+
+  @override
+  String get reasonsEmptyHint =>
+      'Add your reasons in Settings → My Motivation. Reading them during a craving can be powerful.';
+
+  @override
+  String get haltCheckInPrompt => 'Before acting on a craving, check in:';
+
+  @override
+  String get playTapeHeroHeading =>
+      'Pause for a moment.\nLook at what happens next.';
+
+  @override
+  String get playTapeIntro =>
+      'An urge can feel urgent, but it is temporary. Before you act, walk yourself through the next few moments, tonight, and tomorrow morning.';
+
+  @override
+  String get playTapeDrinkTitle => 'If I drink now';
+
+  @override
+  String get playTapeSoberTitle => 'If I stay sober';
+
+  @override
+  String get playTapePhaseRightNow => 'Right now';
+
+  @override
+  String get playTapePhaseTonight => 'Later tonight';
+
+  @override
+  String get playTapePhaseTomorrow => 'Tomorrow';
+
+  @override
+  String get playTapeDrinkNow0 => 'Relief may feel immediate';
+
+  @override
+  String get playTapeDrinkNow1 => 'The craving softens for a little while';
+
+  @override
+  String get playTapeDrinkTonight0 => 'The difficult feelings often return';
+
+  @override
+  String get playTapeDrinkTonight1 => 'Sleep may be disrupted';
+
+  @override
+  String get playTapeDrinkTonight2 => 'My momentum is interrupted';
+
+  @override
+  String get playTapeDrinkTomorrow0 => 'I may wake with regret';
+
+  @override
+  String get playTapeDrinkTomorrow1 => 'The next day asks more of me';
+
+  @override
+  String get playTapeDrinkTomorrow2 => 'Starting again feels harder';
+
+  @override
+  String get playTapeSoberNow0 => 'The craving rises, then passes';
+
+  @override
+  String get playTapeSoberNow1 => 'I give myself space instead of reacting';
+
+  @override
+  String get playTapeSoberTonight0 => 'I protect my peace';
+
+  @override
+  String get playTapeSoberTonight1 => 'I go to bed with clarity';
+
+  @override
+  String get playTapeSoberTonight2 => 'I strengthen self-trust';
+
+  @override
+  String get playTapeSoberTomorrow0 => 'I wake up clear-headed';
+
+  @override
+  String get playTapeSoberTomorrow1 => 'My momentum grows';
+
+  @override
+  String get playTapeSoberTomorrow2 => 'I feel proud of myself';
+
+  @override
+  String get playTapeWhatHelpsTitle => 'What would help right now?';
+
+  @override
+  String get playTapeActionBreathe => 'Breathe with me';
+
+  @override
+  String get playTapeActionJournal => 'Open my journal';
+
+  @override
+  String get playTapeActionReason => 'Read my reason';
+
+  @override
+  String get playTapeActionRideWave => 'Ride the wave';
+
+  @override
+  String get heatmapRecoveryMapTitle => 'Recovery Map';
+
+  @override
+  String get heatmapSubtitleLastYear =>
+      'Last 365 days · A quiet record of the days you showed up.';
+
+  @override
+  String get heatmapSubtitleSinceStart =>
+      'Since you began · A quiet record of the days you showed up.';
+
+  @override
+  String get heatmapFilterAll => 'All';
+
+  @override
+  String get heatmapFilterCravings => 'Cravings';
+
+  @override
+  String get heatmapFilterThoughts => 'Thoughts';
+
+  @override
+  String get heatmapFilterMovement => 'Movement';
+
+  @override
+  String get heatmapStatCareDays => 'Care days';
+
+  @override
+  String get heatmapStatTotalCheckIns => 'Total check-ins';
+
+  @override
+  String get heatmapStatMostUsed => 'Most used';
+
+  @override
+  String get heatmapStatThisMonth => 'This month';
+
+  @override
+  String get heatmapSeeFullYear => 'See full year';
+
+  @override
+  String get heatmapShowLess => 'Show less';
+
+  @override
+  String get heatmapDowMon => 'M';
+
+  @override
+  String get heatmapDowTue => 'T';
+
+  @override
+  String get heatmapDowWed => 'W';
+
+  @override
+  String get heatmapDowThu => 'T';
+
+  @override
+  String get heatmapDowFri => 'F';
+
+  @override
+  String get heatmapDowSat => 'S';
+
+  @override
+  String get heatmapDowSun => 'S';
+
+  @override
+  String get heatmapLegendBeforeBegan => 'Before you began';
+
+  @override
+  String get heatmapLegendNoEntry => 'No entry';
+
+  @override
+  String get heatmapDayNoEntryTitle => 'No entry recorded.';
+
+  @override
+  String get heatmapDayQuietCounts => 'A quiet day still counts.';
+
+  @override
+  String get heatmapSectionCravingSupport => 'Craving support';
+
+  @override
+  String get heatmapEntryFallback => '(entry)';
+
+  @override
+  String heatmapThoughtFallback(String type) {
+    return '(thought — $type)';
+  }
+
+  @override
+  String get heatmapDayShowedUp => 'You showed up for yourself today.';
+
+  @override
+  String get historyScreenTitle => 'My History';
+
+  @override
+  String get historyDeleteEntryTitle => 'Delete entry?';
+
+  @override
+  String get historyDeleteEntryBody => 'This cannot be undone.';
+
+  @override
+  String get historyStatJournalThisWeek => 'Journal this week';
+
+  @override
+  String get historyStatGratitudeThisWeek => 'Gratitude this week';
+
+  @override
+  String get historyStatDaysSober => 'Days sober';
+
+  @override
+  String historyDaysShort(int days) {
+    return '${days}d';
+  }
+
+  @override
+  String get historyCardJournal => 'Journal entry';
+
+  @override
+  String get historyTapToReadMore => 'Tap to read more';
+
+  @override
+  String get historyCardGratitude => 'Gratitude';
+
+  @override
+  String get historyCardCraving => 'Craving';
+
+  @override
+  String get historyCardThought => 'Thought';
+
+  @override
+  String get historyActivityRun => 'Run';
+
+  @override
+  String get historyActivityCycle => 'Cycle';
+
+  @override
+  String get historyActivitySwim => 'Swim';
+
+  @override
+  String get historyActivityWeights => 'Weights';
+
+  @override
+  String get historyActivityGeneric => 'Activity';
+
+  @override
+  String historyActivityDistanceTime(String distance, int minutes) {
+    return '$distance km · $minutes min';
+  }
+
+  @override
+  String historySleepHours(String hours) {
+    return '$hours hours';
+  }
+
+  @override
+  String historySleepQuality(String quality) {
+    return 'Quality: $quality';
+  }
+
+  @override
+  String get historySlipReset => 'Reset';
+
+  @override
+  String historySlipSoberAtTime(String streak) {
+    return 'Sober at the time: $streak';
+  }
+
+  @override
+  String get historyEmptyAllTitle => 'Nothing here yet';
+
+  @override
+  String get historyEmptyAllSub => 'Your entries will appear here';
+
+  @override
+  String get historyEmptyCravingsTitle => 'No cravings yet';
+
+  @override
+  String get historyEmptyCravingsSub =>
+      'Log your cravings from the home screen';
+
+  @override
+  String get historyEmptyThoughtsTitle => 'No thoughts yet';
+
+  @override
+  String get historyEmptyThoughtsSub =>
+      'Log your thoughts from the home screen';
+
+  @override
+  String get historyEmptyActivityTitle => 'No exercise yet';
+
+  @override
+  String get historyEmptyActivitySub =>
+      'Log your exercise from the home screen';
+
+  @override
+  String get historyEmptySleepTitle => 'No sleep yet';
+
+  @override
+  String get historyEmptySleepSub => 'Log your sleep from the home screen';
+
+  @override
+  String get historyEmptyJournalTitle => 'No journal entries yet';
+
+  @override
+  String get historyEmptyJournalSub =>
+      'Log your journal entries from the home screen';
+
+  @override
+  String get historyEmptyGratitudeTitle => 'No gratitude notes yet';
+
+  @override
+  String get historyEmptyGratitudeSub =>
+      'Log your gratitude notes from the home screen';
+
+  @override
+  String get historyEmptySlipsTitle => 'No slips yet';
+
+  @override
+  String get historyEmptySlipsSub => 'Log your slips from the home screen';
+
+  @override
+  String get homeHeroQuote0 => 'Every day forward is a win.';
+
+  @override
+  String get homeHeroQuote1 => 'Progress is built in days like this.';
+
+  @override
+  String get homeHeroQuote2 => 'You\'re farther than yesterday.';
+
+  @override
+  String get homeHeroQuote3 => 'Today counted. Tomorrow will too.';
+
+  @override
+  String get homeHeroQuote4 => 'Momentum compounds. Keep going.';
+
+  @override
+  String get homeHeroQuote5 => 'Each day is a brick in the wall.';
+
+  @override
+  String get homeHeroQuote6 => 'You chose this. Again.';
+
+  @override
+  String get homeHeroQuote7 => 'Sober is a verb today.';
+
+  @override
+  String get homeHeroQuote8 => 'The streak is the strategy.';
+
+  @override
+  String get homeHeroQuote9 => 'You earned this day.';
+
+  @override
+  String get homeHeroQuote10 => 'Forward is the only direction.';
+
+  @override
+  String get homeHeroQuote11 => 'Days stack into years.';
+
+  @override
+  String get homeHeroQuote12 => 'Discipline becomes identity.';
+
+  @override
+  String get homeHeroQuote13 => 'You\'re rewriting the story.';
+
+  @override
+  String get homeHeroQuote14 => 'The next right choice is the whole game.';
+
+  @override
+  String get homeHeroQuote15 => 'Show up. The rest follows.';
+
+  @override
+  String get homeHeroQuote16 => 'Old life. New chapter.';
+
+  @override
+  String get homeHeroQuote17 => 'You did the hard thing today.';
+
+  @override
+  String get homeHeroQuote18 => 'Progress isn\'t loud. It\'s daily.';
+
+  @override
+  String get homeHeroQuote19 => 'Better is built, not found.';
+
+  @override
+  String get homeHeroQuote20 => 'Today is the receipt.';
+
+  @override
+  String get homeHeroQuote21 => 'You moved the needle.';
+
+  @override
+  String get homeHeroQuote22 => 'Sobriety is the work and the reward.';
+
+  @override
+  String get homeHeroQuote23 => 'What you do daily defines you.';
+
+  @override
+  String get homeHeroQuote24 => 'Hours add to days. Days add to years.';
+
+  @override
+  String get homeHeroQuote25 => 'You\'re closer than you were.';
+
+  @override
+  String get homeHeroQuote26 => 'The first hard choice is behind you.';
+
+  @override
+  String get homeHeroQuote27 => 'You\'re not who you were yesterday.';
+
+  @override
+  String get homeHeroQuote28 => 'Action over feeling. Always.';
+
+  @override
+  String get homeHeroQuote29 => 'Hard now. Easier later.';
+
+  @override
+  String get homeHeroQuote30 => 'You\'re stacking days.';
+
+  @override
+  String get homeHeroQuote31 => 'The streak doesn\'t lie.';
+
+  @override
+  String get homeHeroQuote32 => 'Choose forward. Choose again.';
+
+  @override
+  String get homeHeroQuote33 => 'You showed up. That\'s everything.';
+
+  @override
+  String get homeHeroQuote34 => 'Days like this are how it changes.';
+
+  @override
+  String get homeHeroQuote35 => 'You\'re building something real.';
+
+  @override
+  String get homeHeroQuote36 => 'Today is proof.';
+
+  @override
+  String get homeHeroQuote37 => 'Discipline is freedom.';
+
+  @override
+  String get homeHeroQuote38 => 'One choice. Then the next.';
+
+  @override
+  String get homeHeroQuote39 => 'The reps are the result.';
+
+  @override
+  String get homeHeroQuote40 => 'You\'re earning your future.';
+
+  @override
+  String get homeHeroQuote41 => 'Effort compounds quietly.';
+
+  @override
+  String get homeHeroQuote42 => 'Today\'s win is tomorrow\'s foundation.';
+
+  @override
+  String get homeHeroQuote43 => 'Forward is enough.';
+
+  @override
+  String get homeHeroQuote44 =>
+      'You\'re not starting over. You\'re continuing.';
+
+  @override
+  String get homeHeroQuote45 => 'The work is the win.';
+
+  @override
+  String get homeHeroQuote46 => 'Strong is what you become.';
+
+  @override
+  String get homeHeroQuote47 => 'The hard days build you.';
+
+  @override
+  String get homeHeroQuote48 => 'Decision by decision. Day by day.';
+
+  @override
+  String get homeHeroQuote49 => 'You\'re doing it.';
+
+  @override
+  String get homeRecoveryBody0 =>
+      'Your body begins adjusting. Hydration and rest are your allies right now.';
+
+  @override
+  String get homeRecoveryBody1 =>
+      'Heart rate and sleep patterns may begin to shift as your body finds its rhythm.';
+
+  @override
+  String get homeRecoveryBody2 =>
+      'A significant window — be patient with yourself. Seek support if anything feels unsafe.';
+
+  @override
+  String get homeRecoveryBody3 =>
+      'The most intense early adjustment may begin to ease. A small window of calm can emerge.';
+
+  @override
+  String get homeRecoveryBody4 =>
+      'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.';
+
+  @override
+  String get homeRecoveryBody5 =>
+      'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.';
+
+  @override
+  String get homeRecoveryBody6 =>
+      'Many people describe a sense of physical relief settling in around this point.';
+
+  @override
+  String get homeRecoveryBody7 =>
+      'Day-to-day satisfaction may slowly start to feel more accessible again.';
+
+  @override
+  String get homeRecoveryBody8 =>
+      'Many people notice a steadier baseline. Urges may become less frequent and easier to move through.';
+
+  @override
+  String get homeRecoveryBody9 =>
+      'For many people, the long-term load on sleep, energy, and mood begins to ease at this point.';
+
+  @override
+  String get homeRecoveryBody10 =>
+      'The space you have created can continue to deepen over time — one ordinary day at a time.';
+
+  @override
+  String get homeRecoveryJustStarting => 'Just Starting';
+
+  @override
+  String get homeRecoveryJustStartingBody =>
+      'The decision you made today already matters. Be gentle with yourself.';
+
+  @override
+  String get homeRecoveryNow => 'now';
+
+  @override
+  String homeRecoveryInMin(int min) {
+    return 'in $min min';
+  }
+
+  @override
+  String homeRecoveryInHrs(int hrs) {
+    return 'in $hrs hrs';
+  }
+
+  @override
+  String homeRecoveryInDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return 'in $_temp0';
+  }
+
+  @override
+  String get homeHealingTimelineHeader => 'THE HEALING TIMELINE';
+
+  @override
+  String homeRecoveryNext(String label) {
+    return 'Next: $label';
+  }
+
+  @override
+  String get homeRecoveryAllMilestones =>
+      'You have reached every milestone. Remarkable.';
+
+  @override
+  String get homeMilestoneNode5Label => 'Six months';
+
+  @override
+  String get homeMilestoneNode6Label => 'One year';
+
+  @override
+  String homeGreetingName(String name) {
+    return 'Hi, $name';
+  }
+
+  @override
+  String get homeStartsIn => 'STARTS IN';
+
+  @override
+  String get homeTimeSober => 'TIME SOBER';
+
+  @override
+  String homeCounterDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'DAYS',
+      one: 'DAY',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeCounterHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'HOURS',
+      one: 'HOUR',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeCounterMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'MINUTES',
+      one: 'MINUTE',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeCounterSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'SECONDS',
+      one: 'SECOND',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeMilestoneTimingStart => 'start';
+
+  @override
+  String homeMilestoneTimingDay(int day) {
+    return 'Day $day';
+  }
+
+  @override
+  String get homeMilestoneTimingOneYear => '1 year';
+
+  @override
+  String homeMilestoneTimingYears(int years) {
+    return '$years yr';
+  }
+
+  @override
+  String get homeJourneyProgressComplete =>
+      'One year of sobriety — remarkable.';
+
+  @override
+  String homeJourneyDaysTo(int count, String label) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0 to $label';
+  }
+
+  @override
+  String get homeIntentionTitle => 'Today\'s intention';
+
+  @override
+  String get homeIntentionPrompt => 'One small thing for your recovery today.';
+
+  @override
+  String get homeIntentionReviewPrompt => 'How did today go?';
+
+  @override
+  String get homeIntentionOutcomeDid => '✓ You did it.';
+
+  @override
+  String get homeIntentionOutcomePartly => '~ Partly — that still counts.';
+
+  @override
+  String get homeIntentionOutcomeNotYet => '… Not yet — tomorrow is a new day.';
+
+  @override
+  String get homeCravingHaltQuestion => 'Right now, are you any of these?';
+
+  @override
+  String get homeCravingHaltBlurb => 'Naming it slows the wave down — H.A.L.T.';
+
+  @override
+  String get homeCravingOutcomeQuestion => 'How did it turn out?';
+
+  @override
+  String get homeCravingOutcomeStayedSober => 'Stayed sober';
+
+  @override
+  String get homeCravingOutcomeUnclear => 'Unclear';
+
+  @override
+  String get homeCravingOutcomeSlipped => 'Slipped';
+
+  @override
+  String get homeLastTimeOutcomeSober => 'and you stayed sober';
+
+  @override
+  String get homeLastTimeOutcomeSlipped => 'and you slipped — useful to know';
+
+  @override
+  String homeLastTimeDuration(int minutes) {
+    return ' (passed in $minutes min)';
+  }
+
+  @override
+  String homeLastTimeBlurb(String response, String duration, String outcome) {
+    return 'Last time around this level you $response$duration $outcome.';
+  }
+
+  @override
+  String get homeThoughtSavedPrivately => 'Thought saved privately';
+
+  @override
+  String homeThoughtSaveError(String error) {
+    return 'Could not save: $error';
+  }
+
+  @override
+  String get homeThoughtWriteHintOptional =>
+      'Write the thought in your own words (optional).';
+
+  @override
+  String get homeActivityTypeRun => 'Run';
+
+  @override
+  String get homeActivityTypeCycle => 'Cycle';
+
+  @override
+  String get homeActivityTypeSwim => 'Swim';
+
+  @override
+  String get homeActivityTypeGym => 'Gym';
+
+  @override
+  String get homeActivityTimeDistance => 'Time & distance';
+
+  @override
+  String get homeActivityDurationMin => 'Duration (min)';
+
+  @override
+  String homeActivityDistanceLabel(String unit) {
+    return 'Distance ($unit)';
+  }
+
+  @override
+  String get homeUnitMin => 'min';
+
+  @override
+  String get homeUnitKm => 'km';
+
+  @override
+  String get homeUnitMiles => 'miles';
+
+  @override
+  String get homeSleepFactorsShortQuestion => 'What affected sleep?';
+
+  @override
+  String get homeSleepNotesHintShort =>
+      'Notes (optional) - e.g., woke once, settled again quickly.';
+
+  @override
+  String get insightsStatSub7Days => '7 days';
+
+  @override
+  String get insightsStatAvgSleep => 'Avg Sleep';
+
+  @override
+  String get insightsStatActiveDays => 'Active Days';
+
+  @override
+  String get insightsStatJournalDays => 'Journal Days';
+
+  @override
+  String get insightsChartMood => 'Mood — 7 days';
+
+  @override
+  String get insightsChartCravings => 'Cravings — 7 days';
+
+  @override
+  String get insightsChartSleep => 'Sleep — 7 days (hours)';
+
+  @override
+  String get insightsChartExercise => 'Exercise — 7 days (minutes)';
+
+  @override
+  String get insightsEmptyMood => 'No journal entries yet';
+
+  @override
+  String get insightsEmptyCravings => 'No cravings logged';
+
+  @override
+  String get insightsEmptySleep => 'No sleep logged';
+
+  @override
+  String get insightsEmptyActivity => 'No activity logged';
+
+  @override
+  String get insightsMoodHard => 'Hard';
+
+  @override
+  String get insightsThoughtPatterns => 'Thought Patterns — 7 days';
+
+  @override
+  String get insightsEmptyThoughts => 'No thoughts logged';
+
+  @override
+  String get insightsThoughtChallenging => 'Challenging';
+
+  @override
+  String get insightsWeekdayMon => 'M';
+
+  @override
+  String get insightsWeekdayTue => 'T';
+
+  @override
+  String get insightsWeekdayWed => 'W';
+
+  @override
+  String get insightsWeekdayThu => 'T';
+
+  @override
+  String get insightsWeekdayFri => 'F';
+
+  @override
+  String get insightsWeekdaySat => 'S';
+
+  @override
+  String get insightsWeekdaySun => 'S';
+
+  @override
+  String get journalDetailUnlockEntry => 'Unlock entry';
+
+  @override
+  String get journalDetailLockEntry => 'Lock entry';
+
+  @override
+  String get journalDetailUnlockThisEntry => 'Unlock this entry';
+
+  @override
+  String get journalDetailOpenThisEntry => 'Open this entry';
+
+  @override
+  String get journalDetailEdit => 'Edit';
+
+  @override
+  String journalDetailEdited(String time) {
+    return 'Edited $time';
+  }
+
+  @override
+  String get journalDetailQuickMoodInvite =>
+      'A quick mood check-in. Tap edit to add words when you\'re ready.';
+
+  @override
+  String get journalDetailOnThisDayEarlier => 'On this day, earlier';
+
+  @override
+  String get journalDetailDeleteTitle => 'Delete this entry?';
+
+  @override
+  String get journalDetailDeleteBody => 'This cannot be undone.';
+
+  @override
+  String get journalDetailKeep => 'Keep';
+
+  @override
+  String journalDetailMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String journalDetailHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String journalDetailDaysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String journalDetailYearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years ago',
+      one: '1 year ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalDetailLockedEntryTapToUnlock =>
+      'Locked entry · tap to unlock';
+
+  @override
+  String get journalDetailMoodCheckInNoWords => 'Mood check-in (no words)';
+
+  @override
+  String get journalMoodLoggedSnack =>
+      'Mood logged. Tap the card to add words.';
+
+  @override
+  String get journalReauthViewEntry => 'View this entry';
+
+  @override
+  String get journalFilterEmptyTitle => 'Nothing matches';
+
+  @override
+  String get journalFilterEmptySubtitle =>
+      'Try a different filter or clear the search.';
+
+  @override
+  String get journalNewEntryTitle => 'New entry';
+
+  @override
+  String get journalNewEntrySubtitle => 'Pick how you want to write today.';
+
+  @override
+  String get journalPlainEntryTitle => 'Plain entry';
+
+  @override
+  String get journalPlainEntrySubtitle =>
+      'A blank page for your thoughts. Mood, tags, optional prompt.';
+
+  @override
+  String get journalDailyReflectionTitle => 'Daily reflection';
+
+  @override
+  String get journalDailyReflectionSubtitle =>
+      'A guided page: gratitude, anchors, wins, cravings, intention.';
+
+  @override
+  String get journalBadgeNew => 'New';
+
+  @override
+  String get journalCrisisTitleCrisis => 'I see you. Want a hand?';
+
+  @override
+  String get journalCrisisTitleHard => 'That sounds heavy.';
+
+  @override
+  String get journalCrisisBodyCrisis =>
+      'Saving your entry helped. A short calm exercise can take it from here.';
+
+  @override
+  String get journalCrisisBodyHard =>
+      'You wrote it down — that already counts. A 60-second thought record can help if you want it.';
+
+  @override
+  String get journalCrisisCalmRoomLabel => 'Open the calm room';
+
+  @override
+  String get journalCrisisCalmRoomDetail =>
+      'Breath work, grounding, and one safe action.';
+
+  @override
+  String get journalCrisisThoughtRecordLabel => 'Try a thought record';
+
+  @override
+  String get journalCrisisThoughtRecordDetail =>
+      'Name the thought, weigh the evidence, reframe it.';
+
+  @override
+  String get journalCrisisDismiss => 'I\'m okay for now';
+
+  @override
+  String get journalBucketThisWeek => 'This week';
+
+  @override
+  String get journalBucketLastWeek => 'Last week';
+
+  @override
+  String get journalBucketEarlierThisMonth => 'Earlier this month';
+
+  @override
+  String journalWritingStreak(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count day writing streak',
+      one: '1 day writing',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalQuickMoodPrompt => 'How are you right now?';
+
+  @override
+  String journalOnThisDay(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'On this day, $count years ago',
+      one: 'On this day, 1 year ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalEchoLockedEntry => 'A locked entry';
+
+  @override
+  String get journalEchoMoodCheckIn => 'A mood check-in';
+
+  @override
+  String journalEchoMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count more from this day',
+      one: '+1 more from this day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get journalFilterAll => 'All';
+
+  @override
+  String get journalFilterToday => 'Today';
+
+  @override
+  String get journalFilterHard => 'Hard';
+
+  @override
+  String get journalFilterWins => 'Wins';
+
+  @override
+  String get journalFilterLocked => 'Locked';
+
+  @override
+  String get journalSearchHint => 'Search your entries…';
+
+  @override
+  String get journalEmptyTitle => 'A place for the unfiltered you';
+
+  @override
+  String get journalEmptySubtitle =>
+      'Pick a door — or tap + to start with a blank page.';
+
+  @override
+  String get journalBlankPageButton => 'Start with a blank page';
+
+  @override
+  String get journalDeleteEntryTitle => 'Delete entry?';
+
+  @override
+  String get journalDeleteEntryBody => 'This cannot be undone.';
+
+  @override
+  String get journalCardLockedHint => 'Locked entry · tap to unlock';
+
+  @override
+  String get journalCardMoodCheckInHint => 'Mood check-in · tap to add words';
+
+  @override
+  String journalCardDateToday(String time) {
+    return 'Today $time';
+  }
+
+  @override
+  String get journalEditEntryTitle => 'Edit Entry';
+
+  @override
+  String get journalTodaysEntryTitle => 'Today\'s Entry';
+
+  @override
+  String get journalMoodQuestion => 'How are you feeling?';
+
+  @override
+  String get journalSubMoodSpecific => 'A little more specific?';
+
+  @override
+  String get journalSubMoodUnderneath => 'What\'s underneath?';
+
+  @override
+  String get journalMindQuestion => 'What\'s on your mind?';
+
+  @override
+  String get journalVoiceStop => 'Stop';
+
+  @override
+  String get journalVoiceSpeak => 'Speak';
+
+  @override
+  String get journalVoiceUnavailable =>
+      'Voice input is unavailable. Check microphone permission in Settings.';
+
+  @override
+  String get journalBodyHint => 'Write freely — no one else will see this...';
+
+  @override
+  String get journalTagsLabel => 'Tags';
+
+  @override
+  String get journalAddTagHint => 'Add a tag…';
+
+  @override
+  String get journalAdd => 'Add';
+
+  @override
+  String get journalLockedEntryLabel => 'Locked entry';
+
+  @override
+  String get journalLockEntryLabel => 'Lock this entry';
+
+  @override
+  String get journalLockEntryHint =>
+      'Hidden from the list. Re-auth required to view.';
+
+  @override
+  String get journalSaveChanges => 'Save Changes';
+
+  @override
+  String get journalSaveEntry => 'Save Entry';
+
+  @override
+  String journalSuggestedPrompt(String prompt) {
+    return 'Suggested: $prompt';
+  }
+
+  @override
+  String get journalSuggestedTag => '· suggested';
+
+  @override
+  String journalDraftFrom(String age) {
+    return 'Unsaved draft from $age';
+  }
+
+  @override
+  String journalDraftChars(String mood, int count) {
+    return '$mood · $count chars';
+  }
+
+  @override
+  String get journalDraftDiscard => 'Discard';
+
+  @override
+  String get journalAgeMomentAgo => 'a moment ago';
+
+  @override
+  String journalAgeMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String journalAgeHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String get journalAgeYesterday => 'yesterday';
+
+  @override
+  String journalPersonalCard0(String name) {
+    return '$name, you are doing harder things than most people will ever try.';
+  }
+
+  @override
+  String journalPersonalCard1(String name) {
+    return '$name, your sober self is the realest version of you.';
+  }
+
+  @override
+  String journalPersonalCard2(String name) {
+    return '$name, this moment is enough. You are enough.';
+  }
+
+  @override
+  String journalPersonalCard3(String name) {
+    return '$name, the version of you a year from now is rooting for today\'s you.';
+  }
+
+  @override
+  String journalPersonalGratitudeCard(String gratitude) {
+    return 'You wrote this: \"$gratitude\" — that\'s still true.';
+  }
+
+  @override
+  String get journalSwipeHint => 'Swipe for more affirmations';
+
+  @override
+  String get journalYourAffirmations => 'Your affirmations';
+
+  @override
+  String get journalTapToAddAffirmation => 'Tap + to add your own';
+
+  @override
+  String get journalAddAffirmationTitle => 'Add Affirmation';
+
+  @override
+  String get journalAffirmationHint => 'I am...';
+
+  @override
+  String get visionFilterEmptyTitle => 'Nothing here yet';
+
+  @override
+  String get visionFilterEmptySubtitle =>
+      'Try a different filter, or add a new dream.';
+
+  @override
+  String get visionBoardTitle => 'Your Vision Board';
+
+  @override
+  String get visionBoardEmptyTagline => 'Visualise the life ahead of you';
+
+  @override
+  String visionDreamCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dreams',
+      one: '1 dream',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String visionPinnedCount(int count) {
+    return '$count pinned';
+  }
+
+  @override
+  String visionAchievedCount(int count) {
+    return '$count achieved';
+  }
+
+  @override
+  String get visionFilterActive => 'Active';
+
+  @override
+  String get visionFilterPinned => 'Pinned';
+
+  @override
+  String get visionFilterAchieved => 'Achieved';
+
+  @override
+  String get visionEmptyTitle => 'What does your life ahead look like?';
+
+  @override
+  String get visionEmptySubtitle =>
+      'Start with one of these — or tap + for a blank canvas.';
+
+  @override
+  String get visionBlankDreamButton => 'Start with a blank dream';
+
+  @override
+  String get visionTapToOpen => 'Tap to open';
+
+  @override
+  String get visionRemoveDreamTitle => 'Remove this dream?';
+
+  @override
+  String get visionKeep => 'Keep';
+
+  @override
+  String get visionRemove => 'Remove';
+
+  @override
+  String get visionEditDreamTitle => 'Edit Dream';
+
+  @override
+  String get visionAddDreamTitle => 'Add a Dream';
+
+  @override
+  String get visionAddToBoard => 'Add to Vision Board';
+
+  @override
+  String get visionRemoveThisDream => 'Remove this dream';
+
+  @override
+  String get visionDreamTitleLabel => 'Dream title';
+
+  @override
+  String get visionDreamTitleHint => 'e.g. Be more present for my family';
+
+  @override
+  String get visionNotesLabel => 'Notes (optional)';
+
+  @override
+  String get visionNotesHint => 'Anything to remember…';
+
+  @override
+  String get visionWhyLabel => 'Why this matters (optional)';
+
+  @override
+  String get visionWhyHint => 'When this matters most, why does it matter?';
+
+  @override
+  String get visionCategoryLabel => 'Category';
+
+  @override
+  String get visionChooseIcon => 'Choose your icon';
+
+  @override
+  String get visionTargetDateLabel => 'Target date (optional)';
+
+  @override
+  String get visionTargetDatePlaceholder => 'Pick a date to work toward';
+
+  @override
+  String get visionPhotosLabel => 'Photos help you feel it (up to 4)';
+
+  @override
+  String get visionAddFirstPhoto => 'Add your first photo';
+
+  @override
+  String visionAddAnotherPhoto(int count) {
+    return 'Add another ($count/4)';
+  }
+
+  @override
+  String get visionPhotosPrivacyNote =>
+      'Photos are stored on this device only — they never leave your phone.';
+
+  @override
+  String get visionStepsLabel => 'Small concrete steps';
+
+  @override
+  String get visionStepsDescription =>
+      'Break the dream into 3–6 tiny wins. Check them off as life moves.';
+
+  @override
+  String get visionNoStepsYet => 'No steps yet — add one below.';
+
+  @override
+  String get visionStepHint => 'e.g. Walk 20 minutes today';
+
+  @override
+  String get visionAffirmationLabel => 'Affirmation';
+
+  @override
+  String get visionAffirmationDescription =>
+      '\"I am…\" beats \"I want to…\" — the brain hears it as already real.';
+
+  @override
+  String get visionAffirmationHint =>
+      'I am present, patient, and proud of how I show up.';
+
+  @override
+  String get visionSuggestFromTitle => 'Suggest from title';
+
+  @override
+  String get visionTabVision => 'Vision';
+
+  @override
+  String get visionTabPhotos => 'Photos';
+
+  @override
+  String get visionTabSteps => 'Steps';
+
+  @override
+  String get visionTabAffirm => 'Affirm';
+
+  @override
+  String get zenTodaysReflection => 'Today\'s Reflection';
+
+  @override
+  String get zenMorningIntention => 'Morning Intention';
+
+  @override
+  String get zenReflectionPrompts => 'Reflection Prompts';
+
+  @override
+  String get zenThreeGoodThings => 'Three Good Things';
+
+  @override
+  String get zenMindfulMoment => 'Mindful Moment';
+
+  @override
+  String get zenIntentionPrompt0 => 'Today I intend to…';
+
+  @override
+  String get zenIntentionPrompt1 => 'My focus for today is…';
+
+  @override
+  String get zenIntentionPrompt2 => 'I will show up for myself by…';
+
+  @override
+  String get zenIntentionPrompt3 => 'One thing I\'m grateful for right now is…';
+
+  @override
+  String get zenSetIntention => 'Set';
+
+  @override
+  String get zenReflectionPrompt0 => 'What went well today?';
+
+  @override
+  String get zenReflectionPrompt1 =>
+      'What challenged me, and how did I handle it?';
+
+  @override
+  String get zenReflectionPrompt2 => 'What am I most proud of today?';
+
+  @override
+  String get zenReflectionPrompt3 => 'How did I take care of myself today?';
+
+  @override
+  String get zenReflectionPrompt4 => 'What would I do differently tomorrow?';
+
+  @override
+  String get zenReflectionPrompt5 => 'Who or what am I grateful for right now?';
+
+  @override
+  String get zenReflectionPrompt6 => 'What did I learn about myself today?';
+
+  @override
+  String get zenReflectionPrompt7 => 'How did I show up for my sobriety today?';
+
+  @override
+  String get zenNextPrompt => 'Next prompt';
+
+  @override
+  String get zenGoodThingHint => 'Something good today…';
+
+  @override
+  String get zenExercise0Title => '5-4-3-2-1 Grounding';
+
+  @override
+  String get zenExercise0Desc =>
+      'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.';
+
+  @override
+  String get zenExercise1Title => 'Box Breath';
+
+  @override
+  String get zenExercise1Desc =>
+      'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.';
+
+  @override
+  String get zenExercise2Title => 'Body Scan';
+
+  @override
+  String get zenExercise2Desc =>
+      'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.';
+
+  @override
+  String get zenExercise3Title => 'Gratitude Breath';
+
+  @override
+  String get zenExercise3Desc =>
+      'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.';
+
+  @override
+  String get zenOpenGuidedBreathing => 'Open guided breathing in Your Toolkit';
+
+  @override
+  String get zenMoreBreathingExercises =>
+      'More breathing exercises in Your Toolkit';
+
+  @override
+  String get journalReflectionTitle => 'Daily Reflection';
+
+  @override
+  String get journalReflectionSaving => 'Saving…';
+
+  @override
+  String get journalReflectionMoodTitle => 'How I feel today';
+
+  @override
+  String get journalReflectionGratefulTitle => 'I\'m grateful for';
+
+  @override
+  String get journalReflectionAnchorsTitle => 'Today\'s anchors';
+
+  @override
+  String get journalReflectionAnchorReachedOut => 'Reached out to someone';
+
+  @override
+  String get journalReflectionAnchorMeeting => 'Attended a meeting or group';
+
+  @override
+  String get journalReflectionAnchorMoved => 'Moved my body';
+
+  @override
+  String get journalReflectionAnchorAteHydrated => 'Ate + hydrated well';
+
+  @override
+  String get journalReflectionAnchorMeds => 'Took my meds';
+
+  @override
+  String get journalReflectionAnchorAvoidedTrigger => 'Avoided a trigger';
+
+  @override
+  String get journalReflectionWinsTitle => 'Wins today';
+
+  @override
+  String get journalReflectionWinsHint =>
+      'Anything you\'re proud of — big or small.';
+
+  @override
+  String get journalReflectionCravingsTitle => 'Cravings or triggers noticed';
+
+  @override
+  String get journalReflectionCravingsHint =>
+      'What showed up, and how did you respond?';
+
+  @override
+  String get journalReflectionIntentionTitle => 'Tomorrow\'s intention';
+
+  @override
+  String get journalReflectionIntentionHint =>
+      'One small thing you\'ll do for your recovery.';
+
+  @override
+  String get journalReflectionAffirmationTitle => 'An affirmation for me';
+
+  @override
+  String get journalReflectionAffirmationHint =>
+      'A kind sentence in your own voice.';
+
+  @override
+  String get journalReflectionFooter =>
+      'You don\'t have to fill every field.\nWhat you write is enough.';
+
+  @override
+  String get journalReflectionBodyGratefulHeading => '🙏 Grateful for';
+
+  @override
+  String get journalReflectionBodyAnchorsHeading => '⚓ Today\'s anchors';
+
+  @override
+  String get journalReflectionBodyWinsHeading => '✨ Wins today';
+
+  @override
+  String get journalReflectionBodyCravingsHeading =>
+      '⚡ Cravings or triggers noticed';
+
+  @override
+  String get journalReflectionBodyIntentionHeading =>
+      '🌱 Tomorrow\'s intention';
+
+  @override
+  String get journalReflectionBodyAffirmationHeading =>
+      '💛 An affirmation for me';
+
+  @override
+  String get milestoneHundredDays => '100 Days';
+
+  @override
+  String get milestoneHundredDaysShort => '100 Days';
+
+  @override
+  String get milestoneHundredDaysBenefit =>
+      'One hundred days. Brain neuroplasticity is in full swing. The reward system has largely recalibrated to find pleasure in life without alcohol. Relationships, work, and your sense of self are transforming.';
+
+  @override
+  String milestoneShareText(String emoji, String name, String label) {
+    return '$emoji $name — $label sober. One day at a time. #JourneyForward #Sobriety';
+  }
+
+  @override
+  String get milestoneCardGenerateError =>
+      'Could not generate card. Try again.';
+
+  @override
+  String get milestoneShareCardLabel => 'SHARE CARD';
+
+  @override
+  String get milestoneShareButton => 'Share this milestone';
+
+  @override
+  String get milestoneNotYetAchieved => 'Not yet achieved';
+
+  @override
+  String get milestoneAllMilestonesLabel => 'ALL MILESTONES';
+
+  @override
+  String get milestoneHeroGreeting => 'Well done.';
+
+  @override
+  String milestoneHeroGreetingNamed(String name) {
+    return 'Well done, $name.';
+  }
+
+  @override
+  String get milestoneHeroDaySober => 'day\nsober';
+
+  @override
+  String get milestoneHeroDaysSober => 'days\nsober';
+
+  @override
+  String milestoneHeroNext(String label) {
+    return 'Next: $label';
+  }
+
+  @override
+  String milestoneHeroProgressDays(int days, int target) {
+    return '$days of $target days';
+  }
+
+  @override
+  String get milestoneEveryReached => 'Every milestone reached ✨';
+
+  @override
+  String get milestoneAchievedBadge => 'Achieved ✓';
+
+  @override
+  String milestoneDaysToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days to go',
+      one: '1 day to go',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get milestoneWhatHappenedLabel => 'What happened in your body';
+
+  @override
+  String get milestoneWhatWillHappenLabel => 'What will happen';
+
+  @override
+  String get milestoneShareCardFallbackName => 'Friend';
+
+  @override
+  String get milestoneUnitDay => 'day';
+
+  @override
+  String get milestoneUnitDays => 'days';
+
+  @override
+  String get milestoneUnitYear => 'year';
+
+  @override
+  String get milestoneUnitYears => 'years';
+
+  @override
+  String get milestoneUnitSober => 'sober';
+
+  @override
+  String get milestoneShareCardBrand => 'JOURNEY FORWARD';
+
+  @override
+  String milestoneDaysToUnlock(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more days to unlock',
+      one: '1 more day to unlock',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get milestoneStatsTotalDaysSober => 'total\ndays sober';
+
+  @override
+  String get milestoneStatsMoneyReclaimed => 'money\nreclaimed';
+
+  @override
+  String get onbBiometricNotEnrolledError =>
+      'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.';
+
+  @override
+  String get onbBiometricConfirmReason => 'Confirm to enable biometric lock';
+
+  @override
+  String onbBiometricSetupFailed(String error) {
+    return 'Biometric setup failed: $error';
+  }
+
+  @override
+  String onbSetupFailed(String error) {
+    return 'Could not complete setup: $error';
+  }
+
+  @override
+  String get onbWelcomeEyebrow => 'DAY ONE  ·  A WELCOME';
+
+  @override
+  String get onbWelcomeHeadline => 'A new chapter,\nquietly begun.';
+
+  @override
+  String get onbWelcomePillOnDeviceSub => 'Works without\nthe internet';
+
+  @override
+  String get onbWelcomePillNoAccountTitle => 'NO ACCOUNT';
+
+  @override
+  String get onbWelcomePillNoAccountSub => 'No login or\nprofile upload';
+
+  @override
+  String get onbWelcomePillZeroTrackingTitle => 'ZERO TRACKING';
+
+  @override
+  String get onbWelcomePillZeroTrackingSub => 'Your data stays\non device';
+
+  @override
+  String get onbWelcomeBeginButton => 'Begin';
+
+  @override
+  String get onbWelcomeDisclaimer =>
+      'Not medical advice — a companion, not a clinician.';
+
+  @override
+  String get onbQuitDateLabel => 'Quit date';
+
+  @override
+  String get onbTimeOfDayLabel => 'Time of day';
+
+  @override
+  String get onbDaysUntilDayOneLabel => 'days until day one';
+
+  @override
+  String get onbSecurityPinRecoveryWarning =>
+      'If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.';
+
+  @override
+  String get onbSecurityBiometricRecoveryWarning =>
+      'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.';
+
+  @override
+  String onbFinishHeadlineWithName(String name) {
+    return 'You\'re ready,\n$name.';
+  }
+
+  @override
+  String get onbFinishHeadline => 'You\'re ready\nfor this.';
+
+  @override
+  String onbFinishEyebrowCountdown(int days) {
+    return 'IN $days DAYS  ·  YOUR JOURNEY BEGINS';
+  }
+
+  @override
+  String onbFinishEyebrowContinuing(int day) {
+    return 'DAY $day  ·  THE PATH CONTINUES';
+  }
+
+  @override
+  String get onbFinishEyebrowDayOne => 'DAY ONE  ·  THE JOURNEY BEGINS';
+
+  @override
+  String get onbFinishBodyFuture =>
+      'Your quit date is set. We\'ll count down with you — and the moment it arrives, day one begins.';
+
+  @override
+  String get planToolkitBoxBreathingLabel => 'Box Breathing';
+
+  @override
+  String get planToolkitBoxBreathingSub => 'Guided 4-4-4-4 breath cycle';
+
+  @override
+  String get planToolkitGroundingLabel => '5-4-3-2-1 Grounding';
+
+  @override
+  String get planToolkitGroundingSub => 'Ground yourself through your senses';
+
+  @override
+  String get planToolkitCbtReframeLabel => 'CBT Thought Reframe';
+
+  @override
+  String get planToolkitCbtReframeSub => 'Challenge the craving thought';
+
+  @override
+  String get planToolkitAffirmationsLabel => 'Affirmations';
+
+  @override
+  String get planToolkitAffirmationsSub => 'Read a personal affirmation';
+
+  @override
+  String get planToolkitColdWaterLabel => 'Cold Water';
+
+  @override
+  String get planToolkitColdWaterSub => 'Splash cold water on your face';
+
+  @override
+  String get planToolkitWalkOutsideLabel => 'Walk Outside';
+
+  @override
+  String get planToolkitWalkOutsideSub => 'Take a short walk to reset';
+
+  @override
+  String get planToolkitCallSomeoneLabel => 'Call Someone';
+
+  @override
+  String get planToolkitCallSomeoneSub =>
+      'Reach out to your sponsor or a friend';
+
+  @override
+  String get planToolkitBodyScanLabel => 'Body Scan';
+
+  @override
+  String get planToolkitBodyScanSub =>
+      'Scan from toes to head, release tension';
+
+  @override
+  String get planStepHint1 => 'e.g. Take three slow box-breaths';
+
+  @override
+  String get planStepHint2 => 'e.g. Drink a glass of cold water';
+
+  @override
+  String get planStepHint3 => 'e.g. Text my sponsor: \"Craving\"';
+
+  @override
+  String get planSavedSnack =>
+      'Plan saved — you\'ll see it when a craving hits.';
+
+  @override
+  String get planTitle => 'Pre-craving plan';
+
+  @override
+  String get planSubtitle =>
+      'Three things you commit to doing the moment a craving hits — written in calm so you don\'t have to think in a storm.';
+
+  @override
+  String get planLinkExercise => 'Link a Toolkit exercise';
+
+  @override
+  String get planLinkInfo =>
+      'Linking a Toolkit exercise adds a one-tap \"Open\" button during your plan so you can jump straight into the exercise.';
+
+  @override
+  String get planSavePlan => 'Save plan';
+
+  @override
+  String get planSaved => 'Saved';
+
+  @override
+  String get planPickerTitle => 'Choose a Toolkit Exercise';
+
+  @override
+  String get planPickerSubtitle =>
+      'Tap to add a one-tap link to this exercise in your plan.';
+
+  @override
+  String get planOpensInApp => 'Opens in app';
+
+  @override
+  String get planRunnerTitle => 'Your plan';
+
+  @override
+  String get planRunnerSubtitle =>
+      'Run through these before logging. Breathe between each one.';
+
+  @override
+  String planRunnerOpenExercise(String label) {
+    return 'Open $label →';
+  }
+
+  @override
+  String get planRunnerImOkay => 'I\'m okay';
+
+  @override
+  String get planRunnerStillLogIt => 'Still log it';
+
+  @override
+  String get progressSummaryChip => 'Summary';
+
+  @override
+  String get progressMilestoneReached => 'Milestone reached';
+
+  @override
+  String get progressCurrentJourney => 'Current journey';
+
+  @override
+  String progressMilestonePrefix(String label) {
+    return 'Milestone: $label';
+  }
+
+  @override
+  String progressNextPrefix(String label) {
+    return 'Next: $label';
+  }
+
+  @override
+  String progressDaysLabel(int count) {
+    return '$count Days';
+  }
+
+  @override
+  String progressPercentComplete(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get progressThresholdCrossed => 'A beautiful threshold crossed.';
+
+  @override
+  String progressDaysOfTarget(int days, int target) {
+    return '$days / $target days';
+  }
+
+  @override
+  String get progressMilestonesTitle => 'Milestones';
+
+  @override
+  String get progressCardsLink => 'Cards';
+
+  @override
+  String get progressGridYear => '1yr';
+
+  @override
+  String progressGridMonths(int count) {
+    return '${count}mo';
+  }
+
+  @override
+  String progressGridDays(int count) {
+    return '${count}d';
+  }
+
+  @override
+  String get progressUnitDays => 'DAYS';
+
+  @override
+  String get progressUnitHrs => 'HRS';
+
+  @override
+  String get progressUnitMin => 'MIN';
+
+  @override
+  String get progressUnitSec => 'SEC';
+
+  @override
+  String get progressInsightCravingTitle => 'Craving Support';
+
+  @override
+  String get progressInsightCravingSubtitle =>
+      'Every log is a brave step toward healing.';
+
+  @override
+  String get progressInsightCravingQuote =>
+      'Logging a craving is a sign of strength.\nYou\'re choosing awareness and support.';
+
+  @override
+  String get progressInsightSleepTitle => 'Sleep Quality';
+
+  @override
+  String get progressInsightSleepSubtitle =>
+      'Hours logged per night, tracked daily.';
+
+  @override
+  String get progressInsightSleepQuote =>
+      'Rest is part of recovery.\nEvery hour of sleep supports your healing.';
+
+  @override
+  String get progressInsightMovementTitle => 'Movement';
+
+  @override
+  String get progressInsightMovementSubtitle =>
+      'Active minutes per day, two weeks out.';
+
+  @override
+  String get progressInsightMovementQuote =>
+      'Movement lifts the spirit.\nEvery active minute counts.';
+
+  @override
+  String get progressInsightThoughtsTitle => 'Thoughts';
+
+  @override
+  String get progressInsightThoughtsSubtitle =>
+      'Thoughts logged each day across 14 days.';
+
+  @override
+  String get progressInsightThoughtsQuote =>
+      'Reflection builds resilience.\nYour thoughts are your inner compass.';
+
+  @override
+  String get progressYLabelLogs => 'Logs';
+
+  @override
+  String get progressYLabelHrs => 'Hrs';
+
+  @override
+  String get progressYLabelMin => 'Min';
+
+  @override
+  String progressInsightTitle14Days(String title) {
+    return '$title — 14 days';
+  }
+
+  @override
+  String get progressThisWeek => 'This week';
+
+  @override
+  String get progressLastWeek => 'Last week';
+
+  @override
+  String get progressTenderHoursTitle => 'Your tender hours';
+
+  @override
+  String progressTenderHoursBody(int count, int total) {
+    return '$count of your $total logged cravings land in this window. Knowing your pattern is power — plan something gentle for those hours: a walk, a call, the urge timer.';
+  }
+
+  @override
+  String get progressReviewMyPlan => 'Review my plan';
+
+  @override
+  String get progressShowHeatmap => 'Show cravings heatmap';
+
+  @override
+  String get progressCravingsHeatmapTitle => 'Cravings Heatmap';
+
+  @override
+  String get progressViewFull => 'View full';
+
+  @override
+  String get progressHeatmapCaption =>
+      'Day 1 = your first day in the app. Only cravings logged from the Home screen count.';
+
+  @override
+  String progressHeatmapWeekLabel(int number) {
+    return 'Wk $number';
+  }
+
+  @override
+  String get progressHeatmapLegendFewer => 'Fewer';
+
+  @override
+  String get progressHeatmapLegendMore => 'More';
+
+  @override
+  String get progressRecoveryCapitalTitle => 'Recovery capital — this week';
+
+  @override
+  String get progressRecoveryCapitalEmptySubtitle =>
+      'A 30-second check across five things that protect recovery.';
+
+  @override
+  String progressCapitalScore(int score) {
+    return '$score of 5';
+  }
+
+  @override
+  String get progressTapToEdit => 'Tap to edit';
+
+  @override
+  String get progressDayLetterMon => 'M';
+
+  @override
+  String get progressDayLetterTue => 'T';
+
+  @override
+  String get progressDayLetterWed => 'W';
+
+  @override
+  String get progressDayLetterThu => 'T';
+
+  @override
+  String get progressDayLetterFri => 'F';
+
+  @override
+  String get progressDayLetterSat => 'S';
+
+  @override
+  String get progressDayLetterSun => 'S';
+
+  @override
+  String get recoveryMedicalDisclaimer =>
+      'Journey Forward is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. This timeline is educational and reflects general recovery patterns only. Individual recovery varies. If you drink heavily, have a history of withdrawal, seizures, hallucinations, confusion, or feel physically unsafe, speak with a healthcare professional before stopping suddenly or seek urgent medical care.';
+
+  @override
+  String get recoveryMindLabel => 'MIND';
+
+  @override
+  String get recoveryM1Mind =>
+      'You might feel a mix of relief and anxiety as your daily routine shifts. This is the normal friction of change.';
+
+  @override
+  String get recoveryM1Experience =>
+      'The first urges may appear. They can feel urgent, but they are temporary waves.';
+
+  @override
+  String get recoveryM1Tip =>
+      'Drink a large glass of water. When an urge hits, focus only on getting through the next hour.';
+
+  @override
+  String get recoveryM2Mind =>
+      'Your brain\'s reward circuitry is noticing the absence of its usual chemical trigger, which can cause irritability or a low mood.';
+
+  @override
+  String get recoveryM2Experience =>
+      'You may feel emotionally raw, tired, or slightly restless.';
+
+  @override
+  String get recoveryM2Tip =>
+      'Sleep and rest are your best allies right now. Keep your evening routine calm, quiet, and consistent.';
+
+  @override
+  String get recoveryM3Mind =>
+      'Your system is seeking balance. The intensity you feel right now is the feeling of that adjustment taking place.';
+
+  @override
+  String get recoveryM3Experience =>
+      'Restlessness and strong urges are common here. You might feel “wired” or on edge.';
+
+  @override
+  String get recoveryM3Tip =>
+      'Be especially patient with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.';
+
+  @override
+  String get recoveryM4Mind =>
+      'The mental fog often begins to thin. Neurotransmitter production starts to slowly adjust, paving the way for more natural energy.';
+
+  @override
+  String get recoveryM4Experience =>
+      'A small window of calm may emerge. You might feel a quiet, cautious optimism taking root.';
+
+  @override
+  String get recoveryM4Tip =>
+      'Reaching 72 hours is meaningful. Mark it with comfort, care, and support.';
+
+  @override
+  String get recoveryM5Mind =>
+      'You may notice unusually vivid dreams — some people experience this as their sleep pattern settles into a new rhythm.';
+
+  @override
+  String get recoveryM5Experience =>
+      'Improved clarity, though your mood may still naturally swing up and down.';
+
+  @override
+  String get recoveryM5Tip =>
+      'Anchor yourself in routine. A predictable morning and evening structure is a powerful tool right now.';
+
+  @override
+  String get recoveryM6Mind =>
+      'Concentration and short-term memory often start to feel sharper. Each healthier choice you repeat helps lay down new patterns.';
+
+  @override
+  String get recoveryM6Experience =>
+      'You might start feeling surprisingly well, though random moments of emptiness are still normal.';
+
+  @override
+  String get recoveryM6Tip =>
+      'This is when overconfidence can sneak in. Stay connected to your daily practices and support systems.';
+
+  @override
+  String get recoveryM7Mind =>
+      'The brain systems involved in impulse control, decision-making, and emotional regulation may begin to feel steadier over time.';
+
+  @override
+  String get recoveryM7Experience =>
+      'Emotional regulation continues to improve, and building resilience becomes a steady practice.';
+
+  @override
+  String get recoveryM7Tip =>
+      'Review your journey so far. Note the situations that still feel tricky, and plan how you will navigate them gracefully.';
+
+  @override
+  String get recoveryM8Mind =>
+      'For many people, the ability to find genuine satisfaction in simple, everyday activities slowly returns at this stage.';
+
+  @override
+  String get recoveryM8Experience =>
+      'Many people describe feeling more like themselves again. Motivation may feel more available, though it can still rise and fall.';
+
+  @override
+  String get recoveryM8Tip =>
+      'Continue to cultivate your environment. Hobbies, nature, and relationships are deeply protective elements of your growth.';
+
+  @override
+  String get recoveryM9Mind =>
+      'Urges may become less frequent or easier to move through.';
+
+  @override
+  String get recoveryM9Experience =>
+      'The highs and lows of early recovery begin to smooth out into a more consistent rhythm.';
+
+  @override
+  String get recoveryM9Tip =>
+      'Take a moment to honor the quiet days. Peace and stability are among the quiet rewards of this process.';
+
+  @override
+  String get recoveryM10Mind =>
+      'You have lived through many seasons, routines, and emotional moments with more awareness and care.';
+
+  @override
+  String get recoveryM10Experience =>
+      'Support may still matter, and needing it does not diminish your progress.';
+
+  @override
+  String get recoveryM10Tip =>
+      'Reflect on the person you were twelve months ago. Write them a letter from where you stand today.';
+
+  @override
+  String get recoveryM11Mind =>
+      'Recovery may feel less like something you are forcing and more like a way of living you have grown into.';
+
+  @override
+  String get recoveryM11Tip =>
+      'Your story may become a source of comfort for someone else. When the moment feels right, share your strength with someone just beginning their path.';
+
+  @override
+  String get settingsAddWeeklyGoalTitle => 'Add weekly goal';
+
+  @override
+  String get settingsWeeklyGoalHint => 'e.g. Exercise 3 times this week';
+
+  @override
+  String get settingsBiometricNotSetUp =>
+      'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.';
+
+  @override
+  String get settingsBiometricConfirmReason =>
+      'Confirm to enable biometric lock';
+
+  @override
+  String get settingsBiometricNotEnrolled =>
+      'No biometrics enrolled on this device. Add a fingerprint or face in your phone\'s settings.';
+
+  @override
+  String get settingsBiometricUnavailable =>
+      'Biometric hardware is unavailable right now. Try again in a moment.';
+
+  @override
+  String get settingsBiometricLockedOut =>
+      'Too many failed attempts. Wait a moment and try again.';
+
+  @override
+  String get settingsBiometricPermanentlyLockedOut =>
+      'Biometrics are locked. Use your phone\'s screen lock to re-enable.';
+
+  @override
+  String settingsBiometricAuthFailed(String error) {
+    return 'Biometric authentication failed: $error';
+  }
+
+  @override
+  String get settingsReminderScheduleFailed =>
+      'Reminder scheduling failed. Please check notification permissions.';
+
+  @override
+  String get settingsNotificationsBlockedSaved =>
+      'Saved — but notifications are blocked in system settings.';
+
+  @override
+  String get settingsOpenSettingsAction => 'OPEN SETTINGS';
+
+  @override
+  String get settingsNotificationSettingsSaved => 'Notification settings saved';
+
+  @override
+  String get settingsDiagnosticsEnabled => 'Diagnostics enabled';
+
+  @override
+  String get settingsDiagMorningReminder => 'Morning reminder';
+
+  @override
+  String get settingsDiagEveningReminder => 'Evening reminder';
+
+  @override
+  String get settingsDiagTestNotification => 'Test notification';
+
+  @override
+  String settingsDiagMilestoneDay(int day) {
+    return 'Milestone: day $day';
+  }
+
+  @override
+  String get settingsDiagSavingsMilestone => 'Savings milestone';
+
+  @override
+  String get settingsDiagMeetingReminder => 'Meeting reminder';
+
+  @override
+  String settingsDiagUnknownId(int id) {
+    return 'Unknown (ID $id)';
+  }
+
+  @override
+  String get settingsDiagYes => 'Yes';
+
+  @override
+  String get settingsDiagNo => 'No';
+
+  @override
+  String get settingsDiagUnknown => 'Unknown';
+
+  @override
+  String get settingsDiagNotRestricted => 'Not restricted';
+
+  @override
+  String get settingsDiagRestricted => 'Restricted';
+
+  @override
+  String get settingsDiagScheduledNotificationsTitle =>
+      'Scheduled Notifications';
+
+  @override
+  String get settingsDiagSchedulerRanOk => 'Scheduler ran OK';
+
+  @override
+  String settingsDiagSchedulerError(String error) {
+    return 'Scheduler error: $error';
+  }
+
+  @override
+  String get settingsDiagNotificationsAllowed => 'Notifications allowed';
+
+  @override
+  String get settingsDiagBatteryOptimization => 'Battery optimization';
+
+  @override
+  String get settingsDiagExactAlarms => 'Exact alarms';
+
+  @override
+  String get settingsDiagAvailable => 'Available';
+
+  @override
+  String get settingsDiagUnavailable => 'Unavailable';
+
+  @override
+  String get settingsDiagUnknownNotApplicable => 'Unknown / not applicable';
+
+  @override
+  String get settingsDiagTimezone => 'Timezone';
+
+  @override
+  String get settingsDiagTimezoneNow => 'Timezone now';
+
+  @override
+  String get settingsDiagPendingCount => 'Pending count';
+
+  @override
+  String get settingsDiagMorningQueued => 'Morning queued';
+
+  @override
+  String get settingsDiagEveningQueued => 'Evening queued';
+
+  @override
+  String get settingsDiagNoneScheduled =>
+      'No notifications are scheduled. Your daily reminders will not fire.';
+
+  @override
+  String get settingsDiagSendTestNow => 'Send test notification now';
+
+  @override
+  String get settingsDiagTestSent =>
+      'Test sent - you should see it within 2 seconds';
+
+  @override
+  String get settingsDiagTestFailed =>
+      'Test failed - check notification permissions';
+
+  @override
+  String get settingsDiagOpenBatterySettings => 'Open Battery Settings';
+
+  @override
+  String get settingsMyMotivationLabel => 'My Motivation';
+
+  @override
+  String get settingsReasonsToQuitTitle => 'My Reasons to Quit';
+
+  @override
+  String get settingsReasonsToQuitHint => 'e.g. To be healthier';
+
+  @override
+  String get settingsProsTitle => 'Pros of Sobriety';
+
+  @override
+  String get settingsProsHint => 'e.g. More energy';
+
+  @override
+  String get settingsConsTitle => 'Cons I\'m Leaving Behind';
+
+  @override
+  String get settingsConsHint => 'e.g. Feeling anxious';
+
+  @override
+  String get settingsAppSecurityLabel => 'App security';
+
+  @override
+  String get settingsDiagnosticsLabel => 'Diagnostics';
+
+  @override
+  String get settingsCheckScheduledReminders => 'Check scheduled reminders';
+
+  @override
+  String get settingsCheckScheduledRemindersSub =>
+      'Verify alarms, permissions, and timezone';
+
+  @override
+  String get settingsAboutLabel => 'About';
+
+  @override
+  String settingsVersionLabel(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String settingsSoberSinceDate(String date) {
+    return 'Sober since $date';
+  }
+
+  @override
+  String settingsDailySpendChip(String amount) {
+    return '$amount/day · tap to edit';
+  }
+
+  @override
+  String settingsPledgeStreakBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count calm days pledged',
+      one: '1 calm day pledged',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsSavedLabel => 'saved';
+
+  @override
+  String settingsSavingsProgress(String saved, String goal) {
+    return '$saved of $goal';
+  }
+
+  @override
+  String get settingsEditGoal => 'Edit goal';
+
+  @override
+  String get settingsSetSavingsGoal => 'Set a savings goal';
+
+  @override
+  String get settingsSetSavingsGoalSub => 'Track what you\'re saving up for';
+
+  @override
+  String get settingsAddEmergencyContact => 'Add emergency contact';
+
+  @override
+  String get settingsAddEmergencyContactSub =>
+      'Someone to reach when you need support';
+
+  @override
+  String get settingsNoItemsYet => 'No items added yet.';
+
+  @override
+  String get settingsLockNoneLabel => 'No lock';
+
+  @override
+  String get settingsLockNoneSub => 'App opens immediately';
+
+  @override
+  String get settingsLockBiometricLabel => 'Biometric';
+
+  @override
+  String get settingsLockBiometricSub => 'Fingerprint or face unlock';
+
+  @override
+  String get settingsLockPinLabel => 'PIN';
+
+  @override
+  String get settingsLockPinSub => '4-digit numeric PIN';
+
+  @override
+  String get settingsLockPinRecoveryWarning =>
+      'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.';
+
+  @override
+  String get settingsLockBiometricRecoveryWarning =>
+      'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.';
+
+  @override
+  String get settingsRecordsGroupLabel => 'Records';
+
+  @override
+  String get settingsMyHistory => 'My history';
+
+  @override
+  String get settingsMoodCravingInsights => 'Mood & craving insights';
+
+  @override
+  String get settingsMilestoneCards => 'Milestone cards';
+
+  @override
+  String get settingsWeeklyCareSummarySub =>
+      'Create a private summary to share with someone you trust.';
+
+  @override
+  String get settingsToolsAppGroupLabel => 'Tools & App';
+
+  @override
+  String get settingsCbtThoughtTools => 'CBT thought tools';
+
+  @override
+  String get settingsPreCravingPlan => 'Pre-craving plan';
+
+  @override
+  String get settingsRecoveryGroups => 'Recovery groups';
+
+  @override
+  String get settingsMeetingPlanner => 'Meeting planner';
+
+  @override
+  String get settingsSystemNotifsEnabled => 'System notifications enabled';
+
+  @override
+  String get settingsSystemNotifsBlocked => 'System notifications blocked';
+
+  @override
+  String get settingsSystemNotifsEnabledSub =>
+      'Your reminders will appear on time.';
+
+  @override
+  String get settingsSystemNotifsBlockedSub =>
+      'Reminders will not appear until enabled in system settings.';
+
+  @override
+  String get settingsFixItAction => 'Fix it';
+
+  @override
+  String get settingsCheckInReminders => 'Check-in & reminders';
+
+  @override
+  String get settingsMorningEveningTimes => 'Morning & evening times';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsThemeSystem => 'Match system';
+
+  @override
+  String get settingsThemeLightHint =>
+      'Warm cream — the classic Stillwater look';
+
+  @override
+  String get settingsThemeDarkHint => 'Dim forest tones for late nights';
+
+  @override
+  String get settingsThemeSystemHint => 'Follow your phone setting';
+
+  @override
+  String get settingsHapticFeedback => 'Haptic feedback';
+
+  @override
+  String get settingsImperialUnits => 'Imperial units';
+
+  @override
+  String get settingsImperialUnitsSub => 'Distance in miles instead of km';
+
+  @override
+  String get settingsCheckInReminderSchedule =>
+      'Check-in and reminder schedule';
+
+  @override
+  String get settingsMorningCheckIn => 'Morning check-in';
+
+  @override
+  String get settingsEveningReminder => 'Evening reminder';
+
+  @override
+  String get settingsMotivationMessages => 'Motivation messages';
+
+  @override
+  String get settingsDailyReminders => 'Daily reminders';
+
+  @override
+  String get settingsMilestoneAlerts => 'Milestone alerts';
+
+  @override
+  String get settingsTestSentShade =>
+      'Test sent — check your notification shade.';
+
+  @override
+  String get settingsTestCouldNotPost =>
+      'Test could not post. Notifications appear to be blocked for Journey Forward.';
+
+  @override
+  String get settingsSendTestNotification => 'Send test notification';
+
+  @override
+  String get settingsAboutTitle => 'About Journey Forward';
+
+  @override
+  String get settingsAboutBody =>
+      'Recovery and personal growth are rarely a straight line. Having walked a difficult road myself, I know how heavy some days can feel — and how exhausting it can be to use tools filled with noise, pressure, and distraction.\n\nWhen you are trying to heal or rebuild, the last thing you need is advertising, attention-grabbing notifications, or the worry that your deeply personal reflections are being harvested.\n\nYour recovery is not a data product.\n\nI built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and steady progress.\n\nBecause Journey Forward has no accounts, analytics, tracking, or cloud sync, I have no way of seeing how you experience the app, what feels confusing, or what features might help you most. If something is not working, or if you have an idea for a future improvement, you are welcome to contact me directly.\n\nThis app is not here to shame you, score you, or punish you for difficult moments. It is here to help you return — to your reason, your routines, your breath, and the next small step forward.\n\nI am also working toward language support, including Zulu and Afrikaans, so Journey Forward can become more welcoming while keeping its privacy-first foundation.\n\nMy hope is that this space helps you find grounding, reflection, and the grace to take one honest step at a time.\n\n— Shawn';
+
+  @override
+  String get settingsEmailCopied => 'Email copied';
+
+  @override
+  String get settingsShareApp => 'Share app';
+
+  @override
+  String get settingsSpendPerDayQuestion => 'How much did you spend per day?';
+
+  @override
+  String get settingsCurrencyLabel => 'Currency';
+
+  @override
+  String get settingsSetAPin => 'Set a PIN';
+
+  @override
+  String get settingsEnter4DigitPin => 'Enter a 4-digit PIN';
+
+  @override
+  String get settingsEnterPinAgain => 'Enter your PIN again';
+
+  @override
+  String get visionPinCapReached =>
+      'You can pin up to 3 dreams — unpin one to make room.';
+
+  @override
+  String get visionMarkedAchievedToast => 'Marked achieved. Beautiful.';
+
+  @override
+  String get visionUnpinTooltip => 'Unpin';
+
+  @override
+  String get visionPinTooltip => 'Pin to home';
+
+  @override
+  String get visionMoveToActiveTooltip => 'Move back to active';
+
+  @override
+  String get visionMarkAchievedTooltip => 'Mark achieved';
+
+  @override
+  String get visionEditTooltip => 'Edit';
+
+  @override
+  String get visionAchievedBanner => 'You achieved this. Beautiful.';
+
+  @override
+  String visionAchievedOnDate(String date) {
+    return 'Achieved on $date';
+  }
+
+  @override
+  String visionDaysPastTarget(int count) {
+    return '${count}d past target';
+  }
+
+  @override
+  String get visionTargetToday => 'Today';
+
+  @override
+  String visionDaysToGo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days to go',
+      one: '1 day to go',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get visionPinnedChip => 'Pinned';
+
+  @override
+  String get visionMilestonesLabel => 'Milestones';
+
+  @override
+  String visionMilestonesComplete(int done, int total) {
+    return '$done of $total complete';
+  }
+
+  @override
+  String get visionWhyItMattersHeading => 'Why this matters';
+
+  @override
+  String get visionNotesHeading => 'Notes';
+
+  @override
+  String get emergencyToolkitHeading => 'Your Toolkit';
+
+  @override
+  String get emergencyToolkitSubheading => 'One Day at a Time';
+
+  @override
+  String emergencyCallContact(String name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get emergencyHaltShortLabel => 'H.A.L.T.';
+
+  @override
+  String get emergencyPuzzleTitle => 'Puzzle';
+
+  @override
+  String get emergencyWeeklyCareSummaryDesc =>
+      'Prepare a gentle report for therapy, support, or reflection.';
+
+  @override
+  String get emergencyCalmToolkitOverline => 'CALM TOOLKIT';
+
+  @override
+  String get emergencyComplete => 'Complete ✓';
+
+  @override
+  String get breathChooseTitle => 'Choose your breath.';
+
+  @override
+  String get breathChooseSubtitle => 'A steady rhythm for this moment.';
+
+  @override
+  String get breathLibraryTitle => 'Breathing Library';
+
+  @override
+  String get breathMorePatterns => 'More breathing patterns';
+
+  @override
+  String get breathRecommendedNow => 'RECOMMENDED NOW';
+
+  @override
+  String get breathRhythmIn => 'In';
+
+  @override
+  String get breathRhythmHold => 'Hold';
+
+  @override
+  String get breathRhythmOut => 'Out';
+
+  @override
+  String get breathBegin => 'Begin';
+
+  @override
+  String get breathSessionTitle => 'Breathe with me.';
+
+  @override
+  String get breathSessionSubtitle => 'Nothing to solve right now.';
+
+  @override
+  String get breathReady => 'Ready';
+
+  @override
+  String get breathRemaining => 'remaining';
+
+  @override
+  String get breathStart => 'Start';
+
+  @override
+  String get breathResume => 'Resume';
+
+  @override
+  String get breathPause => 'Pause';
+
+  @override
+  String get breathEndSession => 'End session';
+
+  @override
+  String get breathDizzyWarning =>
+      'If you feel dizzy, return to normal breathing.';
+
+  @override
+  String get breathAllPatternsTitle => 'All breathing patterns.';
+
+  @override
+  String get breathAllPatternsSubtitle =>
+      'Find the rhythm that fits this moment.';
+
+  @override
+  String get meditationGuidedAudioLabel => 'GUIDED AUDIO';
+
+  @override
+  String get meditationGuidedScripts => 'Guided scripts';
+
+  @override
+  String get meditationUrgeSurfingTagline =>
+      'Ride the wave — urges peak and pass.';
+
+  @override
+  String get meditationUrgeSurfingExplainer =>
+      'Urge surfing: instead of fighting a craving, you observe it like a wave — it rises, peaks, and falls on its own. This guided session teaches you to ride the wave without acting on it.';
+
+  @override
+  String get meditationDuration8min => '8 min';
+
+  @override
+  String get meditationDuration10min => '10 min';
+
+  @override
+  String get meditationDuration12min => '12 min';
+
+  @override
+  String get meditationDuration15min => '15 min';
+
+  @override
+  String get meditationUrgeSurfingTitle => 'Urge Surfing';
+
+  @override
+  String get meditationUrgeSurfingStep0 =>
+      'Close your eyes and take three slow breaths.';
+
+  @override
+  String get meditationUrgeSurfingStep1 =>
+      'Notice the craving. Where do you feel it in your body?';
+
+  @override
+  String get meditationUrgeSurfingStep2 =>
+      'Imagine it as a wave in the ocean — rising slowly.';
+
+  @override
+  String get meditationUrgeSurfingStep3 =>
+      'You are a surfer. You don\'t fight the wave. You ride it.';
+
+  @override
+  String get meditationUrgeSurfingStep4 =>
+      'Watch the wave peak. It cannot go higher than it already is.';
+
+  @override
+  String get meditationUrgeSurfingStep5 =>
+      'Now watch it begin to fall. Urges always fade.';
+
+  @override
+  String get meditationUrgeSurfingStep6 =>
+      'You did not drink. The wave passed. You surfed it.';
+
+  @override
+  String get meditationBodyScanTitle => 'Body Scan';
+
+  @override
+  String get meditationBodyScanStep0 =>
+      'Lie down or sit comfortably. Close your eyes.';
+
+  @override
+  String get meditationBodyScanStep1 =>
+      'Bring attention to your feet. Notice any sensation — warmth, tingling.';
+
+  @override
+  String get meditationBodyScanStep2 =>
+      'Slowly move up to your calves, then knees, then thighs.';
+
+  @override
+  String get meditationBodyScanStep3 =>
+      'Notice your belly rising and falling with each breath.';
+
+  @override
+  String get meditationBodyScanStep4 =>
+      'Scan your chest, shoulders, arms, and hands.';
+
+  @override
+  String get meditationBodyScanStep5 =>
+      'Finally, relax your jaw, eyes, and forehead.';
+
+  @override
+  String get meditationBodyScanStep6 =>
+      'Rest here for a moment. You are safe. You are whole.';
+
+  @override
+  String get meditationGratitudeResetTitle => 'Gratitude Reset';
+
+  @override
+  String get meditationGratitudeResetStep0 =>
+      'Sit quietly. Take three slow breaths.';
+
+  @override
+  String get meditationGratitudeResetStep1 =>
+      'Think of one person in your life you\'re grateful for.';
+
+  @override
+  String get meditationGratitudeResetStep2 =>
+      'What did they do or say that mattered to you?';
+
+  @override
+  String get meditationGratitudeResetStep3 =>
+      'Think of one moment from today, however small, that was good.';
+
+  @override
+  String get meditationGratitudeResetStep4 =>
+      'Think of something about your body or health you appreciate.';
+
+  @override
+  String get meditationGratitudeResetStep5 =>
+      'Let gratitude fill your chest like warmth.';
+
+  @override
+  String get meditationGratitudeResetStep6 =>
+      'Carry this feeling into your next hour.';
+
+  @override
+  String get meditationSafePlaceTitle => 'Safe Place';
+
+  @override
+  String get meditationSafePlaceStep0 =>
+      'Close your eyes. Take three slow, deep breaths.';
+
+  @override
+  String get meditationSafePlaceStep1 =>
+      'Imagine a place where you feel completely safe.';
+
+  @override
+  String get meditationSafePlaceStep2 =>
+      'It can be real or imagined — a beach, a forest, a room.';
+
+  @override
+  String get meditationSafePlaceStep3 =>
+      'Notice what you see, hear, smell in this place.';
+
+  @override
+  String get meditationSafePlaceStep4 =>
+      'Feel the ground beneath you. You are supported.';
+
+  @override
+  String get meditationSafePlaceStep5 =>
+      'Breathe here for a while. Nothing can harm you.';
+
+  @override
+  String get meditationSafePlaceStep6 =>
+      'When you\'re ready, slowly return, carrying this calm.';
+
+  @override
+  String get meditationSelfCompassionTitle => 'Self-Compassion';
+
+  @override
+  String get meditationSelfCompassionStep0 =>
+      'Place your hand on your heart. Feel its warmth.';
+
+  @override
+  String get meditationSelfCompassionStep1 =>
+      'Say: \"This is a moment of difficulty.\"';
+
+  @override
+  String get meditationSelfCompassionStep2 =>
+      'Say: \"Difficulty is part of life. I am not alone in this.\"';
+
+  @override
+  String get meditationSelfCompassionStep3 =>
+      'Say: \"May I be kind to myself right now.\"';
+
+  @override
+  String get meditationSelfCompassionStep4 =>
+      'Think of something you\'ve been critical of yourself about.';
+
+  @override
+  String get meditationSelfCompassionStep5 =>
+      'Ask: what would I say to a dear friend in this situation?';
+
+  @override
+  String get meditationSelfCompassionStep6 =>
+      'Say those words to yourself. You deserve them too.';
 }

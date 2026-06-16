@@ -17,42 +17,43 @@ import '../utils/haptic_service.dart';
 
 class _BreathPattern {
   const _BreathPattern(this.name, this.inhale, this.hold1, this.exhale,
-      this.hold2, this.description);
+      this.hold2, this.description, this.icon);
   final String name, description;
   final int inhale, hold1, exhale, hold2; // seconds
+  final IconData icon;
 }
 
 List<_BreathPattern> _buildBreathPatterns(AppLocalizations l10n) => [
-      _BreathPattern(
-          l10n.breathPatternBoxName, 4, 4, 4, 4, l10n.breathPatternBoxDesc),
-      _BreathPattern(
-          l10n.breathPattern478Name, 4, 7, 8, 0, l10n.breathPattern478Desc),
-      _BreathPattern(
-          l10n.breathPatternCalmName, 4, 2, 6, 0, l10n.breathPatternCalmDesc),
-      _BreathPattern(
-          l10n.breathPatternPowerName, 6, 0, 2, 0, l10n.breathPatternPowerDesc),
-      _BreathPattern(
-          l10n.breathPatternResetName, 3, 0, 6, 0, l10n.breathPatternResetDesc),
+      _BreathPattern(l10n.breathPatternBoxName, 4, 4, 4, 4,
+          l10n.breathPatternBoxDesc, Icons.crop_square_rounded),
+      _BreathPattern(l10n.breathPattern478Name, 4, 7, 8, 0,
+          l10n.breathPattern478Desc, Icons.nights_stay_outlined),
+      _BreathPattern(l10n.breathPatternCalmName, 4, 2, 6, 0,
+          l10n.breathPatternCalmDesc, Icons.air_outlined),
+      _BreathPattern(l10n.breathPatternPowerName, 6, 0, 2, 0,
+          l10n.breathPatternPowerDesc, Icons.bolt_rounded),
+      _BreathPattern(l10n.breathPatternResetName, 3, 0, 6, 0,
+          l10n.breathPatternResetDesc, Icons.refresh_rounded),
       _BreathPattern(l10n.breathPatternTriangleName, 4, 4, 4, 0,
-          l10n.breathPatternTriangleDesc),
+          l10n.breathPatternTriangleDesc, Icons.change_history_rounded),
       _BreathPattern(l10n.breathPatternAnchorName, 5, 5, 5, 5,
-          l10n.breathPatternAnchorDesc),
+          l10n.breathPatternAnchorDesc, Icons.anchor_outlined),
       _BreathPattern(l10n.breathPatternRescueName, 2, 0, 4, 0,
-          l10n.breathPatternRescueDesc),
-      _BreathPattern(
-          l10n.breathPatternOceanName, 4, 0, 6, 2, l10n.breathPatternOceanDesc),
+          l10n.breathPatternRescueDesc, Icons.air_rounded),
+      _BreathPattern(l10n.breathPatternOceanName, 4, 0, 6, 2,
+          l10n.breathPatternOceanDesc, Icons.waves_rounded),
       _BreathPattern(l10n.breathPatternMorningName, 4, 4, 6, 0,
-          l10n.breathPatternMorningDesc),
+          l10n.breathPatternMorningDesc, Icons.wb_sunny_outlined),
       _BreathPattern(l10n.breathPatternCoherentName, 5, 0, 5, 0,
-          l10n.breathPatternCoherentDesc),
-      _BreathPattern(
-          l10n.breathPattern628Name, 6, 2, 8, 0, l10n.breathPattern628Desc),
+          l10n.breathPatternCoherentDesc, Icons.monitor_heart_outlined),
+      _BreathPattern(l10n.breathPattern628Name, 6, 2, 8, 0,
+          l10n.breathPattern628Desc, Icons.self_improvement_outlined),
       _BreathPattern(l10n.breathPatternSquarePlusName, 5, 5, 5, 5,
-          l10n.breathPatternSquarePlusDesc),
+          l10n.breathPatternSquarePlusDesc, Icons.dashboard_outlined),
       _BreathPattern(l10n.breathPatternWarriorName, 6, 0, 6, 0,
-          l10n.breathPatternWarriorDesc),
-      _BreathPattern(
-          l10n.breathPatternNightName, 4, 7, 8, 0, l10n.breathPatternNightDesc),
+          l10n.breathPatternWarriorDesc, Icons.fitness_center_outlined),
+      _BreathPattern(l10n.breathPatternNightName, 4, 7, 8, 0,
+          l10n.breathPatternNightDesc, Icons.bedtime_outlined),
     ];
 
 // ─── CBT guides ───────────────────────────────────────────────────────────
@@ -232,46 +233,83 @@ class _HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final profile = ref.watch(profileProvider).valueOrNull;
     final ec = profile?.emergencyContact;
 
     // Each tool either switches to an in-screen tab or pushes a route.
     final tools = <(IconData, String, Color, _Tab?, String?)>[
-      (Icons.air_rounded, 'Breathing', AppColors.forest400, _Tab.breathing, null),
+      (
+        Icons.air_rounded,
+        l10n.emergencyBreathingTitle,
+        AppColors.forest400,
+        _Tab.breathing,
+        null
+      ),
       (
         Icons.self_improvement_rounded,
-        'Meditation',
+        l10n.emergencyMeditationTitle,
         AppColors.stone400,
         _Tab.meditation,
         null
       ),
-      (Icons.psychology_rounded, 'CBT Guides', AppColors.forest600, _Tab.cbt, null),
-      (Icons.spa_rounded, 'My Reasons', AppColors.forest600, _Tab.reasons, null),
-      (Icons.spa_outlined, 'H.A.L.T.', AppColors.honey500, _Tab.halt, null),
-      (Icons.timer_outlined, 'Urge Timer', AppColors.forest400, null, '/urge-timer'),
+      (
+        Icons.psychology_rounded,
+        l10n.emergencyCBTTitle,
+        AppColors.forest600,
+        _Tab.cbt,
+        null
+      ),
+      (
+        Icons.spa_rounded,
+        l10n.emergencyReasonsTitle,
+        AppColors.forest600,
+        _Tab.reasons,
+        null
+      ),
+      (
+        Icons.spa_outlined,
+        l10n.emergencyHaltShortLabel,
+        AppColors.honey500,
+        _Tab.halt,
+        null
+      ),
+      (
+        Icons.timer_outlined,
+        l10n.emergencyUrgeTimerTitle,
+        AppColors.forest400,
+        null,
+        '/urge-timer'
+      ),
       (
         Icons.play_circle_outline,
-        'Play the Tape',
+        l10n.emergencyPlayTapeTitle,
         AppColors.stone500,
         _Tab.playTape,
         null
       ),
       (
         Icons.spa_outlined,
-        'Mindfulness',
+        l10n.emergencyMindfulnessTitle,
         AppColors.forest400,
         _Tab.mindfulness,
         null
       ),
-      (Icons.extension_outlined, 'Puzzle', AppColors.stone400, null, '/puzzle'),
+      (
+        Icons.extension_outlined,
+        l10n.emergencyPuzzleTitle,
+        AppColors.stone400,
+        null,
+        '/puzzle'
+      ),
     ];
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
-        Text('Your Toolkit', style: AppTextStyles.greetingSerif),
+        Text(l10n.emergencyToolkitHeading, style: AppTextStyles.greetingSerif),
         const SizedBox(height: 4),
-        Text('One Day at a Time', style: AppTextStyles.bodyLarge),
+        Text(l10n.emergencyToolkitSubheading, style: AppTextStyles.bodyLarge),
         const SizedBox(height: 16),
 
         // Emergency call button
@@ -293,7 +331,7 @@ class _HomeTab extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Call ${ec.name}',
+                        Text(l10n.emergencyCallContact(ec.name),
                             style: AppTextStyles.titleMedium
                                 .copyWith(color: AppColors.onForest)),
                         Text(ec.phone,
@@ -393,10 +431,10 @@ class _HomeTab extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Weekly Care Summary',
+                      Text(l10n.weeklySummaryTitle,
                           style: AppTextStyles.titleSmall),
                       Text(
-                          'Prepare a gentle report for therapy, support, or reflection.',
+                          l10n.emergencyWeeklyCareSummaryDesc,
                           style: AppTextStyles.bodySmall,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
@@ -459,13 +497,17 @@ class _BreathingTabState extends State<_BreathingTab>
 
   _BreathPattern get _pattern => _patterns[_selectedIndex];
 
-  List<(String, int)> get _phases {
+  // Phase records: (stable code for haptics/animation, localized label, seconds).
+  // The code stays in English so the switch logic in [_phaseHaptic] and
+  // [_animatePhase] is locale-independent; only [label] is shown to the user.
+  List<(String, String, int)> get _phases {
     final p = _pattern;
+    final l10n = AppLocalizations.of(context);
     return [
-      ('Inhale', p.inhale),
-      if (p.hold1 > 0) ('Hold', p.hold1),
-      ('Exhale', p.exhale),
-      if (p.hold2 > 0) ('Hold', p.hold2),
+      ('Inhale', l10n.breathPhaseInhale, p.inhale),
+      if (p.hold1 > 0) ('Hold', l10n.breathPhaseHold, p.hold1),
+      ('Exhale', l10n.breathPhaseExhale, p.exhale),
+      if (p.hold2 > 0) ('Hold', l10n.breathPhaseHold, p.hold2),
     ];
   }
 
@@ -495,7 +537,7 @@ class _BreathingTabState extends State<_BreathingTab>
     _circleCtrl.stop();
     _circleCtrl.value = 0;
     _phaseIndex = 0;
-    _phaseRemaining = _phases[0].$2;
+    _phaseRemaining = _phases[0].$3;
     _totalSeconds = _sessionDuration;
     _paused = false;
     _sessionStarted = false;
@@ -528,7 +570,7 @@ class _BreathingTabState extends State<_BreathingTab>
       if (_phaseRemaining <= 0) {
         final phases = _phases;
         _phaseIndex = (_phaseIndex + 1) % phases.length;
-        _phaseRemaining = phases[_phaseIndex].$2;
+        _phaseRemaining = phases[_phaseIndex].$3;
         _phaseHaptic(phases[_phaseIndex].$1);
         _animatePhase();
       }
@@ -539,7 +581,7 @@ class _BreathingTabState extends State<_BreathingTab>
 
   void _animatePhase() {
     final phase = _phases[_phaseIndex];
-    final dur = Duration(seconds: phase.$2);
+    final dur = Duration(seconds: phase.$3);
     // Inhale → expand outward over the phase duration.
     // Exhale → contract inward over the phase duration.
     // Hold → freeze at the current expansion (hold1 freezes expanded,
@@ -597,6 +639,7 @@ class _BreathingTabState extends State<_BreathingTab>
   // ── SELECT SCREEN ────────────────────────────────────────────────────────
 
   Widget _buildSelectScreen() {
+    final l10n = AppLocalizations.of(context);
     // Featured indices in _buildBreathPatterns order:
     // 0=Box, 7=Rescue, 8=Ocean, 10=Coherent, 14=Night
     const rescueIdx = 7;
@@ -615,13 +658,14 @@ class _BreathingTabState extends State<_BreathingTab>
               ),
             ),
             const SizedBox(height: 4),
-            Text('CALM TOOLKIT', style: AppTextStyles.overline),
+            Text(l10n.emergencyCalmToolkitOverline,
+                style: AppTextStyles.overline),
             const SizedBox(height: 4),
-            Text('Choose your breath.',
+            Text(l10n.breathChooseTitle,
                 style: AppTextStyles.greetingSerif
                     .copyWith(fontSize: 32, color: AppColors.forestDark)),
             const SizedBox(height: 4),
-            Text('A steady rhythm for this moment.',
+            Text(l10n.breathChooseSubtitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500)),
             const SizedBox(height: 20),
@@ -634,7 +678,7 @@ class _BreathingTabState extends State<_BreathingTab>
               },
             ),
             const SizedBox(height: 24),
-            Text('Breathing Library',
+            Text(l10n.breathLibraryTitle,
                 style: AppTextStyles.displaySmall.copyWith(
                     fontSize: 22,
                     fontWeight: FontWeight.w500,
@@ -669,7 +713,7 @@ class _BreathingTabState extends State<_BreathingTab>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('More breathing patterns',
+                    Text(l10n.breathMorePatterns,
                         style: AppTextStyles.bodyMedium
                             .copyWith(color: AppColors.forest600)),
                     const SizedBox(width: 4),
@@ -688,8 +732,9 @@ class _BreathingTabState extends State<_BreathingTab>
   // ── SESSION SCREEN ───────────────────────────────────────────────────────
 
   Widget _buildSessionScreen() {
+    final l10n = AppLocalizations.of(context);
     final phases = _phases;
-    final currentName = phases[_phaseIndex].$1;
+    final currentName = phases[_phaseIndex].$2;
     final mm = _totalSeconds ~/ 60;
     final ss = (_totalSeconds % 60).toString().padLeft(2, '0');
     final progress =
@@ -711,13 +756,14 @@ class _BreathingTabState extends State<_BreathingTab>
                     child: LuxuryBackButton(onPressed: _endSession),
                   ),
                   const SizedBox(height: 4),
-                  Text('CALM TOOLKIT', style: AppTextStyles.overline),
+                  Text(l10n.emergencyCalmToolkitOverline,
+                      style: AppTextStyles.overline),
                   const SizedBox(height: 4),
-                  Text('Breathe with me.',
+                  Text(l10n.breathSessionTitle,
                       style: AppTextStyles.greetingSerif
                           .copyWith(fontSize: 32, color: AppColors.forestDark)),
                   const SizedBox(height: 2),
-                  Text('Nothing to solve right now.',
+                  Text(l10n.breathSessionSubtitle,
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone500)),
                 ],
@@ -780,7 +826,9 @@ class _BreathingTabState extends State<_BreathingTab>
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                _sessionStarted ? currentName : 'Ready',
+                                _sessionStarted
+                                    ? currentName
+                                    : l10n.breathReady,
                                 style: AppTextStyles.titleSmall.copyWith(
                                     color: AppColors.forest700,
                                     fontWeight: FontWeight.w500),
@@ -811,7 +859,7 @@ class _BreathingTabState extends State<_BreathingTab>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: phases.asMap().entries.expand((e) {
                   final active = e.key == _phaseIndex;
-                  final name = e.value.$1;
+                  final name = e.value.$2;
                   return [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
@@ -876,7 +924,8 @@ class _BreathingTabState extends State<_BreathingTab>
                             Text('$mm:$ss',
                                 style: AppTextStyles.displaySmall.copyWith(
                                     fontSize: 28, color: AppColors.forestDark)),
-                            Text('remaining', style: AppTextStyles.caption),
+                            Text(l10n.breathRemaining,
+                                style: AppTextStyles.caption),
                           ],
                         ),
                         const Spacer(),
@@ -911,10 +960,10 @@ class _BreathingTabState extends State<_BreathingTab>
                                   borderRadius: AppRadius.xl),
                             ),
                             child: Text(!_sessionStarted
-                                ? 'Start'
+                                ? l10n.breathStart
                                 : _paused
-                                    ? 'Resume'
-                                    : 'Pause'),
+                                    ? l10n.breathResume
+                                    : l10n.breathPause),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -928,7 +977,7 @@ class _BreathingTabState extends State<_BreathingTab>
                               shape: const RoundedRectangleBorder(
                                   borderRadius: AppRadius.xl),
                             ),
-                            child: Text('End session',
+                            child: Text(l10n.breathEndSession,
                                 style: TextStyle(color: AppColors.forest700)),
                           ),
                         ),
@@ -943,7 +992,7 @@ class _BreathingTabState extends State<_BreathingTab>
               padding: const EdgeInsets.only(bottom: 12),
               child: Center(
                 child: Text(
-                  'If you feel dizzy, return to normal breathing.',
+                  l10n.breathDizzyWarning,
                   style:
                       AppTextStyles.caption.copyWith(color: AppColors.stone400),
                 ),
@@ -958,6 +1007,7 @@ class _BreathingTabState extends State<_BreathingTab>
   // ── LIBRARY SCREEN ───────────────────────────────────────────────────────
 
   Widget _buildLibraryScreen() {
+    final l10n = AppLocalizations.of(context);
     const featured = {0, 7, 8, 10, 14};
     final extra = _patterns
         .asMap()
@@ -980,13 +1030,14 @@ class _BreathingTabState extends State<_BreathingTab>
                         setState(() => _view = _BreathView.select)),
               ),
               const SizedBox(height: 4),
-              Text('CALM TOOLKIT', style: AppTextStyles.overline),
+              Text(l10n.emergencyCalmToolkitOverline,
+                  style: AppTextStyles.overline),
               const SizedBox(height: 4),
-              Text('All breathing patterns.',
+              Text(l10n.breathAllPatternsTitle,
                   style: AppTextStyles.greetingSerif
                       .copyWith(fontSize: 30, color: AppColors.forestDark)),
               const SizedBox(height: 4),
-              Text('Find the rhythm that fits this moment.',
+              Text(l10n.breathAllPatternsSubtitle,
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.stone500)),
               const SizedBox(height: 16),
@@ -1025,6 +1076,7 @@ class _RecommendedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1052,7 +1104,7 @@ class _RecommendedCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('RECOMMENDED NOW',
+                    Text(l10n.breathRecommendedNow,
                         style: AppTextStyles.overline.copyWith(
                             color: AppColors.honey500, letterSpacing: 1.1)),
                     const SizedBox(height: 2),
@@ -1075,18 +1127,20 @@ class _RecommendedCard extends StatelessWidget {
           const SizedBox(height: 14),
           Row(
             children: [
-              _RhythmChip(label: 'In', value: pattern.inhale),
+              _RhythmChip(label: l10n.breathRhythmIn, value: pattern.inhale),
               if (pattern.hold1 > 0) ...[
                 const SizedBox(width: 8),
-                _RhythmChip(label: 'Hold', value: pattern.hold1),
+                _RhythmChip(
+                    label: l10n.breathRhythmHold, value: pattern.hold1),
               ],
               if (pattern.exhale > 0) ...[
                 const SizedBox(width: 8),
-                _RhythmChip(label: 'Out', value: pattern.exhale),
+                _RhythmChip(label: l10n.breathRhythmOut, value: pattern.exhale),
               ],
               if (pattern.hold2 > 0) ...[
                 const SizedBox(width: 8),
-                _RhythmChip(label: 'Hold', value: pattern.hold2),
+                _RhythmChip(
+                    label: l10n.breathRhythmHold, value: pattern.hold2),
               ],
               const Spacer(),
               SizedBox(
@@ -1099,8 +1153,8 @@ class _RecommendedCard extends StatelessWidget {
                     shape: const RoundedRectangleBorder(
                         borderRadius: AppRadius.xl),
                   ),
-                  child: const Text('Begin',
-                      style: TextStyle(
+                  child: Text(l10n.breathBegin,
+                      style: const TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
@@ -1143,24 +1197,6 @@ class _LibraryCard extends StatelessWidget {
   final _BreathPattern pattern;
   final VoidCallback onTap;
 
-  static const _icons = <String, IconData>{
-    'Box': Icons.crop_square_rounded,
-    'Night': Icons.bedtime_outlined,
-    'Coherent': Icons.monitor_heart_outlined,
-    'Ocean': Icons.waves_rounded,
-    'Rescue': Icons.air_rounded,
-    'Calm': Icons.air_outlined,
-    'Power': Icons.bolt_rounded,
-    'Reset': Icons.refresh_rounded,
-    'Triangle': Icons.change_history_rounded,
-    'Anchor': Icons.anchor_outlined,
-    'Morning': Icons.wb_sunny_outlined,
-    'Warrior': Icons.fitness_center_outlined,
-    '4-7-8': Icons.nights_stay_outlined,
-    '6-2-8': Icons.self_improvement_outlined,
-    'Square+': Icons.dashboard_outlined,
-  };
-
   String _rhythmLabel() {
     final p = pattern;
     final parts = <String>['${p.inhale}'];
@@ -1172,7 +1208,7 @@ class _LibraryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = _icons[pattern.name] ?? Icons.air_outlined;
+    final icon = pattern.icon;
     return GestureDetector(
       onTap: () {
         H.selection();
@@ -1323,53 +1359,58 @@ class _MeditationGuide {
   final List<String> steps;
 }
 
-const _meditations = [
-  _MeditationGuide('Urge Surfing', '10 min', [
-    'Close your eyes and take three slow breaths.',
-    'Notice the craving. Where do you feel it in your body?',
-    'Imagine it as a wave in the ocean — rising slowly.',
-    'You are a surfer. You don\'t fight the wave. You ride it.',
-    'Watch the wave peak. It cannot go higher than it already is.',
-    'Now watch it begin to fall. Urges always fade.',
-    'You did not drink. The wave passed. You surfed it.',
-  ]),
-  _MeditationGuide('Body Scan', '15 min', [
-    'Lie down or sit comfortably. Close your eyes.',
-    'Bring attention to your feet. Notice any sensation — warmth, tingling.',
-    'Slowly move up to your calves, then knees, then thighs.',
-    'Notice your belly rising and falling with each breath.',
-    'Scan your chest, shoulders, arms, and hands.',
-    'Finally, relax your jaw, eyes, and forehead.',
-    'Rest here for a moment. You are safe. You are whole.',
-  ]),
-  _MeditationGuide('Gratitude Reset', '8 min', [
-    'Sit quietly. Take three slow breaths.',
-    'Think of one person in your life you\'re grateful for.',
-    'What did they do or say that mattered to you?',
-    'Think of one moment from today, however small, that was good.',
-    'Think of something about your body or health you appreciate.',
-    'Let gratitude fill your chest like warmth.',
-    'Carry this feeling into your next hour.',
-  ]),
-  _MeditationGuide('Safe Place', '10 min', [
-    'Close your eyes. Take three slow, deep breaths.',
-    'Imagine a place where you feel completely safe.',
-    'It can be real or imagined — a beach, a forest, a room.',
-    'Notice what you see, hear, smell in this place.',
-    'Feel the ground beneath you. You are supported.',
-    'Breathe here for a while. Nothing can harm you.',
-    'When you\'re ready, slowly return, carrying this calm.',
-  ]),
-  _MeditationGuide('Self-Compassion', '12 min', [
-    'Place your hand on your heart. Feel its warmth.',
-    'Say: "This is a moment of difficulty."',
-    'Say: "Difficulty is part of life. I am not alone in this."',
-    'Say: "May I be kind to myself right now."',
-    'Think of something you\'ve been critical of yourself about.',
-    'Ask: what would I say to a dear friend in this situation?',
-    'Say those words to yourself. You deserve them too.',
-  ]),
-];
+List<_MeditationGuide> _buildMeditations(AppLocalizations l10n) => [
+      _MeditationGuide(
+          l10n.meditationUrgeSurfingTitle, l10n.meditationDuration10min, [
+        l10n.meditationUrgeSurfingStep0,
+        l10n.meditationUrgeSurfingStep1,
+        l10n.meditationUrgeSurfingStep2,
+        l10n.meditationUrgeSurfingStep3,
+        l10n.meditationUrgeSurfingStep4,
+        l10n.meditationUrgeSurfingStep5,
+        l10n.meditationUrgeSurfingStep6,
+      ]),
+      _MeditationGuide(
+          l10n.meditationBodyScanTitle, l10n.meditationDuration15min, [
+        l10n.meditationBodyScanStep0,
+        l10n.meditationBodyScanStep1,
+        l10n.meditationBodyScanStep2,
+        l10n.meditationBodyScanStep3,
+        l10n.meditationBodyScanStep4,
+        l10n.meditationBodyScanStep5,
+        l10n.meditationBodyScanStep6,
+      ]),
+      _MeditationGuide(
+          l10n.meditationGratitudeResetTitle, l10n.meditationDuration8min, [
+        l10n.meditationGratitudeResetStep0,
+        l10n.meditationGratitudeResetStep1,
+        l10n.meditationGratitudeResetStep2,
+        l10n.meditationGratitudeResetStep3,
+        l10n.meditationGratitudeResetStep4,
+        l10n.meditationGratitudeResetStep5,
+        l10n.meditationGratitudeResetStep6,
+      ]),
+      _MeditationGuide(
+          l10n.meditationSafePlaceTitle, l10n.meditationDuration10min, [
+        l10n.meditationSafePlaceStep0,
+        l10n.meditationSafePlaceStep1,
+        l10n.meditationSafePlaceStep2,
+        l10n.meditationSafePlaceStep3,
+        l10n.meditationSafePlaceStep4,
+        l10n.meditationSafePlaceStep5,
+        l10n.meditationSafePlaceStep6,
+      ]),
+      _MeditationGuide(
+          l10n.meditationSelfCompassionTitle, l10n.meditationDuration12min, [
+        l10n.meditationSelfCompassionStep0,
+        l10n.meditationSelfCompassionStep1,
+        l10n.meditationSelfCompassionStep2,
+        l10n.meditationSelfCompassionStep3,
+        l10n.meditationSelfCompassionStep4,
+        l10n.meditationSelfCompassionStep5,
+        l10n.meditationSelfCompassionStep6,
+      ]),
+    ];
 
 class _MeditationTab extends StatefulWidget {
   const _MeditationTab({required this.onBack});
@@ -1396,8 +1437,6 @@ class _MeditationTabState extends State<_MeditationTab>
   );
   late final Animation<double> _pulse = Tween<double>(begin: 0.85, end: 1.15)
       .animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
-
-  _MeditationGuide get _guide => _meditations[_selected];
 
   @override
   void initState() {
@@ -1438,9 +1477,12 @@ class _MeditationTabState extends State<_MeditationTab>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final meditations = _buildMeditations(l10n);
+    final guide = meditations[_selected];
     return Column(
       children: [
-        _TabHeader(title: 'Meditation', onBack: widget.onBack),
+        _TabHeader(title: l10n.emergencyMeditationTitle, onBack: widget.onBack),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
@@ -1478,7 +1520,7 @@ class _MeditationTabState extends State<_MeditationTab>
                               color: AppColors.honey400.withOpacity(0.45),
                             ),
                           ),
-                          child: Text('GUIDED AUDIO',
+                          child: Text(l10n.meditationGuidedAudioLabel,
                               style: AppTextStyles.caption.copyWith(
                                 color: AppColors.honey300,
                                 letterSpacing: 1.2,
@@ -1504,7 +1546,7 @@ class _MeditationTabState extends State<_MeditationTab>
                     const SizedBox(height: 14),
 
                     // Title
-                    Text('Urge Surfing',
+                    Text(l10n.meditationUrgeSurfingTitle,
                         style: AppTextStyles.titleLarge.copyWith(
                           color: Colors.white,
                           fontFamily: 'Fraunces',
@@ -1512,7 +1554,7 @@ class _MeditationTabState extends State<_MeditationTab>
                         )),
                     const SizedBox(height: 4),
                     Text(
-                      'Ride the wave — urges peak and pass.',
+                      l10n.meditationUrgeSurfingTagline,
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.stone400),
                     ),
@@ -1667,10 +1709,7 @@ class _MeditationTabState extends State<_MeditationTab>
                         borderRadius: AppRadius.md,
                       ),
                       child: Text(
-                        'Urge surfing: instead of fighting a craving, you '
-                        'observe it like a wave — it rises, peaks, and falls '
-                        'on its own. This guided session teaches you to ride '
-                        'the wave without acting on it.',
+                        l10n.meditationUrgeSurfingExplainer,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.stone400,
                           height: 1.5,
@@ -1690,7 +1729,7 @@ class _MeditationTabState extends State<_MeditationTab>
                   Expanded(child: Divider(color: AppColors.stone100)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('Guided scripts',
+                    child: Text(l10n.meditationGuidedScripts,
                         style: AppTextStyles.caption
                             .copyWith(color: AppColors.stone400)),
                   ),
@@ -1701,8 +1740,8 @@ class _MeditationTabState extends State<_MeditationTab>
               const SizedBox(height: 8),
 
               // ── Text meditation guides ─────────────────────────────────────
-              ...List.generate(_meditations.length, (i) {
-                final g = _meditations[i];
+              ...List.generate(meditations.length, (i) {
+                final g = meditations[i];
                 final selected = i == _selected;
                 return GestureDetector(
                   onTap: () => setState(() {
@@ -1762,8 +1801,8 @@ class _MeditationTabState extends State<_MeditationTab>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(_guide.title, style: AppTextStyles.titleMedium),
-                        Text('${_step + 1} / ${_guide.steps.length}',
+                        Text(guide.title, style: AppTextStyles.titleMedium),
+                        Text('${_step + 1} / ${guide.steps.length}',
                             style: AppTextStyles.caption),
                       ],
                     ),
@@ -1771,7 +1810,7 @@ class _MeditationTabState extends State<_MeditationTab>
                     ClipRRect(
                       borderRadius: AppRadius.pill,
                       child: LinearProgressIndicator(
-                        value: (_step + 1) / _guide.steps.length,
+                        value: (_step + 1) / guide.steps.length,
                         minHeight: 4,
                         backgroundColor: AppColors.stone100,
                         valueColor:
@@ -1779,7 +1818,7 @@ class _MeditationTabState extends State<_MeditationTab>
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(_guide.steps[_step],
+                    Text(guide.steps[_step],
                         style: AppTextStyles.bodySerif.copyWith(
                             color: AppColors.forest700,
                             fontStyle: FontStyle.italic)),
@@ -1790,20 +1829,20 @@ class _MeditationTabState extends State<_MeditationTab>
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () => setState(() => _step--),
-                              child: const Text('Back'),
+                              child: Text(l10n.commonBack),
                             ),
                           ),
                         if (_step > 0) const SizedBox(width: 10),
                         Expanded(
                           child: FilledButton(
-                            onPressed: _step < _guide.steps.length - 1
+                            onPressed: _step < guide.steps.length - 1
                                 ? () => setState(() => _step++)
                                 : null,
                             style: FilledButton.styleFrom(
                                 backgroundColor: AppColors.forest600),
-                            child: Text(_step < _guide.steps.length - 1
-                                ? 'Next'
-                                : 'Complete ✓'),
+                            child: Text(_step < guide.steps.length - 1
+                                ? l10n.commonNext
+                                : l10n.emergencyComplete),
                           ),
                         ),
                       ],
@@ -1885,7 +1924,8 @@ class _GuideList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final guides = _buildCbtGuides(AppLocalizations.of(context));
+    final l10n = AppLocalizations.of(context);
+    final guides = _buildCbtGuides(l10n);
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       itemCount: guides.length,
@@ -1916,7 +1956,7 @@ class _GuideList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(g.title, style: AppTextStyles.titleSmall),
-                      Text('${g.steps.length} steps',
+                      Text(l10n.cbtGuideStepCount(g.steps.length),
                           style: AppTextStyles.bodySmall),
                     ],
                   ),
@@ -1949,6 +1989,7 @@ class _GuideWalkthrough extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       children: [
@@ -1956,7 +1997,7 @@ class _GuideWalkthrough extends StatelessWidget {
           children: [
             Expanded(
                 child: Text(guide.title, style: AppTextStyles.titleMedium)),
-            TextButton(onPressed: onClose, child: const Text('✕ Close')),
+            TextButton(onPressed: onClose, child: Text(l10n.emergencyCloseGuide)),
           ],
         ),
         ClipRRect(
@@ -1969,7 +2010,7 @@ class _GuideWalkthrough extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text('Step ${step + 1} of ${guide.steps.length}',
+        Text(l10n.onbStepIndicator(step + 1, guide.steps.length),
             style: AppTextStyles.caption),
         const SizedBox(height: 16),
         ForestCard(
@@ -1982,7 +2023,7 @@ class _GuideWalkthrough extends StatelessWidget {
           controller: ctrl,
           maxLines: 4,
           decoration: InputDecoration(
-            hintText: 'Your thoughts…',
+            hintText: l10n.cbtGuideThoughtsHint,
             hintStyle:
                 AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
           ),
@@ -1994,7 +2035,7 @@ class _GuideWalkthrough extends StatelessWidget {
             if (onBack != null) ...[
               Expanded(
                 child: OutlinedButton(
-                    onPressed: onBack, child: const Text('Back')),
+                    onPressed: onBack, child: Text(l10n.commonBack)),
               ),
               const SizedBox(width: 10),
             ],
@@ -2003,7 +2044,7 @@ class _GuideWalkthrough extends StatelessWidget {
                 onPressed: onNext ?? onClose,
                 style: FilledButton.styleFrom(
                     backgroundColor: AppColors.forest600),
-                child: Text(onNext != null ? 'Next' : 'Complete ✓'),
+                child: Text(onNext != null ? l10n.commonNext : l10n.emergencyComplete),
               ),
             ),
           ],
@@ -2034,6 +2075,7 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final profile = ref.watch(profileProvider).valueOrNull;
     // myReasons is the canonical field; fall back to weeklyGoals for users who
     // saved reasons before the field was renamed.
@@ -2043,20 +2085,19 @@ class _ReasonsTabState extends ConsumerState<_ReasonsTab> {
 
     return Column(
       children: [
-        _TabHeader(title: 'My Reasons', onBack: widget.onBack),
+        _TabHeader(title: l10n.emergencyReasonsTitle, onBack: widget.onBack),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
-              Text('Why I\'m doing this.',
+              Text(l10n.reasonsWhyHeading,
                   style: AppTextStyles.bodySerif.copyWith(
                       color: AppColors.forest600, fontStyle: FontStyle.italic)),
               const SizedBox(height: 16),
               if (reasons.isEmpty)
                 ForestCard(
                   child: Text(
-                    'Add your reasons in Settings → My Motivation. '
-                    'Reading them during a craving can be powerful.',
+                    l10n.reasonsEmptyHint,
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.forest700),
                   ),
@@ -2137,7 +2178,7 @@ class _HaltTabState extends State<_HaltTab> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
-              Text('Before acting on a craving, check in:',
+              Text(l10n.haltCheckInPrompt,
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.stone600)),
               const SizedBox(height: 16),
@@ -2242,23 +2283,23 @@ class _PlayTapeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
-        _TabHeader(title: 'Play the Tape', onBack: onBack),
+        _TabHeader(title: l10n.emergencyPlayTapeTitle, onBack: onBack),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
             children: [
               // ── Hero heading
               Text(
-                'Pause for a moment.\nLook at what happens next.',
+                l10n.playTapeHeroHeading,
                 style: AppTextStyles.greetingSerif
                     .copyWith(color: AppColors.forest800, fontSize: 26),
               ),
               const SizedBox(height: 10),
               Text(
-                'An urge can feel urgent, but it is temporary. Before you act, '
-                'walk yourself through the next few moments, tonight, and tomorrow morning.',
+                l10n.playTapeIntro,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone600),
               ),
@@ -2266,36 +2307,36 @@ class _PlayTapeTab extends StatelessWidget {
 
               // ── "If I drink now" card
               _TapeCard(
-                title: 'If I drink now',
+                title: l10n.playTapeDrinkTitle,
                 titleColor: AppColors.honey500,
                 bgColor: AppColors.honey50,
                 borderColor: AppColors.honey200,
                 arrowUp: false,
-                rows: const [
+                rows: [
                   _TapeRow(
                     icon: Icons.access_time_rounded,
-                    label: 'Right now',
+                    label: l10n.playTapePhaseRightNow,
                     bullets: [
-                      'Relief may feel immediate',
-                      'The craving softens for a little while',
+                      l10n.playTapeDrinkNow0,
+                      l10n.playTapeDrinkNow1,
                     ],
                   ),
                   _TapeRow(
                     icon: Icons.nightlight_round,
-                    label: 'Later tonight',
+                    label: l10n.playTapePhaseTonight,
                     bullets: [
-                      'The difficult feelings often return',
-                      'Sleep may be disrupted',
-                      'My momentum is interrupted',
+                      l10n.playTapeDrinkTonight0,
+                      l10n.playTapeDrinkTonight1,
+                      l10n.playTapeDrinkTonight2,
                     ],
                   ),
                   _TapeRow(
                     icon: Icons.wb_twilight_rounded,
-                    label: 'Tomorrow',
+                    label: l10n.playTapePhaseTomorrow,
                     bullets: [
-                      'I may wake with regret',
-                      'The next day asks more of me',
-                      'Starting again feels harder',
+                      l10n.playTapeDrinkTomorrow0,
+                      l10n.playTapeDrinkTomorrow1,
+                      l10n.playTapeDrinkTomorrow2,
                     ],
                   ),
                 ],
@@ -2304,36 +2345,36 @@ class _PlayTapeTab extends StatelessWidget {
 
               // ── "If I stay sober" card
               _TapeCard(
-                title: 'If I stay sober',
+                title: l10n.playTapeSoberTitle,
                 titleColor: AppColors.forest700,
                 bgColor: AppColors.forest50,
                 borderColor: AppColors.forest200,
                 arrowUp: true,
-                rows: const [
+                rows: [
                   _TapeRow(
                     icon: Icons.access_time_rounded,
-                    label: 'Right now',
+                    label: l10n.playTapePhaseRightNow,
                     bullets: [
-                      'The craving rises, then passes',
-                      'I give myself space instead of reacting',
+                      l10n.playTapeSoberNow0,
+                      l10n.playTapeSoberNow1,
                     ],
                   ),
                   _TapeRow(
                     icon: Icons.nightlight_round,
-                    label: 'Later tonight',
+                    label: l10n.playTapePhaseTonight,
                     bullets: [
-                      'I protect my peace',
-                      'I go to bed with clarity',
-                      'I strengthen self-trust',
+                      l10n.playTapeSoberTonight0,
+                      l10n.playTapeSoberTonight1,
+                      l10n.playTapeSoberTonight2,
                     ],
                   ),
                   _TapeRow(
                     icon: Icons.wb_twilight_rounded,
-                    label: 'Tomorrow',
+                    label: l10n.playTapePhaseTomorrow,
                     bullets: [
-                      'I wake up clear-headed',
-                      'My momentum grows',
-                      'I feel proud of myself',
+                      l10n.playTapeSoberTomorrow0,
+                      l10n.playTapeSoberTomorrow1,
+                      l10n.playTapeSoberTomorrow2,
                     ],
                   ),
                 ],
@@ -2365,7 +2406,7 @@ class _PlayTapeTab extends StatelessWidget {
                               size: 16, color: AppColors.forest700),
                         ),
                         const SizedBox(width: 10),
-                        Text('What would help right now?',
+                        Text(l10n.playTapeWhatHelpsTitle,
                             style: AppTextStyles.titleSmall
                                 .copyWith(color: AppColors.forest700)),
                       ],
@@ -2375,13 +2416,13 @@ class _PlayTapeTab extends StatelessWidget {
                       children: [
                         _ActionButton(
                           icon: Icons.air_rounded,
-                          label: 'Breathe with me',
+                          label: l10n.playTapeActionBreathe,
                           onTap: () => onNav(_Tab.breathing),
                         ),
                         const SizedBox(width: 10),
                         _ActionButton(
                           icon: Icons.menu_book_rounded,
-                          label: 'Open my journal',
+                          label: l10n.playTapeActionJournal,
                           onTap: () => context.push('/journal'),
                         ),
                       ],
@@ -2391,13 +2432,13 @@ class _PlayTapeTab extends StatelessWidget {
                       children: [
                         _ActionButton(
                           icon: Icons.spa_rounded,
-                          label: 'Read my reason',
+                          label: l10n.playTapeActionReason,
                           onTap: () => onNav(_Tab.reasons),
                         ),
                         const SizedBox(width: 10),
                         _ActionButton(
                           icon: Icons.timer_outlined,
-                          label: 'Ride the wave',
+                          label: l10n.playTapeActionRideWave,
                           onTap: () => context.push('/urge-timer'),
                         ),
                       ],
@@ -2682,7 +2723,7 @@ class _MindfulnessTabState extends State<_MindfulnessTab> {
                       }),
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           size: 14),
-                      label: const Text('Back'),
+                      label: Text(l10n.commonBack),
                       style: TextButton.styleFrom(
                           foregroundColor: AppColors.forest600),
                     ),

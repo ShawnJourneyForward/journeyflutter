@@ -43,12 +43,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM1Body,
         icon: Icons.water_drop_outlined,
         system: l10n.recoveryM1System,
-        mind:
-            'You might feel a mix of relief and anxiety as your daily routine shifts. This is the normal friction of change.',
-        experience:
-            'The first urges may appear. They can feel urgent, but they are temporary waves.',
-        tip:
-            'Drink a large glass of water. When an urge hits, focus only on getting through the next hour.',
+        mind: l10n.recoveryM1Mind,
+        experience: l10n.recoveryM1Experience,
+        tip: l10n.recoveryM1Tip,
       ),
       _Milestone(
         minutes: 1440,
@@ -57,12 +54,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM2Body,
         icon: Icons.spa_outlined,
         system: l10n.recoveryM2System,
-        mind:
-            'Your brain\'s reward circuitry is noticing the absence of its usual chemical trigger, which can cause irritability or a low mood.',
-        experience:
-            'You may feel emotionally raw, tired, or slightly restless.',
-        tip:
-            'Sleep and rest are your best allies right now. Keep your evening routine calm, quiet, and consistent.',
+        mind: l10n.recoveryM2Mind,
+        experience: l10n.recoveryM2Experience,
+        tip: l10n.recoveryM2Tip,
       ),
       _Milestone(
         minutes: 2880,
@@ -71,12 +65,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM3Body,
         icon: Icons.self_improvement_outlined,
         system: l10n.recoveryM3System,
-        mind:
-            'Your system is seeking balance. The intensity you feel right now is the feeling of that adjustment taking place.',
-        experience:
-            'Restlessness and strong urges are common here. You might feel “wired” or on edge.',
-        tip:
-            'Be especially patient with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.',
+        mind: l10n.recoveryM3Mind,
+        experience: l10n.recoveryM3Experience,
+        tip: l10n.recoveryM3Tip,
       ),
       _Milestone(
         minutes: 4320,
@@ -85,12 +76,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM4Body,
         icon: Icons.spa_outlined,
         system: l10n.recoveryM4System,
-        mind:
-            'The mental fog often begins to thin. Neurotransmitter production starts to slowly adjust, paving the way for more natural energy.',
-        experience:
-            'A small window of calm may emerge. You might feel a quiet, cautious optimism taking root.',
-        tip:
-            'Reaching 72 hours is meaningful. Mark it with comfort, care, and support.',
+        mind: l10n.recoveryM4Mind,
+        experience: l10n.recoveryM4Experience,
+        tip: l10n.recoveryM4Tip,
       ),
       _Milestone(
         minutes: 10080,
@@ -99,12 +87,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM5Body,
         icon: Icons.bedtime_outlined,
         system: l10n.recoveryM5System,
-        mind:
-            'You may notice unusually vivid dreams — some people experience this as their sleep pattern settles into a new rhythm.',
-        experience:
-            'Improved clarity, though your mood may still naturally swing up and down.',
-        tip:
-            'Anchor yourself in routine. A predictable morning and evening structure is a powerful tool right now.',
+        mind: l10n.recoveryM5Mind,
+        experience: l10n.recoveryM5Experience,
+        tip: l10n.recoveryM5Tip,
       ),
       _Milestone(
         minutes: 20160,
@@ -113,12 +98,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM6Body,
         icon: Icons.directions_run_outlined,
         system: l10n.recoveryM6System,
-        mind:
-            'Concentration and short-term memory often start to feel sharper. Each healthier choice you repeat helps lay down new patterns.',
-        experience:
-            'You might start feeling surprisingly well, though random moments of emptiness are still normal.',
-        tip:
-            'This is when overconfidence can sneak in. Stay connected to your daily practices and support systems.',
+        mind: l10n.recoveryM6Mind,
+        experience: l10n.recoveryM6Experience,
+        tip: l10n.recoveryM6Tip,
       ),
       _Milestone(
         minutes: 43200,
@@ -127,12 +109,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM7Body,
         icon: Icons.healing_outlined,
         system: l10n.recoveryM7System,
-        mind:
-            'The brain systems involved in impulse control, decision-making, and emotional regulation may begin to feel steadier over time.',
-        experience:
-            'Emotional regulation continues to improve, and building resilience becomes a steady practice.',
-        tip:
-            'Review your journey so far. Note the situations that still feel tricky, and plan how you will navigate them gracefully.',
+        mind: l10n.recoveryM7Mind,
+        experience: l10n.recoveryM7Experience,
+        tip: l10n.recoveryM7Tip,
       ),
       _Milestone(
         minutes: 129600,
@@ -141,12 +120,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM8Body,
         icon: Icons.psychology_outlined,
         system: l10n.recoveryM8System,
-        mind:
-            'For many people, the ability to find genuine satisfaction in simple, everyday activities slowly returns at this stage.',
-        experience:
-            'Many people describe feeling more like themselves again. Motivation may feel more available, though it can still rise and fall.',
-        tip:
-            'Continue to cultivate your environment. Hobbies, nature, and relationships are deeply protective elements of your growth.',
+        mind: l10n.recoveryM8Mind,
+        experience: l10n.recoveryM8Experience,
+        tip: l10n.recoveryM8Tip,
       ),
       _Milestone(
         minutes: 259200,
@@ -155,11 +131,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM9Body,
         icon: Icons.shield_outlined,
         system: l10n.recoveryM9System,
-        mind: 'Urges may become less frequent or easier to move through.',
-        experience:
-            'The highs and lows of early recovery begin to smooth out into a more consistent rhythm.',
-        tip:
-            'Take a moment to honor the quiet days. Peace and stability are among the quiet rewards of this process.',
+        mind: l10n.recoveryM9Mind,
+        experience: l10n.recoveryM9Experience,
+        tip: l10n.recoveryM9Tip,
       ),
       _Milestone(
         minutes: 525960,
@@ -168,12 +142,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM10Body,
         icon: Icons.spa_rounded,
         system: l10n.recoveryM10System,
-        mind:
-            'You have lived through many seasons, routines, and emotional moments with more awareness and care.',
-        experience:
-            'Support may still matter, and needing it does not diminish your progress.',
-        tip:
-            'Reflect on the person you were twelve months ago. Write them a letter from where you stand today.',
+        mind: l10n.recoveryM10Mind,
+        experience: l10n.recoveryM10Experience,
+        tip: l10n.recoveryM10Tip,
       ),
       _Milestone(
         minutes: 1051920,
@@ -182,11 +153,9 @@ List<_Milestone> _buildTimeline(AppLocalizations l10n) => [
         body: l10n.recoveryM11Body,
         icon: Icons.star_outline_rounded,
         system: l10n.recoveryM11System,
-        mind:
-            'Recovery may feel less like something you are forcing and more like a way of living you have grown into.',
+        mind: l10n.recoveryM11Mind,
         experience: '',
-        tip:
-            'Your story may become a source of comfort for someone else. When the moment feels right, share your strength with someone just beginning their path.',
+        tip: l10n.recoveryM11Tip,
       ),
     ];
 
@@ -270,10 +239,7 @@ class RecoveryScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Journey Forward is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. '
-                          'This timeline is educational and reflects general recovery patterns only. '
-                          'Individual recovery varies. If you drink heavily, have a history of withdrawal, seizures, hallucinations, confusion, '
-                          'or feel physically unsafe, speak with a healthcare professional before stopping suddenly or seek urgent medical care.',
+                          l10n.recoveryMedicalDisclaimer,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.honey600,
                             height: 1.45,
@@ -412,6 +378,7 @@ class _TimelineTileState extends State<_TimelineTile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final m = widget.milestone;
     final achieved = widget.achieved;
     final isCurrent = widget.isCurrent;
@@ -568,7 +535,7 @@ class _TimelineTileState extends State<_TimelineTile> {
                                       ? AppColors.forest500
                                       : AppColors.stone300),
                               const SizedBox(width: 5),
-                              Text('MIND',
+                              Text(l10n.recoveryMindLabel,
                                   style: AppTextStyles.labelSmall.copyWith(
                                       color: achieved
                                           ? AppColors.forest500

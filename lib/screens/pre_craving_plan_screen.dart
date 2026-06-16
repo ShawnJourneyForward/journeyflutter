@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -27,64 +28,66 @@ class _ToolkitExercise {
   final String route; // empty = no navigation (informational only)
 }
 
-final _kToolkitExercises = [
-  _ToolkitExercise(
-    label: 'Box Breathing',
-    sub: 'Guided 4-4-4-4 breath cycle',
-    icon: Icons.air_rounded,
-    color: AppColors.forest500,
-    route: '/emergency',
-  ),
-  _ToolkitExercise(
-    label: '5-4-3-2-1 Grounding',
-    sub: 'Ground yourself through your senses',
-    icon: Icons.touch_app_rounded,
-    color: AppColors.forest600,
-    route: '/emergency',
-  ),
-  _ToolkitExercise(
-    label: 'CBT Thought Reframe',
-    sub: 'Challenge the craving thought',
-    icon: Icons.psychology_outlined,
-    color: AppColors.forest700,
-    route: '/cbt',
-  ),
-  _ToolkitExercise(
-    label: 'Affirmations',
-    sub: 'Read a personal affirmation',
-    icon: Icons.spa_outlined,
-    color: AppColors.honey500,
-    route: '/journal',
-  ),
-  _ToolkitExercise(
-    label: 'Cold Water',
-    sub: 'Splash cold water on your face',
-    icon: Icons.water_drop_outlined,
-    color: AppColors.forest400,
-    route: '',
-  ),
-  _ToolkitExercise(
-    label: 'Walk Outside',
-    sub: 'Take a short walk to reset',
-    icon: Icons.directions_walk_rounded,
-    color: AppColors.forest500,
-    route: '',
-  ),
-  _ToolkitExercise(
-    label: 'Call Someone',
-    sub: 'Reach out to your sponsor or a friend',
-    icon: Icons.phone_outlined,
-    color: AppColors.forest600,
-    route: '',
-  ),
-  _ToolkitExercise(
-    label: 'Body Scan',
-    sub: 'Scan from toes to head, release tension',
-    icon: Icons.self_improvement_rounded,
-    color: AppColors.forest400,
-    route: '/emergency',
-  ),
-];
+// Localised at display time — labels/subs come from AppLocalizations while the
+// `route` doubles as the stable persistence key for a linked exercise.
+List<_ToolkitExercise> _kToolkitExercises(AppLocalizations l10n) => [
+      _ToolkitExercise(
+        label: l10n.planToolkitBoxBreathingLabel,
+        sub: l10n.planToolkitBoxBreathingSub,
+        icon: Icons.air_rounded,
+        color: AppColors.forest500,
+        route: '/emergency',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitGroundingLabel,
+        sub: l10n.planToolkitGroundingSub,
+        icon: Icons.touch_app_rounded,
+        color: AppColors.forest600,
+        route: '/emergency',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitCbtReframeLabel,
+        sub: l10n.planToolkitCbtReframeSub,
+        icon: Icons.psychology_outlined,
+        color: AppColors.forest700,
+        route: '/cbt',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitAffirmationsLabel,
+        sub: l10n.planToolkitAffirmationsSub,
+        icon: Icons.spa_outlined,
+        color: AppColors.honey500,
+        route: '/journal',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitColdWaterLabel,
+        sub: l10n.planToolkitColdWaterSub,
+        icon: Icons.water_drop_outlined,
+        color: AppColors.forest400,
+        route: '',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitWalkOutsideLabel,
+        sub: l10n.planToolkitWalkOutsideSub,
+        icon: Icons.directions_walk_rounded,
+        color: AppColors.forest500,
+        route: '',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitCallSomeoneLabel,
+        sub: l10n.planToolkitCallSomeoneSub,
+        icon: Icons.phone_outlined,
+        color: AppColors.forest600,
+        route: '',
+      ),
+      _ToolkitExercise(
+        label: l10n.planToolkitBodyScanLabel,
+        sub: l10n.planToolkitBodyScanSub,
+        icon: Icons.self_improvement_rounded,
+        color: AppColors.forest400,
+        route: '/emergency',
+      ),
+    ];
 
 // ─── Pre-craving plan ────────────────────────────────────────────────────────
 //
@@ -106,32 +109,44 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
   final List<_ToolkitExercise?> _linkedExercises = [null, null, null];
   bool _dirty = false;
 
-  static const _hints = [
-    'e.g. Take three slow box-breaths',
-    'e.g. Drink a glass of cold water',
-    'e.g. Text my sponsor: "Craving"',
-  ];
+  // Saved link routes restored from the profile, resolved into localised
+  // exercises in didChangeDependencies (where AppLocalizations is available).
+  List<String> _savedLinks = const <String>[];
+  bool _linksRestored = false;
+
+  List<String> _hints(AppLocalizations l10n) => [
+        l10n.planStepHint1,
+        l10n.planStepHint2,
+        l10n.planStepHint3,
+      ];
 
   @override
   void initState() {
     super.initState();
     final profile = ref.read(profileProvider).valueOrNull;
     final plan = profile?.preCravingPlan ?? const <String>[];
-    final links = profile?.preCravingLinks ?? const <String>[];
+    _savedLinks = profile?.preCravingLinks ?? const <String>[];
     _ctrls = List.generate(
       3,
       (i) => TextEditingController(text: i < plan.length ? plan[i] : ''),
     );
-    // Restore saved links
-    for (var i = 0; i < 3 && i < links.length; i++) {
-      if (links[i].isNotEmpty) {
-        _linkedExercises[i] = _kToolkitExercises
-            .cast<_ToolkitExercise?>()
-            .firstWhere((e) => e?.route == links[i], orElse: () => null);
-      }
-    }
     for (final c in _ctrls) {
       c.addListener(() => setState(() => _dirty = true));
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_linksRestored) return;
+    _linksRestored = true;
+    final exercises = _kToolkitExercises(AppLocalizations.of(context));
+    for (var i = 0; i < 3 && i < _savedLinks.length; i++) {
+      if (_savedLinks[i].isNotEmpty) {
+        _linkedExercises[i] = exercises
+            .cast<_ToolkitExercise?>()
+            .firstWhere((e) => e?.route == _savedLinks[i], orElse: () => null);
+      }
     }
   }
 
@@ -153,7 +168,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
     if (mounted) {
       setState(() => _dirty = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Plan saved — you\'ll see it when a craving hits.',
+        content: Text(AppLocalizations.of(context).planSavedSnack,
             style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
         backgroundColor: AppColors.forest600,
         behavior: SnackBarBehavior.floating,
@@ -182,6 +197,8 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final hints = _hints(l10n);
     return Scaffold(
       backgroundColor: AppColors.stone50,
       body: SafeArea(
@@ -198,7 +215,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Pre-craving plan',
+              child: Text(l10n.planTitle,
                   style: AppTextStyles.greetingSerif.copyWith(
                       fontSize: 30,
                       color: AppColors.forestDark,
@@ -208,7 +225,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 16),
               child: Text(
-                'Three things you commit to doing the moment a craving hits — written in calm so you don\'t have to think in a storm.',
+                l10n.planSubtitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500, height: 1.4),
               ),
@@ -255,7 +272,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                 style: AppTextStyles.bodyMedium
                                     .copyWith(color: AppColors.stone800),
                                 decoration: InputDecoration(
-                                  hintText: _hints[i],
+                                  hintText: hints[i],
                                   hintStyle: AppTextStyles.bodyMedium
                                       .copyWith(color: AppColors.stone300),
                                   filled: true,
@@ -302,7 +319,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                                       Icon(Icons.add_link_rounded,
                                           size: 15, color: AppColors.forest400),
                                       const SizedBox(width: 5),
-                                      Text('Link a Toolkit exercise',
+                                      Text(l10n.planLinkExercise,
                                           style: AppTextStyles.labelSmall
                                               .copyWith(
                                                   color: AppColors.forest500)),
@@ -334,7 +351,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Linking a Toolkit exercise adds a one-tap "Open" button during your plan so you can jump straight into the exercise.',
+                      l10n.planLinkInfo,
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.forest700, height: 1.4),
                     ),
@@ -357,7 +374,7 @@ class _PreCravingPlanScreenState extends ConsumerState<PreCravingPlanScreen> {
                   shape:
                       const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
-                child: Text(_dirty ? 'Save plan' : 'Saved',
+                child: Text(_dirty ? l10n.planSavePlan : l10n.planSaved,
                     style:
                         AppTextStyles.labelLarge.copyWith(color: Colors.white)),
               ),
@@ -422,6 +439,7 @@ class _ExercisePickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
@@ -436,7 +454,7 @@ class _ExercisePickerSheet extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text('Choose a Toolkit Exercise',
+                child: Text(l10n.planPickerTitle,
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.forest700)),
               ),
@@ -456,11 +474,11 @@ class _ExercisePickerSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text('Tap to add a one-tap link to this exercise in your plan.',
+          Text(l10n.planPickerSubtitle,
               style:
                   AppTextStyles.bodySmall.copyWith(color: AppColors.stone400)),
           const SizedBox(height: 16),
-          ..._kToolkitExercises.map((ex) => _ExerciseRow(exercise: ex)),
+          ..._kToolkitExercises(l10n).map((ex) => _ExerciseRow(exercise: ex)),
         ],
       ),
     );
@@ -519,7 +537,7 @@ class _ExerciseRow extends StatelessWidget {
                   color: AppColors.forest50,
                   borderRadius: AppRadius.full,
                 ),
-                child: Text('Opens in app',
+                child: Text(AppLocalizations.of(context).planOpensInApp,
                     style: TextStyle(
                         fontSize: 10,
                         color: AppColors.forest600,
@@ -568,6 +586,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(top: 80),
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
@@ -590,11 +609,11 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
               ),
             ),
           ),
-          Text('Your plan',
+          Text(l10n.planRunnerTitle,
               style: AppTextStyles.titleLarge
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 4),
-          Text('Run through these before logging. Breathe between each one.',
+          Text(l10n.planRunnerSubtitle,
               style:
                   AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
           const SizedBox(height: 16),
@@ -605,7 +624,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
             final link = i < widget.links.length ? widget.links[i] : '';
             // Find the matching toolkit exercise for its icon/colour
             final exercise = link.isNotEmpty
-                ? _kToolkitExercises
+                ? _kToolkitExercises(l10n)
                     .cast<_ToolkitExercise?>()
                     .firstWhere((e) => e?.route == link, orElse: () => null)
                 : null;
@@ -678,7 +697,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                                 size: 14, color: exercise.color),
                             const SizedBox(width: 5),
                             Text(
-                              'Open ${exercise.label} →',
+                              l10n.planRunnerOpenExercise(exercise.label),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: exercise.color,
@@ -703,7 +722,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                     H.light();
                     Navigator.of(context).pop(false);
                   },
-                  child: const Text('I\'m okay'),
+                  child: Text(l10n.planRunnerImOkay),
                 ),
               ),
               const SizedBox(width: 10),
@@ -715,7 +734,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
                   },
                   style: FilledButton.styleFrom(
                       backgroundColor: AppColors.forest700),
-                  child: const Text('Still log it'),
+                  child: Text(l10n.planRunnerStillLogIt),
                 ),
               ),
             ],

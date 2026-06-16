@@ -103,7 +103,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                   size: 14, color: AppColors.onForest),
                               const SizedBox(width: 4),
                               Text(
-                                'Summary',
+                                l10n.progressSummaryChip,
                                 style: AppTextStyles.labelLarge.copyWith(
                                     color: AppColors.onForest, fontSize: 11),
                               ),
@@ -213,7 +213,10 @@ class _StreakTab extends ConsumerWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Text(atMilestone ? 'Milestone reached' : 'Current journey',
+                Text(
+                    atMilestone
+                        ? l10n.progressMilestoneReached
+                        : l10n.progressCurrentJourney,
                     style: AppTextStyles.labelSmall.copyWith(
                         color: AppColors.forest600, letterSpacing: 1.0)),
                 const SizedBox(height: 8),
@@ -237,13 +240,17 @@ class _StreakTab extends ConsumerWidget {
                 children: [
                   Text(
                     atMilestone
-                        ? 'Milestone: ${milestoneLabels[days] ?? '$days Days'}'
-                        : 'Next: ${milestoneLabels[nextMs] ?? '$nextMs Days'}',
+                        ? l10n.progressMilestonePrefix(
+                            milestoneLabels[days] ?? l10n.progressDaysLabel(days))
+                        : l10n.progressNextPrefix(milestoneLabels[nextMs] ??
+                            l10n.progressDaysLabel(nextMs)),
                     style: AppTextStyles.titleSmall
                         .copyWith(color: AppColors.forest700),
                   ),
                   Text(
-                    atMilestone ? '100%' : '${(progress * 100).round()}%',
+                    atMilestone
+                        ? l10n.progressPercentComplete(100)
+                        : l10n.progressPercentComplete((progress * 100).round()),
                     style: AppTextStyles.labelLarge
                         .copyWith(color: AppColors.forest600),
                   ),
@@ -263,8 +270,8 @@ class _StreakTab extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 atMilestone
-                    ? 'A beautiful threshold crossed.'
-                    : '$days / $nextMs days',
+                    ? l10n.progressThresholdCrossed
+                    : l10n.progressDaysOfTarget(days, nextMs),
                 style: AppTextStyles.bodySmall,
               ),
             ],
@@ -289,10 +296,11 @@ class _StreakTab extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Milestones', style: AppTextStyles.titleMedium),
+                  Text(l10n.progressMilestonesTitle,
+                      style: AppTextStyles.titleMedium),
                   GestureDetector(
                     onTap: () => context.push('/milestone'),
-                    child: Text('Cards',
+                    child: Text(l10n.progressCardsLink,
                         style: AppTextStyles.labelLarge.copyWith(
                             color: AppColors.forest600,
                             fontWeight: FontWeight.w600)),
@@ -351,10 +359,10 @@ class _StreakTab extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Text(
                           ms >= 365
-                              ? '1yr'
+                              ? l10n.progressGridYear
                               : ms >= 30
-                                  ? '${ms ~/ 30}mo'
-                                  : '${ms}d',
+                                  ? l10n.progressGridMonths(ms ~/ 30)
+                                  : l10n.progressGridDays(ms),
                           style: AppTextStyles.labelSmall.copyWith(
                             color: achieved
                                 ? AppColors.forest700
@@ -387,6 +395,7 @@ class _LiveDHMSRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     // Pause when this tab is off-stage (TickerMode is false for an inactive
     // IndexedStack branch) so the per-second tick stops rebuilding this row
     // while the user is on another tab. That off-stage churn was landing on
@@ -398,13 +407,13 @@ class _LiveDHMSRow extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _CounterUnit(value: liveStats?.days ?? 0, label: 'DAYS'),
+        _CounterUnit(value: liveStats?.days ?? 0, label: l10n.progressUnitDays),
         _Colon(),
-        _CounterUnit(value: liveStats?.hours ?? 0, label: 'HRS'),
+        _CounterUnit(value: liveStats?.hours ?? 0, label: l10n.progressUnitHrs),
         _Colon(),
-        _CounterUnit(value: liveStats?.minutes ?? 0, label: 'MIN'),
+        _CounterUnit(value: liveStats?.minutes ?? 0, label: l10n.progressUnitMin),
         _Colon(),
-        _CounterUnit(value: liveStats?.seconds ?? 0, label: 'SEC'),
+        _CounterUnit(value: liveStats?.seconds ?? 0, label: l10n.progressUnitSec),
       ],
     );
   }
@@ -444,6 +453,7 @@ class _InsightsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final window = _last14();
     final cravings = ref.watch(_cravings14Provider);
     final sleep = ref.watch(_sleep14Provider);
@@ -466,46 +476,43 @@ class _InsightsTab extends ConsumerWidget {
         const _RiskWindowCard(),
 
         _InsightTile(
-          title: 'Craving Support',
-          subtitle: 'Every log is a brave step toward healing.',
+          title: l10n.progressInsightCravingTitle,
+          subtitle: l10n.progressInsightCravingSubtitle,
           data: cravings,
           barColor: AppColors.honey500,
-          yLabel: 'Logs',
+          yLabel: l10n.progressYLabelLogs,
           window: window,
-          quote:
-              'Logging a craving is a sign of strength.\nYou\'re choosing awareness and support.',
+          quote: l10n.progressInsightCravingQuote,
         ),
         const SizedBox(height: 14),
         _InsightTile(
-          title: 'Sleep Quality',
-          subtitle: 'Hours logged per night, tracked daily.',
+          title: l10n.progressInsightSleepTitle,
+          subtitle: l10n.progressInsightSleepSubtitle,
           data: sleep,
           barColor: AppColors.forest400,
-          yLabel: 'Hrs',
+          yLabel: l10n.progressYLabelHrs,
           window: window,
-          quote:
-              'Rest is part of recovery.\nEvery hour of sleep supports your healing.',
+          quote: l10n.progressInsightSleepQuote,
         ),
         const SizedBox(height: 14),
         _InsightTile(
-          title: 'Movement',
-          subtitle: 'Active minutes per day, two weeks out.',
+          title: l10n.progressInsightMovementTitle,
+          subtitle: l10n.progressInsightMovementSubtitle,
           data: activity,
           barColor: AppColors.leafGreen,
-          yLabel: 'Min',
+          yLabel: l10n.progressYLabelMin,
           window: window,
-          quote: 'Movement lifts the spirit.\nEvery active minute counts.',
+          quote: l10n.progressInsightMovementQuote,
         ),
         const SizedBox(height: 14),
         _InsightTile(
-          title: 'Thoughts',
-          subtitle: 'Thoughts logged each day across 14 days.',
+          title: l10n.progressInsightThoughtsTitle,
+          subtitle: l10n.progressInsightThoughtsSubtitle,
           data: thoughts,
           barColor: AppColors.stone400,
-          yLabel: 'Logs',
+          yLabel: l10n.progressYLabelLogs,
           window: window,
-          quote:
-              'Reflection builds resilience.\nYour thoughts are your inner compass.',
+          quote: l10n.progressInsightThoughtsQuote,
         ),
       ],
     );
@@ -519,6 +526,7 @@ class _RiskWindowCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final cravings = ref.watch(cravingProvider).valueOrNull ?? const [];
     final window = topRiskWindow(cravings);
     if (window == null) return const SizedBox.shrink();
@@ -542,7 +550,7 @@ class _RiskWindowCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text('Your tender hours',
+                  child: Text(l10n.progressTenderHoursTitle,
                       style: AppTextStyles.titleMedium),
                 ),
                 Text(
@@ -554,9 +562,7 @@ class _RiskWindowCard extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              '${window.count} of your ${window.total} logged cravings land in '
-              'this window. Knowing your pattern is power — plan something '
-              'gentle for those hours: a walk, a call, the urge timer.',
+              l10n.progressTenderHoursBody(window.count, window.total),
               style: AppTextStyles.bodySmall
                   .copyWith(color: AppColors.stone600, height: 1.5),
             ),
@@ -570,7 +576,7 @@ class _RiskWindowCard extends ConsumerWidget {
                   foregroundColor: AppColors.forest600,
                 ),
                 icon: const Icon(Icons.checklist_rounded, size: 17),
-                label: Text('Review my plan',
+                label: Text(l10n.progressReviewMyPlan,
                     style: AppTextStyles.labelLarge
                         .copyWith(color: AppColors.forest600)),
               ),
@@ -709,13 +715,14 @@ class _InsightTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Title row
           Text(
-            '$title — 14 days',
+            l10n.progressInsightTitle14Days(title),
             style:
                 AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
           ),
@@ -733,13 +740,13 @@ class _InsightTile extends StatelessWidget {
             child: Row(
               children: [
                 _SummaryCol(
-                    label: 'This week',
+                    label: l10n.progressThisWeek,
                     value: _fmtNum(data.thisWeek),
                     valueColor: barColor),
                 VerticalDivider(
                     thickness: 1, width: 1, color: AppColors.stone100),
                 _SummaryCol(
-                    label: 'Last week',
+                    label: l10n.progressLastWeek,
                     value: _fmtNum(data.lastWeek),
                     valueColor: AppColors.stone500),
               ],
@@ -847,7 +854,16 @@ class _MiniBarChart14 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final l10n = AppLocalizations.of(context);
+    final dayLetters = [
+      l10n.progressDayLetterMon,
+      l10n.progressDayLetterTue,
+      l10n.progressDayLetterWed,
+      l10n.progressDayLetterThu,
+      l10n.progressDayLetterFri,
+      l10n.progressDayLetterSat,
+      l10n.progressDayLetterSun,
+    ];
     final maxRaw =
         values.isEmpty ? 1.0 : values.reduce((a, b) => a > b ? a : b);
     // Add 25% headroom so the tallest bar doesn't kiss the top edge.
@@ -1054,6 +1070,7 @@ class _ShowHeatmapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onShow,
@@ -1071,7 +1088,7 @@ class _ShowHeatmapButton extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Show cravings heatmap',
+                l10n.progressShowHeatmap,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.forest700),
               ),
@@ -1113,6 +1130,7 @@ class _MiniHeatmap extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
 
     final day0 = DateTime(startDate.year, startDate.month, startDate.day);
@@ -1143,14 +1161,15 @@ class _MiniHeatmap extends ConsumerWidget {
           // ── Header
           Row(
             children: [
-              Text('Cravings Heatmap', style: AppTextStyles.titleSmall),
+              Text(l10n.progressCravingsHeatmapTitle,
+                  style: AppTextStyles.titleSmall),
               const Spacer(),
               GestureDetector(
                 onTap: () {
                   H.light();
                   context.push('/heatmap');
                 },
-                child: Text('View full',
+                child: Text(l10n.progressViewFull,
                     style: AppTextStyles.labelLarge.copyWith(
                         color: AppColors.forest600,
                         fontWeight: FontWeight.w600)),
@@ -1172,7 +1191,7 @@ class _MiniHeatmap extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Day 1 = your first day in the app. Only cravings logged from the Home screen count.',
+            l10n.progressHeatmapCaption,
             style: AppTextStyles.caption
                 .copyWith(color: AppColors.stone500, fontSize: 11),
           ),
@@ -1196,7 +1215,7 @@ class _MiniHeatmap extends ConsumerWidget {
                       // Row label
                       SizedBox(
                         width: labelW,
-                        child: Text('Wk ${row + 1}',
+                        child: Text(l10n.progressHeatmapWeekLabel(row + 1),
                             style: AppTextStyles.caption.copyWith(
                                 color: AppColors.stone400, fontSize: 9)),
                       ),
@@ -1247,7 +1266,7 @@ class _MiniHeatmap extends ConsumerWidget {
           // ── Legend (fewer cravings ← → more cravings)
           Row(
             children: [
-              Text('Fewer',
+              Text(l10n.progressHeatmapLegendFewer,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone400, fontSize: 9)),
               const SizedBox(width: 4),
@@ -1265,7 +1284,7 @@ class _MiniHeatmap extends ConsumerWidget {
                   decoration: BoxDecoration(
                       color: c, borderRadius: BorderRadius.circular(2)),
                 ),
-              Text('More',
+              Text(l10n.progressHeatmapLegendMore,
                   style: AppTextStyles.caption
                       .copyWith(color: AppColors.stone400, fontSize: 9)),
             ],
@@ -1361,6 +1380,7 @@ class _RecoveryCapitalCard extends ConsumerWidget {
 class _CapitalEmptyContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Container(
@@ -1379,13 +1399,13 @@ class _CapitalEmptyContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Recovery capital — this week',
+                l10n.progressRecoveryCapitalTitle,
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest700),
               ),
               const SizedBox(height: 2),
               Text(
-                'A 30-second check across five things that protect recovery.',
+                l10n.progressRecoveryCapitalEmptySubtitle,
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone500, height: 1.4),
               ),
@@ -1406,6 +1426,7 @@ class _CapitalFilledContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final dots = [
       (week.connected, Icons.people_outline_rounded),
       (week.physical, Icons.directions_walk_rounded),
@@ -1420,7 +1441,7 @@ class _CapitalFilledContent extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Recovery capital — this week',
+                l10n.progressRecoveryCapitalTitle,
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest700),
               ),
@@ -1433,7 +1454,7 @@ class _CapitalFilledContent extends StatelessWidget {
                 border: Border.all(color: AppColors.forest100),
               ),
               child: Text(
-                '${week.score} of 5',
+                l10n.progressCapitalScore(week.score),
                 style: AppTextStyles.labelSmall
                     .copyWith(color: AppColors.forest700),
               ),
@@ -1479,7 +1500,7 @@ class _CapitalFilledContent extends StatelessWidget {
         ],
         const SizedBox(height: 6),
         Text(
-          'Tap to edit',
+          l10n.progressTapToEdit,
           style: AppTextStyles.caption
               .copyWith(color: AppColors.stone400, fontSize: 11),
         ),

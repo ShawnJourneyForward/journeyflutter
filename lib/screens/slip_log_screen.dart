@@ -88,7 +88,8 @@ class SlipLogScreen extends ConsumerWidget {
                   child: CircularProgressIndicator(
                       color: AppColors.forest600, strokeWidth: 2),
                 ),
-                error: (e, _) => Center(child: Text('Error: $e')),
+                error: (e, _) =>
+                    Center(child: Text(l10n.homeErrorPrefix(e.toString()))),
                 data: (slips) {
                   if (slips.isEmpty) {
                     return _EmptyState();

@@ -61,6 +61,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   // ── Export ─────────────────────────────────────────────────────────────────
 
   Future<void> _export() async {
+    final l10n = AppLocalizations.of(context);
     // Ask up-front whether to passphrase-protect. Default is unprotected to
     // preserve the long-standing v1 backup format users already have on disk,
     // but the recommended choice is encrypted — phones get lost / shared.
@@ -103,8 +104,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   : 'application/json'),
         ],
         subject: usingEncryption
-            ? 'Journey Forward Backup (encrypted)'
-            : 'Journey Forward Backup',
+            ? l10n.backupShareSubjectEncrypted
+            : l10n.backupShareSubject,
       );
 
       // Stamp the backup date (plain pref — not sensitive) so the home
@@ -131,6 +132,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   //   • an empty string     → user chose "skip" (plaintext backup)
   //   • null                → user cancelled the dialog
   Future<String?> _promptPassphrase({required bool forExport}) async {
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     final confirmCtrl = TextEditingController();
     String? error;
@@ -142,7 +144,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             backgroundColor: AppColors.card,
             shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
             title: Text(
-              forExport ? 'Protect your backup?' : 'Enter backup passphrase',
+              forExport
+                  ? l10n.backupProtectTitle
+                  : l10n.backupEnterPassphraseTitle,
               style: AppTextStyles.titleMedium,
             ),
             content: Column(
@@ -151,8 +155,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
               children: [
                 Text(
                   forExport
-                      ? 'Set a passphrase to encrypt the backup file. Without it, anyone with the file can read your journal.'
-                      : 'This file is encrypted. Type the passphrase you used when exporting.',
+                      ? l10n.backupProtectDesc
+                      : l10n.backupEnterPassphraseDesc,
                   style: AppTextStyles.bodySmall
                       .copyWith(color: AppColors.stone600, height: 1.4),
                 ),
@@ -161,9 +165,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   controller: ctrl,
                   obscureText: true,
                   autofocus: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Passphrase',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.backupPassphraseLabel,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 if (forExport) ...[
@@ -171,9 +175,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                   TextField(
                     controller: confirmCtrl,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm passphrase',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.backupConfirmPassphraseLabel,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ],
@@ -188,14 +192,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(null),
-                child: Text('Cancel',
+                child: Text(l10n.commonCancel,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.stone500)),
               ),
               if (forExport)
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(''),
-                  child: Text('Skip (plain JSON)',
+                  child: Text(l10n.backupSkipPlainJson,
                       style: AppTextStyles.labelMedium
                           .copyWith(color: AppColors.stone500)),
                 ),
@@ -204,21 +208,21 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                     backgroundColor: AppColors.forest700),
                 onPressed: () {
                   if (ctrl.text.isEmpty) {
-                    setLocal(() => error = 'Passphrase cannot be empty.');
+                    setLocal(() => error = l10n.backupPassphraseEmptyError);
                     return;
                   }
                   if (forExport && ctrl.text != confirmCtrl.text) {
-                    setLocal(() => error = 'Passphrases do not match.');
+                    setLocal(() => error = l10n.backupPassphraseMismatchError);
                     return;
                   }
                   if (forExport && ctrl.text.length < 8) {
-                    setLocal(() =>
-                        error = 'Use at least 8 characters — longer is safer.');
+                    setLocal(() => error = l10n.backupPassphraseTooShortError);
                     return;
                   }
                   Navigator.of(ctx).pop(ctrl.text);
                 },
-                child: Text(forExport ? 'Encrypt' : 'Unlock',
+                child: Text(
+                    forExport ? l10n.backupEncryptButton : l10n.backupUnlockButton,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: Colors.white)),
               ),

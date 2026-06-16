@@ -1,0 +1,75 @@
+{
+  "journalDetailUnlockEntry": {
+    "en": "Unlock entry",
+    "desc": "Tooltip on the lock icon button when the journal entry is currently locked; tapping unlocks it."
+  },
+  "journalDetailLockEntry": {
+    "en": "Lock entry",
+    "desc": "Tooltip on the lock icon button when the journal entry is currently unlocked; tapping locks it."
+  },
+  "journalDetailUnlockThisEntry": {
+    "en": "Unlock this entry",
+    "desc": "Reason shown in the biometric / PIN re-authentication prompt when the user unlocks a locked journal entry."
+  },
+  "journalDetailOpenThisEntry": {
+    "en": "Open this entry",
+    "desc": "Reason shown in the biometric / PIN re-authentication prompt when the user opens a locked older 'on this day' echo entry."
+  },
+  "journalDetailEdit": {
+    "en": "Edit",
+    "desc": "Tooltip on the edit icon button in the journal entry detail screen app bar."
+  },
+  "journalDetailEdited": {
+    "en": "Edited {time}",
+    "desc": "Italic stamp showing when a journal entry was last edited, e.g. 'Edited 5m ago'. {time} is an already-formatted relative time string.",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "journalDetailQuickMoodInvite": {
+    "en": "A quick mood check-in. Tap edit to add words when you're ready.",
+    "desc": "Placeholder card shown when a journal entry has a mood but no written text, inviting the user to add words."
+  },
+  "journalDetailOnThisDayEarlier": {
+    "en": "On this day, earlier",
+    "desc": "Section header above older journal entries from prior years that share the same calendar day."
+  },
+  "journalDetailDeleteTitle": {
+    "en": "Delete this entry?",
+    "desc": "Title of the confirmation dialog shown before deleting a journal entry."
+  },
+  "journalDetailDeleteBody": {
+    "en": "This cannot be undone.",
+    "desc": "Body text of the confirmation dialog shown before deleting a journal entry."
+  },
+  "journalDetailKeep": {
+    "en": "Keep",
+    "desc": "Button that cancels deletion and keeps the journal entry, in the delete confirmation dialog."
+  },
+  "journalDetailMinutesAgo": {
+    "en": "{count}m ago",
+    "desc": "Compact relative time for under an hour ago, e.g. '5m ago'. Used in the 'Edited ...' stamp.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "journalDetailHoursAgo": {
+    "en": "{count}h ago",
+    "desc": "Compact relative time for under a day ago, e.g. '3h ago'. Used in the 'Edited ...' stamp.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "journalDetailDaysAgo": {
+    "en": "{count}d ago",
+    "desc": "Compact relative time for under a week ago, e.g. '4d ago'. Used in the 'Edited ...' stamp.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "journalDetailYearsAgo": {
+    "en": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+    "desc": "Label on an older 'on this day' echo card indicating how many years ago that entry was written.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "journalDetailLockedEntryTapToUnlock": {
+    "en": "Locked entry · tap to unlock",
+    "desc": "Preview text shown in place of the body on a locked older 'on this day' echo card."
+  },
+  "journalDetailMoodCheckInNoWords": {
+    "en": "Mood check-in (no words)",
+    "desc": "Preview text shown on an older 'on this day' echo card when that entry recorded a mood but no written text."
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "puzzleActivity5Label": {
+    "en": "Colour Calm",
+    "desc": "Title of the Colour Calm mindful activity (tapping expanding circles)."
+  },
+  "puzzleActivity5Desc": {
+    "en": "Tap the expanding circles and let your mind follow.",
+    "desc": "One-line description of the Colour Calm activity on the activity grid."
+  },
+  "puzzleActivity5Duration": {
+    "en": "3 min",
+    "desc": "Approximate duration label for the Colour Calm activity."
+  },
+  "puzzleHomeTitle": {
+    "en": "Mindful Activities",
+    "desc": "Header title on the Calm Activities home/grid screen."
+  },
+  "puzzleHomeSubtitle": {
+    "en": "Short exercises to calm and refocus",
+    "desc": "Subtitle under the Mindful Activities header."
+  },
+  "puzzleCountdownIntro": {
+    "en": "Counting backwards by 3 interrupts anxiety\nand brings you into the present.",
+    "desc": "Intro text on the Slow Count activity explaining the technique. Keep the line break."
+  },
+  "puzzleCountdownDone": {
+    "en": "Done!",
+    "desc": "Shown in the center circle when the Slow Count countdown reaches zero."
+  },
+  "puzzleCountdownRestart": {
+    "en": "Tap to restart",
+    "desc": "Instruction shown after the Slow Count is finished; tapping restarts it."
+  },
+  "puzzleCountdownSubtract": {
+    "en": "Tap to subtract 3",
+    "desc": "Instruction during the Slow Count; each tap subtracts 3 from the number."
+  },
+  "puzzleGratitudePrompt0": {
+    "en": "Something in nature I noticed today…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt1": {
+    "en": "A person who has shown me kindness…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt2": {
+    "en": "A simple pleasure I often overlook…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt3": {
+    "en": "Something my body does for me every day…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt4": {
+    "en": "A memory that still makes me smile…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt5": {
+    "en": "Something I've learned in the past year…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt6": {
+    "en": "A challenge that made me stronger…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt7": {
+    "en": "A small comfort that I appreciate…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt8": {
+    "en": "Someone who believed in me when I didn't…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt9": {
+    "en": "A moment of peace I've experienced…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt10": {
+    "en": "A skill or talent I'm glad I have…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt11": {
+    "en": "Something I'm looking forward to…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt12": {
+    "en": "A kindness I showed someone recently…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt13": {
+    "en": "Something that made me laugh recently…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleGratitudePrompt14": {
+    "en": "A place that brings me peace…",
+    "desc": "Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis."
+  },
+  "puzzleReflectionHint": {
+    "en": "Write your reflection here…",
+    "desc": "Placeholder/hint text in the gratitude reflection text field."
+  },
+  "puzzleShufflePrompt": {
+    "en": "Shuffle prompt",
+    "desc": "Button label that picks a new random gratitude prompt."
+  },
+  "puzzleMemoryMoves": {
+    "en": "Moves: {count}",
+    "desc": "Live counter of moves taken in the Memory Match game.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "puzzleNewGame": {
+    "en": "New game",
+    "desc": "Button label to start a fresh Memory Match game."
+  },
+  "puzzleWellDone": {
+    "en": "Well done!",
+    "desc": "Congratulations heading shown when the Memory Match game is won."
+  },
+  "puzzleCompletedInMoves": {
+    "en": "{count, plural, =1{Completed in 1 move} other{Completed in {count} moves}}",
+    "desc": "Shown after winning Memory Match, reporting how many moves it took.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "puzzlePlayAgain": {
+    "en": "Play again",
+    "desc": "Button label to replay the Memory Match game after winning."
+  },
+  "puzzleStrengthIntro": {
+    "en": "How strong does each feel today? This is just for you — there's no right answer.",
+    "desc": "Intro instructions for the Strength Compass self-rating activity."
+  },
+  "puzzleStrength0": {
+    "en": "Courage",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength1": {
+    "en": "Patience",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength2": {
+    "en": "Honesty",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength3": {
+    "en": "Resilience",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength4": {
+    "en": "Gratitude",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength5": {
+    "en": "Hope",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength6": {
+    "en": "Connection",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrength7": {
+    "en": "Purpose",
+    "desc": "Name of a personal strength rated on a 1–5 slider in Strength Compass."
+  },
+  "puzzleStrengthRating": {
+    "en": "{value}/5",
+    "desc": "Numeric rating display next to each strength slider, e.g. 3/5.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "puzzleStrengthAffirmation": {
+    "en": "Wherever you rated yourself today — you showed up. That alone is strength.",
+    "desc": "Encouraging closing message at the bottom of the Strength Compass screen."
+  },
+  "puzzleNowStep0Title": {
+    "en": "Notice",
+    "desc": "Step 1 title of the Now Moment grounding exercise."
+  },
+  "puzzleNowStep0Body": {
+    "en": "Look around you right now. Name 3 things you can see without judging them. Just see them as they are.",
+    "desc": "Step 1 body of the Now Moment grounding exercise."
+  },
+  "puzzleNowStep1Title": {
+    "en": "Feel",
+    "desc": "Step 2 title of the Now Moment grounding exercise."
+  },
+  "puzzleNowStep1Body": {
+    "en": "Place both feet flat on the floor. Feel the weight of your body. Notice one sensation in your body right now — warmth, tension, breath.",
+    "desc": "Step 2 body of the Now Moment grounding exercise."
+  },
+  "puzzleNowStep2Title": {
+    "en": "Choose",
+    "desc": "Step 3 title of the Now Moment grounding exercise."
+  },
+  "puzzleNowStep2Body": {
+    "en": "You have arrived in this moment. What is one small, kind thing you can do for yourself in the next 10 minutes?",
+    "desc": "Step 3 body of the Now Moment grounding exercise."
+  },
+  "puzzleComplete": {
+    "en": "Complete",
+    "desc": "Button label on the final step of the Now Moment exercise; finishes and returns."
+  },
+  "puzzleColorIntro": {
+    "en": "Tap anywhere. Breathe with the circles.",
+    "desc": "Instruction text under the Colour Calm header."
+  },
+  "puzzleColorTapAnywhere": {
+    "en": "Tap anywhere",
+    "desc": "Ambient hint shown centered in the empty Colour Calm canvas before any taps."
+  }
+}

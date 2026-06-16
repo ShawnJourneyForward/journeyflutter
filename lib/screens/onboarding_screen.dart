@@ -161,6 +161,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // finish onboarding, and find the lock screen unable to authenticate).
   Future<void> _onSecurityChanged(String v) async {
     if (v == _lockMethod) return;
+    final l10n = AppLocalizations.of(context);
 
     if (v == 'biometric') {
       final auth = LocalAuthentication();
@@ -169,19 +170,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         final canCheck = await auth.canCheckBiometrics;
         if (!supported || !canCheck) {
           if (!mounted) return;
-          _showError(
-              'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.');
+          _showError(l10n.onbBiometricNotEnrolledError);
           return;
         }
         final ok = await auth.authenticate(
-          localizedReason: 'Confirm to enable biometric lock',
+          localizedReason: l10n.onbBiometricConfirmReason,
           options: const AuthenticationOptions(
               biometricOnly: false, stickyAuth: true),
         );
         if (!ok) return; // user cancelled — keep previous selection
       } on PlatformException catch (e) {
         if (!mounted) return;
-        _showError('Biometric setup failed: ${e.message ?? e.code}');
+        _showError(l10n.onbBiometricSetupFailed(e.message ?? e.code));
         return;
       }
     }
@@ -199,6 +199,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Future<void> _finish() async {
     setState(() => _saving = true);
     H.medium();
+    final l10n = AppLocalizations.of(context);
 
     final _fmt = (TimeOfDay t) =>
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -269,7 +270,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       debugPrint('[Onboarding] _finish failed: $e');
       if (mounted) {
         setState(() => _saving = false);
-        _showError('Could not complete setup: $e');
+        _showError(l10n.onbSetupFailed(e.toString()));
       }
     }
   }
@@ -494,7 +495,7 @@ class _WelcomeStep extends StatelessWidget {
                     // ── Eyebrow ────────────────────────────────────────────
                     Center(
                       child: Text(
-                        'DAY ONE  ·  A WELCOME',
+                        l10n.onbWelcomeEyebrow,
                         style: AppTextStyles.overline.copyWith(
                           color: AppColors.forest700,
                           fontSize: 11,
@@ -506,7 +507,7 @@ class _WelcomeStep extends StatelessWidget {
 
                     // ── Headline (serif) ───────────────────────────────────
                     Text(
-                      'A new chapter,\nquietly begun.',
+                      l10n.onbWelcomeHeadline,
                       style: AppTextStyles.displayMedium.copyWith(
                         fontSize: tight ? 30 : 34,
                         fontWeight: FontWeight.w600,
@@ -538,23 +539,23 @@ class _WelcomeStep extends StatelessWidget {
                           child: _FeaturePill(
                             icon: Icons.wifi_off_rounded,
                             title: l10n.onbPrivacy100OnDevice.toUpperCase(),
-                            sub: 'Works without\nthe internet',
+                            sub: l10n.onbWelcomePillOnDeviceSub,
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(
+                        Expanded(
                           child: _FeaturePill(
                             icon: Icons.lock_outline_rounded,
-                            title: 'NO ACCOUNT',
-                            sub: 'No login or\nprofile upload',
+                            title: l10n.onbWelcomePillNoAccountTitle,
+                            sub: l10n.onbWelcomePillNoAccountSub,
                           ),
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(
+                        Expanded(
                           child: _FeaturePill(
                             icon: Icons.shield_outlined,
-                            title: 'ZERO TRACKING',
-                            sub: 'Your data stays\non device',
+                            title: l10n.onbWelcomePillZeroTrackingTitle,
+                            sub: l10n.onbWelcomePillZeroTrackingSub,
                           ),
                         ),
                       ],
@@ -580,7 +581,7 @@ class _WelcomeStep extends StatelessWidget {
                           ),
                           elevation: 0,
                         ),
-                        child: const Text('Begin'),
+                        child: Text(l10n.onbWelcomeBeginButton),
                       ),
                     ),
 
@@ -589,7 +590,7 @@ class _WelcomeStep extends StatelessWidget {
                     // ── Disclaimer ─────────────────────────────────────────
                     Center(
                       child: Text(
-                        'Not medical advice — a companion, not a clinician.',
+                        l10n.onbWelcomeDisclaimer,
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.stone500,
                           fontSize: 11.5,
@@ -827,7 +828,7 @@ class _DateStepState extends State<_DateStep> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(isFuture ? 'Quit date' : l10n.onbSoberSince,
+                        Text(isFuture ? l10n.onbQuitDateLabel : l10n.onbSoberSince,
                             style: AppTextStyles.caption),
                         const SizedBox(height: 2),
                         Text(
@@ -875,7 +876,7 @@ class _DateStepState extends State<_DateStep> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Time of day', style: AppTextStyles.caption),
+                        Text(l10n.onbTimeOfDayLabel, style: AppTextStyles.caption),
                         const SizedBox(height: 2),
                         Text(
                           timeLabel,
@@ -913,7 +914,7 @@ class _DateStepState extends State<_DateStep> {
                       .copyWith(color: AppColors.forest700),
                 ),
                 const SizedBox(width: 8),
-                Text(isFuture ? 'days until day one' : l10n.onbDaysOfCourageLabel,
+                Text(isFuture ? l10n.onbDaysUntilDayOneLabel : l10n.onbDaysOfCourageLabel,
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.forest600)),
               ],
@@ -1147,8 +1148,8 @@ class _SecurityStep extends StatelessWidget {
                   Expanded(
                     child: Text(
                       selected == 'pin'
-                          ? 'If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.'
-                          : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
+                          ? l10n.onbSecurityPinRecoveryWarning
+                          : l10n.onbSecurityBiometricRecoveryWarning,
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.honey500, height: 1.4),
                     ),
@@ -1669,8 +1670,8 @@ class _FinishStepState extends State<_FinishStep>
         isFuture ? widget.soberDate.difference(DateTime.now()).inDays + 1 : 0;
     final name = widget.username.trim();
     final headline = name.isNotEmpty
-        ? 'You\'re ready,\n$name.'
-        : 'You\'re ready\nfor this.';
+        ? l10n.onbFinishHeadlineWithName(name)
+        : l10n.onbFinishHeadline;
 
     return LayoutBuilder(
       builder: (context, c) {
@@ -1712,10 +1713,10 @@ class _FinishStepState extends State<_FinishStep>
                       child: Center(
                         child: Text(
                           isFuture
-                              ? 'IN $countdownDays DAYS  ·  YOUR JOURNEY BEGINS'
+                              ? l10n.onbFinishEyebrowCountdown(countdownDays)
                               : days > 0
-                                  ? 'DAY ${days + 1}  ·  THE PATH CONTINUES'
-                                  : 'DAY ONE  ·  THE JOURNEY BEGINS',
+                                  ? l10n.onbFinishEyebrowContinuing(days + 1)
+                                  : l10n.onbFinishEyebrowDayOne,
                           style: AppTextStyles.overline.copyWith(
                             color: AppColors.forest700,
                             fontSize: 11,
@@ -1747,7 +1748,7 @@ class _FinishStepState extends State<_FinishStep>
                       opacity: _fade,
                       child: Text(
                         isFuture
-                            ? 'Your quit date is set. We\'ll count down with you — and the moment it arrives, day one begins.'
+                            ? l10n.onbFinishBodyFuture
                             : days > 0
                                 ? l10n.onbFinishBodyDays(days)
                                 : l10n.onbFinishBodyToday,

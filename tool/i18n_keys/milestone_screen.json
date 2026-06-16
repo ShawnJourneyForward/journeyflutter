@@ -1,0 +1,143 @@
+{
+  "milestoneHundredDays": {
+    "en": "100 Days",
+    "desc": "Milestone label for reaching 100 days sober."
+  },
+  "milestoneHundredDaysShort": {
+    "en": "100 Days",
+    "desc": "Short milestone label (tile grid) for 100 days sober."
+  },
+  "milestoneHundredDaysBenefit": {
+    "en": "One hundred days. Brain neuroplasticity is in full swing. The reward system has largely recalibrated to find pleasure in life without alcohol. Relationships, work, and your sense of self are transforming.",
+    "desc": "Body text describing physiological/psychological benefits at the 100-day milestone."
+  },
+  "milestoneShareText": {
+    "en": "{emoji} {name} — {label} sober. One day at a time. #JourneyForward #Sobriety",
+    "desc": "Text shared along with the milestone image card to social/messaging apps. {emoji} is a milestone emoji, {name} is the user's name, {label} is the milestone label e.g. 'One Month'.",
+    "placeholders": {
+      "emoji": { "type": "String" },
+      "name": { "type": "String" },
+      "label": { "type": "String" }
+    }
+  },
+  "milestoneCardGenerateError": {
+    "en": "Could not generate card. Try again.",
+    "desc": "Snackbar shown when generating the shareable milestone image fails."
+  },
+  "milestoneShareCardLabel": {
+    "en": "SHARE CARD",
+    "desc": "Overline/section header above the previewed shareable milestone card."
+  },
+  "milestoneShareButton": {
+    "en": "Share this milestone",
+    "desc": "Button label to share the achieved milestone card."
+  },
+  "milestoneNotYetAchieved": {
+    "en": "Not yet achieved",
+    "desc": "Disabled share-button label shown when the selected milestone has not been reached yet."
+  },
+  "milestoneAllMilestonesLabel": {
+    "en": "ALL MILESTONES",
+    "desc": "Overline/section header above the grid of all milestones."
+  },
+  "milestoneHeroGreeting": {
+    "en": "Well done.",
+    "desc": "Hero card greeting shown when the user has not set a name."
+  },
+  "milestoneHeroGreetingNamed": {
+    "en": "Well done, {name}.",
+    "desc": "Hero card greeting that includes the user's first name.",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "milestoneHeroDaySober": {
+    "en": "day\nsober",
+    "desc": "Two-line unit label shown next to the big day count on the hero card when the count is exactly 1. Keep the newline (\\n) between the two words."
+  },
+  "milestoneHeroDaysSober": {
+    "en": "days\nsober",
+    "desc": "Two-line unit label shown next to the big day count on the hero card (plural). Keep the newline (\\n) between the two words."
+  },
+  "milestoneHeroNext": {
+    "en": "Next: {label}",
+    "desc": "Hero card label showing the next upcoming milestone. {label} is the milestone name e.g. 'One Week'.",
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "milestoneHeroProgressDays": {
+    "en": "{days} of {target} days",
+    "desc": "Hero card progress text showing current sober days out of the next milestone's target days.",
+    "placeholders": {
+      "days": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "milestoneEveryReached": {
+    "en": "Every milestone reached ✨",
+    "desc": "Badge shown on the hero card when the user has reached the final/all milestones. Keep the sparkle emoji."
+  },
+  "milestoneAchievedBadge": {
+    "en": "Achieved ✓",
+    "desc": "Small badge on the achievement card indicating the milestone is reached. Keep the check mark."
+  },
+  "milestoneDaysToGo": {
+    "en": "{count, plural, =1{1 day to go} other{{count} days to go}}",
+    "desc": "Badge on the achievement card showing how many days until the milestone is reached.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "milestoneWhatHappenedLabel": {
+    "en": "What happened in your body",
+    "desc": "Section header above the benefit text when the milestone has been achieved (past tense)."
+  },
+  "milestoneWhatWillHappenLabel": {
+    "en": "What will happen",
+    "desc": "Section header above the benefit text when the milestone has not been achieved yet (future tense)."
+  },
+  "milestoneShareCardFallbackName": {
+    "en": "Friend",
+    "desc": "Fallback name shown on the shareable card when the user has not entered a name."
+  },
+  "milestoneUnitDay": {
+    "en": "day",
+    "desc": "Singular unit word ('day') shown under the big number on the shareable card."
+  },
+  "milestoneUnitDays": {
+    "en": "days",
+    "desc": "Plural unit word ('days') shown under the big number on the shareable card."
+  },
+  "milestoneUnitYear": {
+    "en": "year",
+    "desc": "Singular unit word ('year') shown under the big number on the shareable card for year milestones."
+  },
+  "milestoneUnitYears": {
+    "en": "years",
+    "desc": "Plural unit word ('years') shown under the big number on the shareable card for year milestones."
+  },
+  "milestoneUnitSober": {
+    "en": "sober",
+    "desc": "Second line under the big number on the shareable card (e.g. '1 / year / sober')."
+  },
+  "milestoneShareCardBrand": {
+    "en": "JOURNEY FORWARD",
+    "desc": "Brand name displayed at the top of the shareable milestone card."
+  },
+  "milestoneDaysToUnlock": {
+    "en": "{count, plural, =1{1 more day to unlock} other{{count} more days to unlock}}",
+    "desc": "Overlay text on a locked (unachieved) shareable card showing days remaining to unlock it.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "milestoneStatsTotalDaysSober": {
+    "en": "total\ndays sober",
+    "desc": "Two-line label under the total-days stat at the bottom of the screen. Keep the newline (\\n)."
+  },
+  "milestoneStatsMoneyReclaimed": {
+    "en": "money\nreclaimed",
+    "desc": "Two-line label under the money-saved stat at the bottom of the screen. Keep the newline (\\n)."
+  }
+}

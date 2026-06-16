@@ -1,0 +1,9 @@
+{
+  "cbtReframeNotePrefix": {
+    "en": "Reframe: {reframe}",
+    "desc": "Note prefix stored with a saved CBT thought record; the user's reframed thought follows the label. Shown in the History screen notes.",
+    "placeholders": {
+      "reframe": { "type": "String" }
+    }
+  }
+}

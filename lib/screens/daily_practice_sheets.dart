@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -128,16 +129,19 @@ class _WritePane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          alreadySet ? 'Edit today\'s intention' : 'Set today\'s intention',
+          alreadySet
+              ? l10n.dailyIntentionEditTitle
+              : l10n.dailyIntentionSetTitle,
           style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
         ),
         const SizedBox(height: 4),
         Text(
-          'One small thing for your recovery today.',
+          l10n.dailyIntentionSubtitle,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 16),
@@ -150,7 +154,7 @@ class _WritePane extends StatelessWidget {
           style: AppTextStyles.bodyLarge
               .copyWith(color: AppColors.stone800, height: 1.4, fontSize: 16),
           decoration: InputDecoration(
-            hintText: 'e.g. Call my sponsor before noon.',
+            hintText: l10n.dailyIntentionHint,
             hintStyle:
                 AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
             filled: true,
@@ -183,7 +187,7 @@ class _WritePane extends StatelessWidget {
               shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
             ),
             child: Text(
-              saving ? 'Saving…' : 'Save intention',
+              saving ? l10n.dailySaving : l10n.dailyIntentionSaveButton,
               style: AppTextStyles.labelMedium.copyWith(color: Colors.white),
             ),
           ),
@@ -200,16 +204,17 @@ class _ReviewPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'How did today go?',
+          l10n.dailyReviewTitle,
           style: AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
         ),
         const SizedBox(height: 4),
         Text(
-          'This morning you said:',
+          l10n.dailyReviewPrompt,
           style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
         ),
         const SizedBox(height: 12),
@@ -234,21 +239,21 @@ class _ReviewPane extends StatelessWidget {
           children: [
             _ReviewPill(
               icon: Icons.eco_rounded,
-              label: 'Did it',
+              label: l10n.dailyReviewDidIt,
               color: AppColors.forest600,
               onTap: () => onReview('did'),
             ),
             const SizedBox(width: 8),
             _ReviewPill(
               icon: Icons.timelapse_rounded,
-              label: 'Partly',
+              label: l10n.dailyReviewPartly,
               color: AppColors.honey500,
               onTap: () => onReview('partly'),
             ),
             const SizedBox(width: 8),
             _ReviewPill(
               icon: Icons.bedtime_outlined,
-              label: 'Not yet',
+              label: l10n.dailyReviewNotYet,
               color: AppColors.stone500,
               onTap: () => onReview('not_yet'),
             ),
@@ -364,6 +369,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final weekStart = today.subtract(Duration(days: today.weekday - 1));
@@ -397,7 +403,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
             ),
             const SizedBox(height: 14),
             Text(
-              'Recovery capital this week',
+              l10n.dailyCapitalTitle,
               style:
                   AppTextStyles.titleLarge.copyWith(color: AppColors.forest700),
             ),
@@ -410,31 +416,31 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
             const SizedBox(height: 18),
             _CapitalRow(
               icon: Icons.people_outline_rounded,
-              label: 'Connected with someone supportive',
+              label: l10n.dailyCapitalConnected,
               value: _connected,
               onChanged: (v) => setState(() => _connected = v),
             ),
             _CapitalRow(
               icon: Icons.directions_walk_rounded,
-              label: 'Moved my body',
+              label: l10n.dailyCapitalPhysical,
               value: _physical,
               onChanged: (v) => setState(() => _physical = v),
             ),
             _CapitalRow(
               icon: Icons.bedtime_outlined,
-              label: 'Slept enough most nights',
+              label: l10n.dailyCapitalSlept,
               value: _slept,
               onChanged: (v) => setState(() => _slept = v),
             ),
             _CapitalRow(
               icon: Icons.park_outlined,
-              label: 'Spent time somewhere that helps me',
+              label: l10n.dailyCapitalHelpfulPlace,
               value: _helpfulPlace,
               onChanged: (v) => setState(() => _helpfulPlace = v),
             ),
             _CapitalRow(
               icon: Icons.auto_awesome_outlined,
-              label: 'Did something meaningful to me',
+              label: l10n.dailyCapitalMeaningful,
               value: _meaningful,
               onChanged: (v) => setState(() => _meaningful = v),
             ),
@@ -445,7 +451,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
               style: AppTextStyles.bodyMedium
                   .copyWith(color: AppColors.stone800, height: 1.4),
               decoration: InputDecoration(
-                hintText: 'A note for future-you (optional)',
+                hintText: l10n.dailyCapitalNoteHint,
                 hintStyle:
                     AppTextStyles.bodySmall.copyWith(color: AppColors.stone400),
                 filled: true,
@@ -478,7 +484,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
                       const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(
-                  _saving ? 'Saving…' : 'Save this week',
+                  _saving ? l10n.dailySaving : l10n.dailyCapitalSaveButton,
                   style:
                       AppTextStyles.labelMedium.copyWith(color: Colors.white),
                 ),

@@ -21,8 +21,16 @@ List<DateTime> _last7() {
 bool _sameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
-List<String> _weekLabels(List<DateTime> window) {
-  const abbr = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+List<String> _weekLabels(List<DateTime> window, AppLocalizations l10n) {
+  final abbr = [
+    l10n.insightsWeekdayMon,
+    l10n.insightsWeekdayTue,
+    l10n.insightsWeekdayWed,
+    l10n.insightsWeekdayThu,
+    l10n.insightsWeekdayFri,
+    l10n.insightsWeekdaySat,
+    l10n.insightsWeekdaySun,
+  ];
   return window.map((d) => abbr[d.weekday - 1]).toList();
 }
 
@@ -53,7 +61,7 @@ class InsightsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final window = _last7();
-    final labels = _weekLabels(window);
+    final labels = _weekLabels(window, l10n);
 
     final journals = ref.watch(journalProvider).valueOrNull ?? [];
     final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
@@ -141,18 +149,18 @@ class InsightsScreen extends ConsumerWidget {
                       Row(
                         children: [
                           _StatChip(
-                            label: 'Cravings',
+                            label: l10n.historyFilterCravings,
                             value: '$totalCravings',
-                            sub: '7 days',
+                            sub: l10n.insightsStatSub7Days,
                             color: AppColors.honey500,
                           ),
                           const SizedBox(width: 10),
                           _StatChip(
-                            label: 'Avg Sleep',
+                            label: l10n.insightsStatAvgSleep,
                             value: avgSleep > 0
                                 ? '${avgSleep.toStringAsFixed(1)}h'
                                 : '—',
-                            sub: '7 days',
+                            sub: l10n.insightsStatSub7Days,
                             color: AppColors.forest400,
                           ),
                         ],
@@ -161,16 +169,16 @@ class InsightsScreen extends ConsumerWidget {
                       Row(
                         children: [
                           _StatChip(
-                            label: 'Active Days',
+                            label: l10n.insightsStatActiveDays,
                             value: '$activeDays',
-                            sub: '7 days',
+                            sub: l10n.insightsStatSub7Days,
                             color: AppColors.honey500,
                           ),
                           const SizedBox(width: 10),
                           _StatChip(
-                            label: 'Journal Days',
+                            label: l10n.insightsStatJournalDays,
                             value: '${moodByDay.where((v) => v > 0).length}',
-                            sub: '7 days',
+                            sub: l10n.insightsStatSub7Days,
                             color: AppColors.forest600,
                           ),
                         ],
@@ -179,18 +187,18 @@ class InsightsScreen extends ConsumerWidget {
 
                       // ── Mood trend ───────────────────────────────────────
                       _ChartCard(
-                        title: 'Mood — 7 days',
+                        title: l10n.insightsChartMood,
                         chartHeight: 148,
                         child: hasMood
                             ? _MoodBarChart(data: moodByDay, labels: labels)
-                            : const _EmptyChart(
-                                label: 'No journal entries yet'),
+                            : _EmptyChart(
+                                label: l10n.insightsEmptyMood),
                       ),
                       const SizedBox(height: 12),
 
                       // ── Craving trend ────────────────────────────────────
                       _ChartCard(
-                        title: 'Cravings — 7 days',
+                        title: l10n.insightsChartCravings,
                         child: hasCravings
                             ? _SimpleLineChart(
                                 data: cravingCounts
@@ -199,26 +207,26 @@ class InsightsScreen extends ConsumerWidget {
                                 labels: labels,
                                 color: AppColors.honey500,
                               )
-                            : const _EmptyChart(label: 'No cravings logged'),
+                            : _EmptyChart(label: l10n.insightsEmptyCravings),
                       ),
                       const SizedBox(height: 12),
 
                       // ── Sleep ────────────────────────────────────────────
                       _ChartCard(
-                        title: 'Sleep — 7 days (hours)',
+                        title: l10n.insightsChartSleep,
                         child: hasSleep
                             ? _SimpleBarChart(
                                 data: sleepByDay,
                                 labels: labels,
                                 color: AppColors.forest400,
                               )
-                            : const _EmptyChart(label: 'No sleep logged'),
+                            : _EmptyChart(label: l10n.insightsEmptySleep),
                       ),
                       const SizedBox(height: 12),
 
                       // ── Exercise ─────────────────────────────────────────
                       _ChartCard(
-                        title: 'Exercise — 7 days (minutes)',
+                        title: l10n.insightsChartExercise,
                         child: hasActivity
                             ? _SimpleBarChart(
                                 data:
@@ -226,7 +234,7 @@ class InsightsScreen extends ConsumerWidget {
                                 labels: labels,
                                 color: AppColors.honey500,
                               )
-                            : const _EmptyChart(label: 'No activity logged'),
+                            : _EmptyChart(label: l10n.insightsEmptyActivity),
                       ),
                       const SizedBox(height: 12),
 
@@ -333,6 +341,7 @@ class _MoodBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Expanded(
@@ -389,11 +398,14 @@ class _MoodBarChart extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _MoodLegend(color: AppColors.forest600, label: 'Great'),
-            SizedBox(width: 10),
-            _MoodLegend(color: AppColors.honey500, label: 'Okay'),
-            SizedBox(width: 10),
-            _MoodLegend(color: AppColors.blush400, label: 'Hard'),
+            _MoodLegend(
+                color: AppColors.forest600, label: l10n.historyMoodGreat),
+            const SizedBox(width: 10),
+            _MoodLegend(
+                color: AppColors.honey500, label: l10n.historyMoodOkay),
+            const SizedBox(width: 10),
+            _MoodLegend(
+                color: AppColors.blush400, label: l10n.insightsMoodHard),
           ],
         ),
       ],
@@ -568,33 +580,34 @@ class _ThoughtPatternCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final total = positive + neutral + negative;
 
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Thought Patterns — 7 days', style: AppTextStyles.titleSmall),
+          Text(l10n.insightsThoughtPatterns, style: AppTextStyles.titleSmall),
           const SizedBox(height: 14),
           if (total == 0)
-            const _EmptyChart(label: 'No thoughts logged')
+            _EmptyChart(label: l10n.insightsEmptyThoughts)
           else ...[
             _ThoughtRow(
-              label: 'Positive',
+              label: l10n.homeTonePositive,
               count: positive,
               total: total,
               color: AppColors.forest600,
             ),
             const SizedBox(height: 10),
             _ThoughtRow(
-              label: 'Neutral',
+              label: l10n.homeToneNeutral,
               count: neutral,
               total: total,
               color: AppColors.stone400,
             ),
             const SizedBox(height: 10),
             _ThoughtRow(
-              label: 'Challenging',
+              label: l10n.insightsThoughtChallenging,
               count: negative,
               total: total,
               color: AppColors.blush400,

@@ -186,11 +186,11 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
   }
 
   String _catLabel(_Category cat, AppLocalizations l10n) => switch (cat) {
-        _Category.all => 'All',
+        _Category.all => l10n.heatmapFilterAll,
         _Category.journal => l10n.heatmapCategoryJournal,
-        _Category.cravings => 'Cravings',
-        _Category.thoughts => 'Thoughts',
-        _Category.movement => 'Movement',
+        _Category.cravings => l10n.heatmapFilterCravings,
+        _Category.thoughts => l10n.heatmapFilterThoughts,
+        _Category.movement => l10n.heatmapFilterMovement,
         _Category.sleep => l10n.heatmapCategorySleep,
       };
 
@@ -222,8 +222,8 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
         isLongUser ? today.subtract(const Duration(days: 364)) : recordStart;
 
     final subtitle = isLongUser
-        ? 'Last 365 days · A quiet record of the days you showed up.'
-        : 'Since you began · A quiet record of the days you showed up.';
+        ? l10n.heatmapSubtitleLastYear
+        : l10n.heatmapSubtitleSinceStart;
 
     final scores = _buildScores(
       journals: journals,
@@ -274,7 +274,7 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Recovery Map',
+                              Text(l10n.heatmapRecoveryMapTitle,
                                   style: AppTextStyles.greetingSerif.copyWith(
                                     fontSize: 36,
                                     fontWeight: FontWeight.w400,
@@ -378,7 +378,9 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _showFullYear ? 'Show less' : 'See full year',
+                        _showFullYear
+                            ? l10n.heatmapShowLess
+                            : l10n.heatmapSeeFullYear,
                         style: AppTextStyles.bodyMedium
                             .copyWith(color: AppColors.forest600),
                       ),
@@ -425,6 +427,7 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return LuxuryCard(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
@@ -435,7 +438,7 @@ class _SummaryCard extends StatelessWidget {
                 Expanded(
                   child: _StatCell(
                     icon: Icons.eco_outlined,
-                    label: 'Care days',
+                    label: l10n.heatmapStatCareDays,
                     value: '$careDays',
                   ),
                 ),
@@ -444,7 +447,7 @@ class _SummaryCard extends StatelessWidget {
                 Expanded(
                   child: _StatCell(
                     icon: Icons.check_circle_outline_rounded,
-                    label: 'Total check-ins',
+                    label: l10n.heatmapStatTotalCheckIns,
                     value: '$totalCheckIns',
                   ),
                 ),
@@ -458,7 +461,7 @@ class _SummaryCard extends StatelessWidget {
                 Expanded(
                   child: _StatCell(
                     icon: Icons.spa_outlined,
-                    label: 'Most used',
+                    label: l10n.heatmapStatMostUsed,
                     value: mostUsed,
                     isText: true,
                   ),
@@ -468,7 +471,7 @@ class _SummaryCard extends StatelessWidget {
                 Expanded(
                   child: _StatCell(
                     icon: Icons.calendar_today_outlined,
-                    label: 'This month',
+                    label: l10n.heatmapStatThisMonth,
                     value: '$thisMonth',
                   ),
                 ),
@@ -622,6 +625,7 @@ class _MonthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final firstDay = DateTime(month.year, month.month, 1);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final leadingEmpty = firstDay.weekday - 1; // Mon=0 offset
@@ -646,22 +650,22 @@ class _MonthCard extends StatelessWidget {
                         color: AppColors.forestDark,
                         fontWeight: FontWeight.w600)),
               ),
-              Text('$careDays days',
+              Text(l10n.commonDays(careDays),
                   style: AppTextStyles.bodyMedium
                       .copyWith(color: AppColors.forest600)),
             ],
           ),
           const SizedBox(height: 12),
           // Day-of-week headers
-          const Row(
+          Row(
             children: [
-              _DowLabel('M'),
-              _DowLabel('T'),
-              _DowLabel('W'),
-              _DowLabel('T'),
-              _DowLabel('F'),
-              _DowLabel('S'),
-              _DowLabel('S'),
+              _DowLabel(l10n.heatmapDowMon),
+              _DowLabel(l10n.heatmapDowTue),
+              _DowLabel(l10n.heatmapDowWed),
+              _DowLabel(l10n.heatmapDowThu),
+              _DowLabel(l10n.heatmapDowFri),
+              _DowLabel(l10n.heatmapDowSat),
+              _DowLabel(l10n.heatmapDowSun),
             ],
           ),
           const SizedBox(height: 5),
@@ -811,15 +815,19 @@ class _LegendBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 12,
       runSpacing: 8,
       children: [
         _LegendSwatch(
-            color: _kPreStartColor, label: 'Before you began', bordered: true),
-        _LegendSwatch(color: Color(0xFFEDE8E1), label: 'No entry'),
-        _LegendSwatch(color: Color(0xFFD1E8D5), label: '1'),
-        _LegendSwatch(color: Color(0xFF8FC49A), label: '2–3'),
+            color: _kPreStartColor,
+            label: l10n.heatmapLegendBeforeBegan,
+            bordered: true),
+        _LegendSwatch(
+            color: const Color(0xFFEDE8E1), label: l10n.heatmapLegendNoEntry),
+        _LegendSwatch(color: const Color(0xFFD1E8D5), label: '1'),
+        _LegendSwatch(color: const Color(0xFF8FC49A), label: '2–3'),
         _LegendSwatch(color: AppColors.forest400, label: '4–6'),
         _LegendSwatch(color: AppColors.forest600, label: '7+'),
       ],
@@ -905,6 +913,7 @@ class _DaySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final hasAnything = journals.isNotEmpty ||
         cravings.isNotEmpty ||
         activities.isNotEmpty ||
@@ -941,53 +950,63 @@ class _DaySheet extends StatelessWidget {
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 16),
           if (!hasAnything) ...[
-            Text('No entry recorded.',
+            Text(l10n.heatmapDayNoEntryTitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.forestDark)),
             const SizedBox(height: 4),
-            Text('A quiet day still counts.',
+            Text(l10n.heatmapDayQuietCounts,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500)),
           ] else ...[
             if (journals.isNotEmpty) ...[
-              const _SheetSection(
-                  icon: Icons.menu_book_outlined, label: 'Journal'),
+              _SheetSection(
+                  icon: Icons.menu_book_outlined,
+                  label: l10n.heatmapCategoryJournal),
               ...journals.map((j) => _SheetRow(
-                  text: j.text.isNotEmpty ? j.text : '(entry)',
+                  text: j.text.isNotEmpty ? j.text : l10n.heatmapEntryFallback,
                   sub: j.mood.isNotEmpty ? j.mood : null)),
               const SizedBox(height: 10),
             ],
             if (cravings.isNotEmpty) ...[
-              const _SheetSection(
-                  icon: Icons.bolt_outlined, label: 'Craving support'),
+              _SheetSection(
+                  icon: Icons.bolt_outlined,
+                  label: l10n.heatmapSectionCravingSupport),
               ...cravings.map((c) => _SheetRow(
-                  text: 'Intensity ${c.intensity}/10', sub: c.trigger)),
+                  text: l10n.heatmapIntensityFormat(c.intensity),
+                  sub: c.trigger)),
               const SizedBox(height: 10),
             ],
             if (thoughts.isNotEmpty) ...[
-              const _SheetSection(
-                  icon: Icons.psychology_outlined, label: 'Thoughts'),
+              _SheetSection(
+                  icon: Icons.psychology_outlined,
+                  label: l10n.heatmapFilterThoughts),
               ...thoughts.map((t) => _SheetRow(
-                  text: t.text.isNotEmpty ? t.text : '(thought — ${t.type})',
+                  text: t.text.isNotEmpty
+                      ? t.text
+                      : l10n.heatmapThoughtFallback(t.type),
                   sub: t.strength)),
               const SizedBox(height: 10),
             ],
             if (activities.isNotEmpty) ...[
-              const _SheetSection(
-                  icon: Icons.directions_run_outlined, label: 'Movement'),
+              _SheetSection(
+                  icon: Icons.directions_run_outlined,
+                  label: l10n.heatmapFilterMovement),
               ...activities.map((a) => _SheetRow(
-                  text: '${a.activity} · ${a.minutes} min', sub: a.effort)),
+                  text: l10n.heatmapActivityFormat(a.activity, a.minutes),
+                  sub: a.effort)),
               const SizedBox(height: 10),
             ],
             if (sleeps.isNotEmpty) ...[
-              const _SheetSection(icon: Icons.bedtime_outlined, label: 'Sleep'),
-              ...sleeps.map((s) =>
-                  _SheetRow(text: '${s.hours}h · quality ${s.quality}/5')),
+              _SheetSection(
+                  icon: Icons.bedtime_outlined,
+                  label: l10n.heatmapCategorySleep),
+              ...sleeps.map((s) => _SheetRow(
+                  text: l10n.heatmapSleepFormat('${s.hours}', s.quality))),
               const SizedBox(height: 10),
             ],
             Divider(color: AppColors.stone100, height: 20),
             Text(
-              'You showed up for yourself today.',
+              l10n.heatmapDayShowedUp,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.forest600,
                 fontStyle: FontStyle.italic,

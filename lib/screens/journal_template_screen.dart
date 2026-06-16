@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -37,14 +38,36 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
 
   // Recovery "anchors" — actions that protect the streak. Checking these
   // generates auto-tags on the resulting entry so they're searchable later.
+  // Keyed by a stable identifier so the on/off state and the slug/tag lookups
+  // never depend on the (now localized) display label.
   final Map<String, bool> _anchors = {
-    'Reached out to someone': false,
-    'Attended a meeting or group': false,
-    'Moved my body': false,
-    'Ate + hydrated well': false,
-    'Took my meds': false,
-    'Avoided a trigger': false,
+    'reached_out': false,
+    'meeting': false,
+    'moved': false,
+    'ate_hydrated': false,
+    'meds': false,
+    'avoided_trigger': false,
   };
+
+  // Localized display label for each anchor identity key.
+  String _anchorLabel(AppLocalizations l10n, String id) {
+    switch (id) {
+      case 'reached_out':
+        return l10n.journalReflectionAnchorReachedOut;
+      case 'meeting':
+        return l10n.journalReflectionAnchorMeeting;
+      case 'moved':
+        return l10n.journalReflectionAnchorMoved;
+      case 'ate_hydrated':
+        return l10n.journalReflectionAnchorAteHydrated;
+      case 'meds':
+        return l10n.journalReflectionAnchorMeds;
+      case 'avoided_trigger':
+        return l10n.journalReflectionAnchorAvoidedTrigger;
+      default:
+        return id;
+    }
+  }
 
   final _wins = TextEditingController();
   final _cravings = TextEditingController();
@@ -69,9 +92,9 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
 
   // We render the structured form into a single formatted text body so the
   // existing list / detail / search code works without modification.
-  String _composeBody() {
+  String _composeBody(AppLocalizations l10n) {
     final buf = StringBuffer();
-    buf.writeln('🌿 Daily Reflection');
+    buf.writeln('🌿 ${l10n.journalReflectionTitle}');
     buf.writeln(DateFormat('EEEE, MMMM d, y').format(DateTime.now()));
     buf.writeln();
 
@@ -80,18 +103,19 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
         .where((t) => t.isNotEmpty)
         .toList();
     if (grats.isNotEmpty) {
-      buf.writeln('🙏 Grateful for');
+      buf.writeln(l10n.journalReflectionBodyGratefulHeading);
       for (var i = 0; i < grats.length; i++) {
         buf.writeln('  ${i + 1}. ${grats[i]}');
       }
       buf.writeln();
     }
 
-    final checked = _anchors.entries.where((e) => e.value).map((e) => e.key);
+    final checked =
+        _anchors.entries.where((e) => e.value).map((e) => e.key).toList();
     if (checked.isNotEmpty) {
-      buf.writeln('⚓ Today\'s anchors');
+      buf.writeln(l10n.journalReflectionBodyAnchorsHeading);
       for (final c in checked) {
-        buf.writeln('  • $c');
+        buf.writeln('  • ${_anchorLabel(l10n, c)}');
       }
       buf.writeln();
     }
@@ -104,10 +128,10 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
       buf.writeln();
     }
 
-    section('✨ Wins today', _wins);
-    section('⚡ Cravings or triggers noticed', _cravings);
-    section('🌱 Tomorrow\'s intention', _intention);
-    section('💛 An affirmation for me', _affirmation);
+    section(l10n.journalReflectionBodyWinsHeading, _wins);
+    section(l10n.journalReflectionBodyCravingsHeading, _cravings);
+    section(l10n.journalReflectionBodyIntentionHeading, _intention);
+    section(l10n.journalReflectionBodyAffirmationHeading, _affirmation);
 
     return buf.toString().trimRight();
   }
@@ -117,12 +141,12 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
   List<String> _autoTags() {
     final tags = <String>['reflection'];
     const slug = {
-      'Reached out to someone': 'connection',
-      'Attended a meeting or group': 'meeting',
-      'Moved my body': 'exercise',
-      'Ate + hydrated well': 'self-care',
-      'Took my meds': 'meds',
-      'Avoided a trigger': 'won-over-trigger',
+      'reached_out': 'connection',
+      'meeting': 'meeting',
+      'moved': 'exercise',
+      'ate_hydrated': 'self-care',
+      'meds': 'meds',
+      'avoided_trigger': 'won-over-trigger',
     };
     for (final entry in _anchors.entries) {
       if (entry.value) tags.add(slug[entry.key] ?? '');
@@ -135,7 +159,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
     if (_saving) return;
     setState(() => _saving = true);
     H.medium();
-    final body = _composeBody();
+    final body = _composeBody(AppLocalizations.of(context));
     await ref.read(journalProvider.notifier).add(
           body,
           _mood,
@@ -149,13 +173,14 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: AppColors.cream,
         foregroundColor: AppColors.stone800,
         elevation: 0,
-        title: Text('Daily Reflection',
+        title: Text(l10n.journalReflectionTitle,
             style:
                 AppTextStyles.titleMedium.copyWith(color: AppColors.forest700)),
         actions: [
@@ -171,7 +196,10 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
               ),
-              child: Text(_saving ? 'Saving…' : 'Save',
+              child: Text(
+                  _saving
+                      ? l10n.journalReflectionSaving
+                      : l10n.commonSave,
                   style:
                       AppTextStyles.labelMedium.copyWith(color: Colors.white)),
             ),
@@ -196,7 +224,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.mintChip,
               border: AppColors.forest100,
-              title: 'How I feel today',
+              title: l10n.journalReflectionMoodTitle,
               icon: Icons.sentiment_satisfied_alt_rounded,
               child: Wrap(
                 spacing: 8,
@@ -243,7 +271,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.honey50,
               border: AppColors.honey100,
-              title: 'I\'m grateful for',
+              title: l10n.journalReflectionGratefulTitle,
               icon: Icons.favorite_border_rounded,
               accent: AppColors.honey600,
               child: Column(
@@ -262,15 +290,15 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.mintChip,
               border: AppColors.forest100,
-              title: 'Today\'s anchors',
+              title: l10n.journalReflectionAnchorsTitle,
               icon: Icons.anchor_rounded,
               child: Column(
-                children: _anchors.keys.map((label) {
-                  final on = _anchors[label] ?? false;
+                children: _anchors.keys.map((id) {
+                  final on = _anchors[id] ?? false;
                   return InkWell(
                     onTap: () {
                       H.selection();
-                      setState(() => _anchors[label] = !on);
+                      setState(() => _anchors[id] = !on);
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
@@ -300,7 +328,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              label,
+                              _anchorLabel(l10n, id),
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: on
                                     ? AppColors.stone800
@@ -321,11 +349,11 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.mintChip,
               border: AppColors.forest100,
-              title: 'Wins today',
+              title: l10n.journalReflectionWinsTitle,
               icon: Icons.emoji_events_outlined,
               child: _TallField(
                 controller: _wins,
-                hint: 'Anything you\'re proud of — big or small.',
+                hint: l10n.journalReflectionWinsHint,
               ),
             ),
             const SizedBox(height: 12),
@@ -334,12 +362,12 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.blush50,
               border: AppColors.blush100,
-              title: 'Cravings or triggers noticed',
+              title: l10n.journalReflectionCravingsTitle,
               icon: Icons.bolt_outlined,
               accent: AppColors.blush600,
               child: _TallField(
                 controller: _cravings,
-                hint: 'What showed up, and how did you respond?',
+                hint: l10n.journalReflectionCravingsHint,
               ),
             ),
             const SizedBox(height: 12),
@@ -348,11 +376,11 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.mintChip,
               border: AppColors.forest100,
-              title: 'Tomorrow\'s intention',
+              title: l10n.journalReflectionIntentionTitle,
               icon: Icons.wb_twilight_rounded,
               child: _TallField(
                 controller: _intention,
-                hint: 'One small thing you\'ll do for your recovery.',
+                hint: l10n.journalReflectionIntentionHint,
               ),
             ),
             const SizedBox(height: 12),
@@ -361,19 +389,19 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
             _Section(
               tint: AppColors.honey50,
               border: AppColors.honey100,
-              title: 'An affirmation for me',
+              title: l10n.journalReflectionAffirmationTitle,
               icon: Icons.auto_awesome_rounded,
               accent: AppColors.honey600,
               child: _TallField(
                 controller: _affirmation,
-                hint: 'A kind sentence in your own voice.',
+                hint: l10n.journalReflectionAffirmationHint,
               ),
             ),
             const SizedBox(height: 22),
 
             Center(
               child: Text(
-                'You don\'t have to fill every field.\nWhat you write is enough.',
+                l10n.journalReflectionFooter,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone400, height: 1.5),

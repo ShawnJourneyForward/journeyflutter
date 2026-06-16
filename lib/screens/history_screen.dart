@@ -39,12 +39,12 @@ Color _moodColor(String mood) => switch (mood) {
       _ => AppColors.stone400,
     };
 
-String _moodLabel(String mood) => switch (mood) {
-      'great' => 'Great',
-      'good' => 'Good',
-      'okay' => 'Okay',
-      'hard' => 'Hard day',
-      'crisis' => 'Crisis',
+String _moodLabel(AppLocalizations l10n, String mood) => switch (mood) {
+      'great' => l10n.historyMoodGreat,
+      'good' => l10n.historyMoodGood,
+      'okay' => l10n.historyMoodOkay,
+      'hard' => l10n.historyMoodHard,
+      'crisis' => l10n.historyMoodCrisis,
       _ => mood,
     };
 
@@ -104,6 +104,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Build unified entry list ────────────────────────────────────────────────
 
   List<_HistoryEntry> _buildEntries({
+    required AppLocalizations l10n,
     required List<JournalEntry> journal,
     required List<GratitudeEntry> gratitude,
     required List<CravingEntry> cravings,
@@ -118,7 +119,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       for (final e in journal) {
         if (_search.isNotEmpty &&
             !e.text.toLowerCase().contains(_search.toLowerCase()) &&
-            !_moodLabel(e.mood).toLowerCase().contains(_search.toLowerCase())) {
+            !_moodLabel(l10n, e.mood)
+                .toLowerCase()
+                .contains(_search.toLowerCase())) {
           continue;
         }
         entries.add(_HistoryEntry(
@@ -262,22 +265,23 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Delete confirmation ─────────────────────────────────────────────────────
 
   void _confirmDelete(BuildContext context, String id) {
+    final l10n = AppLocalizations.of(context);
     H.medium();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text('Delete entry?', style: AppTextStyles.titleMedium),
+        title: Text(l10n.historyDeleteEntryTitle, style: AppTextStyles.titleMedium),
         content: Text(
-          'This cannot be undone.',
+          l10n.historyDeleteEntryBody,
           style: AppTextStyles.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Cancel',
+              l10n.commonCancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.stone600,
               ),
@@ -290,7 +294,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               _expanded.remove(id);
             },
             child: Text(
-              'Delete',
+              l10n.commonDelete,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.blush500,
               ),
@@ -304,23 +308,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Swipe-to-delete confirmation ───────────────────────────────────────────
 
   Future<bool> _showDeleteConfirm(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     H.medium();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text('Delete entry?', style: AppTextStyles.titleMedium),
-        content: Text('This cannot be undone.', style: AppTextStyles.bodyMedium),
+        title: Text(l10n.historyDeleteEntryTitle, style: AppTextStyles.titleMedium),
+        content: Text(l10n.historyDeleteEntryBody, style: AppTextStyles.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel',
+            child: Text(l10n.commonCancel,
                 style: AppTextStyles.labelLarge.copyWith(color: AppColors.stone600)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Delete',
+            child: Text(l10n.commonDelete,
                 style: AppTextStyles.labelLarge.copyWith(color: AppColors.blush500)),
           ),
         ],
@@ -524,7 +529,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Journal entry',
+                            l10n.historyCardJournal,
                             style: AppTextStyles.labelSmall.copyWith(
                               color: moodColor,
                               letterSpacing: 0.5,
@@ -598,7 +603,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       if (!isExpanded && entry.text.length > 120) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'Tap to read more',
+                          l10n.historyTapToReadMore,
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.forest500,
                           ),
@@ -618,6 +623,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Gratitude card ──────────────────────────────────────────────────────────
 
   Widget _buildGratitudeCard(GratitudeEntry entry) {
+    final l10n = AppLocalizations.of(context);
     final date = DateTime.tryParse(entry.date) ?? DateTime.now();
 
     return SolidCard(
@@ -653,7 +659,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           color: AppColors.honey500,
                         ),
                         Text(
-                          'Gratitude',
+                          l10n.historyCardGratitude,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: AppColors.honey600,
                             letterSpacing: 0.5,
@@ -708,6 +714,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ??? Craving card ?????????????????????????????????????????????????????????
 
   Widget _buildCravingCard(CravingEntry e) {
+    final l10n = AppLocalizations.of(context);
     final intensity = e.intensity;
     final barColor = intensity <= 3
         ? AppColors.forest400
@@ -761,7 +768,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             size: 14, color: barColor),
                         const SizedBox(width: 6),
                         Text(
-                          'Craving',
+                          l10n.historyCardCraving,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: chipText,
                             letterSpacing: 0.5,
@@ -789,7 +796,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     _metaWrap([
                       if (e.severity != null) _metaPill(e.severity!),
                       if (e.durationMinutes != null)
-                        _metaPill('${e.durationMinutes} min'),
+                        _metaPill(l10n.commonMin(e.durationMinutes!)),
                       ...triggerLabels.map((t) => _metaPill(t)),
                     ]),
                     if (e.notes != null && e.notes!.isNotEmpty) ...[
@@ -813,6 +820,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ??? Thought card ??????????????????????????????????????????????????????????
 
   Widget _buildThoughtCard(ThoughtEntry e) {
+    final l10n = AppLocalizations.of(context);
     final typeColor = switch (e.type) {
       'positive' => AppColors.forest500,
       'negative' => AppColors.honey600,
@@ -856,7 +864,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             size: 14, color: typeColor),
                         const SizedBox(width: 6),
                         Text(
-                          'Thought',
+                          l10n.historyCardThought,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: typeColor,
                             letterSpacing: 0.5,
@@ -875,11 +883,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             borderRadius: AppRadius.pill,
                           ),
                           child: Text(
-                            // Capitalise the type chip so "positive" / "negative"
+                            // Localised type chip so "positive" / "negative"
                             // read as labels rather than raw enum values.
-                            e.type.isNotEmpty
-                                ? '${e.type[0].toUpperCase()}${e.type.substring(1)}'
-                                : e.type,
+                            switch (e.type) {
+                              'positive' => l10n.homeTonePositive,
+                              'negative' => l10n.homeToneNegative,
+                              'neutral' => l10n.homeToneNeutral,
+                              _ => e.type.isNotEmpty
+                                  ? '${e.type[0].toUpperCase()}${e.type.substring(1)}'
+                                  : e.type,
+                            },
                             style: AppTextStyles.labelSmall
                                 .copyWith(color: typeColor),
                           ),
@@ -896,7 +909,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     _metaWrap([
                       if (e.strength != null) _metaPill(e.strength!),
                       if (e.durationMinutes != null)
-                        _metaPill('${e.durationMinutes} min'),
+                        _metaPill(l10n.commonMin(e.durationMinutes!)),
                       ...e.triggers.map((t) => _metaPill(t)),
                     ]),
                     if (e.notes != null && e.notes!.isNotEmpty) ...[
@@ -920,23 +933,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ??? Activity card ?????????????????????????????????????????????????????????
 
   Widget _buildActivityCard(ActivityEntry e) {
+    final l10n = AppLocalizations.of(context);
     final (icon, label) = switch (e.activity) {
-      'walk' => (Icons.directions_walk_rounded, 'Walk'),
-      'run' => (Icons.directions_run_rounded, 'Run'),
-      'cycle' => (Icons.directions_bike_rounded, 'Cycle'),
-      'swim' => (Icons.pool_rounded, 'Swim'),
-      'weights' => (Icons.fitness_center_rounded, 'Weights'),
+      'walk' => (Icons.directions_walk_rounded, l10n.homeActivityTypeWalk),
+      'run' => (Icons.directions_run_rounded, l10n.historyActivityRun),
+      'cycle' => (Icons.directions_bike_rounded, l10n.historyActivityCycle),
+      'swim' => (Icons.pool_rounded, l10n.historyActivitySwim),
+      'weights' => (Icons.fitness_center_rounded, l10n.historyActivityWeights),
       // legacy value kept for existing records
-      'exercise' => (Icons.fitness_center_rounded, 'Exercise'),
-      'yoga' => (Icons.self_improvement_outlined, 'Yoga'),
-      _ => (Icons.directions_run_rounded, 'Activity'),
+      'exercise' => (Icons.fitness_center_rounded, l10n.homeActivityTypeExercise),
+      'yoga' => (Icons.self_improvement_outlined, l10n.homeActivityTypeYoga),
+      _ => (Icons.directions_run_rounded, l10n.historyActivityGeneric),
     };
 
     // Sub-label: distance + time for distance activities; just time otherwise.
     final distKm = e.distance;
     final subLabel = distKm != null
-        ? '${distKm.toStringAsFixed(2)} km · ${e.minutes} min'
-        : '${e.minutes} min';
+        ? l10n.historyActivityDistanceTime(distKm.toStringAsFixed(2), e.minutes)
+        : l10n.commonMin(e.minutes);
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -1013,7 +1027,15 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ??? Sleep card ????????????????????????????????????????????????????????????
 
   Widget _buildSleepCard(SleepEntry e) {
-    const qualityLabels = ['', 'Poor', 'Fair', 'OK', 'Good', 'Great'];
+    final l10n = AppLocalizations.of(context);
+    final qualityLabels = [
+      '',
+      l10n.homeSleepQualityPoor,
+      l10n.homeSleepQualityFair,
+      l10n.homeSleepQualityOK,
+      l10n.homeSleepQualityGood,
+      l10n.homeSleepQualityGreat,
+    ];
     final qualityColors = [
       AppColors.stone400,
       AppColors.stone400,
@@ -1065,9 +1087,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${e.hours.toStringAsFixed(1)} hours',
+                              Text(l10n.historySleepHours(e.hours.toStringAsFixed(1)),
                                   style: AppTextStyles.titleSmall),
-                              Text('Quality: $qLabel',
+                              Text(l10n.historySleepQuality(qLabel),
                                   style: AppTextStyles.bodySmall
                                       .copyWith(color: qColor)),
                             ],
@@ -1102,8 +1124,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ─── Slip card ───────────────────────────────────────────────────────────────
 
   Widget _buildSlipCard(Slip e) {
-    final streakLabel =
-        e.streakDays == 1 ? '1 day sober' : '${e.streakDays} days sober';
+    final l10n = AppLocalizations.of(context);
+    final streakLabel = l10n.slipLogStreakBadge(e.streakDays);
 
     return SolidCard(
       padding: const EdgeInsets.all(0),
@@ -1144,7 +1166,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             borderRadius: AppRadius.pill,
                           ),
                           child: Text(
-                            'Reset',
+                            l10n.historySlipReset,
                             style: AppTextStyles.labelSmall
                                 .copyWith(color: AppColors.honey600),
                           ),
@@ -1153,7 +1175,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sober at the time: $streakLabel',
+                      l10n.historySlipSoberAtTime(streakLabel),
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.stone600),
                     ),
@@ -1178,60 +1200,66 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   // ??? Empty state ???????????????????????????????????????????????????????????
 
   Widget _buildEmptyState() {
-    final (icon, noun) = switch (_filter) {
-      'cravings' => (Icons.local_fire_department_rounded, 'cravings'),
-      'thoughts' => (Icons.lightbulb_outline_rounded, 'thoughts'),
-      'exercise' => (Icons.directions_walk_rounded, 'exercise'),
-      'sleep' => (Icons.bedtime_outlined, 'sleep'),
-      'journal' => (Icons.edit_note_rounded, 'journal entries'),
-      'gratitude' => (Icons.spa_outlined, 'gratitude notes'),
-      'slips' => (Icons.timeline_rounded, 'slips'),
-      _ => (Icons.history_rounded, 'entries'),
+    final l10n = AppLocalizations.of(context);
+    final (icon, title, subtitle) = switch (_filter) {
+      'cravings' => (
+          Icons.local_fire_department_rounded,
+          l10n.historyEmptyCravingsTitle,
+          l10n.historyEmptyCravingsSub,
+        ),
+      'thoughts' => (
+          Icons.lightbulb_outline_rounded,
+          l10n.historyEmptyThoughtsTitle,
+          l10n.historyEmptyThoughtsSub,
+        ),
+      'exercise' => (
+          Icons.directions_walk_rounded,
+          l10n.historyEmptyActivityTitle,
+          l10n.historyEmptyActivitySub,
+        ),
+      'sleep' => (
+          Icons.bedtime_outlined,
+          l10n.historyEmptySleepTitle,
+          l10n.historyEmptySleepSub,
+        ),
+      'journal' => (
+          Icons.edit_note_rounded,
+          l10n.historyEmptyJournalTitle,
+          l10n.historyEmptyJournalSub,
+        ),
+      'gratitude' => (
+          Icons.spa_outlined,
+          l10n.historyEmptyGratitudeTitle,
+          l10n.historyEmptyGratitudeSub,
+        ),
+      'slips' => (
+          Icons.timeline_rounded,
+          l10n.historyEmptySlipsTitle,
+          l10n.historyEmptySlipsSub,
+        ),
+      _ => (
+          Icons.history_rounded,
+          l10n.historyEmptyAllTitle,
+          l10n.historyEmptyAllSub,
+        ),
     };
 
-    if (_filter != 'all') {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 52, color: AppColors.stone200),
-            const SizedBox(height: 16),
-            Text(
-              'No ${noun[0].toUpperCase()}${noun.substring(1)} yet',
-              style:
-                  AppTextStyles.titleMedium.copyWith(color: AppColors.stone500),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Log your $noun from the home screen',
-              style: AppTextStyles.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    // Generic empty state for 'all'
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.history_rounded, size: 52, color: AppColors.stone200),
+          Icon(icon, size: 52, color: AppColors.stone200),
           const SizedBox(height: 16),
           Text(
-            'Nothing here yet',
-            style: AppTextStyles.titleMedium.copyWith(
-              color: AppColors.stone500,
-            ),
+            title,
+            style:
+                AppTextStyles.titleMedium.copyWith(color: AppColors.stone500),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
           Text(
-            'Your entries will appear here',
+            subtitle,
             style: AppTextStyles.bodySmall,
             textAlign: TextAlign.center,
           ),
@@ -1244,6 +1272,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final journalAsync = ref.watch(journalProvider);
     final gratitudeAsync = ref.watch(allGratitudeProvider);
     final cravingsAsync = ref.watch(cravingProvider);
@@ -1270,6 +1299,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }).length;
 
     final entries = _buildEntries(
+      l10n: l10n,
       journal: journal,
       gratitude: gratitude,
       cravings: cravings,
@@ -1294,7 +1324,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 children: [
                   const LuxuryBackButton(),
                   const SizedBox(width: 4),
-                  Text('My History', style: AppTextStyles.titleLarge),
+                  Text(l10n.historyScreenTitle, style: AppTextStyles.titleLarge),
                 ],
               ),
             ),
@@ -1311,17 +1341,19 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   _buildStatChip(
                     icon: Icons.edit_note_rounded,
                     value: journalThisWeek.toString(),
-                    label: 'Journal this week',
+                    label: l10n.historyStatJournalThisWeek,
                   ),
                   _buildStatChip(
                     icon: Icons.spa_rounded,
                     value: gratitudeThisWeek.toString(),
-                    label: 'Gratitude this week',
+                    label: l10n.historyStatGratitudeThisWeek,
                   ),
                   _buildStatChip(
                     icon: Icons.local_florist_rounded,
-                    value: soberStats != null ? '${soberStats.days}d' : '--',
-                    label: 'Days sober',
+                    value: soberStats != null
+                        ? l10n.historyDaysShort(soberStats.days)
+                        : '--',
+                    label: l10n.historyStatDaysSober,
                   ),
                 ],
               ),

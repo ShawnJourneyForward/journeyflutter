@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -36,6 +37,7 @@ class VisionDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final items = ref.watch(visionBoardProvider).valueOrNull ?? const [];
     final item = items.firstWhere(
       (e) => e.id == itemId,
@@ -81,8 +83,7 @@ class VisionDetailScreen extends ConsumerWidget {
               if (!context.mounted) return;
               if (!after.pinned && !item.pinned) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      'You can pin up to 3 dreams — unpin one to make room.'),
+                  content: Text(l10n.visionPinCapReached),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.forest700,
                 ));
@@ -101,7 +102,7 @@ class VisionDetailScreen extends ConsumerWidget {
                   item;
               if (after.achieved) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Marked achieved. Beautiful.'),
+                  content: Text(l10n.visionMarkedAchievedToast),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppColors.forest700,
                 ));
@@ -174,6 +175,7 @@ class _DetailAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
@@ -184,7 +186,7 @@ class _DetailAppBar extends StatelessWidget {
       elevation: 0,
       actions: [
         IconButton(
-          tooltip: item.pinned ? 'Unpin' : 'Pin to home',
+          tooltip: item.pinned ? l10n.visionUnpinTooltip : l10n.visionPinTooltip,
           icon: Icon(
             item.pinned ? Icons.push_pin : Icons.push_pin_outlined,
             color: item.pinned ? accent : AppColors.stone600,
@@ -192,7 +194,9 @@ class _DetailAppBar extends StatelessWidget {
           onPressed: onTogglePin,
         ),
         IconButton(
-          tooltip: item.achieved ? 'Move back to active' : 'Mark achieved',
+          tooltip: item.achieved
+              ? l10n.visionMoveToActiveTooltip
+              : l10n.visionMarkAchievedTooltip,
           icon: Icon(
             item.achieved
                 ? Icons.check_circle
@@ -202,7 +206,7 @@ class _DetailAppBar extends StatelessWidget {
           onPressed: onToggleAchieved,
         ),
         IconButton(
-          tooltip: 'Edit',
+          tooltip: l10n.visionEditTooltip,
           icon: const Icon(Icons.edit_outlined),
           onPressed: onEdit,
         ),
@@ -314,6 +318,7 @@ class _AchievedBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 16),
@@ -332,8 +337,8 @@ class _AchievedBanner extends StatelessWidget {
           Expanded(
             child: Text(
               date == null
-                  ? 'You achieved this. Beautiful.'
-                  : 'Achieved on ${DateFormat.yMMMMd().format(date!)}',
+                  ? l10n.visionAchievedBanner
+                  : l10n.visionAchievedOnDate(DateFormat.yMMMMd().format(date!)),
               style:
                   AppTextStyles.bodyMedium.copyWith(color: AppColors.forest700),
             ),
@@ -353,6 +358,7 @@ class _CategoryAndDate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final cat = categoryInfoFor(item.category);
     final daysLeft = item.targetDate == null
         ? null
@@ -372,16 +378,16 @@ class _CategoryAndDate extends StatelessWidget {
           _Chip(
             icon: Icons.event_rounded,
             label: daysLeft < 0
-                ? '${-daysLeft}d past target'
+                ? l10n.visionDaysPastTarget(-daysLeft)
                 : daysLeft == 0
-                    ? 'Today'
-                    : '$daysLeft days to go',
+                    ? l10n.visionTargetToday
+                    : l10n.visionDaysToGo(daysLeft),
             color: daysLeft < 0 ? AppColors.blush600 : accent,
           ),
         if (item.pinned)
           _Chip(
             icon: Icons.push_pin,
-            label: 'Pinned',
+            label: l10n.visionPinnedChip,
             color: AppColors.honey500,
           ),
       ],
@@ -429,6 +435,7 @@ class _AffirmationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
@@ -445,7 +452,7 @@ class _AffirmationCard extends StatelessWidget {
             children: [
               Icon(Icons.format_quote_rounded, size: 18, color: accent),
               const SizedBox(width: 6),
-              Text('Affirmation',
+              Text(l10n.visionAffirmationLabel,
                   style: AppTextStyles.overline.copyWith(color: accent)),
             ],
           ),
@@ -478,6 +485,7 @@ class _MilestoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final done = item.milestones.where((m) => m.done).length;
     final total = item.milestones.length;
 
@@ -522,10 +530,10 @@ class _MilestoneCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Milestones',
+                    Text(l10n.visionMilestonesLabel,
                         style: AppTextStyles.titleSmall
                             .copyWith(color: AppColors.forest700)),
-                    Text('$done of $total complete',
+                    Text(l10n.visionMilestonesComplete(done, total),
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone500)),
                   ],
@@ -651,7 +659,7 @@ class _WhyItMattersCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _ProseCard(
       icon: Icons.psychology_outlined,
-      heading: 'Why this matters',
+      heading: AppLocalizations.of(context).visionWhyItMattersHeading,
       text: text,
     );
   }
@@ -665,7 +673,7 @@ class _DescriptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _ProseCard(
       icon: Icons.notes_rounded,
-      heading: 'Notes',
+      heading: AppLocalizations.of(context).visionNotesHeading,
       text: text,
     );
   }

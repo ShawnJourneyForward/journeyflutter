@@ -967,3 +967,137 @@ letterSeal	Seal letter
 letterCustomDayTitle	Custom day
 letterCustomDaysFromSober	{count, plural, =1{1 day from your sober date} other{{count} days from your sober date}}
 letterUseDay	Use day {day}
+commonGotIt	Got it
+trNewRecord	New record
+trTitle	Thought record
+trSubtitle	Catch a thought. Spot the distortion. Walk it through evidence. Land on something truer.
+trDeleteTitle	Delete this record?
+trEmptyTitle	No records yet
+trEmptyBody	When a thought hooks you, walk it through this. Most users find one record changes their whole week.
+trStartRecord	Start a record
+trMoodDelta	{value} mood
+trLabelSituation	Situation
+trLabelAutoThought	Automatic thought
+trLabelReframe	Reframe
+trCatchFirst	Catch the thought first
+trSaveRecord	Save record
+trStep0Title	What's the situation?
+trStep0Sub	Where were you, who with, what was happening?
+trStep0Hint	e.g. Saturday night. Home alone. Old playlist came on.
+trStep1Title	Catch the thought
+trStep1Sub	The exact automatic thought, word-for-word.
+trStep1Hint	e.g. "I'll never be able to enjoy a weekend sober."
+trMoodNow	Mood right now
+trMoodAfter	Mood after writing this
+trMoodScale	{value} / 10
+trStep2Title	Which distortions fit?
+trStep2Sub	Pick any that ring true — the label takes the sting out.
+trTryAsking	Try asking:
+trStep3Title	Weigh the evidence
+trStep3Sub	Like a courtroom — what supports the thought, what doesn't?
+trEvidenceFor	For the thought
+trEvidenceForHint	Facts that suggest the thought is true
+trEvidenceAgainst	Against the thought
+trEvidenceAgainstHint	Facts that contradict or soften it
+trStep4Title	Land somewhere truer
+trStep4Sub	Not "positive thinking" — a fairer, more accurate version.
+trStep4Hint	e.g. "This is hard right now. I've had sober Saturdays before. One is coming again."
+trDistAllOrNothingName	All-or-nothing
+trDistAllOrNothingDesc	Seeing things in black and white — anything less than perfect is failure.
+trDistAllOrNothingPrompt	Where on the spectrum is the truth actually sitting?
+trDistCatastrophizingName	Catastrophizing
+trDistCatastrophizingDesc	Expecting the worst possible outcome and treating it as certain.
+trDistCatastrophizingPrompt	What is the most likely outcome, not the worst possible one?
+trDistOvergeneralizationName	Overgeneralization
+trDistOvergeneralizationDesc	One bad event becomes a never-ending pattern of defeat.
+trDistOvergeneralizationPrompt	Is this really "always" / "never," or is it just this once?
+trDistMindReadingName	Mind reading
+trDistMindReadingDesc	Assuming you know what others are thinking about you.
+trDistMindReadingPrompt	What evidence do I actually have for that assumption?
+trDistShouldName	"Should" statements
+trDistShouldDesc	Beating yourself up with "should," "must," "ought to." Drives shame.
+trDistShouldPrompt	Replace "I should" with "I would like to" — does it land softer?
+trDistEmotionalReasoningName	Emotional reasoning
+trDistEmotionalReasoningDesc	Believing something is true because it FEELS true.
+trDistEmotionalReasoningPrompt	Feelings are data, not verdicts. What do the facts say?
+trDistPersonalizationName	Personalization
+trDistPersonalizationDesc	Blaming yourself for things that aren't entirely your fault.
+trDistPersonalizationPrompt	What other factors contributed — was this all on me?
+trDistMentalFilterName	Mental filter
+trDistMentalFilterDesc	Focusing only on the negative and screening out the positive.
+trDistMentalFilterPrompt	What good has happened today that I'm discounting?
+trDistLabelingName	Labeling
+trDistLabelingDesc	Attaching a global label to yourself: "I'm a failure," "I'm broken."
+trDistLabelingPrompt	Separate the behaviour from the person. What would I tell a friend?
+trDistDisqualifyingPositiveName	Disqualifying the positive
+trDistDisqualifyingPositiveDesc	Telling yourself good things "don't count."
+trDistDisqualifyingPositivePrompt	Why would that achievement count if a friend did it?
+commonRead	Read
+commonPlan	Plan
+commonUndo	Undo
+strengthCardTitle	Today's strength
+strengthHardDays	{count, plural, =1{1 hard day} other{{count} hard days}}
+strengthLetterTitle	A letter is waiting for you
+strengthLetterSub	You sealed it on day {day}. Open it.
+strengthPatternTitle	{weekday}s, {time}
+strengthPatternSub	{count} of your {total} cravings cluster here. Plan a ritual.
+strengthHardRecorded	Hard day recorded
+strengthHardAsk	Staying sober on a hard day?
+strengthHardRecordedSub	Time sober counts the days. This records the hard ones.
+strengthHardAskSub	Mark it — being present on a hard day is real recovery.
+strengthMarkIt	Mark it
+strengthHardLogged	Logged. Staying present on a hard day matters.
+strengthWriteFirst	Write a letter to future you
+strengthWriteAnother	Write another letter
+puzzleActivity5Label	Colour Calm
+puzzleActivity5Desc	Tap the expanding circles and let your mind follow.
+puzzleActivity5Duration	3 min
+puzzleHomeTitle	Mindful Activities
+puzzleHomeSubtitle	Short exercises to calm and refocus
+puzzleCountdownIntro	Counting backwards by 3 interrupts anxiety
+and brings you into the present.
+puzzleCountdownDone	Done!
+puzzleCountdownRestart	Tap to restart
+puzzleCountdownSubtract	Tap to subtract 3
+puzzleGratitudePrompt0	Something in nature I noticed today…
+puzzleGratitudePrompt1	A person who has shown me kindness…
+puzzleGratitudePrompt2	A simple pleasure I often overlook…
+puzzleGratitudePrompt3	Something my body does for me every day…
+puzzleGratitudePrompt4	A memory that still makes me smile…
+puzzleGratitudePrompt5	Something I've learned in the past year…
+puzzleGratitudePrompt6	A challenge that made me stronger…
+puzzleGratitudePrompt7	A small comfort that I appreciate…
+puzzleGratitudePrompt8	Someone who believed in me when I didn't…
+puzzleGratitudePrompt9	A moment of peace I've experienced…
+puzzleGratitudePrompt10	A skill or talent I'm glad I have…
+puzzleGratitudePrompt11	Something I'm looking forward to…
+puzzleGratitudePrompt12	A kindness I showed someone recently…
+puzzleGratitudePrompt13	Something that made me laugh recently…
+puzzleGratitudePrompt14	A place that brings me peace…
+puzzleReflectionHint	Write your reflection here…
+puzzleShufflePrompt	Shuffle prompt
+puzzleMemoryMoves	Moves: {count}
+puzzleNewGame	New game
+puzzleWellDone	Well done!
+puzzleCompletedInMoves	{count, plural, =1{Completed in 1 move} other{Completed in {count} moves}}
+puzzlePlayAgain	Play again
+puzzleStrengthIntro	How strong does each feel today? This is just for you — there's no right answer.
+puzzleStrength0	Courage
+puzzleStrength1	Patience
+puzzleStrength2	Honesty
+puzzleStrength3	Resilience
+puzzleStrength4	Gratitude
+puzzleStrength5	Hope
+puzzleStrength6	Connection
+puzzleStrength7	Purpose
+puzzleStrengthRating	{value}/5
+puzzleStrengthAffirmation	Wherever you rated yourself today — you showed up. That alone is strength.
+puzzleNowStep0Title	Notice
+puzzleNowStep0Body	Look around you right now. Name 3 things you can see without judging them. Just see them as they are.
+puzzleNowStep1Title	Feel
+puzzleNowStep1Body	Place both feet flat on the floor. Feel the weight of your body. Notice one sensation in your body right now — warmth, tension, breath.
+puzzleNowStep2Title	Choose
+puzzleNowStep2Body	You have arrived in this moment. What is one small, kind thing you can do for yourself in the next 10 minutes?
+puzzleComplete	Complete
+puzzleColorIntro	Tap anywhere. Breathe with the circles.
+puzzleColorTapAnywhere	Tap anywhere

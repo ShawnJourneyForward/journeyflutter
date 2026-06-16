@@ -1,0 +1,21 @@
+{
+  "dailyIntentionSetTitle": { "en": "Set today's intention", "desc": "Title of the morning intention bottom-sheet when no intention has been set yet." },
+  "dailyIntentionEditTitle": { "en": "Edit today's intention", "desc": "Title of the intention bottom-sheet when an intention already exists and can be edited." },
+  "dailyIntentionSubtitle": { "en": "One small thing for your recovery today.", "desc": "Subtitle prompting the user to write a small recovery intention for the day." },
+  "dailyIntentionHint": { "en": "e.g. Call my sponsor before noon.", "desc": "Hint text inside the daily intention text field giving an example intention." },
+  "dailyIntentionSaveButton": { "en": "Save intention", "desc": "Button label to save the daily intention." },
+  "dailySaving": { "en": "Saving…", "desc": "Transient button label shown while a daily-practice entry is being saved." },
+  "dailyReviewTitle": { "en": "How did today go?", "desc": "Title of the evening review pane asking the user to reflect on their intention." },
+  "dailyReviewPrompt": { "en": "This morning you said:", "desc": "Label introducing the intention the user wrote earlier in the day, shown above the quoted intention text." },
+  "dailyReviewDidIt": { "en": "Did it", "desc": "Pill button: the user followed through on today's intention." },
+  "dailyReviewPartly": { "en": "Partly", "desc": "Pill button: the user partly followed through on today's intention." },
+  "dailyReviewNotYet": { "en": "Not yet", "desc": "Pill button: the user has not yet followed through on today's intention." },
+  "dailyCapitalTitle": { "en": "Recovery capital this week", "desc": "Title of the weekly recovery-capital check bottom-sheet." },
+  "dailyCapitalConnected": { "en": "Connected with someone supportive", "desc": "Checklist row label: did the user connect with a supportive person this week." },
+  "dailyCapitalPhysical": { "en": "Moved my body", "desc": "Checklist row label: did the user move/exercise this week." },
+  "dailyCapitalSlept": { "en": "Slept enough most nights", "desc": "Checklist row label: did the user sleep enough most nights this week." },
+  "dailyCapitalHelpfulPlace": { "en": "Spent time somewhere that helps me", "desc": "Checklist row label: did the user spend time in a place that supports recovery." },
+  "dailyCapitalMeaningful": { "en": "Did something meaningful to me", "desc": "Checklist row label: did the user do something personally meaningful this week." },
+  "dailyCapitalNoteHint": { "en": "A note for future-you (optional)", "desc": "Hint text for the optional note field in the weekly recovery-capital check." },
+  "dailyCapitalSaveButton": { "en": "Save this week", "desc": "Button label to save the weekly recovery-capital check." }
+}

@@ -96,63 +96,64 @@ String _dailyQuote(AppLocalizations l10n) {
 // tense, about progress. No softening language ("gentle", "ease", "breathe").
 // 50 entries; cycles by day-of-year so the same line shows from midnight
 // to midnight without flicker, and the cycle repeats every ~7 weeks.
-const _heroQuotes = <String>[
-  'Every day forward is a win.',
-  'Progress is built in days like this.',
-  "You're farther than yesterday.",
-  'Today counted. Tomorrow will too.',
-  'Momentum compounds. Keep going.',
-  'Each day is a brick in the wall.',
-  'You chose this. Again.',
-  'Sober is a verb today.',
-  'The streak is the strategy.',
-  'You earned this day.',
-  'Forward is the only direction.',
-  'Days stack into years.',
-  'Discipline becomes identity.',
-  "You're rewriting the story.",
-  'The next right choice is the whole game.',
-  'Show up. The rest follows.',
-  'Old life. New chapter.',
-  'You did the hard thing today.',
-  "Progress isn't loud. It's daily.",
-  'Better is built, not found.',
-  'Today is the receipt.',
-  'You moved the needle.',
-  'Sobriety is the work and the reward.',
-  'What you do daily defines you.',
-  'Hours add to days. Days add to years.',
-  "You're closer than you were.",
-  'The first hard choice is behind you.',
-  "You're not who you were yesterday.",
-  'Action over feeling. Always.',
-  'Hard now. Easier later.',
-  "You're stacking days.",
-  "The streak doesn't lie.",
-  'Choose forward. Choose again.',
-  "You showed up. That's everything.",
-  'Days like this are how it changes.',
-  "You're building something real.",
-  'Today is proof.',
-  'Discipline is freedom.',
-  'One choice. Then the next.',
-  'The reps are the result.',
-  "You're earning your future.",
-  'Effort compounds quietly.',
-  "Today's win is tomorrow's foundation.",
-  'Forward is enough.',
-  "You're not starting over. You're continuing.",
-  'The work is the win.',
-  'Strong is what you become.',
-  'The hard days build you.',
-  'Decision by decision. Day by day.',
-  "You're doing it.",
-];
+List<String> _buildHeroQuotes(AppLocalizations l10n) => [
+      l10n.homeHeroQuote0,
+      l10n.homeHeroQuote1,
+      l10n.homeHeroQuote2,
+      l10n.homeHeroQuote3,
+      l10n.homeHeroQuote4,
+      l10n.homeHeroQuote5,
+      l10n.homeHeroQuote6,
+      l10n.homeHeroQuote7,
+      l10n.homeHeroQuote8,
+      l10n.homeHeroQuote9,
+      l10n.homeHeroQuote10,
+      l10n.homeHeroQuote11,
+      l10n.homeHeroQuote12,
+      l10n.homeHeroQuote13,
+      l10n.homeHeroQuote14,
+      l10n.homeHeroQuote15,
+      l10n.homeHeroQuote16,
+      l10n.homeHeroQuote17,
+      l10n.homeHeroQuote18,
+      l10n.homeHeroQuote19,
+      l10n.homeHeroQuote20,
+      l10n.homeHeroQuote21,
+      l10n.homeHeroQuote22,
+      l10n.homeHeroQuote23,
+      l10n.homeHeroQuote24,
+      l10n.homeHeroQuote25,
+      l10n.homeHeroQuote26,
+      l10n.homeHeroQuote27,
+      l10n.homeHeroQuote28,
+      l10n.homeHeroQuote29,
+      l10n.homeHeroQuote30,
+      l10n.homeHeroQuote31,
+      l10n.homeHeroQuote32,
+      l10n.homeHeroQuote33,
+      l10n.homeHeroQuote34,
+      l10n.homeHeroQuote35,
+      l10n.homeHeroQuote36,
+      l10n.homeHeroQuote37,
+      l10n.homeHeroQuote38,
+      l10n.homeHeroQuote39,
+      l10n.homeHeroQuote40,
+      l10n.homeHeroQuote41,
+      l10n.homeHeroQuote42,
+      l10n.homeHeroQuote43,
+      l10n.homeHeroQuote44,
+      l10n.homeHeroQuote45,
+      l10n.homeHeroQuote46,
+      l10n.homeHeroQuote47,
+      l10n.homeHeroQuote48,
+      l10n.homeHeroQuote49,
+    ];
 
-String _heroDailyLine() {
+String _heroDailyLine(AppLocalizations l10n) {
+  final quotes = _buildHeroQuotes(l10n);
   final now = DateTime.now();
   final doy = now.difference(DateTime(now.year)).inDays;
-  return _heroQuotes[doy % _heroQuotes.length];
+  return quotes[doy % quotes.length];
 }
 
 // ─── Daily missions pool ──────────────────────────────────────────────────────
@@ -262,46 +263,47 @@ class _RecoveryProgress {
     1051920,
   ];
 
-  static const _milestoneLabels = [
-    '12 Hours',
-    '24 Hours',
-    '48 Hours',
-    '3 Days',
-    '1 Week',
-    '2 Weeks',
-    '1 Month',
-    '3 Months',
-    '6 Months',
-    '1 Year',
-    '2 Years & Beyond',
-  ];
+  static List<String> _milestoneLabels(AppLocalizations l10n) => [
+        l10n.recoveryM1Label,
+        l10n.recoveryM2Label,
+        l10n.recoveryM3Label,
+        l10n.recoveryM4Label,
+        l10n.recoveryM5Label,
+        l10n.recoveryM6Label,
+        l10n.recoveryM7Label,
+        l10n.recoveryM8Label,
+        l10n.recoveryM9Label,
+        l10n.recoveryM10Label,
+        l10n.recoveryM11Label,
+      ];
 
-  static const _milestoneBodies = [
-    'Your body begins adjusting. Hydration and rest are your allies right now.',
-    'Heart rate and sleep patterns may begin to shift as your body finds its rhythm.',
-    'A significant window — be patient with yourself. Seek support if anything feels unsafe.',
-    'The most intense early adjustment may begin to ease. A small window of calm can emerge.',
-    'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.',
-    'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.',
-    'Many people describe a sense of physical relief settling in around this point.',
-    'Day-to-day satisfaction may slowly start to feel more accessible again.',
-    'Many people notice a steadier baseline. Urges may become less frequent and easier to move through.',
-    'For many people, the long-term load on sleep, energy, and mood begins to ease at this point.',
-    'The space you have created can continue to deepen over time — one ordinary day at a time.',
-  ];
+  static List<String> _milestoneBodies(AppLocalizations l10n) => [
+        l10n.homeRecoveryBody0,
+        l10n.homeRecoveryBody1,
+        l10n.homeRecoveryBody2,
+        l10n.homeRecoveryBody3,
+        l10n.homeRecoveryBody4,
+        l10n.homeRecoveryBody5,
+        l10n.homeRecoveryBody6,
+        l10n.homeRecoveryBody7,
+        l10n.homeRecoveryBody8,
+        l10n.homeRecoveryBody9,
+        l10n.homeRecoveryBody10,
+      ];
 
-  static _RecoveryProgress compute(Duration elapsed) {
+  static _RecoveryProgress compute(AppLocalizations l10n, Duration elapsed) {
+    final labels = _milestoneLabels(l10n);
+    final bodies = _milestoneBodies(l10n);
     final mins = elapsed.inMinutes.clamp(0, 999999999);
 
     if (mins < _milestoneMinutes.first) {
       final frac = (mins / _milestoneMinutes.first).clamp(0.0, 1.0);
       return _RecoveryProgress(
-        currentLabel: 'Just Starting',
-        currentBody:
-            'The decision you made today already matters. Be gentle with yourself.',
+        currentLabel: l10n.homeRecoveryJustStarting,
+        currentBody: l10n.homeRecoveryJustStartingBody,
         progress: frac,
-        nextLabel: _milestoneLabels.first,
-        nextIn: _formatRemaining(_milestoneMinutes.first - mins),
+        nextLabel: labels.first,
+        nextIn: _formatRemaining(l10n, _milestoneMinutes.first - mins),
       );
     }
 
@@ -315,8 +317,8 @@ class _RecoveryProgress {
 
     if (idx == _milestoneMinutes.length - 1) {
       return _RecoveryProgress(
-        currentLabel: _milestoneLabels[idx],
-        currentBody: _milestoneBodies[idx],
+        currentLabel: labels[idx],
+        currentBody: bodies[idx],
         progress: 1.0,
       );
     }
@@ -326,20 +328,20 @@ class _RecoveryProgress {
     final frac = ((mins - from) / (to - from)).clamp(0.0, 1.0);
 
     return _RecoveryProgress(
-      currentLabel: _milestoneLabels[idx],
-      currentBody: _milestoneBodies[idx],
+      currentLabel: labels[idx],
+      currentBody: bodies[idx],
       progress: frac,
-      nextLabel: _milestoneLabels[idx + 1],
-      nextIn: _formatRemaining(to - mins),
+      nextLabel: labels[idx + 1],
+      nextIn: _formatRemaining(l10n, to - mins),
     );
   }
 
-  static String _formatRemaining(int mins) {
-    if (mins <= 0) return 'now';
-    if (mins < 60) return 'in $mins min';
-    if (mins < 1440) return 'in ${(mins / 60).round()} hrs';
+  static String _formatRemaining(AppLocalizations l10n, int mins) {
+    if (mins <= 0) return l10n.homeRecoveryNow;
+    if (mins < 60) return l10n.homeRecoveryInMin(mins);
+    if (mins < 1440) return l10n.homeRecoveryInHrs((mins / 60).round());
     final days = (mins / 1440).round();
-    return 'in $days ${days == 1 ? "day" : "days"}';
+    return l10n.homeRecoveryInDays(days);
   }
 }
 
@@ -358,8 +360,10 @@ List<_MilestoneNode> _buildMilestones(AppLocalizations l10n) => [
           7, l10n.homeMilestoneNode2Label, Icons.energy_savings_leaf_outlined),
       _MilestoneNode(30, l10n.homeMilestoneNode3Label, Icons.terrain_outlined),
       _MilestoneNode(90, l10n.homeMilestoneNode4Label, Icons.park_outlined),
-      _MilestoneNode(180, 'Six months', Icons.local_florist_outlined),
-      _MilestoneNode(365, 'One year', Icons.star_outline_rounded),
+      _MilestoneNode(
+          180, l10n.homeMilestoneNode5Label, Icons.local_florist_outlined),
+      _MilestoneNode(
+          365, l10n.homeMilestoneNode6Label, Icons.star_outline_rounded),
     ];
 
 // ─── Home Screen ──────────────────────────────────────────────────────────────
@@ -910,7 +914,7 @@ class _HomeHeader extends StatelessWidget {
     final dateStr = DateFormat('EEEE, d MMMM').format(DateTime.now());
     final name = username.isEmpty ? l10n.homeFriendFallback : username;
     final firstName = name.split(' ').first;
-    final greetingText = 'Hi, $firstName';
+    final greetingText = l10n.homeGreetingName(firstName);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -963,6 +967,7 @@ class _SerenityCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     // Daily provider — plant image only needs midnight refresh.
     // The live counter is isolated in _LiveCounter below.
     final stats = ref.watch(soberDaysProvider);
@@ -983,7 +988,7 @@ class _SerenityCard extends ConsumerWidget {
                   const _HeroCardHeader(),
                   const SizedBox(height: 16),
                   Text(
-                    _heroDailyLine(),
+                    _heroDailyLine(l10n),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.displaySmall.copyWith(
                       fontSize: 22,
@@ -1068,6 +1073,7 @@ class _TimeSoberLabel extends StatelessWidget {
   final bool countdown;
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -1076,7 +1082,7 @@ class _TimeSoberLabel extends StatelessWidget {
         Icon(Icons.eco_outlined, size: 11, color: AppColors.forest400),
         const SizedBox(width: 8),
         Text(
-          countdown ? 'STARTS IN' : 'TIME SOBER',
+          countdown ? l10n.homeStartsIn : l10n.homeTimeSober,
           style: AppTextStyles.overline.copyWith(
             color: AppColors.stone500,
             letterSpacing: 2.4,
@@ -1419,6 +1425,7 @@ class _LiveCounter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     // Tick only when this counter is on the active tab (TickerMode is false for
     // an off-stage IndexedStack branch) AND the Home list isn't mid-scroll.
     // When paused, read the last value without subscribing — no rebuild fires
@@ -1447,28 +1454,28 @@ class _LiveCounter extends ConsumerWidget {
               Expanded(
                 child: _CounterTile(
                   value: '$days',
-                  label: days == 1 ? 'DAY' : 'DAYS',
+                  label: l10n.homeCounterDays(days),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _CounterTile(
                   value: '$hours',
-                  label: hours == 1 ? 'HOUR' : 'HOURS',
+                  label: l10n.homeCounterHours(hours),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _CounterTile(
                   value: '$minutes',
-                  label: minutes == 1 ? 'MINUTE' : 'MINUTES',
+                  label: l10n.homeCounterMinutes(minutes),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _CounterTile(
                   value: '$seconds',
-                  label: seconds == 1 ? 'SECOND' : 'SECONDS',
+                  label: l10n.homeCounterSeconds(seconds),
                 ),
               ),
             ],
@@ -1856,6 +1863,7 @@ class _MyReasonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final reason = _reason();
     return LuxuryCard(
       padding: const EdgeInsets.all(16),
@@ -1865,7 +1873,7 @@ class _MyReasonCard extends StatelessWidget {
           Row(children: [
             Icon(Icons.spa_rounded, size: 14, color: AppColors.forest600),
             const SizedBox(width: 6),
-            Text('My Reason',
+            Text(l10n.homeMyReasonTitle,
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest700)),
           ]),
@@ -1882,7 +1890,7 @@ class _MyReasonCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
-            Text('rotates daily',
+            Text(l10n.homeMyReasonRotates,
                 style:
                     AppTextStyles.caption.copyWith(color: AppColors.stone400)),
           ] else ...[
@@ -1894,7 +1902,7 @@ class _MyReasonCard extends StatelessWidget {
                   Icon(Icons.add_circle_outline_rounded,
                       size: 26, color: AppColors.stone300),
                   const SizedBox(height: 6),
-                  Text('Add your reasons\nin Profile',
+                  Text(l10n.homeMyReasonAddPrompt,
                       style: AppTextStyles.caption
                           .copyWith(color: AppColors.stone400),
                       textAlign: TextAlign.center),
@@ -1971,13 +1979,15 @@ class _JourneyCard extends StatelessWidget {
                       final achieved = days >= node.days;
                       final String timing;
                       if (achieved) {
-                        timing = node.days == 0 ? 'start' : 'done';
+                        timing = node.days == 0
+                            ? l10n.homeMilestoneTimingStart
+                            : l10n.homeMilestoneTimingDone;
                       } else if (node.days < 365) {
-                        timing = 'Day ${node.days}';
+                        timing = l10n.homeMilestoneTimingDay(node.days);
                       } else {
                         timing = node.days == 365
-                            ? '1 year'
-                            : '${node.days ~/ 365} yr';
+                            ? l10n.homeMilestoneTimingOneYear
+                            : l10n.homeMilestoneTimingYears(node.days ~/ 365);
                       }
                       return Expanded(
                         child: Column(
@@ -2035,6 +2045,7 @@ class _JourneyProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     int idx = 0;
     for (int i = milestones.length - 1; i >= 0; i--) {
       if (days >= milestones[i].days) {
@@ -2086,8 +2097,9 @@ class _JourneyProgressBar extends StatelessWidget {
         const SizedBox(height: 5),
         Text(
           isLast
-              ? 'One year of sobriety — remarkable.'
-              : '$remaining ${remaining == 1 ? 'day' : 'days'} to ${milestones[idx + 1].label.toLowerCase()}',
+              ? l10n.homeJourneyProgressComplete
+              : l10n.homeJourneyDaysTo(
+                  remaining, milestones[idx + 1].label.toLowerCase()),
           style: AppTextStyles.caption
               .copyWith(color: AppColors.mistGrey, fontSize: 10),
           textAlign: TextAlign.right,
@@ -2152,8 +2164,9 @@ class _PledgeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _EditorialInputCard(
-      title: 'DAILY PLEDGE',
+      title: l10n.homeDailyPledge,
       chipIcon: Icons.shield_outlined,
       chipColor: AppColors.forest,
       chipBackground: AppColors.mintChip,
@@ -2164,7 +2177,7 @@ class _PledgeCard extends StatelessWidget {
       saving: saving,
       onSave: onSave,
       onEdit: onEdit,
-      hintText: 'e.g., Today I choose clarity.',
+      hintText: l10n.homePledgeHint,
       savedText: pledgedToday ? pledgeText : null,
     );
   }
@@ -2183,6 +2196,7 @@ class _IntentionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final today = ref.watch(todaysIntentionProvider);
     final now = DateTime.now();
     final readyForReview =
@@ -2231,13 +2245,13 @@ class _IntentionCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Today\'s intention',
+                          l10n.homeIntentionTitle,
                           style: AppTextStyles.titleSmall
                               .copyWith(color: AppColors.forest700),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'One small thing for your recovery today.',
+                          l10n.homeIntentionPrompt,
                           style: AppTextStyles.bodySmall
                               .copyWith(color: AppColors.stone500, height: 1.4),
                         ),
@@ -2248,8 +2262,8 @@ class _IntentionCard extends ConsumerWidget {
                       children: [
                         Text(
                           readyForReview
-                              ? 'How did today go?'
-                              : 'Today\'s intention',
+                              ? l10n.homeIntentionReviewPrompt
+                              : l10n.homeIntentionTitle,
                           style: AppTextStyles.labelSmall.copyWith(
                             color: readyForReview
                                 ? AppColors.honey600
@@ -2271,7 +2285,7 @@ class _IntentionCard extends ConsumerWidget {
                         if (today.outcome != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            _outcomeBlurb(today.outcome!),
+                            _outcomeBlurb(l10n, today.outcome!),
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.forest600,
                             ),
@@ -2289,10 +2303,10 @@ class _IntentionCard extends ConsumerWidget {
     );
   }
 
-  String _outcomeBlurb(String o) => switch (o) {
-        'did' => '✓ You did it.',
-        'partly' => '~ Partly — that still counts.',
-        'not_yet' => '… Not yet — tomorrow is a new day.',
+  String _outcomeBlurb(AppLocalizations l10n, String o) => switch (o) {
+        'did' => l10n.homeIntentionOutcomeDid,
+        'partly' => l10n.homeIntentionOutcomePartly,
+        'not_yet' => l10n.homeIntentionOutcomeNotYet,
         _ => '',
       };
 }
@@ -2314,8 +2328,9 @@ class _GratitudeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _EditorialInputCard(
-      title: 'DAILY GRATITUDE',
+      title: l10n.homeDailyGratitude,
       chipIcon: Icons.spa_outlined,
       chipColor: AppColors.honey,
       chipBackground: AppColors.honeySoft,
@@ -2326,7 +2341,7 @@ class _GratitudeCard extends StatelessWidget {
       saving: saving,
       onSave: onSave,
       onEdit: onEdit,
-      hintText: 'e.g., I\u2019m grateful for\nanother fresh start.',
+      hintText: l10n.homeGratitudeHint,
       savedText: todayEntry,
     );
   }
@@ -2365,6 +2380,7 @@ class _EditorialInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isSaved = savedText != null && savedText!.isNotEmpty;
 
     return LuxuryCard(
@@ -2460,7 +2476,7 @@ class _EditorialInputCard extends StatelessWidget {
                                 child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2),
                               )
-                            : const Text('Save'),
+                            : Text(l10n.commonSave),
                       ),
                     ),
                   ),
@@ -2486,11 +2502,12 @@ class _WeeklyGoalsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Weekly Goals', style: AppTextStyles.titleMedium),
+          Text(l10n.homeWeeklyGoals, style: AppTextStyles.titleMedium),
           const SizedBox(height: 12),
           ...goals.asMap().entries.map((e) {
             final done = toggles.contains(e.key);
@@ -2658,23 +2675,30 @@ class _CheckInCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final buttons = [
-      (Icons.bolt_rounded, 'Craving', AppColors.honey, onCraving),
-      (Icons.psychology_outlined, 'Thought', AppColors.stone400, onThought),
+      (Icons.bolt_rounded, l10n.homeCheckInCraving, AppColors.honey, onCraving),
+      (
+        Icons.psychology_outlined,
+        l10n.homeCheckInThought,
+        AppColors.stone400,
+        onThought
+      ),
       (
         Icons.directions_run_rounded,
-        'Activity',
+        l10n.homeCheckInActivity,
         AppColors.forest400,
         onActivity
       ),
-      (Icons.bedtime_outlined, 'Sleep', AppColors.stone500, onSleep),
+      (Icons.bedtime_outlined, l10n.homeCheckInSleep, AppColors.stone500,
+          onSleep),
     ];
 
     return LuxuryCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('DAILY CHECK-IN', style: AppTextStyles.overline),
+          Text(l10n.homeDailyCheckIn, style: AppTextStyles.overline),
           const SizedBox(height: 12),
           Row(
             children: buttons.map((b) {
@@ -2751,7 +2775,8 @@ class _RecoveryBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rp = _RecoveryProgress.compute(elapsed);
+    final l10n = AppLocalizations.of(context);
+    final rp = _RecoveryProgress.compute(l10n, elapsed);
 
     return GestureDetector(
       onTap: onTap,
@@ -2765,7 +2790,8 @@ class _RecoveryBanner extends StatelessWidget {
               children: [
                 const IconChip(icon: Icons.timeline_rounded, size: 38),
                 const SizedBox(width: 12),
-                Text('THE HEALING TIMELINE', style: AppTextStyles.overline),
+                Text(l10n.homeHealingTimelineHeader,
+                    style: AppTextStyles.overline),
                 const Spacer(),
                 Icon(Icons.chevron_right_rounded,
                     color: AppColors.mistGrey, size: 20),
@@ -2809,7 +2835,7 @@ class _RecoveryBanner extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Next: ${rp.nextLabel}',
+                    l10n.homeRecoveryNext(rp.nextLabel!),
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.forest,
                       fontWeight: FontWeight.w600,
@@ -2826,7 +2852,7 @@ class _RecoveryBanner extends StatelessWidget {
               )
             else
               Text(
-                'You have reached every milestone. Remarkable.',
+                l10n.homeRecoveryAllMilestones,
                 style: AppTextStyles.caption.copyWith(
                   color: AppColors.forest,
                   fontWeight: FontWeight.w600,
@@ -2968,11 +2994,17 @@ class _ChoiceWrap extends StatelessWidget {
     required this.options,
     required this.isSelected,
     required this.onTap,
+    this.labelFor,
   });
 
   final List<String> options;
   final bool Function(String option) isSelected;
   final ValueChanged<String> onTap;
+
+  /// Optional resolver: maps a canonical (stored) option to its localized
+  /// display label. Selection/storage logic still uses the raw [option]; only
+  /// the visible chip text is translated. When null the option is shown as-is.
+  final String Function(String option)? labelFor;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -2981,7 +3013,7 @@ class _ChoiceWrap extends StatelessWidget {
         children: options
             .map(
               (option) => _ChoiceChip(
-                label: option,
+                label: labelFor?.call(option) ?? option,
                 selected: isSelected(option),
                 onTap: () => onTap(option),
               ),
@@ -3060,6 +3092,61 @@ const _severityOptions = [
   'Consuming',
 ];
 
+// ─── Canonical-value → localized-label resolvers ────────────────────────────
+// The check-in sheets STORE the canonical English value (so logged data stays
+// stable across languages and history/insights can read it back). These
+// helpers translate that stored value to a localized label purely for display
+// inside the picker chips.
+
+String _severityLabel(AppLocalizations l10n, String value) => switch (value) {
+      'Brief' => l10n.homeSeverityBrief,
+      'Mild' => l10n.homeSeverityMild,
+      'Moderate' => l10n.homeSeverityModerate,
+      'Strong' => l10n.homeSeverityStrong,
+      'Consuming' => l10n.homeSeverityConsuming,
+      _ => value,
+    };
+
+String _triggerLabel(AppLocalizations l10n, String value) => switch (value) {
+      'Stress' => l10n.homeTriggerStress,
+      'Social' => l10n.homeTriggerSocial,
+      'Boredom' => l10n.homeTriggerBoredom,
+      'Time of day' => l10n.homeTriggerTimeOfDay,
+      'Celebration' => l10n.homeTriggerCelebration,
+      'Sadness' => l10n.homeTriggerSadness,
+      'Location' => l10n.homeTriggerLocation,
+      'Memory' => l10n.homeTriggerMemory,
+      'Hungry' => l10n.homeTriggerHungry,
+      'Angry' => l10n.homeTriggerAngry,
+      'Tired' => l10n.homeTriggerTired,
+      _ => value,
+    };
+
+String _effortLabel(AppLocalizations l10n, String value) => switch (value) {
+      'Light' => l10n.homeEffortGentle,
+      'Moderate' => l10n.homeEffortModerate,
+      'Strong' => l10n.homeEffortStrong,
+      _ => value,
+    };
+
+String _outcomeLabel(AppLocalizations l10n, String value) => switch (value) {
+      'Calmer' => l10n.homeOutcomeCalmer,
+      'Clearer' => l10n.homeOutcomeClearer,
+      'Energized' => l10n.homeOutcomeEnergized,
+      'Same' => l10n.homeOutcomeSame,
+      _ => value,
+    };
+
+String _sleepFactorLabel(AppLocalizations l10n, String value) => switch (value) {
+      'Restless' => l10n.homeSleepFactorRestless,
+      'Woke often' => l10n.homeSleepFactorWokeOften,
+      'Dreams' => l10n.homeSleepFactorDreams,
+      'Stress' => l10n.homeSleepFactorStress,
+      'Cravings' => l10n.homeSleepFactorCravings,
+      'Late caffeine' => l10n.homeSleepFactorLateCaffeine,
+      _ => value,
+    };
+
 // ?? Craving sheet ???????????????????????????????????????????????????????????
 
 class _CravingSheet extends ConsumerStatefulWidget {
@@ -3120,6 +3207,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
     // at roughly this intensity (±2) that have a recorded response + outcome.
     // No prompt, no model — just the user's own pattern, surfaced when they
     // most need it.
+    final l10n = AppLocalizations.of(context);
     final all = ref.watch(cravingProvider).valueOrNull ?? const [];
     final similar = lastSimilar(all, _intensity.round());
 
@@ -3128,16 +3216,15 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SheetHeader(
+          _SheetHeader(
             icon: Icons.spa_outlined,
-            title: 'Log a craving',
-            subtitle:
-                'Noticing the shape of a craving helps you understand the pattern without obeying it.',
+            title: l10n.homeCravingSheetTitle,
+            subtitle: l10n.homeCravingSheetSubtitle,
           ),
           const SizedBox(height: 22),
 
           // ── HALT pre-check (placed first deliberately) ──────────────────
-          const _SheetSectionLabel('Right now, are you any of these?'),
+          _SheetSectionLabel(l10n.homeCravingHaltQuestion),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -3181,16 +3268,17 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Naming it slows the wave down — H.A.L.T.',
+            l10n.homeCravingHaltBlurb,
             style: AppTextStyles.bodySmall
                 .copyWith(color: AppColors.stone400, fontSize: 11),
           ),
           const SizedBox(height: 18),
 
-          const _SheetSectionLabel('How strong was the craving?'),
+          _SheetSectionLabel(l10n.homeCravingStrengthQuestion),
           const SizedBox(height: 10),
           _ChoiceWrap(
             options: _severityOptions,
+            labelFor: (option) => _severityLabel(l10n, option),
             isSelected: (option) => _severity == option,
             onTap: (option) {
               H.selection();
@@ -3200,10 +3288,10 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           const SizedBox(height: 18),
           Row(
             children: [
-              const _SheetSectionLabel('Intensity'),
+              _SheetSectionLabel(l10n.homeCravingIntensityLabel),
               const Spacer(),
               Text(
-                '${_intensity.round()} / 10',
+                l10n.homeCravingIntensityValue(_intensity.round()),
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest600),
               ),
@@ -3239,7 +3327,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      _lastTimeBlurb(similar),
+                      _lastTimeBlurb(l10n, similar),
                       style: AppTextStyles.bodySmall
                           .copyWith(color: AppColors.forest700, height: 1.4),
                     ),
@@ -3250,10 +3338,11 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           ],
 
           const SizedBox(height: 14),
-          const _SheetSectionLabel('What triggered it?'),
+          _SheetSectionLabel(l10n.homeCravingTriggerQuestion),
           const SizedBox(height: 10),
           _ChoiceWrap(
             options: _commonTriggers,
+            labelFor: (option) => _triggerLabel(l10n, option),
             isSelected: _triggers.contains,
             onTap: (option) {
               H.selection();
@@ -3269,10 +3358,10 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           const SizedBox(height: 18),
           Row(
             children: [
-              const _SheetSectionLabel('How long did it last?'),
+              _SheetSectionLabel(l10n.homeCravingDurationQuestion),
               const Spacer(),
               Text(
-                '${_duration.round()} minutes',
+                l10n.homeCravingDurationValue(_duration.round()),
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest600),
               ),
@@ -3293,7 +3382,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
 
           // ── Response chosen (the A → B in ABC analysis) ───────────────
           const SizedBox(height: 14),
-          const _SheetSectionLabel('What did you do?'),
+          _SheetSectionLabel(l10n.homeActivityTypeQuestion),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -3334,13 +3423,13 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
 
           // ── Outcome (the C in ABC) ────────────────────────────────────
           const SizedBox(height: 18),
-          const _SheetSectionLabel('How did it turn out?'),
+          _SheetSectionLabel(l10n.homeCravingOutcomeQuestion),
           const SizedBox(height: 10),
           Row(
             children: [
               _OutcomePill(
                 slug: 'stayed_sober',
-                label: 'Stayed sober',
+                label: l10n.homeCravingOutcomeStayedSober,
                 icon: Icons.eco_rounded,
                 color: AppColors.forest600,
                 selected: _outcome == 'stayed_sober',
@@ -3353,7 +3442,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               const SizedBox(width: 8),
               _OutcomePill(
                 slug: 'unclear',
-                label: 'Unclear',
+                label: l10n.homeCravingOutcomeUnclear,
                 icon: Icons.help_outline_rounded,
                 color: AppColors.stone500,
                 selected: _outcome == 'unclear',
@@ -3366,7 +3455,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               const SizedBox(width: 8),
               _OutcomePill(
                 slug: 'slipped',
-                label: 'Slipped',
+                label: l10n.homeCravingOutcomeSlipped,
                 icon: Icons.water_drop_outlined,
                 color: AppColors.blush500,
                 selected: _outcome == 'slipped',
@@ -3382,13 +3471,13 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
           const SizedBox(height: 14),
           _NotesField(
             controller: _notesCtrl,
-            hintText: 'Notes (optional) — e.g., passed a bar on the way home.',
+            hintText: l10n.homeCravingNotesHint,
           ),
           const SizedBox(height: 18),
           _saveButton(
             saving: _saving,
             onPressed: _save,
-            label: 'Save craving',
+            label: l10n.homeSaveCraving,
           ),
         ],
       ),
@@ -3398,21 +3487,21 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
   /// Compose a calm one-liner referencing the user's own most-recent
   /// similar-intensity craving. We deliberately avoid prescriptive phrasing
   /// ("you should…") — it's a memory, not a lecture.
-  String _lastTimeBlurb(CravingEntry e) {
+  String _lastTimeBlurb(AppLocalizations l10n, CravingEntry e) {
     final responseLabel = kCravingResponses
         .firstWhere((r) => r.slug == e.responseChosen,
             orElse: () => CravingResponse(e.responseChosen!, e.responseChosen!))
         .label
         .toLowerCase();
     final outcomePart = e.outcome == 'stayed_sober'
-        ? 'and you stayed sober'
+        ? l10n.homeLastTimeOutcomeSober
         : e.outcome == 'slipped'
-            ? 'and you slipped — useful to know'
+            ? l10n.homeLastTimeOutcomeSlipped
             : '';
     final duration = e.durationMinutes != null
-        ? ' (passed in ${e.durationMinutes} min)'
+        ? l10n.homeLastTimeDuration(e.durationMinutes!)
         : '';
-    return 'Last time around this level you $responseLabel$duration $outcomePart.';
+    return l10n.homeLastTimeBlurb(responseLabel, duration, outcomePart);
   }
 }
 
@@ -3502,6 +3591,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
     // can become stale after async gaps causing silent pop/snackbar failures.
     final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
+    final l10n = AppLocalizations.of(context);
 
     setState(() => _saving = true);
     H.light();
@@ -3516,7 +3606,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
           );
       messenger.showSnackBar(
         SnackBar(
-          content: const Text('Thought saved privately'),
+          content: Text(l10n.homeThoughtSavedPrivately),
           backgroundColor: AppColors.forest700,
           behavior: SnackBarBehavior.floating,
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
@@ -3530,7 +3620,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
       if (mounted) setState(() => _saving = false);
       messenger.showSnackBar(
         SnackBar(
-          content: Text('Could not save: $e'),
+          content: Text(l10n.homeThoughtSaveError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -3540,108 +3630,117 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheetShell(
-        context: context,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SheetHeader(
-              icon: Icons.chat_bubble_outline_rounded,
-              title: 'Log a thought',
-              subtitle:
-                  'Noticing thoughts about alcohol is normal. Logging them helps reveal the pattern.',
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return _sheetShell(
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetHeader(
+            icon: Icons.chat_bubble_outline_rounded,
+            title: l10n.homeThoughtSheetTitle,
+            subtitle: l10n.homeThoughtSheetSubtitle,
+          ),
+          const SizedBox(height: 22),
+          _SheetSectionLabel(l10n.homeThoughtWhatQuestion),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _thoughtCtrl,
+            maxLines: 3,
+            style: AppTextStyles.bodyMedium,
+            decoration: InputDecoration(
+              hintText: l10n.homeThoughtWriteHintOptional,
+              hintStyle:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
             ),
-            const SizedBox(height: 22),
-            const _SheetSectionLabel('What was the thought?'),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _thoughtCtrl,
-              maxLines: 3,
-              style: AppTextStyles.bodyMedium,
-              decoration: InputDecoration(
-                hintText: 'Write the thought in your own words (optional).',
-                hintStyle: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.stone400),
+          ),
+          const SizedBox(height: 18),
+          _SheetSectionLabel(l10n.homeThoughtStrengthQuestion),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: _severityOptions,
+            labelFor: (option) => _severityLabel(l10n, option),
+            isSelected: (option) => _strength == option,
+            onTap: (option) {
+              H.selection();
+              setState(() => _strength = option);
+            },
+          ),
+          const SizedBox(height: 18),
+          _SheetSectionLabel(l10n.homeThoughtTriggerQuestion),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: _commonTriggers,
+            labelFor: (option) => _triggerLabel(l10n, option),
+            isSelected: _triggers.contains,
+            onTap: (option) {
+              H.selection();
+              setState(() {
+                if (_triggers.contains(option)) {
+                  _triggers.remove(option);
+                } else {
+                  _triggers.add(option);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              _SheetSectionLabel(l10n.homeThoughtDurationQuestion),
+              const Spacer(),
+              Text(
+                l10n.homeCravingDurationValue(_duration.round()),
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest600),
               ),
-            ),
-            const SizedBox(height: 18),
-            const _SheetSectionLabel('How strong was the thought?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: _severityOptions,
-              isSelected: (option) => _strength == option,
-              onTap: (option) {
-                H.selection();
-                setState(() => _strength = option);
-              },
-            ),
-            const SizedBox(height: 18),
-            const _SheetSectionLabel('What triggered the thought?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: _commonTriggers,
-              isSelected: _triggers.contains,
-              onTap: (option) {
-                H.selection();
-                setState(() {
-                  if (_triggers.contains(option)) {
-                    _triggers.remove(option);
-                  } else {
-                    _triggers.add(option);
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const _SheetSectionLabel('How long did it last?'),
-                const Spacer(),
-                Text(
-                  '${_duration.round()} minutes',
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest600),
-                ),
-              ],
-            ),
-            Slider(
-              value: _duration,
-              min: 1,
-              max: 60,
-              divisions: 59,
-              onChanged: (v) {
-                H.selection();
-                setState(() => _duration = v);
-              },
-              activeColor: AppColors.forest600,
-              inactiveColor: AppColors.stone100,
-            ),
-            const SizedBox(height: 8),
-            const _SheetSectionLabel('Tone'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: const ['Negative', 'Neutral', 'Positive'],
-              isSelected: (option) => _type == option.toLowerCase(),
-              onTap: (option) {
-                H.selection();
-                setState(() => _type = option.toLowerCase());
-              },
-            ),
-            const SizedBox(height: 18),
-            _NotesField(
-              controller: _notesCtrl,
-              hintText:
-                  'Notes (optional) - e.g., saw an ad and noticed the thought arrive.',
-            ),
-            const SizedBox(height: 18),
-            _saveButton(
-              saving: _saving,
-              onPressed: _save,
-              label: 'Save thought',
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+          Slider(
+            value: _duration,
+            min: 1,
+            max: 60,
+            divisions: 59,
+            onChanged: (v) {
+              H.selection();
+              setState(() => _duration = v);
+            },
+            activeColor: AppColors.forest600,
+            inactiveColor: AppColors.stone100,
+          ),
+          const SizedBox(height: 8),
+          _SheetSectionLabel(l10n.homeThoughtToneLabel),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: const ['Negative', 'Neutral', 'Positive'],
+            labelFor: (option) => switch (option) {
+              'Negative' => l10n.homeToneNegative,
+              'Neutral' => l10n.homeToneNeutral,
+              'Positive' => l10n.homeTonePositive,
+              _ => option,
+            },
+            isSelected: (option) => _type == option.toLowerCase(),
+            onTap: (option) {
+              H.selection();
+              setState(() => _type = option.toLowerCase());
+            },
+          ),
+          const SizedBox(height: 18),
+          _NotesField(
+            controller: _notesCtrl,
+            hintText: l10n.homeThoughtNotesHint,
+          ),
+          const SizedBox(height: 18),
+          _saveButton(
+            saving: _saving,
+            onPressed: _save,
+            label: l10n.homeSaveThought,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── Activity sheet ────────────────────────────────────────────────────────────
@@ -3713,7 +3812,19 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
     }
   }
 
+  String _activityTypeLabel(AppLocalizations l10n, String id) => switch (id) {
+        'walk' => l10n.homeActivityTypeWalk,
+        'run' => l10n.homeActivityTypeRun,
+        'cycle' => l10n.homeActivityTypeCycle,
+        'swim' => l10n.homeActivityTypeSwim,
+        'gym' => l10n.homeActivityTypeGym,
+        'yoga' => l10n.homeActivityTypeYoga,
+        'other' => l10n.homeActivityTypeOther,
+        _ => id,
+      };
+
   Widget _typeGrid(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     const row1 = ['walk', 'run', 'cycle', 'swim'];
     const row2 = ['gym', 'yoga', 'other'];
 
@@ -3744,7 +3855,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                       color: sel ? AppColors.forest600 : AppColors.stone400),
                   const SizedBox(height: 4),
                   Text(
-                    t.label,
+                    _activityTypeLabel(l10n, t.id),
                     style: AppTextStyles.caption.copyWith(
                       color: sel ? AppColors.forest700 : AppColors.stone400,
                     ),
@@ -3779,30 +3890,31 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final useImperial =
         ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
-    final distanceUnit = useImperial ? 'miles' : 'km';
+    final distanceUnit =
+        useImperial ? l10n.homeUnitMiles : l10n.homeUnitKm;
 
     return _sheetShell(
       context: context,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SheetHeader(
+          _SheetHeader(
             icon: Icons.directions_run_rounded,
-            title: 'Log activity',
-            subtitle:
-                'Movement can shift the nervous system. Capture enough detail to see what truly helps.',
+            title: l10n.homeActivitySheetTitle,
+            subtitle: l10n.homeActivitySheetSubtitle,
           ),
           const SizedBox(height: 22),
-          const _SheetSectionLabel('What did you do?'),
+          _SheetSectionLabel(l10n.homeActivityTypeQuestion),
           const SizedBox(height: 10),
           _typeGrid(context),
           const SizedBox(height: 18),
 
           // ── Duration + Distance ──────────────────────────────────────────
           if (_needsDistance) ...[
-            const _SheetSectionLabel('Time & distance'),
+            _SheetSectionLabel(l10n.homeActivityTimeDistance),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -3811,7 +3923,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Duration (min)',
+                      Text(l10n.homeActivityDurationMin,
                           style: AppTextStyles.caption
                               .copyWith(color: AppColors.stone400)),
                       const SizedBox(height: 6),
@@ -3841,7 +3953,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                             borderSide: BorderSide(
                                 color: AppColors.forest300, width: 1.5),
                           ),
-                          suffixText: 'min',
+                          suffixText: l10n.homeUnitMin,
                           suffixStyle: AppTextStyles.caption
                               .copyWith(color: AppColors.stone400),
                         ),
@@ -3855,7 +3967,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Distance ($distanceUnit)',
+                      Text(l10n.homeActivityDistanceLabel(distanceUnit),
                           style: AppTextStyles.caption
                               .copyWith(color: AppColors.stone400)),
                       const SizedBox(height: 6),
@@ -3900,7 +4012,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
               ],
             ),
           ] else ...[
-            const _SheetSectionLabel('Duration'),
+            _SheetSectionLabel(l10n.homeActivityDurationLabel),
             const SizedBox(height: 10),
             TextField(
               controller: _minutesCtrl,
@@ -3926,7 +4038,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                   borderSide:
                       BorderSide(color: AppColors.forest300, width: 1.5),
                 ),
-                suffixText: 'min',
+                suffixText: l10n.homeUnitMin,
                 suffixStyle:
                     AppTextStyles.caption.copyWith(color: AppColors.stone400),
               ),
@@ -3935,10 +4047,11 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
           const SizedBox(height: 18),
 
           // ── Effort ───────────────────────────────────────────────────────
-          const _SheetSectionLabel('How much effort did it take?'),
+          _SheetSectionLabel(l10n.homeActivityEffortQuestion),
           const SizedBox(height: 10),
           _ChoiceWrap(
             options: const ['Light', 'Moderate', 'Strong'],
+            labelFor: (option) => _effortLabel(l10n, option),
             isSelected: (option) => _effort == option,
             onTap: (option) {
               H.selection();
@@ -3948,10 +4061,11 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
           const SizedBox(height: 18),
 
           // ── Outcome ──────────────────────────────────────────────────────
-          const _SheetSectionLabel('How did you feel after?'),
+          _SheetSectionLabel(l10n.homeActivityOutcomeQuestion),
           const SizedBox(height: 10),
           _ChoiceWrap(
             options: const ['Calmer', 'Clearer', 'Energized', 'Same'],
+            labelFor: (option) => _outcomeLabel(l10n, option),
             isSelected: (option) => _outcome == option,
             onTap: (option) {
               H.selection();
@@ -3963,14 +4077,13 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
           // ── Notes + save ─────────────────────────────────────────────────
           _NotesField(
             controller: _notesCtrl,
-            hintText:
-                'Notes (optional) — e.g., walked after dinner and felt steadier.',
+            hintText: l10n.homeActivityNotesHint,
           ),
           const SizedBox(height: 18),
           _saveButton(
             saving: _saving,
             onPressed: _save,
-            label: 'Save activity',
+            label: l10n.homeSaveActivity,
           ),
         ],
       ),
@@ -3994,7 +4107,6 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
   final _notesCtrl = TextEditingController();
   bool _saving = false;
 
-  static const _qualityLabels = ['Poor', 'Fair', 'OK', 'Good', 'Great'];
   static const _factorOptions = [
     'Restless',
     'Woke often',
@@ -4003,6 +4115,14 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
     'Cravings',
     'Late caffeine',
   ];
+
+  List<String> _qualityLabels(AppLocalizations l10n) => [
+        l10n.homeSleepQualityPoor,
+        l10n.homeSleepQualityFair,
+        l10n.homeSleepQualityOK,
+        l10n.homeSleepQualityGood,
+        l10n.homeSleepQualityGreat,
+      ];
 
   @override
   void dispose() {
@@ -4027,122 +4147,125 @@ class _SleepSheetState extends ConsumerState<_SleepSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheetShell(
-        context: context,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _SheetHeader(
-              icon: Icons.bedtime_outlined,
-              title: 'Log sleep',
-              subtitle:
-                  'Sleep is one of the clearest signals in recovery. Small details help reveal the trend.',
-            ),
-            const SizedBox(height: 22),
-            Row(
-              children: [
-                const _SheetSectionLabel('Hours slept'),
-                const Spacer(),
-                Text(
-                  '${_hours.toStringAsFixed(1)} hrs',
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest600),
-                ),
-              ],
-            ),
-            Slider(
-              value: _hours,
-              min: 1,
-              max: 12,
-              divisions: 22,
-              onChanged: (v) {
-                H.selection();
-                setState(() => _hours = v);
-              },
-              activeColor: AppColors.forest600,
-              inactiveColor: AppColors.stone100,
-            ),
-            const SizedBox(height: 8),
-            const _SheetSectionLabel('Sleep quality'),
-            const SizedBox(height: 10),
-            Row(
-              children: List.generate(5, (i) {
-                final selected = _quality == i + 1;
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: GestureDetector(
-                      onTap: () {
-                        H.selection();
-                        setState(() => _quality = i + 1);
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color:
-                              selected ? AppColors.forest50 : AppColors.stone50,
-                          borderRadius: AppRadius.lg,
-                          border: Border.all(
-                            color: selected
-                                ? AppColors.forest300
-                                : AppColors.stone100,
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final qualityLabels = _qualityLabels(l10n);
+    return _sheetShell(
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetHeader(
+            icon: Icons.bedtime_outlined,
+            title: l10n.homeSleepSheetTitle,
+            subtitle: l10n.homeSleepSheetSubtitle,
+          ),
+          const SizedBox(height: 22),
+          Row(
+            children: [
+              _SheetSectionLabel(l10n.homeSleepHoursLabel),
+              const Spacer(),
+              Text(
+                l10n.homeSleepHoursValue(_hours.toStringAsFixed(1)),
+                style: AppTextStyles.titleSmall
+                    .copyWith(color: AppColors.forest600),
+              ),
+            ],
+          ),
+          Slider(
+            value: _hours,
+            min: 1,
+            max: 12,
+            divisions: 22,
+            onChanged: (v) {
+              H.selection();
+              setState(() => _hours = v);
+            },
+            activeColor: AppColors.forest600,
+            inactiveColor: AppColors.stone100,
+          ),
+          const SizedBox(height: 8),
+          _SheetSectionLabel(l10n.homeSleepQualityLabel),
+          const SizedBox(height: 10),
+          Row(
+            children: List.generate(5, (i) {
+              final selected = _quality == i + 1;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: GestureDetector(
+                    onTap: () {
+                      H.selection();
+                      setState(() => _quality = i + 1);
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color:
+                            selected ? AppColors.forest50 : AppColors.stone50,
+                        borderRadius: AppRadius.lg,
+                        border: Border.all(
+                          color: selected
+                              ? AppColors.forest300
+                              : AppColors.stone100,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            '${i + 1}',
+                            style: AppTextStyles.titleSmall.copyWith(
+                              color: selected
+                                  ? AppColors.forest600
+                                  : AppColors.stone400,
+                            ),
                           ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              '${i + 1}',
-                              style: AppTextStyles.titleSmall.copyWith(
-                                color: selected
-                                    ? AppColors.forest600
-                                    : AppColors.stone400,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _qualityLabels[i],
-                              style: AppTextStyles.caption,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
+                          const SizedBox(height: 2),
+                          Text(
+                            qualityLabels[i],
+                            style: AppTextStyles.caption,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: 18),
-            const _SheetSectionLabel('What affected sleep?'),
-            const SizedBox(height: 10),
-            _ChoiceWrap(
-              options: _factorOptions,
-              isSelected: _factors.contains,
-              onTap: (option) {
-                H.selection();
-                setState(() {
-                  if (_factors.contains(option)) {
-                    _factors.remove(option);
-                  } else {
-                    _factors.add(option);
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 18),
-            _NotesField(
-              controller: _notesCtrl,
-              hintText:
-                  'Notes (optional) - e.g., woke once, settled again quickly.',
-            ),
-            const SizedBox(height: 18),
-            _saveButton(
-              saving: _saving,
-              onPressed: _save,
-              label: 'Save sleep',
-            ),
-          ],
-        ),
-      );
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 18),
+          _SheetSectionLabel(l10n.homeSleepFactorsShortQuestion),
+          const SizedBox(height: 10),
+          _ChoiceWrap(
+            options: _factorOptions,
+            labelFor: (option) => _sleepFactorLabel(l10n, option),
+            isSelected: _factors.contains,
+            onTap: (option) {
+              H.selection();
+              setState(() {
+                if (_factors.contains(option)) {
+                  _factors.remove(option);
+                } else {
+                  _factors.add(option);
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 18),
+          _NotesField(
+            controller: _notesCtrl,
+            hintText: l10n.homeSleepNotesHintShort,
+          ),
+          const SizedBox(height: 18),
+          _saveButton(
+            saving: _saving,
+            onPressed: _save,
+            label: l10n.homeSaveSleep,
+          ),
+        ],
+      ),
+    );
+  }
 }

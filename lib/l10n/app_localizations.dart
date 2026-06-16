@@ -6319,6 +6319,5994 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Write another letter'**
   String get strengthWriteAnother;
+
+  /// Title of the Colour Calm mindful activity (tapping expanding circles).
+  ///
+  /// In en, this message translates to:
+  /// **'Colour Calm'**
+  String get puzzleActivity5Label;
+
+  /// One-line description of the Colour Calm activity on the activity grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the expanding circles and let your mind follow.'**
+  String get puzzleActivity5Desc;
+
+  /// Approximate duration label for the Colour Calm activity.
+  ///
+  /// In en, this message translates to:
+  /// **'3 min'**
+  String get puzzleActivity5Duration;
+
+  /// Header title on the Calm Activities home/grid screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Mindful Activities'**
+  String get puzzleHomeTitle;
+
+  /// Subtitle under the Mindful Activities header.
+  ///
+  /// In en, this message translates to:
+  /// **'Short exercises to calm and refocus'**
+  String get puzzleHomeSubtitle;
+
+  /// Intro text on the Slow Count activity explaining the technique. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting backwards by 3 interrupts anxiety\nand brings you into the present.'**
+  String get puzzleCountdownIntro;
+
+  /// Shown in the center circle when the Slow Count countdown reaches zero.
+  ///
+  /// In en, this message translates to:
+  /// **'Done!'**
+  String get puzzleCountdownDone;
+
+  /// Instruction shown after the Slow Count is finished; tapping restarts it.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to restart'**
+  String get puzzleCountdownRestart;
+
+  /// Instruction during the Slow Count; each tap subtracts 3 from the number.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to subtract 3'**
+  String get puzzleCountdownSubtract;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Something in nature I noticed today…'**
+  String get puzzleGratitudePrompt0;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A person who has shown me kindness…'**
+  String get puzzleGratitudePrompt1;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A simple pleasure I often overlook…'**
+  String get puzzleGratitudePrompt2;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Something my body does for me every day…'**
+  String get puzzleGratitudePrompt3;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A memory that still makes me smile…'**
+  String get puzzleGratitudePrompt4;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Something I\'ve learned in the past year…'**
+  String get puzzleGratitudePrompt5;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A challenge that made me stronger…'**
+  String get puzzleGratitudePrompt6;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A small comfort that I appreciate…'**
+  String get puzzleGratitudePrompt7;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone who believed in me when I didn\'t…'**
+  String get puzzleGratitudePrompt8;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A moment of peace I\'ve experienced…'**
+  String get puzzleGratitudePrompt9;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A skill or talent I\'m glad I have…'**
+  String get puzzleGratitudePrompt10;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Something I\'m looking forward to…'**
+  String get puzzleGratitudePrompt11;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A kindness I showed someone recently…'**
+  String get puzzleGratitudePrompt12;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'Something that made me laugh recently…'**
+  String get puzzleGratitudePrompt13;
+
+  /// Gratitude reflection prompt (sentence starter). Keep the trailing ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'A place that brings me peace…'**
+  String get puzzleGratitudePrompt14;
+
+  /// Placeholder/hint text in the gratitude reflection text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your reflection here…'**
+  String get puzzleReflectionHint;
+
+  /// Button label that picks a new random gratitude prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle prompt'**
+  String get puzzleShufflePrompt;
+
+  /// Live counter of moves taken in the Memory Match game.
+  ///
+  /// In en, this message translates to:
+  /// **'Moves: {count}'**
+  String puzzleMemoryMoves(int count);
+
+  /// Button label to start a fresh Memory Match game.
+  ///
+  /// In en, this message translates to:
+  /// **'New game'**
+  String get puzzleNewGame;
+
+  /// Congratulations heading shown when the Memory Match game is won.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done!'**
+  String get puzzleWellDone;
+
+  /// Shown after winning Memory Match, reporting how many moves it took.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Completed in 1 move} other{Completed in {count} moves}}'**
+  String puzzleCompletedInMoves(int count);
+
+  /// Button label to replay the Memory Match game after winning.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get puzzlePlayAgain;
+
+  /// Intro instructions for the Strength Compass self-rating activity.
+  ///
+  /// In en, this message translates to:
+  /// **'How strong does each feel today? This is just for you — there\'s no right answer.'**
+  String get puzzleStrengthIntro;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Courage'**
+  String get puzzleStrength0;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Patience'**
+  String get puzzleStrength1;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Honesty'**
+  String get puzzleStrength2;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Resilience'**
+  String get puzzleStrength3;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude'**
+  String get puzzleStrength4;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Hope'**
+  String get puzzleStrength5;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection'**
+  String get puzzleStrength6;
+
+  /// Name of a personal strength rated on a 1–5 slider in Strength Compass.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get puzzleStrength7;
+
+  /// Numeric rating display next to each strength slider, e.g. 3/5.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}/5'**
+  String puzzleStrengthRating(int value);
+
+  /// Encouraging closing message at the bottom of the Strength Compass screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Wherever you rated yourself today — you showed up. That alone is strength.'**
+  String get puzzleStrengthAffirmation;
+
+  /// Step 1 title of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice'**
+  String get puzzleNowStep0Title;
+
+  /// Step 1 body of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Look around you right now. Name 3 things you can see without judging them. Just see them as they are.'**
+  String get puzzleNowStep0Body;
+
+  /// Step 2 title of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Feel'**
+  String get puzzleNowStep1Title;
+
+  /// Step 2 body of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Place both feet flat on the floor. Feel the weight of your body. Notice one sensation in your body right now — warmth, tension, breath.'**
+  String get puzzleNowStep1Body;
+
+  /// Step 3 title of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get puzzleNowStep2Title;
+
+  /// Step 3 body of the Now Moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'You have arrived in this moment. What is one small, kind thing you can do for yourself in the next 10 minutes?'**
+  String get puzzleNowStep2Body;
+
+  /// Button label on the final step of the Now Moment exercise; finishes and returns.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get puzzleComplete;
+
+  /// Instruction text under the Colour Calm header.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap anywhere. Breathe with the circles.'**
+  String get puzzleColorIntro;
+
+  /// Ambient hint shown centered in the empty Colour Calm canvas before any taps.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap anywhere'**
+  String get puzzleColorTapAnywhere;
+
+  /// Subject line for the OS share sheet when exporting an unencrypted (plain JSON) backup file.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward Backup'**
+  String get backupShareSubject;
+
+  /// Subject line for the OS share sheet when exporting an encrypted (.jfwbk) backup file.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward Backup (encrypted)'**
+  String get backupShareSubjectEncrypted;
+
+  /// Title of the dialog shown before exporting, asking whether to passphrase-protect the backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your backup?'**
+  String get backupProtectTitle;
+
+  /// Title of the dialog shown when restoring an encrypted backup, prompting for the passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter backup passphrase'**
+  String get backupEnterPassphraseTitle;
+
+  /// Body text of the export passphrase dialog explaining why encryption is recommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a passphrase to encrypt the backup file. Without it, anyone with the file can read your journal.'**
+  String get backupProtectDesc;
+
+  /// Body text of the restore passphrase dialog, prompting for the passphrase used at export time.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is encrypted. Type the passphrase you used when exporting.'**
+  String get backupEnterPassphraseDesc;
+
+  /// Text field label for the backup passphrase input.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase'**
+  String get backupPassphraseLabel;
+
+  /// Text field label for the confirm-passphrase input shown only when exporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm passphrase'**
+  String get backupConfirmPassphraseLabel;
+
+  /// Button that skips encryption and exports an unencrypted plain JSON backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip (plain JSON)'**
+  String get backupSkipPlainJson;
+
+  /// Validation error shown when the passphrase field is left blank.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase cannot be empty.'**
+  String get backupPassphraseEmptyError;
+
+  /// Validation error shown when the passphrase and confirm-passphrase fields differ.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrases do not match.'**
+  String get backupPassphraseMismatchError;
+
+  /// Validation error shown when the export passphrase is shorter than 8 characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 8 characters — longer is safer.'**
+  String get backupPassphraseTooShortError;
+
+  /// Confirm button in the export passphrase dialog that encrypts the backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypt'**
+  String get backupEncryptButton;
+
+  /// Confirm button in the restore passphrase dialog that decrypts the backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get backupUnlockButton;
+
+  /// Note prefix stored with a saved CBT thought record; the user's reframed thought follows the label. Shown in the History screen notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Reframe: {reframe}'**
+  String cbtReframeNotePrefix(String reframe);
+
+  /// Expandable region group header on the Crisis Lines screen for international and United States helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'International / US'**
+  String get crisisRegionInternationalUs;
+
+  /// Expandable region group header on the Crisis Lines screen for United Kingdom and Ireland helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'UK / Ireland'**
+  String get crisisRegionUkIreland;
+
+  /// Expandable region group header on the Crisis Lines screen for South African helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'South Africa'**
+  String get crisisRegionSouthAfrica;
+
+  /// Expandable region group header on the Crisis Lines screen for Australian helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'Australia'**
+  String get crisisRegionAustralia;
+
+  /// Expandable region group header on the Crisis Lines screen for Canadian helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'Canada'**
+  String get crisisRegionCanada;
+
+  /// Expandable region group header on the Crisis Lines screen for New Zealand helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'New Zealand'**
+  String get crisisRegionNewZealand;
+
+  /// Expandable region group header on the Crisis Lines screen for European helplines.
+  ///
+  /// In en, this message translates to:
+  /// **'Europe'**
+  String get crisisRegionEurope;
+
+  /// Availability badge on a crisis line meaning the line is open 24 hours a day, every day.
+  ///
+  /// In en, this message translates to:
+  /// **'24/7'**
+  String get crisisHours247;
+
+  /// Availability badge on a crisis line meaning it is reachable only during normal business hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Business hours'**
+  String get crisisHoursBusiness;
+
+  /// Availability badge on a crisis line meaning it is reachable only during office hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Office hours'**
+  String get crisisHoursOffice;
+
+  /// Availability badge on a crisis line: open Monday to Friday, 9am to 8pm.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon-Fri 9am-8pm'**
+  String get crisisHoursMonFri;
+
+  /// Name of the US '988 Suicide & Crisis Lifeline' helpline. '988' is the dial code.
+  ///
+  /// In en, this message translates to:
+  /// **'988 Suicide & Crisis Lifeline'**
+  String get crisisLine988Name;
+
+  /// One-line description of the US 988 Suicide & Crisis Lifeline.
+  ///
+  /// In en, this message translates to:
+  /// **'US mental health & substance use crisis — call or text'**
+  String get crisisLine988Desc;
+
+  /// Name of the US SAMHSA (Substance Abuse and Mental Health Services Administration) helpline. SAMHSA is a proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'SAMHSA Helpline'**
+  String get crisisLineSamhsaName;
+
+  /// One-line description of the SAMHSA helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Free, confidential substance abuse help'**
+  String get crisisLineSamhsaDesc;
+
+  /// Name of the US 'Crisis Text Line' SMS support service.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis Text Line'**
+  String get crisisLineCrisisTextName;
+
+  /// Instruction shown in place of a phone number for the Crisis Text Line: text the word HOME to the shortcode 741741. Keep 'HOME' and '741741' unchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Text HOME to 741741'**
+  String get crisisLineCrisisTextNumber;
+
+  /// One-line description of the Crisis Text Line.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-based crisis support'**
+  String get crisisLineCrisisTextDesc;
+
+  /// Name of the Alcoholics Anonymous (AA) general service line (US). 'AA' is an abbreviation for Alcoholics Anonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'AA General Service'**
+  String get crisisLineAaGeneralName;
+
+  /// One-line description of the AA General Service line.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous support'**
+  String get crisisLineAaGeneralDesc;
+
+  /// Name of the SMART Recovery support organisation (US). SMART Recovery is a proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'SMART Recovery'**
+  String get crisisLineSmartUsName;
+
+  /// One-line description of the SMART Recovery support line (US).
+  ///
+  /// In en, this message translates to:
+  /// **'Science-based recovery support'**
+  String get crisisLineSmartUsDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for the United Kingdom.
+  ///
+  /// In en, this message translates to:
+  /// **'AA United Kingdom'**
+  String get crisisLineAaUkName;
+
+  /// One-line description of the AA United Kingdom helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous UK'**
+  String get crisisLineAaUkDesc;
+
+  /// Name of the UK 'Drinkline' national alcohol helpline. Drinkline is a proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinkline'**
+  String get crisisLineDrinklineName;
+
+  /// One-line description of the Drinkline helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'National alcohol helpline'**
+  String get crisisLineDrinklineDesc;
+
+  /// Name of the UK/Ireland 'Samaritans' emotional support charity. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Samaritans'**
+  String get crisisLineSamaritansName;
+
+  /// One-line description of the Samaritans helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional support in crisis'**
+  String get crisisLineSamaritansDesc;
+
+  /// Name of the UK 'Frank' drug and alcohol helpline. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Frank'**
+  String get crisisLineFrankName;
+
+  /// One-line description of the Frank helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Drug and alcohol helpline'**
+  String get crisisLineFrankDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for Ireland.
+  ///
+  /// In en, this message translates to:
+  /// **'AA Ireland'**
+  String get crisisLineAaIrelandName;
+
+  /// One-line description of the AA Ireland helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous Ireland'**
+  String get crisisLineAaIrelandDesc;
+
+  /// Name of the South African SADAG suicide crisis helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Suicide Crisis Helpline'**
+  String get crisisLineSadagSuicideName;
+
+  /// One-line description of the SADAG suicide crisis line. SADAG is a proper-name acronym; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'SADAG 24-hour suicide crisis line'**
+  String get crisisLineSadagSuicideDesc;
+
+  /// Name of the SADAG substance-abuse helpline (South Africa).
+  ///
+  /// In en, this message translates to:
+  /// **'SADAG Substance Abuse'**
+  String get crisisLineSadagSubstanceName;
+
+  /// Full name of SADAG, shown as the description of its substance-abuse line.
+  ///
+  /// In en, this message translates to:
+  /// **'South African Depression and Anxiety Group'**
+  String get crisisLineSadagSubstanceDesc;
+
+  /// Name of the SADAG SMS (text) support line (South Africa).
+  ///
+  /// In en, this message translates to:
+  /// **'SADAG SMS Line'**
+  String get crisisLineSadagSmsName;
+
+  /// One-line description of the SADAG SMS support line.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-based support'**
+  String get crisisLineSadagSmsDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for South Africa.
+  ///
+  /// In en, this message translates to:
+  /// **'AA South Africa'**
+  String get crisisLineAaSaName;
+
+  /// One-line description of the AA South Africa helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous SA'**
+  String get crisisLineAaSaDesc;
+
+  /// Name of the 'Lifeline South Africa' crisis counselling service.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifeline South Africa'**
+  String get crisisLineLifelineSaName;
+
+  /// One-line description of the Lifeline South Africa service.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis counselling'**
+  String get crisisLineLifelineSaDesc;
+
+  /// Name of the South African FAMSA helpline. FAMSA is a proper-name acronym; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'FAMSA'**
+  String get crisisLineFamsaName;
+
+  /// Full name of FAMSA, shown as its line description.
+  ///
+  /// In en, this message translates to:
+  /// **'Family and Marriage Society of SA'**
+  String get crisisLineFamsaDesc;
+
+  /// Name of the South African SANCA helpline. SANCA is a proper-name acronym; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'SANCA'**
+  String get crisisLineSancaName;
+
+  /// Full name of SANCA, shown as its line description.
+  ///
+  /// In en, this message translates to:
+  /// **'SA National Council on Alcoholism'**
+  String get crisisLineSancaDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for Australia.
+  ///
+  /// In en, this message translates to:
+  /// **'AA Australia'**
+  String get crisisLineAaAustraliaName;
+
+  /// One-line description of the AA Australia helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous Australia'**
+  String get crisisLineAaAustraliaDesc;
+
+  /// Name of the Australian 'Beyond Blue' mental health service. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Beyond Blue'**
+  String get crisisLineBeyondBlueName;
+
+  /// One-line description of the Beyond Blue service.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental health support'**
+  String get crisisLineBeyondBlueDesc;
+
+  /// Name of the 'Lifeline Australia' crisis support service.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifeline Australia'**
+  String get crisisLineLifelineAuName;
+
+  /// One-line description of the Lifeline Australia service.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis support'**
+  String get crisisLineLifelineAuDesc;
+
+  /// Name of the Australian 'Turning Point' alcohol and drug treatment service. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning Point'**
+  String get crisisLineTurningPointName;
+
+  /// One-line description of the Turning Point service.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol and drug treatment'**
+  String get crisisLineTurningPointDesc;
+
+  /// Name of the SMART Recovery service for Australia (AU). SMART Recovery is a proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'SMART Recovery AU'**
+  String get crisisLineSmartAuName;
+
+  /// One-line description of the SMART Recovery AU service.
+  ///
+  /// In en, this message translates to:
+  /// **'Science-based recovery'**
+  String get crisisLineSmartAuDesc;
+
+  /// Name of the 'Crisis Services Canada' national crisis line.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis Services Canada'**
+  String get crisisLineCrisisServicesCanadaName;
+
+  /// One-line description of Crisis Services Canada.
+  ///
+  /// In en, this message translates to:
+  /// **'National crisis line'**
+  String get crisisLineCrisisServicesCanadaDesc;
+
+  /// Name of the Canadian CAMH helpline. CAMH is a proper-name acronym; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'CAMH'**
+  String get crisisLineCamhName;
+
+  /// Full name of CAMH, shown as its line description.
+  ///
+  /// In en, this message translates to:
+  /// **'Centre for Addiction and Mental Health'**
+  String get crisisLineCamhDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for Canada.
+  ///
+  /// In en, this message translates to:
+  /// **'AA Canada'**
+  String get crisisLineAaCanadaName;
+
+  /// One-line description of the AA Canada helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous Canada'**
+  String get crisisLineAaCanadaDesc;
+
+  /// Name of the Canadian 'ConnexOntario' helpline. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'ConnexOntario'**
+  String get crisisLineConnexOntarioName;
+
+  /// One-line description of the ConnexOntario helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Mental health and addictions'**
+  String get crisisLineConnexOntarioDesc;
+
+  /// Name of the Alcoholics Anonymous helpline for New Zealand.
+  ///
+  /// In en, this message translates to:
+  /// **'AA New Zealand'**
+  String get crisisLineAaNzName;
+
+  /// One-line description of the AA New Zealand helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous NZ'**
+  String get crisisLineAaNzDesc;
+
+  /// Name of the 'Lifeline NZ' crisis support service (New Zealand).
+  ///
+  /// In en, this message translates to:
+  /// **'Lifeline NZ'**
+  String get crisisLineLifelineNzName;
+
+  /// One-line description of the Lifeline NZ service.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis support'**
+  String get crisisLineLifelineNzDesc;
+
+  /// Name of the New Zealand 'Need to Talk' (1737) free call-or-text support line. Proper name; keep it.
+  ///
+  /// In en, this message translates to:
+  /// **'Need to Talk'**
+  String get crisisLineNeedToTalkName;
+
+  /// One-line description of the Need to Talk line.
+  ///
+  /// In en, this message translates to:
+  /// **'Free call or text'**
+  String get crisisLineNeedToTalkDesc;
+
+  /// Name of the New Zealand 'Alcohol Drug Helpline'.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol Drug Helpline'**
+  String get crisisLineAlcoholDrugNzName;
+
+  /// One-line description of the New Zealand Alcohol Drug Helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol and drug support'**
+  String get crisisLineAlcoholDrugNzDesc;
+
+  /// Name of the German DHS helpline; format is 'Country — Organisation'. Keep the em dash and 'DHS' acronym.
+  ///
+  /// In en, this message translates to:
+  /// **'Germany — DHS'**
+  String get crisisLineGermanyDhsName;
+
+  /// Full German-language name of DHS (German Centre for Addiction Issues), shown as its description. Keep as-is.
+  ///
+  /// In en, this message translates to:
+  /// **'Deutsche Hauptstelle fuer Suchtfragen'**
+  String get crisisLineGermanyDhsDesc;
+
+  /// Name of the French 'Ecoute Alcool' helpline; format is 'Country — Organisation'. Keep 'Ecoute Alcool'.
+  ///
+  /// In en, this message translates to:
+  /// **'France — Ecoute Alcool'**
+  String get crisisLineFranceEcouteName;
+
+  /// One-line description of the France Ecoute Alcool helpline.
+  ///
+  /// In en, this message translates to:
+  /// **'National alcohol helpline'**
+  String get crisisLineFranceEcouteDesc;
+
+  /// Name of the Dutch 'Jellinek' addiction service; format is 'Country — Organisation'. Keep 'Jellinek'.
+  ///
+  /// In en, this message translates to:
+  /// **'Netherlands — Jellinek'**
+  String get crisisLineNetherlandsJellinekName;
+
+  /// One-line description of the Netherlands Jellinek service.
+  ///
+  /// In en, this message translates to:
+  /// **'Addiction treatment'**
+  String get crisisLineNetherlandsJellinekDesc;
+
+  /// Name of the Spanish Alcoholics Anonymous service; format is 'Country — Organisation'. Keep 'AA Espana'.
+  ///
+  /// In en, this message translates to:
+  /// **'Spain — AA Espana'**
+  String get crisisLineSpainAaName;
+
+  /// One-line description of the AA Spain service.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcoholics Anonymous Spain'**
+  String get crisisLineSpainAaDesc;
+
+  /// Title of the morning intention bottom-sheet when no intention has been set yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set today\'s intention'**
+  String get dailyIntentionSetTitle;
+
+  /// Title of the intention bottom-sheet when an intention already exists and can be edited.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit today\'s intention'**
+  String get dailyIntentionEditTitle;
+
+  /// Subtitle prompting the user to write a small recovery intention for the day.
+  ///
+  /// In en, this message translates to:
+  /// **'One small thing for your recovery today.'**
+  String get dailyIntentionSubtitle;
+
+  /// Hint text inside the daily intention text field giving an example intention.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Call my sponsor before noon.'**
+  String get dailyIntentionHint;
+
+  /// Button label to save the daily intention.
+  ///
+  /// In en, this message translates to:
+  /// **'Save intention'**
+  String get dailyIntentionSaveButton;
+
+  /// Transient button label shown while a daily-practice entry is being saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get dailySaving;
+
+  /// Title of the evening review pane asking the user to reflect on their intention.
+  ///
+  /// In en, this message translates to:
+  /// **'How did today go?'**
+  String get dailyReviewTitle;
+
+  /// Label introducing the intention the user wrote earlier in the day, shown above the quoted intention text.
+  ///
+  /// In en, this message translates to:
+  /// **'This morning you said:'**
+  String get dailyReviewPrompt;
+
+  /// Pill button: the user followed through on today's intention.
+  ///
+  /// In en, this message translates to:
+  /// **'Did it'**
+  String get dailyReviewDidIt;
+
+  /// Pill button: the user partly followed through on today's intention.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly'**
+  String get dailyReviewPartly;
+
+  /// Pill button: the user has not yet followed through on today's intention.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get dailyReviewNotYet;
+
+  /// Title of the weekly recovery-capital check bottom-sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery capital this week'**
+  String get dailyCapitalTitle;
+
+  /// Checklist row label: did the user connect with a supportive person this week.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected with someone supportive'**
+  String get dailyCapitalConnected;
+
+  /// Checklist row label: did the user move/exercise this week.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved my body'**
+  String get dailyCapitalPhysical;
+
+  /// Checklist row label: did the user sleep enough most nights this week.
+  ///
+  /// In en, this message translates to:
+  /// **'Slept enough most nights'**
+  String get dailyCapitalSlept;
+
+  /// Checklist row label: did the user spend time in a place that supports recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent time somewhere that helps me'**
+  String get dailyCapitalHelpfulPlace;
+
+  /// Checklist row label: did the user do something personally meaningful this week.
+  ///
+  /// In en, this message translates to:
+  /// **'Did something meaningful to me'**
+  String get dailyCapitalMeaningful;
+
+  /// Hint text for the optional note field in the weekly recovery-capital check.
+  ///
+  /// In en, this message translates to:
+  /// **'A note for future-you (optional)'**
+  String get dailyCapitalNoteHint;
+
+  /// Button label to save the weekly recovery-capital check.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this week'**
+  String get dailyCapitalSaveButton;
+
+  /// Button that closes the open CBT guide walkthrough. Keep the ✕ symbol.
+  ///
+  /// In en, this message translates to:
+  /// **'✕ Close'**
+  String get emergencyCloseGuide;
+
+  /// Placeholder text for the free-text field where the user writes their reflection during a CBT guide step.
+  ///
+  /// In en, this message translates to:
+  /// **'Your thoughts…'**
+  String get cbtGuideThoughtsHint;
+
+  /// Number of steps in a CBT guide, shown under the guide title in the list.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 step} other{{count} steps}}'**
+  String cbtGuideStepCount(int count);
+
+  /// Italic heading at the top of the My Reasons tab, framing the user's personal reasons for recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Why I\'m doing this.'**
+  String get reasonsWhyHeading;
+
+  /// Empty-state message on the My Reasons tab when the user has not added any reasons yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your reasons in Settings → My Motivation. Reading them during a craving can be powerful.'**
+  String get reasonsEmptyHint;
+
+  /// Intro line above the HALT (Hungry/Angry/Lonely/Tired) self-check list.
+  ///
+  /// In en, this message translates to:
+  /// **'Before acting on a craving, check in:'**
+  String get haltCheckInPrompt;
+
+  /// Hero heading on the Play the Tape tab. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause for a moment.\nLook at what happens next.'**
+  String get playTapeHeroHeading;
+
+  /// Intro paragraph on the Play the Tape tab explaining the exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'An urge can feel urgent, but it is temporary. Before you act, walk yourself through the next few moments, tonight, and tomorrow morning.'**
+  String get playTapeIntro;
+
+  /// Title of the card showing consequences of drinking, on the Play the Tape tab.
+  ///
+  /// In en, this message translates to:
+  /// **'If I drink now'**
+  String get playTapeDrinkTitle;
+
+  /// Title of the card showing benefits of staying sober, on the Play the Tape tab.
+  ///
+  /// In en, this message translates to:
+  /// **'If I stay sober'**
+  String get playTapeSoberTitle;
+
+  /// Timeline row label (immediate timeframe) within a Play the Tape consequence card.
+  ///
+  /// In en, this message translates to:
+  /// **'Right now'**
+  String get playTapePhaseRightNow;
+
+  /// Timeline row label (evening timeframe) within a Play the Tape consequence card.
+  ///
+  /// In en, this message translates to:
+  /// **'Later tonight'**
+  String get playTapePhaseTonight;
+
+  /// Timeline row label (next-day timeframe) within a Play the Tape consequence card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get playTapePhaseTomorrow;
+
+  /// Bullet under 'Right now' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'Relief may feel immediate'**
+  String get playTapeDrinkNow0;
+
+  /// Bullet under 'Right now' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'The craving softens for a little while'**
+  String get playTapeDrinkNow1;
+
+  /// Bullet under 'Later tonight' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'The difficult feelings often return'**
+  String get playTapeDrinkTonight0;
+
+  /// Bullet under 'Later tonight' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep may be disrupted'**
+  String get playTapeDrinkTonight1;
+
+  /// Bullet under 'Later tonight' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'My momentum is interrupted'**
+  String get playTapeDrinkTonight2;
+
+  /// Bullet under 'Tomorrow' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I may wake with regret'**
+  String get playTapeDrinkTomorrow0;
+
+  /// Bullet under 'Tomorrow' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'The next day asks more of me'**
+  String get playTapeDrinkTomorrow1;
+
+  /// Bullet under 'Tomorrow' in the 'If I drink now' card.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting again feels harder'**
+  String get playTapeDrinkTomorrow2;
+
+  /// Bullet under 'Right now' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'The craving rises, then passes'**
+  String get playTapeSoberNow0;
+
+  /// Bullet under 'Right now' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I give myself space instead of reacting'**
+  String get playTapeSoberNow1;
+
+  /// Bullet under 'Later tonight' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I protect my peace'**
+  String get playTapeSoberTonight0;
+
+  /// Bullet under 'Later tonight' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I go to bed with clarity'**
+  String get playTapeSoberTonight1;
+
+  /// Bullet under 'Later tonight' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I strengthen self-trust'**
+  String get playTapeSoberTonight2;
+
+  /// Bullet under 'Tomorrow' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I wake up clear-headed'**
+  String get playTapeSoberTomorrow0;
+
+  /// Bullet under 'Tomorrow' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'My momentum grows'**
+  String get playTapeSoberTomorrow1;
+
+  /// Bullet under 'Tomorrow' in the 'If I stay sober' card.
+  ///
+  /// In en, this message translates to:
+  /// **'I feel proud of myself'**
+  String get playTapeSoberTomorrow2;
+
+  /// Title of the action card offering coping tools on the Play the Tape tab.
+  ///
+  /// In en, this message translates to:
+  /// **'What would help right now?'**
+  String get playTapeWhatHelpsTitle;
+
+  /// Action button that opens the breathing exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe with me'**
+  String get playTapeActionBreathe;
+
+  /// Action button that opens the journal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open my journal'**
+  String get playTapeActionJournal;
+
+  /// Action button that opens the My Reasons tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Read my reason'**
+  String get playTapeActionReason;
+
+  /// Action button that opens the urge timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride the wave'**
+  String get playTapeActionRideWave;
+
+  /// Large header title at the top of the Recovery Map (activity heatmap) screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery Map'**
+  String get heatmapRecoveryMapTitle;
+
+  /// Subtitle under the Recovery Map title for users who have been recording for a year or more.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 365 days · A quiet record of the days you showed up.'**
+  String get heatmapSubtitleLastYear;
+
+  /// Subtitle under the Recovery Map title for users who began recording less than a year ago.
+  ///
+  /// In en, this message translates to:
+  /// **'Since you began · A quiet record of the days you showed up.'**
+  String get heatmapSubtitleSinceStart;
+
+  /// Filter chip on the Recovery Map showing entries from all categories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get heatmapFilterAll;
+
+  /// Filter chip on the Recovery Map for craving log entries (plural).
+  ///
+  /// In en, this message translates to:
+  /// **'Cravings'**
+  String get heatmapFilterCravings;
+
+  /// Filter chip / section label on the Recovery Map for logged thought entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Thoughts'**
+  String get heatmapFilterThoughts;
+
+  /// Filter chip / section label on the Recovery Map for movement/activity entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get heatmapFilterMovement;
+
+  /// Summary card stat label: number of days the user logged any self-care entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Care days'**
+  String get heatmapStatCareDays;
+
+  /// Summary card stat label: total number of check-in entries logged.
+  ///
+  /// In en, this message translates to:
+  /// **'Total check-ins'**
+  String get heatmapStatTotalCheckIns;
+
+  /// Summary card stat label: the category the user logged most often.
+  ///
+  /// In en, this message translates to:
+  /// **'Most used'**
+  String get heatmapStatMostUsed;
+
+  /// Summary card stat label: number of check-ins logged in the current calendar month.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get heatmapStatThisMonth;
+
+  /// Tappable link that expands the Recovery Map to show all 12 months.
+  ///
+  /// In en, this message translates to:
+  /// **'See full year'**
+  String get heatmapSeeFullYear;
+
+  /// Tappable link that collapses the Recovery Map back to the most recent two months.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get heatmapShowLess;
+
+  /// Single-letter day-of-week initial for Monday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'M'**
+  String get heatmapDowMon;
+
+  /// Single-letter day-of-week initial for Tuesday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get heatmapDowTue;
+
+  /// Single-letter day-of-week initial for Wednesday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'W'**
+  String get heatmapDowWed;
+
+  /// Single-letter day-of-week initial for Thursday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get heatmapDowThu;
+
+  /// Single-letter day-of-week initial for Friday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get heatmapDowFri;
+
+  /// Single-letter day-of-week initial for Saturday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get heatmapDowSat;
+
+  /// Single-letter day-of-week initial for Sunday in the calendar grid header.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get heatmapDowSun;
+
+  /// Legend label for calendar tiles dated before the user's recovery start date.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you began'**
+  String get heatmapLegendBeforeBegan;
+
+  /// Legend label for calendar tiles on days with no logged entry.
+  ///
+  /// In en, this message translates to:
+  /// **'No entry'**
+  String get heatmapLegendNoEntry;
+
+  /// Heading in the day-detail bottom sheet when no entries exist for the tapped day.
+  ///
+  /// In en, this message translates to:
+  /// **'No entry recorded.'**
+  String get heatmapDayNoEntryTitle;
+
+  /// Reassuring subtitle in the day-detail bottom sheet when no entries exist for that day.
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet day still counts.'**
+  String get heatmapDayQuietCounts;
+
+  /// Section header in the day-detail bottom sheet grouping logged craving entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving support'**
+  String get heatmapSectionCravingSupport;
+
+  /// Placeholder text shown for a journal entry in the day-detail sheet when the entry has no text body.
+  ///
+  /// In en, this message translates to:
+  /// **'(entry)'**
+  String get heatmapEntryFallback;
+
+  /// Placeholder shown for a logged thought in the day-detail sheet when the thought has no text; {type} is the thought tone identifier (e.g. negative).
+  ///
+  /// In en, this message translates to:
+  /// **'(thought — {type})'**
+  String heatmapThoughtFallback(String type);
+
+  /// Encouraging closing line in the day-detail bottom sheet when entries exist for that day.
+  ///
+  /// In en, this message translates to:
+  /// **'You showed up for yourself today.'**
+  String get heatmapDayShowedUp;
+
+  /// App bar title on the personal history screen listing all logged entries.
+  ///
+  /// In en, this message translates to:
+  /// **'My History'**
+  String get historyScreenTitle;
+
+  /// Confirmation dialog title shown before deleting a history entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry?'**
+  String get historyDeleteEntryTitle;
+
+  /// Confirmation dialog body warning that deleting an entry is permanent.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get historyDeleteEntryBody;
+
+  /// Label under a summary stat chip showing the count of journal entries logged in the past week.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal this week'**
+  String get historyStatJournalThisWeek;
+
+  /// Label under a summary stat chip showing the count of gratitude entries logged in the past week.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude this week'**
+  String get historyStatGratitudeThisWeek;
+
+  /// Label under a summary stat chip showing how many days the user has been sober.
+  ///
+  /// In en, this message translates to:
+  /// **'Days sober'**
+  String get historyStatDaysSober;
+
+  /// Compact days value, e.g. '12d' for 12 days, shown in a stat chip.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d'**
+  String historyDaysShort(int days);
+
+  /// Type label at the top of a journal entry card in the history list.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal entry'**
+  String get historyCardJournal;
+
+  /// Hint under a long, collapsed journal entry inviting the user to tap to expand it.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to read more'**
+  String get historyTapToReadMore;
+
+  /// Type label at the top of a gratitude entry card in the history list.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude'**
+  String get historyCardGratitude;
+
+  /// Type label at the top of a craving entry card in the history list.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving'**
+  String get historyCardCraving;
+
+  /// Type label at the top of a thought entry card in the history list.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought'**
+  String get historyCardThought;
+
+  /// Name of the 'run' physical activity type, shown on an activity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get historyActivityRun;
+
+  /// Name of the 'cycle' physical activity type, shown on an activity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get historyActivityCycle;
+
+  /// Name of the 'swim' physical activity type, shown on an activity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get historyActivitySwim;
+
+  /// Name of the 'weights' (weight training) physical activity type, shown on an activity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Weights'**
+  String get historyActivityWeights;
+
+  /// Fallback name for an unrecognised physical activity type, shown on an activity card.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get historyActivityGeneric;
+
+  /// Sub-label on an activity card showing distance in km and duration in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km · {minutes} min'**
+  String historyActivityDistanceTime(String distance, int minutes);
+
+  /// Sleep duration shown on a sleep entry card, e.g. '7.5 hours'.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours'**
+  String historySleepHours(String hours);
+
+  /// Sleep quality label on a sleep entry card, where {quality} is a word like Poor/Fair/OK/Good/Great.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality: {quality}'**
+  String historySleepQuality(String quality);
+
+  /// Badge on a slip entry card indicating the sobriety streak was reset at that point.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get historySlipReset;
+
+  /// Line on a slip card showing how long the user was sober when the slip occurred; {streak} is a phrase like '12 days sober'.
+  ///
+  /// In en, this message translates to:
+  /// **'Sober at the time: {streak}'**
+  String historySlipSoberAtTime(String streak);
+
+  /// Empty-state title when the unfiltered history list has no entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get historyEmptyAllTitle;
+
+  /// Empty-state subtitle when the unfiltered history list has no entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Your entries will appear here'**
+  String get historyEmptyAllSub;
+
+  /// Empty-state title shown when the history list is filtered to cravings and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No cravings yet'**
+  String get historyEmptyCravingsTitle;
+
+  /// Empty-state subtitle prompting the user to log cravings from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your cravings from the home screen'**
+  String get historyEmptyCravingsSub;
+
+  /// Empty-state title shown when the history list is filtered to thoughts and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No thoughts yet'**
+  String get historyEmptyThoughtsTitle;
+
+  /// Empty-state subtitle prompting the user to log thoughts from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your thoughts from the home screen'**
+  String get historyEmptyThoughtsSub;
+
+  /// Empty-state title shown when the history list is filtered to exercise/activity and there is none.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise yet'**
+  String get historyEmptyActivityTitle;
+
+  /// Empty-state subtitle prompting the user to log exercise/activity from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your exercise from the home screen'**
+  String get historyEmptyActivitySub;
+
+  /// Empty-state title shown when the history list is filtered to sleep and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep yet'**
+  String get historyEmptySleepTitle;
+
+  /// Empty-state subtitle prompting the user to log sleep from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your sleep from the home screen'**
+  String get historyEmptySleepSub;
+
+  /// Empty-state title shown when the history list is filtered to journal entries and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries yet'**
+  String get historyEmptyJournalTitle;
+
+  /// Empty-state subtitle prompting the user to log journal entries from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your journal entries from the home screen'**
+  String get historyEmptyJournalSub;
+
+  /// Empty-state title shown when the history list is filtered to gratitude notes and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No gratitude notes yet'**
+  String get historyEmptyGratitudeTitle;
+
+  /// Empty-state subtitle prompting the user to log gratitude notes from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your gratitude notes from the home screen'**
+  String get historyEmptyGratitudeSub;
+
+  /// Empty-state title shown when the history list is filtered to slips and there are none.
+  ///
+  /// In en, this message translates to:
+  /// **'No slips yet'**
+  String get historyEmptySlipsTitle;
+
+  /// Empty-state subtitle prompting the user to log slips from the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your slips from the home screen'**
+  String get historyEmptySlipsSub;
+
+  /// Rotating daily hero line on the home Serenity card (1 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Every day forward is a win.'**
+  String get homeHeroQuote0;
+
+  /// Rotating daily hero line on the home Serenity card (2 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Progress is built in days like this.'**
+  String get homeHeroQuote1;
+
+  /// Rotating daily hero line on the home Serenity card (3 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re farther than yesterday.'**
+  String get homeHeroQuote2;
+
+  /// Rotating daily hero line on the home Serenity card (4 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Today counted. Tomorrow will too.'**
+  String get homeHeroQuote3;
+
+  /// Rotating daily hero line on the home Serenity card (5 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Momentum compounds. Keep going.'**
+  String get homeHeroQuote4;
+
+  /// Rotating daily hero line on the home Serenity card (6 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Each day is a brick in the wall.'**
+  String get homeHeroQuote5;
+
+  /// Rotating daily hero line on the home Serenity card (7 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You chose this. Again.'**
+  String get homeHeroQuote6;
+
+  /// Rotating daily hero line on the home Serenity card (8 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Sober is a verb today.'**
+  String get homeHeroQuote7;
+
+  /// Rotating daily hero line on the home Serenity card (9 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The streak is the strategy.'**
+  String get homeHeroQuote8;
+
+  /// Rotating daily hero line on the home Serenity card (10 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You earned this day.'**
+  String get homeHeroQuote9;
+
+  /// Rotating daily hero line on the home Serenity card (11 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Forward is the only direction.'**
+  String get homeHeroQuote10;
+
+  /// Rotating daily hero line on the home Serenity card (12 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Days stack into years.'**
+  String get homeHeroQuote11;
+
+  /// Rotating daily hero line on the home Serenity card (13 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Discipline becomes identity.'**
+  String get homeHeroQuote12;
+
+  /// Rotating daily hero line on the home Serenity card (14 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re rewriting the story.'**
+  String get homeHeroQuote13;
+
+  /// Rotating daily hero line on the home Serenity card (15 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The next right choice is the whole game.'**
+  String get homeHeroQuote14;
+
+  /// Rotating daily hero line on the home Serenity card (16 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Show up. The rest follows.'**
+  String get homeHeroQuote15;
+
+  /// Rotating daily hero line on the home Serenity card (17 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Old life. New chapter.'**
+  String get homeHeroQuote16;
+
+  /// Rotating daily hero line on the home Serenity card (18 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You did the hard thing today.'**
+  String get homeHeroQuote17;
+
+  /// Rotating daily hero line on the home Serenity card (19 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Progress isn\'t loud. It\'s daily.'**
+  String get homeHeroQuote18;
+
+  /// Rotating daily hero line on the home Serenity card (20 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Better is built, not found.'**
+  String get homeHeroQuote19;
+
+  /// Rotating daily hero line on the home Serenity card (21 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Today is the receipt.'**
+  String get homeHeroQuote20;
+
+  /// Rotating daily hero line on the home Serenity card (22 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You moved the needle.'**
+  String get homeHeroQuote21;
+
+  /// Rotating daily hero line on the home Serenity card (23 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Sobriety is the work and the reward.'**
+  String get homeHeroQuote22;
+
+  /// Rotating daily hero line on the home Serenity card (24 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'What you do daily defines you.'**
+  String get homeHeroQuote23;
+
+  /// Rotating daily hero line on the home Serenity card (25 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Hours add to days. Days add to years.'**
+  String get homeHeroQuote24;
+
+  /// Rotating daily hero line on the home Serenity card (26 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re closer than you were.'**
+  String get homeHeroQuote25;
+
+  /// Rotating daily hero line on the home Serenity card (27 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The first hard choice is behind you.'**
+  String get homeHeroQuote26;
+
+  /// Rotating daily hero line on the home Serenity card (28 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not who you were yesterday.'**
+  String get homeHeroQuote27;
+
+  /// Rotating daily hero line on the home Serenity card (29 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Action over feeling. Always.'**
+  String get homeHeroQuote28;
+
+  /// Rotating daily hero line on the home Serenity card (30 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Hard now. Easier later.'**
+  String get homeHeroQuote29;
+
+  /// Rotating daily hero line on the home Serenity card (31 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re stacking days.'**
+  String get homeHeroQuote30;
+
+  /// Rotating daily hero line on the home Serenity card (32 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The streak doesn\'t lie.'**
+  String get homeHeroQuote31;
+
+  /// Rotating daily hero line on the home Serenity card (33 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose forward. Choose again.'**
+  String get homeHeroQuote32;
+
+  /// Rotating daily hero line on the home Serenity card (34 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You showed up. That\'s everything.'**
+  String get homeHeroQuote33;
+
+  /// Rotating daily hero line on the home Serenity card (35 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Days like this are how it changes.'**
+  String get homeHeroQuote34;
+
+  /// Rotating daily hero line on the home Serenity card (36 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re building something real.'**
+  String get homeHeroQuote35;
+
+  /// Rotating daily hero line on the home Serenity card (37 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Today is proof.'**
+  String get homeHeroQuote36;
+
+  /// Rotating daily hero line on the home Serenity card (38 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Discipline is freedom.'**
+  String get homeHeroQuote37;
+
+  /// Rotating daily hero line on the home Serenity card (39 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'One choice. Then the next.'**
+  String get homeHeroQuote38;
+
+  /// Rotating daily hero line on the home Serenity card (40 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The reps are the result.'**
+  String get homeHeroQuote39;
+
+  /// Rotating daily hero line on the home Serenity card (41 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re earning your future.'**
+  String get homeHeroQuote40;
+
+  /// Rotating daily hero line on the home Serenity card (42 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Effort compounds quietly.'**
+  String get homeHeroQuote41;
+
+  /// Rotating daily hero line on the home Serenity card (43 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s win is tomorrow\'s foundation.'**
+  String get homeHeroQuote42;
+
+  /// Rotating daily hero line on the home Serenity card (44 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Forward is enough.'**
+  String get homeHeroQuote43;
+
+  /// Rotating daily hero line on the home Serenity card (45 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not starting over. You\'re continuing.'**
+  String get homeHeroQuote44;
+
+  /// Rotating daily hero line on the home Serenity card (46 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The work is the win.'**
+  String get homeHeroQuote45;
+
+  /// Rotating daily hero line on the home Serenity card (47 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Strong is what you become.'**
+  String get homeHeroQuote46;
+
+  /// Rotating daily hero line on the home Serenity card (48 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'The hard days build you.'**
+  String get homeHeroQuote47;
+
+  /// Rotating daily hero line on the home Serenity card (49 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'Decision by decision. Day by day.'**
+  String get homeHeroQuote48;
+
+  /// Rotating daily hero line on the home Serenity card (50 of 50).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re doing it.'**
+  String get homeHeroQuote49;
+
+  /// Short healing-timeline body text on the home recovery banner for the 12-hour milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your body begins adjusting. Hydration and rest are your allies right now.'**
+  String get homeRecoveryBody0;
+
+  /// Short healing-timeline body text on the home recovery banner for the 24-hour milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart rate and sleep patterns may begin to shift as your body finds its rhythm.'**
+  String get homeRecoveryBody1;
+
+  /// Short healing-timeline body text on the home recovery banner for the 48-hour milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'A significant window — be patient with yourself. Seek support if anything feels unsafe.'**
+  String get homeRecoveryBody2;
+
+  /// Short healing-timeline body text on the home recovery banner for the 3-day milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'The most intense early adjustment may begin to ease. A small window of calm can emerge.'**
+  String get homeRecoveryBody3;
+
+  /// Short healing-timeline body text on the home recovery banner for the 1-week milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Restorative sleep often begins to return. Vivid dreams can be a sign of deep repair.'**
+  String get homeRecoveryBody4;
+
+  /// Short healing-timeline body text on the home recovery banner for the 2-week milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical stamina may begin to return. Concentration and memory are beginning to sharpen.'**
+  String get homeRecoveryBody5;
+
+  /// Short healing-timeline body text on the home recovery banner for the 1-month milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Many people describe a sense of physical relief settling in around this point.'**
+  String get homeRecoveryBody6;
+
+  /// Short healing-timeline body text on the home recovery banner for the 3-month milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Day-to-day satisfaction may slowly start to feel more accessible again.'**
+  String get homeRecoveryBody7;
+
+  /// Short healing-timeline body text on the home recovery banner for the 6-month milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Many people notice a steadier baseline. Urges may become less frequent and easier to move through.'**
+  String get homeRecoveryBody8;
+
+  /// Short healing-timeline body text on the home recovery banner for the 1-year milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'For many people, the long-term load on sleep, energy, and mood begins to ease at this point.'**
+  String get homeRecoveryBody9;
+
+  /// Short healing-timeline body text on the home recovery banner for the 2-years-and-beyond milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'The space you have created can continue to deepen over time — one ordinary day at a time.'**
+  String get homeRecoveryBody10;
+
+  /// Recovery banner current-stage label shown before the first (12-hour) milestone is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'Just Starting'**
+  String get homeRecoveryJustStarting;
+
+  /// Recovery banner body shown before the first milestone is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'The decision you made today already matters. Be gentle with yourself.'**
+  String get homeRecoveryJustStartingBody;
+
+  /// Recovery banner relative-time phrase: the next milestone is reached right now.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get homeRecoveryNow;
+
+  /// Recovery banner countdown: time until next milestone, in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'in {min} min'**
+  String homeRecoveryInMin(int min);
+
+  /// Recovery banner countdown: time until next milestone, in hours.
+  ///
+  /// In en, this message translates to:
+  /// **'in {hrs} hrs'**
+  String homeRecoveryInHrs(int hrs);
+
+  /// Recovery banner countdown: time until next milestone, in days.
+  ///
+  /// In en, this message translates to:
+  /// **'in {days, plural, =1{1 day} other{{days} days}}'**
+  String homeRecoveryInDays(int days);
+
+  /// Uppercase header on the home recovery/healing-timeline banner card.
+  ///
+  /// In en, this message translates to:
+  /// **'THE HEALING TIMELINE'**
+  String get homeHealingTimelineHeader;
+
+  /// Recovery banner: label of the next milestone, e.g. 'Next: 1 Week'.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {label}'**
+  String homeRecoveryNext(String label);
+
+  /// Recovery banner line shown once every healing milestone has been reached.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reached every milestone. Remarkable.'**
+  String get homeRecoveryAllMilestones;
+
+  /// Journey timeline node label for the 180-day milestone (sentence case).
+  ///
+  /// In en, this message translates to:
+  /// **'Six months'**
+  String get homeMilestoneNode5Label;
+
+  /// Journey timeline node label for the 365-day milestone (sentence case).
+  ///
+  /// In en, this message translates to:
+  /// **'One year'**
+  String get homeMilestoneNode6Label;
+
+  /// Home header greeting using the user's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, {name}'**
+  String homeGreetingName(String name);
+
+  /// Uppercase caption above the live counter when the quit date is in the future (counting down).
+  ///
+  /// In en, this message translates to:
+  /// **'STARTS IN'**
+  String get homeStartsIn;
+
+  /// Uppercase caption above the live counter when counting time elapsed since the sober date.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME SOBER'**
+  String get homeTimeSober;
+
+  /// Uppercase unit label under the days digit in the live home counter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{DAY} other{DAYS}}'**
+  String homeCounterDays(int count);
+
+  /// Uppercase unit label under the hours digit in the live home counter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{HOUR} other{HOURS}}'**
+  String homeCounterHours(int count);
+
+  /// Uppercase unit label under the minutes digit in the live home counter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{MINUTE} other{MINUTES}}'**
+  String homeCounterMinutes(int count);
+
+  /// Uppercase unit label under the seconds digit in the live home counter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{SECOND} other{SECONDS}}'**
+  String homeCounterSeconds(int count);
+
+  /// Journey card timing caption for the day-0 milestone node.
+  ///
+  /// In en, this message translates to:
+  /// **'start'**
+  String get homeMilestoneTimingStart;
+
+  /// Journey card timing caption for an unreached milestone under one year, e.g. 'Day 30'.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}'**
+  String homeMilestoneTimingDay(int day);
+
+  /// Journey card timing caption for the 365-day milestone node.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get homeMilestoneTimingOneYear;
+
+  /// Journey card timing caption for a multi-year milestone node, e.g. '2 yr'.
+  ///
+  /// In en, this message translates to:
+  /// **'{years} yr'**
+  String homeMilestoneTimingYears(int years);
+
+  /// Journey card progress-bar caption shown once the final milestone is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'One year of sobriety — remarkable.'**
+  String get homeJourneyProgressComplete;
+
+  /// Journey card progress-bar caption: days remaining until the next milestone, e.g. '5 days to one week'. {label} is the lowercased next-milestone name.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}} to {label}'**
+  String homeJourneyDaysTo(int count, String label);
+
+  /// Title on the home daily-intention card.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s intention'**
+  String get homeIntentionTitle;
+
+  /// Subtitle inviting the user to set today's intention on the home intention card.
+  ///
+  /// In en, this message translates to:
+  /// **'One small thing for your recovery today.'**
+  String get homeIntentionPrompt;
+
+  /// Evening-review prompt label on the home intention card after 4pm.
+  ///
+  /// In en, this message translates to:
+  /// **'How did today go?'**
+  String get homeIntentionReviewPrompt;
+
+  /// Home intention card outcome blurb when the user marked the intention as done. Keep the leading checkmark.
+  ///
+  /// In en, this message translates to:
+  /// **'✓ You did it.'**
+  String get homeIntentionOutcomeDid;
+
+  /// Home intention card outcome blurb when partly done. Keep the leading tilde.
+  ///
+  /// In en, this message translates to:
+  /// **'~ Partly — that still counts.'**
+  String get homeIntentionOutcomePartly;
+
+  /// Home intention card outcome blurb when not yet done. Keep the leading ellipsis.
+  ///
+  /// In en, this message translates to:
+  /// **'… Not yet — tomorrow is a new day.'**
+  String get homeIntentionOutcomeNotYet;
+
+  /// Section label above the HALT (hungry/angry/lonely/tired) chips in the log-a-craving sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Right now, are you any of these?'**
+  String get homeCravingHaltQuestion;
+
+  /// Helper caption under the HALT chips in the log-a-craving sheet. H.A.L.T. is an acronym.
+  ///
+  /// In en, this message translates to:
+  /// **'Naming it slows the wave down — H.A.L.T.'**
+  String get homeCravingHaltBlurb;
+
+  /// Section label above the outcome pills in the log-a-craving sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'How did it turn out?'**
+  String get homeCravingOutcomeQuestion;
+
+  /// Outcome pill in the log-a-craving sheet: the user stayed sober.
+  ///
+  /// In en, this message translates to:
+  /// **'Stayed sober'**
+  String get homeCravingOutcomeStayedSober;
+
+  /// Outcome pill in the log-a-craving sheet: outcome was unclear.
+  ///
+  /// In en, this message translates to:
+  /// **'Unclear'**
+  String get homeCravingOutcomeUnclear;
+
+  /// Outcome pill in the log-a-craving sheet: the user slipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Slipped'**
+  String get homeCravingOutcomeSlipped;
+
+  /// Clause inserted into the 'last time' craving hint when the prior similar craving ended in staying sober.
+  ///
+  /// In en, this message translates to:
+  /// **'and you stayed sober'**
+  String get homeLastTimeOutcomeSober;
+
+  /// Clause inserted into the 'last time' craving hint when the prior similar craving ended in a slip.
+  ///
+  /// In en, this message translates to:
+  /// **'and you slipped — useful to know'**
+  String get homeLastTimeOutcomeSlipped;
+
+  /// Parenthetical inserted into the 'last time' craving hint giving how long the prior craving lasted. Keep the leading space.
+  ///
+  /// In en, this message translates to:
+  /// **' (passed in {minutes} min)'**
+  String homeLastTimeDuration(int minutes);
+
+  /// Personal 'last time' hint in the craving sheet. {response} is a lowercased response verb phrase, {duration} is an optional parenthetical, {outcome} is an optional outcome clause.
+  ///
+  /// In en, this message translates to:
+  /// **'Last time around this level you {response}{duration} {outcome}.'**
+  String homeLastTimeBlurb(String response, String duration, String outcome);
+
+  /// Snackbar confirmation after saving a thought log.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought saved privately'**
+  String get homeThoughtSavedPrivately;
+
+  /// Snackbar shown when saving a thought log fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save: {error}'**
+  String homeThoughtSaveError(String error);
+
+  /// Text field hint in the log-a-thought sheet (optional variant).
+  ///
+  /// In en, this message translates to:
+  /// **'Write the thought in your own words (optional).'**
+  String get homeThoughtWriteHintOptional;
+
+  /// Activity-type chip label in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get homeActivityTypeRun;
+
+  /// Activity-type chip label in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get homeActivityTypeCycle;
+
+  /// Activity-type chip label in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get homeActivityTypeSwim;
+
+  /// Activity-type chip label in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Gym'**
+  String get homeActivityTypeGym;
+
+  /// Section label for the time + distance inputs in the log-activity sheet (distance-based activities).
+  ///
+  /// In en, this message translates to:
+  /// **'Time & distance'**
+  String get homeActivityTimeDistance;
+
+  /// Field label above the minutes input for distance-based activities in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (min)'**
+  String get homeActivityDurationMin;
+
+  /// Field label above the distance input in the log-activity sheet; {unit} is km or miles.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance ({unit})'**
+  String homeActivityDistanceLabel(String unit);
+
+  /// Abbreviation for minutes used as a text-field suffix in the log-activity sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get homeUnitMin;
+
+  /// Metric distance unit abbreviation (kilometres).
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get homeUnitKm;
+
+  /// Imperial distance unit (miles).
+  ///
+  /// In en, this message translates to:
+  /// **'miles'**
+  String get homeUnitMiles;
+
+  /// Section label above the sleep-factor chips in the log-sleep sheet (short variant).
+  ///
+  /// In en, this message translates to:
+  /// **'What affected sleep?'**
+  String get homeSleepFactorsShortQuestion;
+
+  /// Notes field hint in the log-sleep sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional) - e.g., woke once, settled again quickly.'**
+  String get homeSleepNotesHintShort;
+
+  /// Subtitle under each summary stat chip indicating the metric covers the last 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get insightsStatSub7Days;
+
+  /// Label for the summary stat chip showing average hours of sleep over 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Sleep'**
+  String get insightsStatAvgSleep;
+
+  /// Label for the summary stat chip showing the number of days with logged activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Days'**
+  String get insightsStatActiveDays;
+
+  /// Label for the summary stat chip showing the number of days with a journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Journal Days'**
+  String get insightsStatJournalDays;
+
+  /// Title of the mood trend chart card, covering the last 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood — 7 days'**
+  String get insightsChartMood;
+
+  /// Title of the cravings trend chart card, covering the last 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Cravings — 7 days'**
+  String get insightsChartCravings;
+
+  /// Title of the sleep chart card; values shown are hours per day over 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep — 7 days (hours)'**
+  String get insightsChartSleep;
+
+  /// Title of the exercise chart card; values shown are minutes per day over 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise — 7 days (minutes)'**
+  String get insightsChartExercise;
+
+  /// Empty-state message shown in the mood chart when no journal entries exist.
+  ///
+  /// In en, this message translates to:
+  /// **'No journal entries yet'**
+  String get insightsEmptyMood;
+
+  /// Empty-state message shown in the cravings chart when no cravings are logged.
+  ///
+  /// In en, this message translates to:
+  /// **'No cravings logged'**
+  String get insightsEmptyCravings;
+
+  /// Empty-state message shown in the sleep chart when no sleep is logged.
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep logged'**
+  String get insightsEmptySleep;
+
+  /// Empty-state message shown in the exercise chart when no activity is logged.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity logged'**
+  String get insightsEmptyActivity;
+
+  /// Mood-chart legend label for a hard/low mood day (short form, distinct from 'Hard day').
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get insightsMoodHard;
+
+  /// Title of the thought-patterns card showing positive/neutral/challenging thought breakdown over 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'Thought Patterns — 7 days'**
+  String get insightsThoughtPatterns;
+
+  /// Empty-state message in the thought-patterns card when no thoughts are logged.
+  ///
+  /// In en, this message translates to:
+  /// **'No thoughts logged'**
+  String get insightsEmptyThoughts;
+
+  /// Label for the challenging (negative) category row in the thought-patterns card.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenging'**
+  String get insightsThoughtChallenging;
+
+  /// Single-letter abbreviation for Monday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'M'**
+  String get insightsWeekdayMon;
+
+  /// Single-letter abbreviation for Tuesday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get insightsWeekdayTue;
+
+  /// Single-letter abbreviation for Wednesday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'W'**
+  String get insightsWeekdayWed;
+
+  /// Single-letter abbreviation for Thursday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get insightsWeekdayThu;
+
+  /// Single-letter abbreviation for Friday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get insightsWeekdayFri;
+
+  /// Single-letter abbreviation for Saturday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get insightsWeekdaySat;
+
+  /// Single-letter abbreviation for Sunday, shown on chart x-axes.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get insightsWeekdaySun;
+
+  /// Tooltip on the lock icon button when the journal entry is currently locked; tapping unlocks it.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock entry'**
+  String get journalDetailUnlockEntry;
+
+  /// Tooltip on the lock icon button when the journal entry is currently unlocked; tapping locks it.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock entry'**
+  String get journalDetailLockEntry;
+
+  /// Reason shown in the biometric / PIN re-authentication prompt when the user unlocks a locked journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock this entry'**
+  String get journalDetailUnlockThisEntry;
+
+  /// Reason shown in the biometric / PIN re-authentication prompt when the user opens a locked older 'on this day' echo entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Open this entry'**
+  String get journalDetailOpenThisEntry;
+
+  /// Tooltip on the edit icon button in the journal entry detail screen app bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get journalDetailEdit;
+
+  /// Italic stamp showing when a journal entry was last edited, e.g. 'Edited 5m ago'. {time} is an already-formatted relative time string.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited {time}'**
+  String journalDetailEdited(String time);
+
+  /// Placeholder card shown when a journal entry has a mood but no written text, inviting the user to add words.
+  ///
+  /// In en, this message translates to:
+  /// **'A quick mood check-in. Tap edit to add words when you\'re ready.'**
+  String get journalDetailQuickMoodInvite;
+
+  /// Section header above older journal entries from prior years that share the same calendar day.
+  ///
+  /// In en, this message translates to:
+  /// **'On this day, earlier'**
+  String get journalDetailOnThisDayEarlier;
+
+  /// Title of the confirmation dialog shown before deleting a journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this entry?'**
+  String get journalDetailDeleteTitle;
+
+  /// Body text of the confirmation dialog shown before deleting a journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get journalDetailDeleteBody;
+
+  /// Button that cancels deletion and keeps the journal entry, in the delete confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get journalDetailKeep;
+
+  /// Compact relative time for under an hour ago, e.g. '5m ago'. Used in the 'Edited ...' stamp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String journalDetailMinutesAgo(int count);
+
+  /// Compact relative time for under a day ago, e.g. '3h ago'. Used in the 'Edited ...' stamp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String journalDetailHoursAgo(int count);
+
+  /// Compact relative time for under a week ago, e.g. '4d ago'. Used in the 'Edited ...' stamp.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String journalDetailDaysAgo(int count);
+
+  /// Label on an older 'on this day' echo card indicating how many years ago that entry was written.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
+  String journalDetailYearsAgo(int count);
+
+  /// Preview text shown in place of the body on a locked older 'on this day' echo card.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked entry · tap to unlock'**
+  String get journalDetailLockedEntryTapToUnlock;
+
+  /// Preview text shown on an older 'on this day' echo card when that entry recorded a mood but no written text.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-in (no words)'**
+  String get journalDetailMoodCheckInNoWords;
+
+  /// Snackbar shown after the user logs a quick mood with no body text yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood logged. Tap the card to add words.'**
+  String get journalMoodLoggedSnack;
+
+  /// Reason shown in the biometric/PIN re-auth prompt when opening a locked journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'View this entry'**
+  String get journalReauthViewEntry;
+
+  /// Title of the empty state when no journal entries match the active filter/search.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches'**
+  String get journalFilterEmptyTitle;
+
+  /// Subtitle of the journal filter empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different filter or clear the search.'**
+  String get journalFilterEmptySubtitle;
+
+  /// Header of the bottom sheet that lets the user choose what kind of journal entry to write.
+  ///
+  /// In en, this message translates to:
+  /// **'New entry'**
+  String get journalNewEntryTitle;
+
+  /// Subtitle under the New entry chooser header.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick how you want to write today.'**
+  String get journalNewEntrySubtitle;
+
+  /// Title of the option that opens a blank journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Plain entry'**
+  String get journalPlainEntryTitle;
+
+  /// Description of the plain journal entry option.
+  ///
+  /// In en, this message translates to:
+  /// **'A blank page for your thoughts. Mood, tags, optional prompt.'**
+  String get journalPlainEntrySubtitle;
+
+  /// Title of the option that opens the guided daily-reflection template.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reflection'**
+  String get journalDailyReflectionTitle;
+
+  /// Description of the guided daily reflection option.
+  ///
+  /// In en, this message translates to:
+  /// **'A guided page: gratitude, anchors, wins, cravings, intention.'**
+  String get journalDailyReflectionSubtitle;
+
+  /// Small 'New' badge on the daily reflection option.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get journalBadgeNew;
+
+  /// Heading of the support sheet shown after a fresh entry with a 'crisis' mood.
+  ///
+  /// In en, this message translates to:
+  /// **'I see you. Want a hand?'**
+  String get journalCrisisTitleCrisis;
+
+  /// Heading of the support sheet shown after a fresh entry with a 'hard' mood.
+  ///
+  /// In en, this message translates to:
+  /// **'That sounds heavy.'**
+  String get journalCrisisTitleHard;
+
+  /// Body of the support sheet for a crisis-mood entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your entry helped. A short calm exercise can take it from here.'**
+  String get journalCrisisBodyCrisis;
+
+  /// Body of the support sheet for a hard-mood entry.
+  ///
+  /// In en, this message translates to:
+  /// **'You wrote it down — that already counts. A 60-second thought record can help if you want it.'**
+  String get journalCrisisBodyHard;
+
+  /// Action label routing the user to the calm/emergency toolkit.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the calm room'**
+  String get journalCrisisCalmRoomLabel;
+
+  /// Detail line under the 'Open the calm room' action.
+  ///
+  /// In en, this message translates to:
+  /// **'Breath work, grounding, and one safe action.'**
+  String get journalCrisisCalmRoomDetail;
+
+  /// Action label routing the user to the CBT thought-record tool.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a thought record'**
+  String get journalCrisisThoughtRecordLabel;
+
+  /// Detail line under the 'Try a thought record' action.
+  ///
+  /// In en, this message translates to:
+  /// **'Name the thought, weigh the evidence, reframe it.'**
+  String get journalCrisisThoughtRecordDetail;
+
+  /// Dismiss button on the post-entry crisis support sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m okay for now'**
+  String get journalCrisisDismiss;
+
+  /// Section header grouping journal entries from the last 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get journalBucketThisWeek;
+
+  /// Section header grouping journal entries from 8-14 days ago.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get journalBucketLastWeek;
+
+  /// Section header grouping older journal entries within the current month.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier this month'**
+  String get journalBucketEarlierThisMonth;
+
+  /// Journal writing streak label shown in the diary header.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day writing} other{{count} day writing streak}}'**
+  String journalWritingStreak(int count);
+
+  /// Prompt on the one-tap quick-mood pill.
+  ///
+  /// In en, this message translates to:
+  /// **'How are you right now?'**
+  String get journalQuickMoodPrompt;
+
+  /// Label on the 'on this day' memory card showing how many years ago an entry was written.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{On this day, 1 year ago} other{On this day, {count} years ago}}'**
+  String journalOnThisDay(int count);
+
+  /// Placeholder text for a locked entry shown in the 'on this day' card.
+  ///
+  /// In en, this message translates to:
+  /// **'A locked entry'**
+  String get journalEchoLockedEntry;
+
+  /// Placeholder text for a body-less mood entry shown in the 'on this day' card.
+  ///
+  /// In en, this message translates to:
+  /// **'A mood check-in'**
+  String get journalEchoMoodCheckIn;
+
+  /// Counter showing how many more entries exist from the same day in the 'on this day' card.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 more from this day} other{+{count} more from this day}}'**
+  String journalEchoMore(int count);
+
+  /// Filter chip showing all journal entries (also reused on the vision board).
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get journalFilterAll;
+
+  /// Filter chip showing only today's journal entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get journalFilterToday;
+
+  /// Filter chip showing hard/crisis-mood journal entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get journalFilterHard;
+
+  /// Filter chip showing good/great-mood journal entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Wins'**
+  String get journalFilterWins;
+
+  /// Filter chip showing locked journal entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get journalFilterLocked;
+
+  /// Hint text in the journal search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search your entries…'**
+  String get journalSearchHint;
+
+  /// Title of the journal empty state (no entries yet).
+  ///
+  /// In en, this message translates to:
+  /// **'A place for the unfiltered you'**
+  String get journalEmptyTitle;
+
+  /// Subtitle of the journal empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a door — or tap + to start with a blank page.'**
+  String get journalEmptySubtitle;
+
+  /// Button to open a blank journal entry from the empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a blank page'**
+  String get journalBlankPageButton;
+
+  /// Title of the confirmation dialog when swiping to delete a journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry?'**
+  String get journalDeleteEntryTitle;
+
+  /// Body of the delete-entry confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get journalDeleteEntryBody;
+
+  /// Hint shown in place of the body on a locked journal card.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked entry · tap to unlock'**
+  String get journalCardLockedHint;
+
+  /// Hint shown on a body-less mood-only journal card.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood check-in · tap to add words'**
+  String get journalCardMoodCheckInHint;
+
+  /// Date label on a journal card written today, including the time of day.
+  ///
+  /// In en, this message translates to:
+  /// **'Today {time}'**
+  String journalCardDateToday(String time);
+
+  /// Header of the journal entry sheet when editing an existing entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Entry'**
+  String get journalEditEntryTitle;
+
+  /// Header of the journal entry sheet when creating a new entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Entry'**
+  String get journalTodaysEntryTitle;
+
+  /// Label above the primary mood picker in the entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'How are you feeling?'**
+  String get journalMoodQuestion;
+
+  /// Label above the sub-mood picker when the primary mood is 'great'.
+  ///
+  /// In en, this message translates to:
+  /// **'A little more specific?'**
+  String get journalSubMoodSpecific;
+
+  /// Label above the sub-mood picker for non-great moods.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s underneath?'**
+  String get journalSubMoodUnderneath;
+
+  /// Label above the journal body text field.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind?'**
+  String get journalMindQuestion;
+
+  /// Button label to stop voice dictation in the entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get journalVoiceStop;
+
+  /// Button label to start voice dictation in the entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak'**
+  String get journalVoiceSpeak;
+
+  /// Snackbar shown when voice input cannot be initialised.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input is unavailable. Check microphone permission in Settings.'**
+  String get journalVoiceUnavailable;
+
+  /// Hint text in the journal body text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Write freely — no one else will see this...'**
+  String get journalBodyHint;
+
+  /// Label above the tag picker in the entry sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get journalTagsLabel;
+
+  /// Hint text in the new-tag input field.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a tag…'**
+  String get journalAddTagHint;
+
+  /// Button to add a new tag or affirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get journalAdd;
+
+  /// Lock-toggle title when the entry is locked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked entry'**
+  String get journalLockedEntryLabel;
+
+  /// Lock-toggle title when the entry is unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock this entry'**
+  String get journalLockEntryLabel;
+
+  /// Explanation under the lock-this-entry toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden from the list. Re-auth required to view.'**
+  String get journalLockEntryHint;
+
+  /// Save button when editing an existing journal entry or vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get journalSaveChanges;
+
+  /// Save button when creating a new journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Entry'**
+  String get journalSaveEntry;
+
+  /// Headline of the collapsed prompt strip showing a suggested journaling prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested: {prompt}'**
+  String journalSuggestedPrompt(String prompt);
+
+  /// Small tag marking the smart-default journaling prompt category.
+  ///
+  /// In en, this message translates to:
+  /// **'· suggested'**
+  String get journalSuggestedTag;
+
+  /// Title of the draft-restore banner; {age} is a relative time like '5m ago'.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved draft from {age}'**
+  String journalDraftFrom(String age);
+
+  /// Subtitle of the draft-restore banner showing the draft mood and character count.
+  ///
+  /// In en, this message translates to:
+  /// **'{mood} · {count} chars'**
+  String journalDraftChars(String mood, int count);
+
+  /// Button to discard an unsaved journal draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get journalDraftDiscard;
+
+  /// Relative time for a draft saved less than a minute ago.
+  ///
+  /// In en, this message translates to:
+  /// **'a moment ago'**
+  String get journalAgeMomentAgo;
+
+  /// Relative time for a draft saved N minutes ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String journalAgeMinutesAgo(int count);
+
+  /// Relative time for a draft saved N hours ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String journalAgeHoursAgo(int count);
+
+  /// Relative time for a draft saved more than a day ago.
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get journalAgeYesterday;
+
+  /// Personalised affirmation card addressing the user by name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, you are doing harder things than most people will ever try.'**
+  String journalPersonalCard0(String name);
+
+  /// Personalised affirmation card addressing the user by name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, your sober self is the realest version of you.'**
+  String journalPersonalCard1(String name);
+
+  /// Personalised affirmation card addressing the user by name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, this moment is enough. You are enough.'**
+  String journalPersonalCard2(String name);
+
+  /// Personalised affirmation card addressing the user by name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, the version of you a year from now is rooting for today\'s you.'**
+  String journalPersonalCard3(String name);
+
+  /// Affirmation card mirroring back a recent gratitude the user wrote.
+  ///
+  /// In en, this message translates to:
+  /// **'You wrote this: \"{gratitude}\" — that\'s still true.'**
+  String journalPersonalGratitudeCard(String gratitude);
+
+  /// Hint under the swipeable affirmation card.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for more affirmations'**
+  String get journalSwipeHint;
+
+  /// Section header for the user's custom affirmations list.
+  ///
+  /// In en, this message translates to:
+  /// **'Your affirmations'**
+  String get journalYourAffirmations;
+
+  /// Empty-state hint when the user has no custom affirmations.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your own'**
+  String get journalTapToAddAffirmation;
+
+  /// Header of the add-affirmation bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Affirmation'**
+  String get journalAddAffirmationTitle;
+
+  /// Hint text in the add-affirmation input field.
+  ///
+  /// In en, this message translates to:
+  /// **'I am...'**
+  String get journalAffirmationHint;
+
+  /// Title of the vision-board empty state when no items match the active filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get visionFilterEmptyTitle;
+
+  /// Subtitle of the vision-board filter empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different filter, or add a new dream.'**
+  String get visionFilterEmptySubtitle;
+
+  /// Title of the vision board header banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Vision Board'**
+  String get visionBoardTitle;
+
+  /// Tagline shown in the vision board header when there are no items.
+  ///
+  /// In en, this message translates to:
+  /// **'Visualise the life ahead of you'**
+  String get visionBoardEmptyTagline;
+
+  /// Count of dreams on the vision board, shown in the header subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 dream} other{{count} dreams}}'**
+  String visionDreamCount(int count);
+
+  /// Count of pinned dreams in the vision board header subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pinned'**
+  String visionPinnedCount(int count);
+
+  /// Count of achieved dreams in the vision board header subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} achieved'**
+  String visionAchievedCount(int count);
+
+  /// Vision board filter chip for active (not-yet-achieved) dreams.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get visionFilterActive;
+
+  /// Vision board filter chip for pinned dreams.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get visionFilterPinned;
+
+  /// Vision board filter chip for achieved dreams.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved'**
+  String get visionFilterAchieved;
+
+  /// Title of the vision board empty state (no items yet).
+  ///
+  /// In en, this message translates to:
+  /// **'What does your life ahead look like?'**
+  String get visionEmptyTitle;
+
+  /// Subtitle of the vision board empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with one of these — or tap + for a blank canvas.'**
+  String get visionEmptySubtitle;
+
+  /// Button to add a blank vision item from the empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a blank dream'**
+  String get visionBlankDreamButton;
+
+  /// Hint on a vision card without milestones, prompting the user to open it.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open'**
+  String get visionTapToOpen;
+
+  /// Title of the confirm dialog when long-pressing to delete a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this dream?'**
+  String get visionRemoveDreamTitle;
+
+  /// Button to cancel removing a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get visionKeep;
+
+  /// Button to confirm removing a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get visionRemove;
+
+  /// Header of the vision edit sheet when editing an existing item.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Dream'**
+  String get visionEditDreamTitle;
+
+  /// Header of the vision edit sheet when adding a new item.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a Dream'**
+  String get visionAddDreamTitle;
+
+  /// Primary button to save a new vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Vision Board'**
+  String get visionAddToBoard;
+
+  /// Secondary button to delete a vision item from the edit sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this dream'**
+  String get visionRemoveThisDream;
+
+  /// Field label for the vision item title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dream title'**
+  String get visionDreamTitleLabel;
+
+  /// Hint text for the vision item title field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Be more present for my family'**
+  String get visionDreamTitleHint;
+
+  /// Field label for the optional vision item notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get visionNotesLabel;
+
+  /// Hint text for the vision item notes field.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to remember…'**
+  String get visionNotesHint;
+
+  /// Field label for the optional 'why it matters' field.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this matters (optional)'**
+  String get visionWhyLabel;
+
+  /// Hint text for the 'why it matters' field.
+  ///
+  /// In en, this message translates to:
+  /// **'When this matters most, why does it matter?'**
+  String get visionWhyHint;
+
+  /// Field label for the vision item category picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get visionCategoryLabel;
+
+  /// Field label for the vision item icon picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your icon'**
+  String get visionChooseIcon;
+
+  /// Field label for the optional vision item target date.
+  ///
+  /// In en, this message translates to:
+  /// **'Target date (optional)'**
+  String get visionTargetDateLabel;
+
+  /// Placeholder shown when no target date is set.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date to work toward'**
+  String get visionTargetDatePlaceholder;
+
+  /// Field label for the vision item photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos help you feel it (up to 4)'**
+  String get visionPhotosLabel;
+
+  /// Button label to add the first photo to a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first photo'**
+  String get visionAddFirstPhoto;
+
+  /// Button label to add another photo, showing how many of 4 are used.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another ({count}/4)'**
+  String visionAddAnotherPhoto(int count);
+
+  /// Privacy note under the vision item photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos are stored on this device only — they never leave your phone.'**
+  String get visionPhotosPrivacyNote;
+
+  /// Field label for the vision item milestones/steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Small concrete steps'**
+  String get visionStepsLabel;
+
+  /// Description under the vision item steps label.
+  ///
+  /// In en, this message translates to:
+  /// **'Break the dream into 3–6 tiny wins. Check them off as life moves.'**
+  String get visionStepsDescription;
+
+  /// Empty-state text when a vision item has no milestones.
+  ///
+  /// In en, this message translates to:
+  /// **'No steps yet — add one below.'**
+  String get visionNoStepsYet;
+
+  /// Hint text for the add-milestone input field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Walk 20 minutes today'**
+  String get visionStepHint;
+
+  /// Field label for the vision item affirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Affirmation'**
+  String get visionAffirmationLabel;
+
+  /// Description under the vision item affirmation label.
+  ///
+  /// In en, this message translates to:
+  /// **'\"I am…\" beats \"I want to…\" — the brain hears it as already real.'**
+  String get visionAffirmationDescription;
+
+  /// Hint text for the vision item affirmation field.
+  ///
+  /// In en, this message translates to:
+  /// **'I am present, patient, and proud of how I show up.'**
+  String get visionAffirmationHint;
+
+  /// Button that auto-suggests an affirmation from the dream title.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggest from title'**
+  String get visionSuggestFromTitle;
+
+  /// Tab label for the vision details tab in the edit sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision'**
+  String get visionTabVision;
+
+  /// Tab label for the photos tab in the vision edit sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get visionTabPhotos;
+
+  /// Tab label for the milestones/steps tab in the vision edit sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get visionTabSteps;
+
+  /// Tab label for the affirmation tab in the vision edit sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Affirm'**
+  String get visionTabAffirm;
+
+  /// Overline label above the daily zen quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Reflection'**
+  String get zenTodaysReflection;
+
+  /// Section title for the morning intention widget in the Zen tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning Intention'**
+  String get zenMorningIntention;
+
+  /// Section title for the evening reflection prompts in the Zen tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection Prompts'**
+  String get zenReflectionPrompts;
+
+  /// Section title for the gratitude widget in the Zen tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Three Good Things'**
+  String get zenThreeGoodThings;
+
+  /// Section title for the breathing reminder in the Zen tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Mindful Moment'**
+  String get zenMindfulMoment;
+
+  /// Rotating hint for the morning intention field.
+  ///
+  /// In en, this message translates to:
+  /// **'Today I intend to…'**
+  String get zenIntentionPrompt0;
+
+  /// Rotating hint for the morning intention field.
+  ///
+  /// In en, this message translates to:
+  /// **'My focus for today is…'**
+  String get zenIntentionPrompt1;
+
+  /// Rotating hint for the morning intention field.
+  ///
+  /// In en, this message translates to:
+  /// **'I will show up for myself by…'**
+  String get zenIntentionPrompt2;
+
+  /// Rotating hint for the morning intention field.
+  ///
+  /// In en, this message translates to:
+  /// **'One thing I\'m grateful for right now is…'**
+  String get zenIntentionPrompt3;
+
+  /// Button to save the morning intention.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get zenSetIntention;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What went well today?'**
+  String get zenReflectionPrompt0;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What challenged me, and how did I handle it?'**
+  String get zenReflectionPrompt1;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What am I most proud of today?'**
+  String get zenReflectionPrompt2;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How did I take care of myself today?'**
+  String get zenReflectionPrompt3;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What would I do differently tomorrow?'**
+  String get zenReflectionPrompt4;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Who or what am I grateful for right now?'**
+  String get zenReflectionPrompt5;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What did I learn about myself today?'**
+  String get zenReflectionPrompt6;
+
+  /// Evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How did I show up for my sobriety today?'**
+  String get zenReflectionPrompt7;
+
+  /// Button to cycle to the next evening reflection prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Next prompt'**
+  String get zenNextPrompt;
+
+  /// Hint text in each of the three good-things gratitude fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Something good today…'**
+  String get zenGoodThingHint;
+
+  /// Title of a mindful-moment grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'5-4-3-2-1 Grounding'**
+  String get zenExercise0Title;
+
+  /// Description of the 5-4-3-2-1 grounding exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.'**
+  String get zenExercise0Desc;
+
+  /// Title of a mindful-moment breathing exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Box Breath'**
+  String get zenExercise1Title;
+
+  /// Description of the box breath exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times.'**
+  String get zenExercise1Desc;
+
+  /// Title of a mindful-moment body scan exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Scan'**
+  String get zenExercise2Title;
+
+  /// Description of the body scan exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Close your eyes. Slowly scan from your toes to your head, releasing tension as you go.'**
+  String get zenExercise2Desc;
+
+  /// Title of a mindful-moment gratitude breathing exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude Breath'**
+  String get zenExercise3Title;
+
+  /// Description of the gratitude breath exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'With each inhale, think of something you\'re grateful for. With each exhale, let go of what doesn\'t serve you.'**
+  String get zenExercise3Desc;
+
+  /// Link to the guided breathing tool for exercises that have a guided version.
+  ///
+  /// In en, this message translates to:
+  /// **'Open guided breathing in Your Toolkit'**
+  String get zenOpenGuidedBreathing;
+
+  /// Link to more breathing exercises for exercises without a guided version.
+  ///
+  /// In en, this message translates to:
+  /// **'More breathing exercises in Your Toolkit'**
+  String get zenMoreBreathingExercises;
+
+  /// AppBar title and saved-entry heading for the guided Daily Reflection journal template
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reflection'**
+  String get journalReflectionTitle;
+
+  /// Save button label while the reflection is being saved
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get journalReflectionSaving;
+
+  /// Section title above the mood picker on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'How I feel today'**
+  String get journalReflectionMoodTitle;
+
+  /// Section title above the three gratitude lines on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m grateful for'**
+  String get journalReflectionGratefulTitle;
+
+  /// Section title above the recovery-action checklist (anchors) on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s anchors'**
+  String get journalReflectionAnchorsTitle;
+
+  /// Checklist item: a recovery anchor action — contacting another person
+  ///
+  /// In en, this message translates to:
+  /// **'Reached out to someone'**
+  String get journalReflectionAnchorReachedOut;
+
+  /// Checklist item: a recovery anchor action — attending a support meeting or group
+  ///
+  /// In en, this message translates to:
+  /// **'Attended a meeting or group'**
+  String get journalReflectionAnchorMeeting;
+
+  /// Checklist item: a recovery anchor action — physical movement or exercise
+  ///
+  /// In en, this message translates to:
+  /// **'Moved my body'**
+  String get journalReflectionAnchorMoved;
+
+  /// Checklist item: a recovery anchor action — eating well and staying hydrated
+  ///
+  /// In en, this message translates to:
+  /// **'Ate + hydrated well'**
+  String get journalReflectionAnchorAteHydrated;
+
+  /// Checklist item: a recovery anchor action — taking prescribed medication
+  ///
+  /// In en, this message translates to:
+  /// **'Took my meds'**
+  String get journalReflectionAnchorMeds;
+
+  /// Checklist item: a recovery anchor action — avoiding a known trigger
+  ///
+  /// In en, this message translates to:
+  /// **'Avoided a trigger'**
+  String get journalReflectionAnchorAvoidedTrigger;
+
+  /// Section title above the 'wins today' free-text field on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'Wins today'**
+  String get journalReflectionWinsTitle;
+
+  /// Placeholder hint text for the 'wins today' field
+  ///
+  /// In en, this message translates to:
+  /// **'Anything you\'re proud of — big or small.'**
+  String get journalReflectionWinsHint;
+
+  /// Section title above the cravings/triggers free-text field on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'Cravings or triggers noticed'**
+  String get journalReflectionCravingsTitle;
+
+  /// Placeholder hint text for the cravings/triggers field
+  ///
+  /// In en, this message translates to:
+  /// **'What showed up, and how did you respond?'**
+  String get journalReflectionCravingsHint;
+
+  /// Section title above the 'tomorrow's intention' free-text field on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow\'s intention'**
+  String get journalReflectionIntentionTitle;
+
+  /// Placeholder hint text for the 'tomorrow's intention' field
+  ///
+  /// In en, this message translates to:
+  /// **'One small thing you\'ll do for your recovery.'**
+  String get journalReflectionIntentionHint;
+
+  /// Section title above the affirmation free-text field on the Daily Reflection page
+  ///
+  /// In en, this message translates to:
+  /// **'An affirmation for me'**
+  String get journalReflectionAffirmationTitle;
+
+  /// Placeholder hint text for the affirmation field
+  ///
+  /// In en, this message translates to:
+  /// **'A kind sentence in your own voice.'**
+  String get journalReflectionAffirmationHint;
+
+  /// Reassuring footer note at the bottom of the Daily Reflection page; contains a line break
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have to fill every field.\nWhat you write is enough.'**
+  String get journalReflectionFooter;
+
+  /// Heading written into the saved reflection entry text above the gratitude list; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'🙏 Grateful for'**
+  String get journalReflectionBodyGratefulHeading;
+
+  /// Heading written into the saved reflection entry text above the checked anchors list; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'⚓ Today\'s anchors'**
+  String get journalReflectionBodyAnchorsHeading;
+
+  /// Heading written into the saved reflection entry text above the wins section; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'✨ Wins today'**
+  String get journalReflectionBodyWinsHeading;
+
+  /// Heading written into the saved reflection entry text above the cravings section; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'⚡ Cravings or triggers noticed'**
+  String get journalReflectionBodyCravingsHeading;
+
+  /// Heading written into the saved reflection entry text above the intention section; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'🌱 Tomorrow\'s intention'**
+  String get journalReflectionBodyIntentionHeading;
+
+  /// Heading written into the saved reflection entry text above the affirmation section; keep the emoji
+  ///
+  /// In en, this message translates to:
+  /// **'💛 An affirmation for me'**
+  String get journalReflectionBodyAffirmationHeading;
+
+  /// Milestone label for reaching 100 days sober.
+  ///
+  /// In en, this message translates to:
+  /// **'100 Days'**
+  String get milestoneHundredDays;
+
+  /// Short milestone label (tile grid) for 100 days sober.
+  ///
+  /// In en, this message translates to:
+  /// **'100 Days'**
+  String get milestoneHundredDaysShort;
+
+  /// Body text describing physiological/psychological benefits at the 100-day milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'One hundred days. Brain neuroplasticity is in full swing. The reward system has largely recalibrated to find pleasure in life without alcohol. Relationships, work, and your sense of self are transforming.'**
+  String get milestoneHundredDaysBenefit;
+
+  /// Text shared along with the milestone image card to social/messaging apps. {emoji} is a milestone emoji, {name} is the user's name, {label} is the milestone label e.g. 'One Month'.
+  ///
+  /// In en, this message translates to:
+  /// **'{emoji} {name} — {label} sober. One day at a time. #JourneyForward #Sobriety'**
+  String milestoneShareText(String emoji, String name, String label);
+
+  /// Snackbar shown when generating the shareable milestone image fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not generate card. Try again.'**
+  String get milestoneCardGenerateError;
+
+  /// Overline/section header above the previewed shareable milestone card.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARE CARD'**
+  String get milestoneShareCardLabel;
+
+  /// Button label to share the achieved milestone card.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this milestone'**
+  String get milestoneShareButton;
+
+  /// Disabled share-button label shown when the selected milestone has not been reached yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet achieved'**
+  String get milestoneNotYetAchieved;
+
+  /// Overline/section header above the grid of all milestones.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL MILESTONES'**
+  String get milestoneAllMilestonesLabel;
+
+  /// Hero card greeting shown when the user has not set a name.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done.'**
+  String get milestoneHeroGreeting;
+
+  /// Hero card greeting that includes the user's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Well done, {name}.'**
+  String milestoneHeroGreetingNamed(String name);
+
+  /// Two-line unit label shown next to the big day count on the hero card when the count is exactly 1. Keep the newline (\n) between the two words.
+  ///
+  /// In en, this message translates to:
+  /// **'day\nsober'**
+  String get milestoneHeroDaySober;
+
+  /// Two-line unit label shown next to the big day count on the hero card (plural). Keep the newline (\n) between the two words.
+  ///
+  /// In en, this message translates to:
+  /// **'days\nsober'**
+  String get milestoneHeroDaysSober;
+
+  /// Hero card label showing the next upcoming milestone. {label} is the milestone name e.g. 'One Week'.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {label}'**
+  String milestoneHeroNext(String label);
+
+  /// Hero card progress text showing current sober days out of the next milestone's target days.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} of {target} days'**
+  String milestoneHeroProgressDays(int days, int target);
+
+  /// Badge shown on the hero card when the user has reached the final/all milestones. Keep the sparkle emoji.
+  ///
+  /// In en, this message translates to:
+  /// **'Every milestone reached ✨'**
+  String get milestoneEveryReached;
+
+  /// Small badge on the achievement card indicating the milestone is reached. Keep the check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved ✓'**
+  String get milestoneAchievedBadge;
+
+  /// Badge on the achievement card showing how many days until the milestone is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day to go} other{{count} days to go}}'**
+  String milestoneDaysToGo(int count);
+
+  /// Section header above the benefit text when the milestone has been achieved (past tense).
+  ///
+  /// In en, this message translates to:
+  /// **'What happened in your body'**
+  String get milestoneWhatHappenedLabel;
+
+  /// Section header above the benefit text when the milestone has not been achieved yet (future tense).
+  ///
+  /// In en, this message translates to:
+  /// **'What will happen'**
+  String get milestoneWhatWillHappenLabel;
+
+  /// Fallback name shown on the shareable card when the user has not entered a name.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get milestoneShareCardFallbackName;
+
+  /// Singular unit word ('day') shown under the big number on the shareable card.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get milestoneUnitDay;
+
+  /// Plural unit word ('days') shown under the big number on the shareable card.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get milestoneUnitDays;
+
+  /// Singular unit word ('year') shown under the big number on the shareable card for year milestones.
+  ///
+  /// In en, this message translates to:
+  /// **'year'**
+  String get milestoneUnitYear;
+
+  /// Plural unit word ('years') shown under the big number on the shareable card for year milestones.
+  ///
+  /// In en, this message translates to:
+  /// **'years'**
+  String get milestoneUnitYears;
+
+  /// Second line under the big number on the shareable card (e.g. '1 / year / sober').
+  ///
+  /// In en, this message translates to:
+  /// **'sober'**
+  String get milestoneUnitSober;
+
+  /// Brand name displayed at the top of the shareable milestone card.
+  ///
+  /// In en, this message translates to:
+  /// **'JOURNEY FORWARD'**
+  String get milestoneShareCardBrand;
+
+  /// Overlay text on a locked (unachieved) shareable card showing days remaining to unlock it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 more day to unlock} other{{count} more days to unlock}}'**
+  String milestoneDaysToUnlock(int count);
+
+  /// Two-line label under the total-days stat at the bottom of the screen. Keep the newline (\n).
+  ///
+  /// In en, this message translates to:
+  /// **'total\ndays sober'**
+  String get milestoneStatsTotalDaysSober;
+
+  /// Two-line label under the money-saved stat at the bottom of the screen. Keep the newline (\n).
+  ///
+  /// In en, this message translates to:
+  /// **'money\nreclaimed'**
+  String get milestoneStatsMoneyReclaimed;
+
+  /// Error shown when the user picks biometric lock but no fingerprint/face is enrolled on the device.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.'**
+  String get onbBiometricNotEnrolledError;
+
+  /// Prompt reason shown by the OS biometric dialog while enabling biometric app lock during onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm to enable biometric lock'**
+  String get onbBiometricConfirmReason;
+
+  /// Error shown when the biometric authentication attempt throws a platform exception during onboarding setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric setup failed: {error}'**
+  String onbBiometricSetupFailed(String error);
+
+  /// Error shown when saving the profile / finishing onboarding fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete setup: {error}'**
+  String onbSetupFailed(String error);
+
+  /// Uppercase eyebrow label above the welcome headline on the first onboarding screen.
+  ///
+  /// In en, this message translates to:
+  /// **'DAY ONE  ·  A WELCOME'**
+  String get onbWelcomeEyebrow;
+
+  /// Large serif headline on the welcome onboarding screen. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'A new chapter,\nquietly begun.'**
+  String get onbWelcomeHeadline;
+
+  /// Subtitle of the '100% on-device' feature pill on the welcome screen. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Works without\nthe internet'**
+  String get onbWelcomePillOnDeviceSub;
+
+  /// Uppercase title of the no-account feature pill on the welcome screen.
+  ///
+  /// In en, this message translates to:
+  /// **'NO ACCOUNT'**
+  String get onbWelcomePillNoAccountTitle;
+
+  /// Subtitle of the no-account feature pill on the welcome screen. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'No login or\nprofile upload'**
+  String get onbWelcomePillNoAccountSub;
+
+  /// Uppercase title of the zero-tracking feature pill on the welcome screen.
+  ///
+  /// In en, this message translates to:
+  /// **'ZERO TRACKING'**
+  String get onbWelcomePillZeroTrackingTitle;
+
+  /// Subtitle of the zero-tracking feature pill on the welcome screen. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data stays\non device'**
+  String get onbWelcomePillZeroTrackingSub;
+
+  /// Primary call-to-action button on the welcome onboarding screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get onbWelcomeBeginButton;
+
+  /// Small disclaimer text at the bottom of the welcome onboarding screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Not medical advice — a companion, not a clinician.'**
+  String get onbWelcomeDisclaimer;
+
+  /// Label on the date tile when the user has chosen a future quit date (countdown mode).
+  ///
+  /// In en, this message translates to:
+  /// **'Quit date'**
+  String get onbQuitDateLabel;
+
+  /// Label on the time tile in the sober-date onboarding step.
+  ///
+  /// In en, this message translates to:
+  /// **'Time of day'**
+  String get onbTimeOfDayLabel;
+
+  /// Trailing label after the countdown number when a future quit date is selected, e.g. '12 days until day one'.
+  ///
+  /// In en, this message translates to:
+  /// **'days until day one'**
+  String get onbDaysUntilDayOneLabel;
+
+  /// Data-recovery warning shown when the user selects PIN lock during onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.'**
+  String get onbSecurityPinRecoveryWarning;
+
+  /// Data-recovery warning shown when the user selects biometric lock during onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.'**
+  String get onbSecurityBiometricRecoveryWarning;
+
+  /// Finish-step headline when the user entered a name. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re ready,\n{name}.'**
+  String onbFinishHeadlineWithName(String name);
+
+  /// Finish-step headline when no name was entered. Keep the line break.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re ready\nfor this.'**
+  String get onbFinishHeadline;
+
+  /// Uppercase eyebrow on the finish step when a future quit date is set, counting down to day one.
+  ///
+  /// In en, this message translates to:
+  /// **'IN {days} DAYS  ·  YOUR JOURNEY BEGINS'**
+  String onbFinishEyebrowCountdown(int days);
+
+  /// Uppercase eyebrow on the finish step when the user already has sober days logged.
+  ///
+  /// In en, this message translates to:
+  /// **'DAY {day}  ·  THE PATH CONTINUES'**
+  String onbFinishEyebrowContinuing(int day);
+
+  /// Uppercase eyebrow on the finish step when the journey starts today (day one).
+  ///
+  /// In en, this message translates to:
+  /// **'DAY ONE  ·  THE JOURNEY BEGINS'**
+  String get onbFinishEyebrowDayOne;
+
+  /// Finish-step subtitle shown when the user picked a future quit date.
+  ///
+  /// In en, this message translates to:
+  /// **'Your quit date is set. We\'ll count down with you — and the moment it arrives, day one begins.'**
+  String get onbFinishBodyFuture;
+
+  /// Toolkit exercise name: a 4-4-4-4 guided breathing technique the user can link to a craving-plan step.
+  ///
+  /// In en, this message translates to:
+  /// **'Box Breathing'**
+  String get planToolkitBoxBreathingLabel;
+
+  /// Sub-label describing the Box Breathing toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided 4-4-4-4 breath cycle'**
+  String get planToolkitBoxBreathingSub;
+
+  /// Toolkit exercise name: a sensory grounding technique (notice 5 things you see, 4 you hear, etc.).
+  ///
+  /// In en, this message translates to:
+  /// **'5-4-3-2-1 Grounding'**
+  String get planToolkitGroundingLabel;
+
+  /// Sub-label describing the 5-4-3-2-1 Grounding toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Ground yourself through your senses'**
+  String get planToolkitGroundingSub;
+
+  /// Toolkit exercise name: a cognitive behavioural therapy thought-reframing exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'CBT Thought Reframe'**
+  String get planToolkitCbtReframeLabel;
+
+  /// Sub-label describing the CBT Thought Reframe toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge the craving thought'**
+  String get planToolkitCbtReframeSub;
+
+  /// Toolkit exercise name: reading personal affirmations.
+  ///
+  /// In en, this message translates to:
+  /// **'Affirmations'**
+  String get planToolkitAffirmationsLabel;
+
+  /// Sub-label describing the Affirmations toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Read a personal affirmation'**
+  String get planToolkitAffirmationsSub;
+
+  /// Toolkit exercise name: splashing cold water on the face to interrupt a craving.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold Water'**
+  String get planToolkitColdWaterLabel;
+
+  /// Sub-label describing the Cold Water toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Splash cold water on your face'**
+  String get planToolkitColdWaterSub;
+
+  /// Toolkit exercise name: taking a short walk outdoors to reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk Outside'**
+  String get planToolkitWalkOutsideLabel;
+
+  /// Sub-label describing the Walk Outside toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a short walk to reset'**
+  String get planToolkitWalkOutsideSub;
+
+  /// Toolkit exercise name: phoning a sponsor or friend for support.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Someone'**
+  String get planToolkitCallSomeoneLabel;
+
+  /// Sub-label describing the Call Someone toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach out to your sponsor or a friend'**
+  String get planToolkitCallSomeoneSub;
+
+  /// Toolkit exercise name: a body-scan relaxation from toes to head.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Scan'**
+  String get planToolkitBodyScanLabel;
+
+  /// Sub-label describing the Body Scan toolkit exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan from toes to head, release tension'**
+  String get planToolkitBodyScanSub;
+
+  /// Placeholder hint for the first pre-craving plan step input.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Take three slow box-breaths'**
+  String get planStepHint1;
+
+  /// Placeholder hint for the second pre-craving plan step input.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Drink a glass of cold water'**
+  String get planStepHint2;
+
+  /// Placeholder hint for the third pre-craving plan step input.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Text my sponsor: \"Craving\"'**
+  String get planStepHint3;
+
+  /// Snackbar confirmation shown after the user saves their pre-craving plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan saved — you\'ll see it when a craving hits.'**
+  String get planSavedSnack;
+
+  /// Screen title for the pre-craving plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-craving plan'**
+  String get planTitle;
+
+  /// Subtitle on the pre-craving plan screen explaining its purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Three things you commit to doing the moment a craving hits — written in calm so you don\'t have to think in a storm.'**
+  String get planSubtitle;
+
+  /// Tappable label that lets the user attach a toolkit exercise to a plan step.
+  ///
+  /// In en, this message translates to:
+  /// **'Link a Toolkit exercise'**
+  String get planLinkExercise;
+
+  /// Informational note explaining what linking a toolkit exercise does.
+  ///
+  /// In en, this message translates to:
+  /// **'Linking a Toolkit exercise adds a one-tap \"Open\" button during your plan so you can jump straight into the exercise.'**
+  String get planLinkInfo;
+
+  /// Button label to save the pre-craving plan when there are unsaved changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save plan'**
+  String get planSavePlan;
+
+  /// Button label shown after the pre-craving plan has been saved (no unsaved changes).
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get planSaved;
+
+  /// Title of the bottom sheet where the user picks a toolkit exercise to link.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a Toolkit Exercise'**
+  String get planPickerTitle;
+
+  /// Subtitle of the toolkit-exercise picker bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add a one-tap link to this exercise in your plan.'**
+  String get planPickerSubtitle;
+
+  /// Small badge indicating that a toolkit exercise opens inside the app (has a route).
+  ///
+  /// In en, this message translates to:
+  /// **'Opens in app'**
+  String get planOpensInApp;
+
+  /// Title of the plan-runner sheet shown before logging a craving.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan'**
+  String get planRunnerTitle;
+
+  /// Subtitle of the plan-runner sheet prompting the user to work through their plan steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Run through these before logging. Breathe between each one.'**
+  String get planRunnerSubtitle;
+
+  /// Tappable label that opens a linked toolkit exercise from a plan step; {label} is the exercise name.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {label} →'**
+  String planRunnerOpenExercise(String label);
+
+  /// Button on the plan-runner sheet: the user feels okay and does not need to log the craving.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m okay'**
+  String get planRunnerImOkay;
+
+  /// Button on the plan-runner sheet: continue to the craving-logging flow anyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Still log it'**
+  String get planRunnerStillLogIt;
+
+  /// Label on the small chip/button in the Progress header that opens the weekly care summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get progressSummaryChip;
+
+  /// Eyebrow label above the live counter when the current day count exactly matches a milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone reached'**
+  String get progressMilestoneReached;
+
+  /// Eyebrow label above the live sober-time counter when not currently at a milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Current journey'**
+  String get progressCurrentJourney;
+
+  /// Title showing the milestone the user is currently on. {label} is a milestone name like 'One Week'.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone: {label}'**
+  String progressMilestonePrefix(String label);
+
+  /// Title showing the next milestone to reach. {label} is a milestone name like 'One Month'.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {label}'**
+  String progressNextPrefix(String label);
+
+  /// Fallback milestone label used when no named milestone exists for a given day count. Capitalized 'Days'.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Days'**
+  String progressDaysLabel(int count);
+
+  /// Percentage-complete text shown next to the milestone progress bar.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String progressPercentComplete(int percent);
+
+  /// Encouraging caption under the progress bar when the user is exactly at a milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'A beautiful threshold crossed.'**
+  String get progressThresholdCrossed;
+
+  /// Progress caption showing current days out of the next-milestone target, e.g. '5 / 7 days'.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} / {target} days'**
+  String progressDaysOfTarget(int days, int target);
+
+  /// Section title for the milestone achievement grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestones'**
+  String get progressMilestonesTitle;
+
+  /// Tappable link in the Milestones section header that opens the shareable milestone cards screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get progressCardsLink;
+
+  /// Compact label inside a milestone grid cell for the one-year (365-day) milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'1yr'**
+  String get progressGridYear;
+
+  /// Compact label inside a milestone grid cell showing months, e.g. '2mo'.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}mo'**
+  String progressGridMonths(int count);
+
+  /// Compact label inside a milestone grid cell showing days, e.g. '7d'.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d'**
+  String progressGridDays(int count);
+
+  /// Uppercase unit label under the days digits in the live sober-time counter.
+  ///
+  /// In en, this message translates to:
+  /// **'DAYS'**
+  String get progressUnitDays;
+
+  /// Uppercase unit label under the hours digits in the live sober-time counter.
+  ///
+  /// In en, this message translates to:
+  /// **'HRS'**
+  String get progressUnitHrs;
+
+  /// Uppercase unit label under the minutes digits in the live sober-time counter.
+  ///
+  /// In en, this message translates to:
+  /// **'MIN'**
+  String get progressUnitMin;
+
+  /// Uppercase unit label under the seconds digits in the live sober-time counter.
+  ///
+  /// In en, this message translates to:
+  /// **'SEC'**
+  String get progressUnitSec;
+
+  /// Title of the cravings insight chart card on the Insights tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Craving Support'**
+  String get progressInsightCravingTitle;
+
+  /// Subtitle of the cravings insight chart card.
+  ///
+  /// In en, this message translates to:
+  /// **'Every log is a brave step toward healing.'**
+  String get progressInsightCravingSubtitle;
+
+  /// Motivational quote shown at the bottom of the cravings insight card. Contains a line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging a craving is a sign of strength.\nYou\'re choosing awareness and support.'**
+  String get progressInsightCravingQuote;
+
+  /// Title of the sleep insight chart card on the Insights tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep Quality'**
+  String get progressInsightSleepTitle;
+
+  /// Subtitle of the sleep insight chart card.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours logged per night, tracked daily.'**
+  String get progressInsightSleepSubtitle;
+
+  /// Motivational quote shown at the bottom of the sleep insight card. Contains a line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest is part of recovery.\nEvery hour of sleep supports your healing.'**
+  String get progressInsightSleepQuote;
+
+  /// Title of the physical-activity insight chart card on the Insights tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get progressInsightMovementTitle;
+
+  /// Subtitle of the movement insight chart card.
+  ///
+  /// In en, this message translates to:
+  /// **'Active minutes per day, two weeks out.'**
+  String get progressInsightMovementSubtitle;
+
+  /// Motivational quote shown at the bottom of the movement insight card. Contains a line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement lifts the spirit.\nEvery active minute counts.'**
+  String get progressInsightMovementQuote;
+
+  /// Title of the thoughts insight chart card on the Insights tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Thoughts'**
+  String get progressInsightThoughtsTitle;
+
+  /// Subtitle of the thoughts insight chart card.
+  ///
+  /// In en, this message translates to:
+  /// **'Thoughts logged each day across 14 days.'**
+  String get progressInsightThoughtsSubtitle;
+
+  /// Motivational quote shown at the bottom of the thoughts insight card. Contains a line break.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection builds resilience.\nYour thoughts are your inner compass.'**
+  String get progressInsightThoughtsQuote;
+
+  /// Y-axis unit caption for insight charts that count log entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs'**
+  String get progressYLabelLogs;
+
+  /// Y-axis unit caption for the sleep insight chart (hours).
+  ///
+  /// In en, this message translates to:
+  /// **'Hrs'**
+  String get progressYLabelHrs;
+
+  /// Y-axis unit caption for the movement insight chart (minutes).
+  ///
+  /// In en, this message translates to:
+  /// **'Min'**
+  String get progressYLabelMin;
+
+  /// Header of each insight card combining its title with a fixed '14 days' window suffix, e.g. 'Sleep Quality — 14 days'.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} — 14 days'**
+  String progressInsightTitle14Days(String title);
+
+  /// Column label for the current week's value in an insight card summary.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get progressThisWeek;
+
+  /// Column label for the previous week's value in an insight card summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get progressLastWeek;
+
+  /// Title of the risk-window card highlighting the time of day when the user logs most cravings.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tender hours'**
+  String get progressTenderHoursTitle;
+
+  /// Body text of the risk-window card. {count} of {total} cravings fall in the user's highest-risk time window.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of your {total} logged cravings land in this window. Knowing your pattern is power — plan something gentle for those hours: a walk, a call, the urge timer.'**
+  String progressTenderHoursBody(int count, int total);
+
+  /// Button on the risk-window card that opens the pre-craving plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Review my plan'**
+  String get progressReviewMyPlan;
+
+  /// Placeholder button text shown in place of the cravings heatmap card after the user has hidden it; tapping re-enables the card.
+  ///
+  /// In en, this message translates to:
+  /// **'Show cravings heatmap'**
+  String get progressShowHeatmap;
+
+  /// Header of the inline 28-day cravings heatmap card.
+  ///
+  /// In en, this message translates to:
+  /// **'Cravings Heatmap'**
+  String get progressCravingsHeatmapTitle;
+
+  /// Link in the cravings heatmap card header that opens the full heatmap screen.
+  ///
+  /// In en, this message translates to:
+  /// **'View full'**
+  String get progressViewFull;
+
+  /// Explanatory caption under the cravings heatmap header.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 1 = your first day in the app. Only cravings logged from the Home screen count.'**
+  String get progressHeatmapCaption;
+
+  /// Row label in the cravings heatmap grid, abbreviated 'Week N'.
+  ///
+  /// In en, this message translates to:
+  /// **'Wk {number}'**
+  String progressHeatmapWeekLabel(int number);
+
+  /// Left-side legend label on the cravings heatmap color scale (fewer cravings).
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer'**
+  String get progressHeatmapLegendFewer;
+
+  /// Right-side legend label on the cravings heatmap color scale (more cravings).
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get progressHeatmapLegendMore;
+
+  /// Title of the weekly recovery-capital card on the Insights tab (used in both empty and filled states).
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery capital — this week'**
+  String get progressRecoveryCapitalTitle;
+
+  /// Subtitle shown on the recovery-capital card when the user hasn't filled in this week's check.
+  ///
+  /// In en, this message translates to:
+  /// **'A 30-second check across five things that protect recovery.'**
+  String get progressRecoveryCapitalEmptySubtitle;
+
+  /// Score badge on the filled recovery-capital card, e.g. '4 of 5' dimensions ticked.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} of 5'**
+  String progressCapitalScore(int score);
+
+  /// Hint at the bottom of the filled recovery-capital card indicating it can be tapped to edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to edit'**
+  String get progressTapToEdit;
+
+  /// Single-letter abbreviation for Monday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'M'**
+  String get progressDayLetterMon;
+
+  /// Single-letter abbreviation for Tuesday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get progressDayLetterTue;
+
+  /// Single-letter abbreviation for Wednesday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'W'**
+  String get progressDayLetterWed;
+
+  /// Single-letter abbreviation for Thursday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get progressDayLetterThu;
+
+  /// Single-letter abbreviation for Friday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get progressDayLetterFri;
+
+  /// Single-letter abbreviation for Saturday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get progressDayLetterSat;
+
+  /// Single-letter abbreviation for Sunday on the insight chart's x-axis.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get progressDayLetterSun;
+
+  /// Medical/safety disclaimer shown above the healing timeline on the Recovery screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward is not a medical device and does not diagnose, treat, cure, or prevent any medical condition. This timeline is educational and reflects general recovery patterns only. Individual recovery varies. If you drink heavily, have a history of withdrawal, seizures, hallucinations, confusion, or feel physically unsafe, speak with a healthcare professional before stopping suddenly or seek urgent medical care.'**
+  String get recoveryMedicalDisclaimer;
+
+  /// Uppercase section label introducing the psychological/mind notes for a recovery milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'MIND'**
+  String get recoveryMindLabel;
+
+  /// Recovery milestone 1 (12 hours) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'You might feel a mix of relief and anxiety as your daily routine shifts. This is the normal friction of change.'**
+  String get recoveryM1Mind;
+
+  /// Recovery milestone 1 (12 hours) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'The first urges may appear. They can feel urgent, but they are temporary waves.'**
+  String get recoveryM1Experience;
+
+  /// Recovery milestone 1 (12 hours) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink a large glass of water. When an urge hits, focus only on getting through the next hour.'**
+  String get recoveryM1Tip;
+
+  /// Recovery milestone 2 (24 hours) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'Your brain\'s reward circuitry is noticing the absence of its usual chemical trigger, which can cause irritability or a low mood.'**
+  String get recoveryM2Mind;
+
+  /// Recovery milestone 2 (24 hours) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'You may feel emotionally raw, tired, or slightly restless.'**
+  String get recoveryM2Experience;
+
+  /// Recovery milestone 2 (24 hours) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep and rest are your best allies right now. Keep your evening routine calm, quiet, and consistent.'**
+  String get recoveryM2Tip;
+
+  /// Recovery milestone 3 (48 hours) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'Your system is seeking balance. The intensity you feel right now is the feeling of that adjustment taking place.'**
+  String get recoveryM3Mind;
+
+  /// Recovery milestone 3 (48 hours) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Restlessness and strong urges are common here. You might feel “wired” or on edge.'**
+  String get recoveryM3Experience;
+
+  /// Recovery milestone 3 (48 hours) — actionable tip with safety warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Be especially patient with yourself today. If you experience shaking, confusion, hallucinations, seizures, severe agitation, or feel unsafe, seek urgent medical support.'**
+  String get recoveryM3Tip;
+
+  /// Recovery milestone 4 (3 days) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'The mental fog often begins to thin. Neurotransmitter production starts to slowly adjust, paving the way for more natural energy.'**
+  String get recoveryM4Mind;
+
+  /// Recovery milestone 4 (3 days) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'A small window of calm may emerge. You might feel a quiet, cautious optimism taking root.'**
+  String get recoveryM4Experience;
+
+  /// Recovery milestone 4 (3 days) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Reaching 72 hours is meaningful. Mark it with comfort, care, and support.'**
+  String get recoveryM4Tip;
+
+  /// Recovery milestone 5 (1 week) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'You may notice unusually vivid dreams — some people experience this as their sleep pattern settles into a new rhythm.'**
+  String get recoveryM5Mind;
+
+  /// Recovery milestone 5 (1 week) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Improved clarity, though your mood may still naturally swing up and down.'**
+  String get recoveryM5Experience;
+
+  /// Recovery milestone 5 (1 week) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Anchor yourself in routine. A predictable morning and evening structure is a powerful tool right now.'**
+  String get recoveryM5Tip;
+
+  /// Recovery milestone 6 (2 weeks) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'Concentration and short-term memory often start to feel sharper. Each healthier choice you repeat helps lay down new patterns.'**
+  String get recoveryM6Mind;
+
+  /// Recovery milestone 6 (2 weeks) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'You might start feeling surprisingly well, though random moments of emptiness are still normal.'**
+  String get recoveryM6Experience;
+
+  /// Recovery milestone 6 (2 weeks) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'This is when overconfidence can sneak in. Stay connected to your daily practices and support systems.'**
+  String get recoveryM6Tip;
+
+  /// Recovery milestone 7 (1 month) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'The brain systems involved in impulse control, decision-making, and emotional regulation may begin to feel steadier over time.'**
+  String get recoveryM7Mind;
+
+  /// Recovery milestone 7 (1 month) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Emotional regulation continues to improve, and building resilience becomes a steady practice.'**
+  String get recoveryM7Experience;
+
+  /// Recovery milestone 7 (1 month) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your journey so far. Note the situations that still feel tricky, and plan how you will navigate them gracefully.'**
+  String get recoveryM7Tip;
+
+  /// Recovery milestone 8 (3 months) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'For many people, the ability to find genuine satisfaction in simple, everyday activities slowly returns at this stage.'**
+  String get recoveryM8Mind;
+
+  /// Recovery milestone 8 (3 months) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Many people describe feeling more like themselves again. Motivation may feel more available, though it can still rise and fall.'**
+  String get recoveryM8Experience;
+
+  /// Recovery milestone 8 (3 months) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to cultivate your environment. Hobbies, nature, and relationships are deeply protective elements of your growth.'**
+  String get recoveryM8Tip;
+
+  /// Recovery milestone 9 (6 months) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'Urges may become less frequent or easier to move through.'**
+  String get recoveryM9Mind;
+
+  /// Recovery milestone 9 (6 months) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'The highs and lows of early recovery begin to smooth out into a more consistent rhythm.'**
+  String get recoveryM9Experience;
+
+  /// Recovery milestone 9 (6 months) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a moment to honor the quiet days. Peace and stability are among the quiet rewards of this process.'**
+  String get recoveryM9Tip;
+
+  /// Recovery milestone 10 (1 year) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'You have lived through many seasons, routines, and emotional moments with more awareness and care.'**
+  String get recoveryM10Mind;
+
+  /// Recovery milestone 10 (1 year) — what you may experience.
+  ///
+  /// In en, this message translates to:
+  /// **'Support may still matter, and needing it does not diminish your progress.'**
+  String get recoveryM10Experience;
+
+  /// Recovery milestone 10 (1 year) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflect on the person you were twelve months ago. Write them a letter from where you stand today.'**
+  String get recoveryM10Tip;
+
+  /// Recovery milestone 11 (2 years & beyond) — mind/psychological note.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery may feel less like something you are forcing and more like a way of living you have grown into.'**
+  String get recoveryM11Mind;
+
+  /// Recovery milestone 11 (2 years & beyond) — actionable tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Your story may become a source of comfort for someone else. When the moment feels right, share your strength with someone just beginning their path.'**
+  String get recoveryM11Tip;
+
+  /// Dialog title and add-button label for adding a new weekly goal in the profile/settings screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add weekly goal'**
+  String get settingsAddWeeklyGoalTitle;
+
+  /// Hint text in the add-weekly-goal dialog text field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Exercise 3 times this week'**
+  String get settingsWeeklyGoalHint;
+
+  /// Snackbar shown when the user tries to enable biometric lock but no biometrics are enrolled on the device.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.'**
+  String get settingsBiometricNotSetUp;
+
+  /// Prompt text shown by the OS biometric authentication dialog when enabling biometric app lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm to enable biometric lock'**
+  String get settingsBiometricConfirmReason;
+
+  /// Error snackbar when the platform reports no biometrics are enrolled.
+  ///
+  /// In en, this message translates to:
+  /// **'No biometrics enrolled on this device. Add a fingerprint or face in your phone\'s settings.'**
+  String get settingsBiometricNotEnrolled;
+
+  /// Error snackbar when biometric hardware is temporarily unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric hardware is unavailable right now. Try again in a moment.'**
+  String get settingsBiometricUnavailable;
+
+  /// Error snackbar when biometric auth is temporarily locked out after failed attempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many failed attempts. Wait a moment and try again.'**
+  String get settingsBiometricLockedOut;
+
+  /// Error snackbar when biometric auth is permanently locked and needs the device screen lock to re-enable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics are locked. Use your phone\'s screen lock to re-enable.'**
+  String get settingsBiometricPermanentlyLockedOut;
+
+  /// Generic biometric failure snackbar with the underlying platform error message.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric authentication failed: {error}'**
+  String settingsBiometricAuthFailed(String error);
+
+  /// Snackbar shown when scheduling notification reminders fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder scheduling failed. Please check notification permissions.'**
+  String get settingsReminderScheduleFailed;
+
+  /// Snackbar shown after saving notification settings while notifications are blocked at the OS level.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved — but notifications are blocked in system settings.'**
+  String get settingsNotificationsBlockedSaved;
+
+  /// Snackbar action button that deep-links to the system notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'OPEN SETTINGS'**
+  String get settingsOpenSettingsAction;
+
+  /// Snackbar confirming notification settings were saved successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings saved'**
+  String get settingsNotificationSettingsSaved;
+
+  /// Snackbar shown after tapping the version label five times to unlock the hidden diagnostics section.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnostics enabled'**
+  String get settingsDiagnosticsEnabled;
+
+  /// Diagnostic label describing a scheduled morning reminder notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning reminder'**
+  String get settingsDiagMorningReminder;
+
+  /// Diagnostic label describing a scheduled evening reminder notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening reminder'**
+  String get settingsDiagEveningReminder;
+
+  /// Diagnostic label describing a test notification entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Test notification'**
+  String get settingsDiagTestNotification;
+
+  /// Diagnostic label describing a scheduled milestone notification for a given sober day.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone: day {day}'**
+  String settingsDiagMilestoneDay(int day);
+
+  /// Diagnostic label describing a scheduled savings milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings milestone'**
+  String get settingsDiagSavingsMilestone;
+
+  /// Diagnostic label describing a scheduled meeting reminder notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting reminder'**
+  String get settingsDiagMeetingReminder;
+
+  /// Diagnostic label for a notification whose ID does not match any known category.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown (ID {id})'**
+  String settingsDiagUnknownId(int id);
+
+  /// Diagnostic value meaning a boolean condition is true.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get settingsDiagYes;
+
+  /// Diagnostic value meaning a boolean condition is false.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get settingsDiagNo;
+
+  /// Diagnostic value meaning a condition could not be determined.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get settingsDiagUnknown;
+
+  /// Diagnostic value meaning battery optimization is not restricting the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Not restricted'**
+  String get settingsDiagNotRestricted;
+
+  /// Diagnostic value meaning battery optimization is restricting the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted'**
+  String get settingsDiagRestricted;
+
+  /// Title of the diagnostics bottom sheet listing scheduled notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled Notifications'**
+  String get settingsDiagScheduledNotificationsTitle;
+
+  /// Diagnostic status line shown when the notification scheduler ran successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduler ran OK'**
+  String get settingsDiagSchedulerRanOk;
+
+  /// Diagnostic status line shown when the notification scheduler failed, with the error detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduler error: {error}'**
+  String settingsDiagSchedulerError(String error);
+
+  /// Diagnostic row label for whether the OS allows notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications allowed'**
+  String get settingsDiagNotificationsAllowed;
+
+  /// Diagnostic row label for the battery optimization status.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery optimization'**
+  String get settingsDiagBatteryOptimization;
+
+  /// Diagnostic row label for the exact-alarm permission status.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact alarms'**
+  String get settingsDiagExactAlarms;
+
+  /// Diagnostic value meaning exact alarms are available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get settingsDiagAvailable;
+
+  /// Diagnostic value meaning exact alarms are unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get settingsDiagUnavailable;
+
+  /// Diagnostic value meaning the exact-alarm status is unknown or not applicable on this platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown / not applicable'**
+  String get settingsDiagUnknownNotApplicable;
+
+  /// Diagnostic row label for the device timezone name.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get settingsDiagTimezone;
+
+  /// Diagnostic row label for the current time in the device timezone.
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone now'**
+  String get settingsDiagTimezoneNow;
+
+  /// Diagnostic row label for the number of pending scheduled notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending count'**
+  String get settingsDiagPendingCount;
+
+  /// Diagnostic row label for whether the morning reminder is queued.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning queued'**
+  String get settingsDiagMorningQueued;
+
+  /// Diagnostic row label for whether the evening reminder is queued.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening queued'**
+  String get settingsDiagEveningQueued;
+
+  /// Warning shown in the diagnostics sheet when no notifications are scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications are scheduled. Your daily reminders will not fire.'**
+  String get settingsDiagNoneScheduled;
+
+  /// Button in the diagnostics sheet that sends a test notification immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Send test notification now'**
+  String get settingsDiagSendTestNow;
+
+  /// Snackbar confirming a diagnostic test notification was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test sent - you should see it within 2 seconds'**
+  String get settingsDiagTestSent;
+
+  /// Snackbar shown when a diagnostic test notification could not be sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test failed - check notification permissions'**
+  String get settingsDiagTestFailed;
+
+  /// Button in the diagnostics sheet that opens the device battery optimization settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Battery Settings'**
+  String get settingsDiagOpenBatterySettings;
+
+  /// Section header above the reasons/pros/cons motivation cards in settings.
+  ///
+  /// In en, this message translates to:
+  /// **'My Motivation'**
+  String get settingsMyMotivationLabel;
+
+  /// Collapsible card title for the user's list of reasons to quit.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reasons to Quit'**
+  String get settingsReasonsToQuitTitle;
+
+  /// Placeholder hint in the add-reason text field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. To be healthier'**
+  String get settingsReasonsToQuitHint;
+
+  /// Collapsible card title for the list of benefits of staying sober.
+  ///
+  /// In en, this message translates to:
+  /// **'Pros of Sobriety'**
+  String get settingsProsTitle;
+
+  /// Placeholder hint in the add-pro text field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. More energy'**
+  String get settingsProsHint;
+
+  /// Collapsible card title for the list of negatives the user is leaving behind.
+  ///
+  /// In en, this message translates to:
+  /// **'Cons I\'m Leaving Behind'**
+  String get settingsConsTitle;
+
+  /// Placeholder hint in the add-con text field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Feeling anxious'**
+  String get settingsConsHint;
+
+  /// Section header above the app-lock security card.
+  ///
+  /// In en, this message translates to:
+  /// **'App security'**
+  String get settingsAppSecurityLabel;
+
+  /// Section header above the hidden diagnostics section.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnostics'**
+  String get settingsDiagnosticsLabel;
+
+  /// Row label that opens the notification diagnostics sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Check scheduled reminders'**
+  String get settingsCheckScheduledReminders;
+
+  /// Subtitle for the check-scheduled-reminders diagnostics row.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify alarms, permissions, and timezone'**
+  String get settingsCheckScheduledRemindersSub;
+
+  /// Section header above the About card.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAboutLabel;
+
+  /// App version label shown at the bottom of settings; tapping it repeatedly unlocks diagnostics.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String settingsVersionLabel(String version);
+
+  /// Tappable sober-date line in the profile header, showing the formatted start date.
+  ///
+  /// In en, this message translates to:
+  /// **'Sober since {date}'**
+  String settingsSoberSinceDate(String date);
+
+  /// Daily-spend chip in the profile header showing the formatted amount and a hint to tap to edit.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount}/day · tap to edit'**
+  String settingsDailySpendChip(String amount);
+
+  /// Pledge streak badge in the profile header showing how many calm days were pledged.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 calm day pledged} other{{count} calm days pledged}}'**
+  String settingsPledgeStreakBadge(int count);
+
+  /// Small caption under the money-saved amount in the profile header.
+  ///
+  /// In en, this message translates to:
+  /// **'saved'**
+  String get settingsSavedLabel;
+
+  /// Progress line under the savings-goal bar showing amount saved out of the goal amount (both pre-formatted with currency).
+  ///
+  /// In en, this message translates to:
+  /// **'{saved} of {goal}'**
+  String settingsSavingsProgress(String saved, String goal);
+
+  /// Row label to edit an existing savings goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit goal'**
+  String get settingsEditGoal;
+
+  /// Row label to create a savings goal when none exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a savings goal'**
+  String get settingsSetSavingsGoal;
+
+  /// Subtitle for the set-a-savings-goal row.
+  ///
+  /// In en, this message translates to:
+  /// **'Track what you\'re saving up for'**
+  String get settingsSetSavingsGoalSub;
+
+  /// Row label to add an emergency contact when none exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Add emergency contact'**
+  String get settingsAddEmergencyContact;
+
+  /// Subtitle for the add-emergency-contact row.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone to reach when you need support'**
+  String get settingsAddEmergencyContactSub;
+
+  /// Empty-state text shown inside an expanded motivation card with no items.
+  ///
+  /// In en, this message translates to:
+  /// **'No items added yet.'**
+  String get settingsNoItemsYet;
+
+  /// Lock-method option label and current-state label meaning the app opens without any lock.
+  ///
+  /// In en, this message translates to:
+  /// **'No lock'**
+  String get settingsLockNoneLabel;
+
+  /// Subtitle for the No lock option in the security card.
+  ///
+  /// In en, this message translates to:
+  /// **'App opens immediately'**
+  String get settingsLockNoneSub;
+
+  /// Lock-method option label and current-state label for biometric (fingerprint/face) unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric'**
+  String get settingsLockBiometricLabel;
+
+  /// Subtitle for the Biometric option in the security card.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint or face unlock'**
+  String get settingsLockBiometricSub;
+
+  /// Lock-method option label and current-state label for PIN unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN'**
+  String get settingsLockPinLabel;
+
+  /// Subtitle for the PIN option in the security card.
+  ///
+  /// In en, this message translates to:
+  /// **'4-digit numeric PIN'**
+  String get settingsLockPinSub;
+
+  /// Warning shown when PIN lock is active, reminding the user a forgotten PIN means data loss without a backup.
+  ///
+  /// In en, this message translates to:
+  /// **'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.'**
+  String get settingsLockPinRecoveryWarning;
+
+  /// Warning shown when biometric lock is active, reminding the user that losing biometric access means data loss without a backup.
+  ///
+  /// In en, this message translates to:
+  /// **'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.'**
+  String get settingsLockBiometricRecoveryWarning;
+
+  /// Section header for the records group (history, heatmap, insights, etc.) in the More card.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get settingsRecordsGroupLabel;
+
+  /// Row label linking to the full history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'My history'**
+  String get settingsMyHistory;
+
+  /// Row label linking to the mood and craving insights tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Mood & craving insights'**
+  String get settingsMoodCravingInsights;
+
+  /// Row label linking to the milestone cards screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone cards'**
+  String get settingsMilestoneCards;
+
+  /// Subtitle for the Weekly Care Summary row.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a private summary to share with someone you trust.'**
+  String get settingsWeeklyCareSummarySub;
+
+  /// Section header for the tools and app group in the More card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tools & App'**
+  String get settingsToolsAppGroupLabel;
+
+  /// Row label linking to the CBT thought tools screen.
+  ///
+  /// In en, this message translates to:
+  /// **'CBT thought tools'**
+  String get settingsCbtThoughtTools;
+
+  /// Row label linking to the pre-craving plan screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-craving plan'**
+  String get settingsPreCravingPlan;
+
+  /// Row label linking to the support/recovery groups screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery groups'**
+  String get settingsRecoveryGroups;
+
+  /// Row label linking to the meeting planner screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting planner'**
+  String get settingsMeetingPlanner;
+
+  /// Status title shown when the OS reports notifications are enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'System notifications enabled'**
+  String get settingsSystemNotifsEnabled;
+
+  /// Status title shown when the OS reports notifications are blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'System notifications blocked'**
+  String get settingsSystemNotifsBlocked;
+
+  /// Status subtitle shown when notifications are enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reminders will appear on time.'**
+  String get settingsSystemNotifsEnabledSub;
+
+  /// Status subtitle shown when notifications are blocked at the OS level.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders will not appear until enabled in system settings.'**
+  String get settingsSystemNotifsBlockedSub;
+
+  /// Small pill button that deep-links to system notification settings when notifications are blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix it'**
+  String get settingsFixItAction;
+
+  /// Row label that opens the notification times and toggles sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in & reminders'**
+  String get settingsCheckInReminders;
+
+  /// Subtitle for the check-in & reminders row.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning & evening times'**
+  String get settingsMorningEveningTimes;
+
+  /// Row label and dialog title for the light/dark/system theme picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// Theme option label for light mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// Theme option label for dark mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// Theme option label meaning follow the device's system theme setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Match system'**
+  String get settingsThemeSystem;
+
+  /// Description of the light theme option in the appearance picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm cream — the classic Stillwater look'**
+  String get settingsThemeLightHint;
+
+  /// Description of the dark theme option in the appearance picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Dim forest tones for late nights'**
+  String get settingsThemeDarkHint;
+
+  /// Description of the match-system theme option in the appearance picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow your phone setting'**
+  String get settingsThemeSystemHint;
+
+  /// Toggle label for enabling/disabling haptic (vibration) feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptic feedback'**
+  String get settingsHapticFeedback;
+
+  /// Toggle label for using imperial (miles) instead of metric units.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial units'**
+  String get settingsImperialUnits;
+
+  /// Subtitle for the imperial units toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance in miles instead of km'**
+  String get settingsImperialUnitsSub;
+
+  /// Subtitle under the Notifications title in the reminders bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in and reminder schedule'**
+  String get settingsCheckInReminderSchedule;
+
+  /// Row label for the morning notification time in the reminders sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning check-in'**
+  String get settingsMorningCheckIn;
+
+  /// Row label for the evening notification time in the reminders sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening reminder'**
+  String get settingsEveningReminder;
+
+  /// Toggle label for daily motivation message notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Motivation messages'**
+  String get settingsMotivationMessages;
+
+  /// Toggle label for daily reminder notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminders'**
+  String get settingsDailyReminders;
+
+  /// Toggle label for milestone celebration notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone alerts'**
+  String get settingsMilestoneAlerts;
+
+  /// Snackbar confirming a test notification was posted; tells the user to check their notification shade.
+  ///
+  /// In en, this message translates to:
+  /// **'Test sent — check your notification shade.'**
+  String get settingsTestSentShade;
+
+  /// Snackbar shown when a test notification could not post because notifications appear blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Test could not post. Notifications appear to be blocked for Journey Forward.'**
+  String get settingsTestCouldNotPost;
+
+  /// Outlined button in the reminders sheet that sends a test notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send test notification'**
+  String get settingsSendTestNotification;
+
+  /// Collapsible card header for the About section.
+  ///
+  /// In en, this message translates to:
+  /// **'About Journey Forward'**
+  String get settingsAboutTitle;
+
+  /// Long personal letter from the developer shown in the expanded About card. Keep the paragraph breaks (\n\n) and the em-dash before the signature 'Shawn'.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery and personal growth are rarely a straight line. Having walked a difficult road myself, I know how heavy some days can feel — and how exhausting it can be to use tools filled with noise, pressure, and distraction.\n\nWhen you are trying to heal or rebuild, the last thing you need is advertising, attention-grabbing notifications, or the worry that your deeply personal reflections are being harvested.\n\nYour recovery is not a data product.\n\nI built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and steady progress.\n\nBecause Journey Forward has no accounts, analytics, tracking, or cloud sync, I have no way of seeing how you experience the app, what feels confusing, or what features might help you most. If something is not working, or if you have an idea for a future improvement, you are welcome to contact me directly.\n\nThis app is not here to shame you, score you, or punish you for difficult moments. It is here to help you return — to your reason, your routines, your breath, and the next small step forward.\n\nI am also working toward language support, including Zulu and Afrikaans, so Journey Forward can become more welcoming while keeping its privacy-first foundation.\n\nMy hope is that this space helps you find grounding, reflection, and the grace to take one honest step at a time.\n\n— Shawn'**
+  String get settingsAboutBody;
+
+  /// Snackbar confirming the developer's contact email was copied to the clipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Email copied'**
+  String get settingsEmailCopied;
+
+  /// Button that opens the Play Store page to share the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Share app'**
+  String get settingsShareApp;
+
+  /// Prompt above the amount field in the daily-spend dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did you spend per day?'**
+  String get settingsSpendPerDayQuestion;
+
+  /// Label above the currency-symbol chooser in the daily-spend dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get settingsCurrencyLabel;
+
+  /// Title of the PIN setup dialog on the first (enter) step.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a PIN'**
+  String get settingsSetAPin;
+
+  /// Instruction on the first step of the PIN setup dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a 4-digit PIN'**
+  String get settingsEnter4DigitPin;
+
+  /// Instruction on the confirm step of the PIN setup dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN again'**
+  String get settingsEnterPinAgain;
+
+  /// Snackbar shown when the user tries to pin a vision item but already has the maximum of 3 pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'You can pin up to 3 dreams — unpin one to make room.'**
+  String get visionPinCapReached;
+
+  /// Snackbar confirming a vision/dream item was marked as achieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked achieved. Beautiful.'**
+  String get visionMarkedAchievedToast;
+
+  /// Tooltip on the pin icon button when the vision item is currently pinned; tapping unpins it.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get visionUnpinTooltip;
+
+  /// Tooltip on the pin icon button when the vision item is not pinned; tapping pins it to the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to home'**
+  String get visionPinTooltip;
+
+  /// Tooltip on the achieved-toggle icon button when the vision item is achieved; tapping returns it to active goals.
+  ///
+  /// In en, this message translates to:
+  /// **'Move back to active'**
+  String get visionMoveToActiveTooltip;
+
+  /// Tooltip on the achieved-toggle icon button to mark the vision item as achieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark achieved'**
+  String get visionMarkAchievedTooltip;
+
+  /// Tooltip on the edit icon button for a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get visionEditTooltip;
+
+  /// Banner text shown at the top of an achieved vision item when no achieved date is recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'You achieved this. Beautiful.'**
+  String get visionAchievedBanner;
+
+  /// Banner text on an achieved vision item showing the date it was achieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieved on {date}'**
+  String visionAchievedOnDate(String date);
+
+  /// Chip label for a vision item whose target date has passed; {count} is the number of days past the target.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d past target'**
+  String visionDaysPastTarget(int count);
+
+  /// Chip label shown when a vision item's target date is today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get visionTargetToday;
+
+  /// Chip label counting down the days remaining until a vision item's target date.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day to go} other{{count} days to go}}'**
+  String visionDaysToGo(int count);
+
+  /// Chip label indicating a vision item is pinned to the home screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get visionPinnedChip;
+
+  /// Section heading for the milestone checklist on a vision item.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestones'**
+  String get visionMilestonesLabel;
+
+  /// Progress subtitle showing how many milestones are completed out of the total.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} complete'**
+  String visionMilestonesComplete(int done, int total);
+
+  /// Heading for the 'why it matters' prose card on the vision detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this matters'**
+  String get visionWhyItMattersHeading;
+
+  /// Heading for the description/notes prose card on the vision detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get visionNotesHeading;
+
+  /// Greeting heading at the top of the Emergency Toolkit home tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Toolkit'**
+  String get emergencyToolkitHeading;
+
+  /// Subheading under the toolkit heading on the Emergency home tab; recovery encouragement.
+  ///
+  /// In en, this message translates to:
+  /// **'One Day at a Time'**
+  String get emergencyToolkitSubheading;
+
+  /// Label on the emergency-contact call button; {name} is the saved contact's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String emergencyCallContact(String name);
+
+  /// Short tile label for the HALT self-check tool (Hungry/Angry/Lonely/Tired). Keep the dotted acronym.
+  ///
+  /// In en, this message translates to:
+  /// **'H.A.L.T.'**
+  String get emergencyHaltShortLabel;
+
+  /// Tile label for the distraction puzzle mini-game on the Emergency home tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Puzzle'**
+  String get emergencyPuzzleTitle;
+
+  /// Description under the Weekly Care Summary row on the Emergency home tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare a gentle report for therapy, support, or reflection.'**
+  String get emergencyWeeklyCareSummaryDesc;
+
+  /// Small uppercase overline shown above breathing-screen titles. Keep it uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'CALM TOOLKIT'**
+  String get emergencyCalmToolkitOverline;
+
+  /// Button label shown on the final step of a guided meditation or CBT walkthrough. Keep the ✓ checkmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete ✓'**
+  String get emergencyComplete;
+
+  /// Large serif title on the breathing pattern selection screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your breath.'**
+  String get breathChooseTitle;
+
+  /// Subtitle under the breathing selection title.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady rhythm for this moment.'**
+  String get breathChooseSubtitle;
+
+  /// Section heading for the grid of breathing patterns on the selection screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathing Library'**
+  String get breathLibraryTitle;
+
+  /// Tappable link that opens the full breathing-pattern library.
+  ///
+  /// In en, this message translates to:
+  /// **'More breathing patterns'**
+  String get breathMorePatterns;
+
+  /// Uppercase badge on the recommended breathing-pattern card. Keep it uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'RECOMMENDED NOW'**
+  String get breathRecommendedNow;
+
+  /// Rhythm chip label for the inhale phase duration on the recommended breathing card.
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get breathRhythmIn;
+
+  /// Rhythm chip label for a breath-hold phase duration on the recommended breathing card.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get breathRhythmHold;
+
+  /// Rhythm chip label for the exhale phase duration on the recommended breathing card.
+  ///
+  /// In en, this message translates to:
+  /// **'Out'**
+  String get breathRhythmOut;
+
+  /// Button that starts the recommended breathing session.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin'**
+  String get breathBegin;
+
+  /// Serif title at the top of the active breathing-session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe with me.'**
+  String get breathSessionTitle;
+
+  /// Calming subtitle under the breathing-session title.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to solve right now.'**
+  String get breathSessionSubtitle;
+
+  /// Word shown in the breathing ring before the session is started.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get breathReady;
+
+  /// Caption under the session countdown timer (e.g. '4:32 remaining'). Lowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'remaining'**
+  String get breathRemaining;
+
+  /// Button that begins the breathing-session countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get breathStart;
+
+  /// Button that resumes a paused breathing session.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get breathResume;
+
+  /// Button that pauses the active breathing session.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get breathPause;
+
+  /// Outlined button that ends the breathing session and returns to the pattern list.
+  ///
+  /// In en, this message translates to:
+  /// **'End session'**
+  String get breathEndSession;
+
+  /// Safety footer shown during a breathing session.
+  ///
+  /// In en, this message translates to:
+  /// **'If you feel dizzy, return to normal breathing.'**
+  String get breathDizzyWarning;
+
+  /// Serif title on the full breathing-pattern library screen.
+  ///
+  /// In en, this message translates to:
+  /// **'All breathing patterns.'**
+  String get breathAllPatternsTitle;
+
+  /// Subtitle under the full breathing-library title.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the rhythm that fits this moment.'**
+  String get breathAllPatternsSubtitle;
+
+  /// Uppercase badge on the Urge Surfing guided-audio player card. Keep it uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'GUIDED AUDIO'**
+  String get meditationGuidedAudioLabel;
+
+  /// Divider label separating the audio player from the text-based guided meditation list.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided scripts'**
+  String get meditationGuidedScripts;
+
+  /// Tagline under the Urge Surfing audio title. Keep the em dash.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride the wave — urges peak and pass.'**
+  String get meditationUrgeSurfingTagline;
+
+  /// Explainer paragraph describing what urge surfing is, shown under the audio player.
+  ///
+  /// In en, this message translates to:
+  /// **'Urge surfing: instead of fighting a craving, you observe it like a wave — it rises, peaks, and falls on its own. This guided session teaches you to ride the wave without acting on it.'**
+  String get meditationUrgeSurfingExplainer;
+
+  /// Duration label for an 8-minute guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'8 min'**
+  String get meditationDuration8min;
+
+  /// Duration label for a 10-minute guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'10 min'**
+  String get meditationDuration10min;
+
+  /// Duration label for a 12-minute guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'12 min'**
+  String get meditationDuration12min;
+
+  /// Duration label for a 15-minute guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'15 min'**
+  String get meditationDuration15min;
+
+  /// Title of the Urge Surfing guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'Urge Surfing'**
+  String get meditationUrgeSurfingTitle;
+
+  /// Urge Surfing meditation step 1 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Close your eyes and take three slow breaths.'**
+  String get meditationUrgeSurfingStep0;
+
+  /// Urge Surfing meditation step 2 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice the craving. Where do you feel it in your body?'**
+  String get meditationUrgeSurfingStep1;
+
+  /// Urge Surfing meditation step 3 of 7. Keep the em dash.
+  ///
+  /// In en, this message translates to:
+  /// **'Imagine it as a wave in the ocean — rising slowly.'**
+  String get meditationUrgeSurfingStep2;
+
+  /// Urge Surfing meditation step 4 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'You are a surfer. You don\'t fight the wave. You ride it.'**
+  String get meditationUrgeSurfingStep3;
+
+  /// Urge Surfing meditation step 5 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch the wave peak. It cannot go higher than it already is.'**
+  String get meditationUrgeSurfingStep4;
+
+  /// Urge Surfing meditation step 6 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Now watch it begin to fall. Urges always fade.'**
+  String get meditationUrgeSurfingStep5;
+
+  /// Urge Surfing meditation step 7 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'You did not drink. The wave passed. You surfed it.'**
+  String get meditationUrgeSurfingStep6;
+
+  /// Title of the Body Scan guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Scan'**
+  String get meditationBodyScanTitle;
+
+  /// Body Scan meditation step 1 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Lie down or sit comfortably. Close your eyes.'**
+  String get meditationBodyScanStep0;
+
+  /// Body Scan meditation step 2 of 7. Keep the em dash.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring attention to your feet. Notice any sensation — warmth, tingling.'**
+  String get meditationBodyScanStep1;
+
+  /// Body Scan meditation step 3 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Slowly move up to your calves, then knees, then thighs.'**
+  String get meditationBodyScanStep2;
+
+  /// Body Scan meditation step 4 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice your belly rising and falling with each breath.'**
+  String get meditationBodyScanStep3;
+
+  /// Body Scan meditation step 5 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your chest, shoulders, arms, and hands.'**
+  String get meditationBodyScanStep4;
+
+  /// Body Scan meditation step 6 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Finally, relax your jaw, eyes, and forehead.'**
+  String get meditationBodyScanStep5;
+
+  /// Body Scan meditation step 7 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest here for a moment. You are safe. You are whole.'**
+  String get meditationBodyScanStep6;
+
+  /// Title of the Gratitude Reset guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude Reset'**
+  String get meditationGratitudeResetTitle;
+
+  /// Gratitude Reset meditation step 1 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Sit quietly. Take three slow breaths.'**
+  String get meditationGratitudeResetStep0;
+
+  /// Gratitude Reset meditation step 2 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Think of one person in your life you\'re grateful for.'**
+  String get meditationGratitudeResetStep1;
+
+  /// Gratitude Reset meditation step 3 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'What did they do or say that mattered to you?'**
+  String get meditationGratitudeResetStep2;
+
+  /// Gratitude Reset meditation step 4 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Think of one moment from today, however small, that was good.'**
+  String get meditationGratitudeResetStep3;
+
+  /// Gratitude Reset meditation step 5 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Think of something about your body or health you appreciate.'**
+  String get meditationGratitudeResetStep4;
+
+  /// Gratitude Reset meditation step 6 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Let gratitude fill your chest like warmth.'**
+  String get meditationGratitudeResetStep5;
+
+  /// Gratitude Reset meditation step 7 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Carry this feeling into your next hour.'**
+  String get meditationGratitudeResetStep6;
+
+  /// Title of the Safe Place guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe Place'**
+  String get meditationSafePlaceTitle;
+
+  /// Safe Place meditation step 1 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Close your eyes. Take three slow, deep breaths.'**
+  String get meditationSafePlaceStep0;
+
+  /// Safe Place meditation step 2 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Imagine a place where you feel completely safe.'**
+  String get meditationSafePlaceStep1;
+
+  /// Safe Place meditation step 3 of 7. Keep the em dash.
+  ///
+  /// In en, this message translates to:
+  /// **'It can be real or imagined — a beach, a forest, a room.'**
+  String get meditationSafePlaceStep2;
+
+  /// Safe Place meditation step 4 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice what you see, hear, smell in this place.'**
+  String get meditationSafePlaceStep3;
+
+  /// Safe Place meditation step 5 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Feel the ground beneath you. You are supported.'**
+  String get meditationSafePlaceStep4;
+
+  /// Safe Place meditation step 6 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe here for a while. Nothing can harm you.'**
+  String get meditationSafePlaceStep5;
+
+  /// Safe Place meditation step 7 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'When you\'re ready, slowly return, carrying this calm.'**
+  String get meditationSafePlaceStep6;
+
+  /// Title of the Self-Compassion guided meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-Compassion'**
+  String get meditationSelfCompassionTitle;
+
+  /// Self-Compassion meditation step 1 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your hand on your heart. Feel its warmth.'**
+  String get meditationSelfCompassionStep0;
+
+  /// Self-Compassion meditation step 2 of 7. Keep the quotation marks.
+  ///
+  /// In en, this message translates to:
+  /// **'Say: \"This is a moment of difficulty.\"'**
+  String get meditationSelfCompassionStep1;
+
+  /// Self-Compassion meditation step 3 of 7. Keep the quotation marks.
+  ///
+  /// In en, this message translates to:
+  /// **'Say: \"Difficulty is part of life. I am not alone in this.\"'**
+  String get meditationSelfCompassionStep2;
+
+  /// Self-Compassion meditation step 4 of 7. Keep the quotation marks.
+  ///
+  /// In en, this message translates to:
+  /// **'Say: \"May I be kind to myself right now.\"'**
+  String get meditationSelfCompassionStep3;
+
+  /// Self-Compassion meditation step 5 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Think of something you\'ve been critical of yourself about.'**
+  String get meditationSelfCompassionStep4;
+
+  /// Self-Compassion meditation step 6 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask: what would I say to a dear friend in this situation?'**
+  String get meditationSelfCompassionStep5;
+
+  /// Self-Compassion meditation step 7 of 7.
+  ///
+  /// In en, this message translates to:
+  /// **'Say those words to yourself. You deserve them too.'**
+  String get meditationSelfCompassionStep6;
 }
 
 class _AppLocalizationsDelegate

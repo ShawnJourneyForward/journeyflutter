@@ -94,14 +94,11 @@ List<_Milestone> _buildMilestones(AppLocalizations l10n) => [
       ),
       _Milestone(
         days: 100,
-        label: '100 Days',
-        shortLabel: '100 Days',
+        label: l10n.milestoneHundredDays,
+        shortLabel: l10n.milestoneHundredDaysShort,
         icon: Icons.star_border_rounded,
         emoji: '⭐',
-        benefit:
-            'One hundred days. Brain neuroplasticity is in full swing. The reward '
-            'system has largely recalibrated to find pleasure in life without alcohol. '
-            'Relationships, work, and your sense of self are transforming.',
+        benefit: l10n.milestoneHundredDaysBenefit,
       ),
       _Milestone(
         days: 180,
@@ -204,20 +201,21 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
       final file = File('${Directory.systemTemp.path}/journey_milestone.png');
       await file.writeAsBytes(bytes);
 
+      final l10n = AppLocalizations.of(context);
       final profile = ref.read(profileProvider).valueOrNull;
-      final name = profile?.username ?? 'Journey Forward';
+      final name = profile?.username ?? l10n.appTitle;
       final milestone = _milestones[_selectedIndex];
 
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: '${milestone.emoji} $name — ${milestone.label} sober. '
-            'One day at a time. #JourneyForward #Sobriety',
+        text: l10n.milestoneShareText(milestone.emoji, name, milestone.label),
       );
     } catch (_) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not generate card. Try again.',
+            content: Text(l10n.milestoneCardGenerateError,
                 style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
             backgroundColor: AppColors.stone700,
             behavior: SnackBarBehavior.floating,
@@ -307,13 +305,14 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SHARE CARD', style: AppTextStyles.overline),
+                    Text(l10n.milestoneShareCardLabel,
+                        style: AppTextStyles.overline),
                     const SizedBox(height: 10),
                     RepaintBoundary(
                       key: _cardKey,
                       child: _ShareCard(
                         milestone: selected,
-                        username: profile?.username ?? 'Journey Forward',
+                        username: profile?.username ?? l10n.appTitle,
                         days: days,
                         achieved: isAchieved,
                       ),
@@ -332,8 +331,8 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
                             : const Icon(Icons.share_rounded, size: 18),
                         label: Text(
                           isAchieved
-                              ? 'Share this milestone'
-                              : 'Not yet achieved',
+                              ? l10n.milestoneShareButton
+                              : l10n.milestoneNotYetAchieved,
                           style: AppTextStyles.labelLarge
                               .copyWith(color: Colors.white),
                         ),
@@ -357,7 +356,8 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
-                child: Text('ALL MILESTONES', style: AppTextStyles.overline),
+                child: Text(l10n.milestoneAllMilestonesLabel,
+                    style: AppTextStyles.overline),
               ),
             ),
             SliverPadding(
@@ -439,9 +439,10 @@ class _HeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final greeting = username.isNotEmpty
-        ? 'Well done, ${username.split(' ').first}.'
-        : 'Well done.';
+        ? l10n.milestoneHeroGreetingNamed(username.split(' ').first)
+        : l10n.milestoneHeroGreeting;
 
     return Container(
       decoration: BoxDecoration(
@@ -483,7 +484,9 @@ class _HeroCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: Text(
-                        days == 1 ? 'day\nsober' : 'days\nsober',
+                        days == 1
+                            ? l10n.milestoneHeroDaySober
+                            : l10n.milestoneHeroDaysSober,
                         style: AppTextStyles.titleSmall
                             .copyWith(color: AppColors.forest200, height: 1.3),
                       ),
@@ -505,7 +508,7 @@ class _HeroCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Next: ${nextMilestone!.label}',
+                      Text(l10n.milestoneHeroNext(nextMilestone!.label),
                           style: AppTextStyles.caption
                               .copyWith(color: AppColors.forest300)),
                       AnimatedBuilder(
@@ -536,7 +539,7 @@ class _HeroCard extends StatelessWidget {
                   AnimatedBuilder(
                     animation: progressAnim,
                     builder: (_, __) => Text(
-                      '$days of ${nextMilestone!.days} days',
+                      l10n.milestoneHeroProgressDays(days, nextMilestone!.days),
                       style: AppTextStyles.caption
                           .copyWith(color: AppColors.forest400),
                     ),
@@ -552,7 +555,7 @@ class _HeroCard extends StatelessWidget {
                       border: Border.all(
                           color: AppColors.honey400.withValues(alpha: 0.4)),
                     ),
-                    child: Text('Every milestone reached ✨',
+                    child: Text(l10n.milestoneEveryReached,
                         style: AppTextStyles.labelSmall
                             .copyWith(color: AppColors.honey300)),
                   ),
@@ -580,6 +583,7 @@ class _AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xxl,
       padding: const EdgeInsets.all(22),
@@ -632,8 +636,8 @@ class _AchievementCard extends StatelessWidget {
                       ),
                       child: Text(
                         achieved
-                            ? 'Achieved ✓'
-                            : '${milestone.days} days to go',
+                            ? l10n.milestoneAchievedBadge
+                            : l10n.milestoneDaysToGo(milestone.days),
                         style: AppTextStyles.labelSmall.copyWith(
                           color: achieved
                               ? AppColors.forest600
@@ -650,7 +654,9 @@ class _AchievementCard extends StatelessWidget {
           Container(height: 1, color: AppColors.stone100),
           const SizedBox(height: 18),
           Text(
-            achieved ? 'What happened in your body' : 'What will happen',
+            achieved
+                ? l10n.milestoneWhatHappenedLabel
+                : l10n.milestoneWhatWillHappenLabel,
             style: AppTextStyles.overline,
           ),
           const SizedBox(height: 10),
@@ -708,27 +714,39 @@ class _ShareCard extends StatelessWidget {
   }
 
   // First-name display: keep the share card clean even if the user typed a
-  // full name in onboarding. Falls back to "Friend" when no name is set.
-  String get _displayName {
+  // full name in onboarding. Falls back to a friendly default when no name is
+  // set.
+  String _displayName(AppLocalizations l10n) {
     final trimmed = username.trim();
-    if (trimmed.isEmpty) return 'Friend';
+    if (trimmed.isEmpty) return l10n.milestoneShareCardFallbackName;
     return trimmed.split(' ').first;
   }
 
   // Unit word under the hero number. Years milestones invert: the 365-day
   // card reads "1 / year / sober" rather than "365 / day / sober".
-  ({String top, String bottom}) get _unitLines {
-    if (!achieved) return (top: 'days', bottom: 'sober');
+  ({String top, String bottom}) _unitLines(AppLocalizations l10n) {
+    if (!achieved) {
+      return (top: l10n.milestoneUnitDays, bottom: l10n.milestoneUnitSober);
+    }
     if (milestone.days >= 365) {
       final years = milestone.days ~/ 365;
-      return (top: years == 1 ? 'year' : 'years', bottom: 'sober');
+      return (
+        top: years == 1 ? l10n.milestoneUnitYear : l10n.milestoneUnitYears,
+        bottom: l10n.milestoneUnitSober,
+      );
     }
-    return (top: milestone.days == 1 ? 'day' : 'days', bottom: 'sober');
+    return (
+      top: milestone.days == 1
+          ? l10n.milestoneUnitDay
+          : l10n.milestoneUnitDays,
+      bottom: l10n.milestoneUnitSober,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final units = _unitLines;
+    final l10n = AppLocalizations.of(context);
+    final units = _unitLines(l10n);
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(
@@ -784,7 +802,7 @@ class _ShareCard extends StatelessWidget {
                           color: AppColors.honey300.withOpacity(0.85)),
                       const SizedBox(width: 6),
                       Text(
-                        'JOURNEY FORWARD',
+                        l10n.milestoneShareCardBrand,
                         style: AppTextStyles.labelSmall.copyWith(
                           color: AppColors.forest200,
                           letterSpacing: 2.4,
@@ -899,7 +917,7 @@ class _ShareCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          _displayName,
+                          _displayName(l10n),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTextStyles.bodySmall.copyWith(
@@ -961,7 +979,7 @@ class _ShareCard extends StatelessWidget {
                           color: AppColors.honey300, size: 28),
                       const SizedBox(height: 8),
                       Text(
-                        '${milestone.days - days} more ${milestone.days - days == 1 ? 'day' : 'days'} to unlock',
+                        l10n.milestoneDaysToUnlock(milestone.days - days),
                         style: AppTextStyles.labelMedium
                             .copyWith(color: AppColors.honey200),
                       ),
@@ -1092,6 +1110,7 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xl,
       child: Row(
@@ -1102,7 +1121,7 @@ class _StatsRow extends StatelessWidget {
                 Text('$days',
                     style: AppTextStyles.displaySmall.copyWith(fontSize: 28)),
                 const SizedBox(height: 2),
-                Text('total\ndays sober',
+                Text(l10n.milestoneStatsTotalDaysSober,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodySmall),
               ],
@@ -1118,7 +1137,7 @@ class _StatsRow extends StatelessWidget {
                     style: AppTextStyles.moneyNumber.copyWith(fontSize: 26),
                   ),
                   const SizedBox(height: 2),
-                  Text('money\nreclaimed',
+                  Text(l10n.milestoneStatsMoneyReclaimed,
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodySmall),
                 ],

@@ -1,0 +1,103 @@
+{
+  "onbBiometricNotEnrolledError": {
+    "en": "Biometrics aren't set up on this device. Add a fingerprint or face in your phone's settings, then try again.",
+    "desc": "Error shown when the user picks biometric lock but no fingerprint/face is enrolled on the device."
+  },
+  "onbBiometricConfirmReason": {
+    "en": "Confirm to enable biometric lock",
+    "desc": "Prompt reason shown by the OS biometric dialog while enabling biometric app lock during onboarding."
+  },
+  "onbBiometricSetupFailed": {
+    "en": "Biometric setup failed: {error}",
+    "desc": "Error shown when the biometric authentication attempt throws a platform exception during onboarding setup.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "onbSetupFailed": {
+    "en": "Could not complete setup: {error}",
+    "desc": "Error shown when saving the profile / finishing onboarding fails.",
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "onbWelcomeEyebrow": {
+    "en": "DAY ONE  ·  A WELCOME",
+    "desc": "Uppercase eyebrow label above the welcome headline on the first onboarding screen."
+  },
+  "onbWelcomeHeadline": {
+    "en": "A new chapter,\nquietly begun.",
+    "desc": "Large serif headline on the welcome onboarding screen. Keep the line break."
+  },
+  "onbWelcomePillOnDeviceSub": {
+    "en": "Works without\nthe internet",
+    "desc": "Subtitle of the '100% on-device' feature pill on the welcome screen. Keep the line break."
+  },
+  "onbWelcomePillNoAccountTitle": {
+    "en": "NO ACCOUNT",
+    "desc": "Uppercase title of the no-account feature pill on the welcome screen."
+  },
+  "onbWelcomePillNoAccountSub": {
+    "en": "No login or\nprofile upload",
+    "desc": "Subtitle of the no-account feature pill on the welcome screen. Keep the line break."
+  },
+  "onbWelcomePillZeroTrackingTitle": {
+    "en": "ZERO TRACKING",
+    "desc": "Uppercase title of the zero-tracking feature pill on the welcome screen."
+  },
+  "onbWelcomePillZeroTrackingSub": {
+    "en": "Your data stays\non device",
+    "desc": "Subtitle of the zero-tracking feature pill on the welcome screen. Keep the line break."
+  },
+  "onbWelcomeBeginButton": {
+    "en": "Begin",
+    "desc": "Primary call-to-action button on the welcome onboarding screen."
+  },
+  "onbWelcomeDisclaimer": {
+    "en": "Not medical advice — a companion, not a clinician.",
+    "desc": "Small disclaimer text at the bottom of the welcome onboarding screen."
+  },
+  "onbQuitDateLabel": {
+    "en": "Quit date",
+    "desc": "Label on the date tile when the user has chosen a future quit date (countdown mode)."
+  },
+  "onbTimeOfDayLabel": {
+    "en": "Time of day",
+    "desc": "Label on the time tile in the sober-date onboarding step."
+  },
+  "onbDaysUntilDayOneLabel": {
+    "en": "days until day one",
+    "desc": "Trailing label after the countdown number when a future quit date is selected, e.g. '12 days until day one'."
+  },
+  "onbSecurityPinRecoveryWarning": {
+    "en": "If you forget your PIN, your data cannot be recovered without a backup. Set up a backup later in Profile → Backup.",
+    "desc": "Data-recovery warning shown when the user selects PIN lock during onboarding."
+  },
+  "onbSecurityBiometricRecoveryWarning": {
+    "en": "If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.",
+    "desc": "Data-recovery warning shown when the user selects biometric lock during onboarding."
+  },
+  "onbFinishHeadlineWithName": {
+    "en": "You're ready,\n{name}.",
+    "desc": "Finish-step headline when the user entered a name. Keep the line break.",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "onbFinishHeadline": {
+    "en": "You're ready\nfor this.",
+    "desc": "Finish-step headline when no name was entered. Keep the line break."
+  },
+  "onbFinishEyebrowCountdown": {
+    "en": "IN {days} DAYS  ·  YOUR JOURNEY BEGINS",
+    "desc": "Uppercase eyebrow on the finish step when a future quit date is set, counting down to day one.",
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "onbFinishEyebrowContinuing": {
+    "en": "DAY {day}  ·  THE PATH CONTINUES",
+    "desc": "Uppercase eyebrow on the finish step when the user already has sober days logged.",
+    "placeholders": { "day": { "type": "int" } }
+  },
+  "onbFinishEyebrowDayOne": {
+    "en": "DAY ONE  ·  THE JOURNEY BEGINS",
+    "desc": "Uppercase eyebrow on the finish step when the journey starts today (day one)."
+  },
+  "onbFinishBodyFuture": {
+    "en": "Your quit date is set. We'll count down with you — and the moment it arrives, day one begins.",
+    "desc": "Finish-step subtitle shown when the user picked a future quit date."
+  }
+}

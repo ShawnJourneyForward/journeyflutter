@@ -313,11 +313,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _addWeeklyGoal(UserProfile p) async {
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     final result = await _textDialog(
-      title: 'Add weekly goal',
+      title: l10n.settingsAddWeeklyGoalTitle,
       controller: ctrl,
-      hint: 'e.g. Exercise 3 times this week',
+      hint: l10n.settingsWeeklyGoalHint,
       capitalization: TextCapitalization.sentences,
     );
     ctrl.dispose();
@@ -350,19 +351,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _setLockBiometric(UserProfile p) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final supported = await _auth.isDeviceSupported();
       final canCheck = await _auth.canCheckBiometrics;
       final available = await _auth.getAvailableBiometrics();
       if (!supported || !canCheck || available.isEmpty) {
         if (mounted) {
-          _showSnack(
-              'Biometrics aren\'t set up on this device. Add a fingerprint or face in your phone\'s settings, then try again.');
+          _showSnack(l10n.settingsBiometricNotSetUp);
         }
         return;
       }
       final authenticated = await _auth.authenticate(
-        localizedReason: 'Confirm to enable biometric lock',
+        localizedReason: l10n.settingsBiometricConfirmReason,
         options:
             const AuthenticationOptions(biometricOnly: false, stickyAuth: true),
       );
@@ -378,14 +379,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } on PlatformException catch (e) {
       if (!mounted) return;
       final msg = switch (e.code) {
-        'NotEnrolled' =>
-          'No biometrics enrolled on this device. Add a fingerprint or face in your phone\'s settings.',
-        'NotAvailable' =>
-          'Biometric hardware is unavailable right now. Try again in a moment.',
-        'LockedOut' => 'Too many failed attempts. Wait a moment and try again.',
-        'PermanentlyLockedOut' =>
-          'Biometrics are locked. Use your phone\'s screen lock to re-enable.',
-        _ => 'Biometric authentication failed: ${e.message ?? e.code}',
+        'NotEnrolled' => l10n.settingsBiometricNotEnrolled,
+        'NotAvailable' => l10n.settingsBiometricUnavailable,
+        'LockedOut' => l10n.settingsBiometricLockedOut,
+        'PermanentlyLockedOut' => l10n.settingsBiometricPermanentlyLockedOut,
+        _ => l10n.settingsBiometricAuthFailed(e.message ?? e.code),
       };
       _showSnack(msg);
     }
@@ -418,6 +416,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _editNotifications() async {
     H.light();
+    final l10n = AppLocalizations.of(context);
     final prefs = await ref.read(prefsProvider.future);
     TimeOfDay parseTime(String s) {
       final parts = s.split(':');
@@ -477,8 +476,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SnackBar(
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 6),
-          content: const Text(
-            'Reminder scheduling failed. Please check notification permissions.',
+          content: Text(
+            l10n.settingsReminderScheduleFailed,
           ),
           backgroundColor: AppColors.honey500,
         ),
@@ -490,15 +489,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 6),
-        content: const Text(
-            'Saved — but notifications are blocked in system settings.'),
+        content: Text(l10n.settingsNotificationsBlockedSaved),
         action: SnackBarAction(
-          label: 'OPEN SETTINGS',
+          label: l10n.settingsOpenSettingsAction,
           onPressed: NotificationService.openSystemNotificationSettings,
         ),
       ));
     } else {
-      _showSnack('Notification settings saved');
+      _showSnack(l10n.settingsNotificationSettingsSaved);
     }
   }
 
@@ -509,7 +507,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _showDiagnostics = true);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Diagnostics enabled'),
+        content: Text(AppLocalizations.of(context).settingsDiagnosticsEnabled),
         backgroundColor: AppColors.forest700,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -531,30 +529,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final timezoneNow = NotificationService.localTimezoneNowTextIfAvailable();
 
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
 
     String describeId(int id) {
-      if (id == 1) return 'Morning reminder';
-      if (id == 2) return 'Evening reminder';
-      if (id == 99) return 'Test notification';
-      if (id >= 10000 && id < 20000) return 'Milestone: day ${id - 10000}';
-      if (id >= 20000 && id < 30000) return 'Savings milestone';
-      if (id >= 30000) return 'Meeting reminder';
-      return 'Unknown (ID $id)';
+      if (id == 1) return l10n.settingsDiagMorningReminder;
+      if (id == 2) return l10n.settingsDiagEveningReminder;
+      if (id == 99) return l10n.settingsDiagTestNotification;
+      if (id >= 10000 && id < 20000) {
+        return l10n.settingsDiagMilestoneDay(id - 10000);
+      }
+      if (id >= 20000 && id < 30000) return l10n.settingsDiagSavingsMilestone;
+      if (id >= 30000) return l10n.settingsDiagMeetingReminder;
+      return l10n.settingsDiagUnknownId(id);
     }
 
     final hasMorning = pending.any((n) => n.id == 1);
     final hasEvening = pending.any((n) => n.id == 2);
 
     String yesNoUnknown(bool? value) {
-      if (value == true) return 'Yes';
-      if (value == false) return 'No';
-      return 'Unknown';
+      if (value == true) return l10n.settingsDiagYes;
+      if (value == false) return l10n.settingsDiagNo;
+      return l10n.settingsDiagUnknown;
     }
 
     String batteryLabel(bool? value) {
-      if (value == true) return 'Not restricted';
-      if (value == false) return 'Restricted';
-      return 'Unknown';
+      if (value == true) return l10n.settingsDiagNotRestricted;
+      if (value == false) return l10n.settingsDiagRestricted;
+      return l10n.settingsDiagUnknown;
     }
 
     showModalBottomSheet(
@@ -571,14 +572,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Scheduled Notifications',
+                l10n.settingsDiagScheduledNotificationsTitle,
                 style: AppTextStyles.titleMedium.copyWith(fontSize: 18),
               ),
               const SizedBox(height: 8),
               Text(
                 result.success
-                    ? 'Scheduler ran OK'
-                    : 'Scheduler error: ${result.error}',
+                    ? l10n.settingsDiagSchedulerRanOk
+                    : l10n.settingsDiagSchedulerError(result.error.toString()),
                 style: AppTextStyles.bodySmall.copyWith(
                   color:
                       result.success ? AppColors.forest700 : AppColors.blush700,
@@ -586,40 +587,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 16),
               _DiagnosticLine(
-                label: 'Notifications allowed',
+                label: l10n.settingsDiagNotificationsAllowed,
                 value: yesNoUnknown(notificationsAllowed),
               ),
               _DiagnosticLine(
-                label: 'Battery optimization',
+                label: l10n.settingsDiagBatteryOptimization,
                 value: batteryLabel(batteryStatus),
               ),
               _DiagnosticLine(
-                label: 'Exact alarms',
+                label: l10n.settingsDiagExactAlarms,
                 value: exactAlarmAllowed == true
-                    ? 'Available'
+                    ? l10n.settingsDiagAvailable
                     : exactAlarmAllowed == false
-                        ? 'Unavailable'
-                        : 'Unknown / not applicable',
+                        ? l10n.settingsDiagUnavailable
+                        : l10n.settingsDiagUnknownNotApplicable,
               ),
               _DiagnosticLine(
-                label: 'Timezone',
-                value: timezoneName ?? 'Unknown',
+                label: l10n.settingsDiagTimezone,
+                value: timezoneName ?? l10n.settingsDiagUnknown,
               ),
               _DiagnosticLine(
-                label: 'Timezone now',
-                value: timezoneNow ?? 'Unknown',
+                label: l10n.settingsDiagTimezoneNow,
+                value: timezoneNow ?? l10n.settingsDiagUnknown,
               ),
               _DiagnosticLine(
-                label: 'Pending count',
+                label: l10n.settingsDiagPendingCount,
                 value: pending.length.toString(),
               ),
               _DiagnosticLine(
-                label: 'Morning queued',
-                value: hasMorning ? 'Yes' : 'No',
+                label: l10n.settingsDiagMorningQueued,
+                value: hasMorning ? l10n.settingsDiagYes : l10n.settingsDiagNo,
               ),
               _DiagnosticLine(
-                label: 'Evening queued',
-                value: hasEvening ? 'Yes' : 'No',
+                label: l10n.settingsDiagEveningQueued,
+                value: hasEvening ? l10n.settingsDiagYes : l10n.settingsDiagNo,
               ),
               const SizedBox(height: 16),
               if (pending.isEmpty)
@@ -640,7 +641,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'No notifications are scheduled. Your daily reminders will not fire.',
+                          l10n.settingsDiagNoneScheduled,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.stone700,
                           ),
@@ -695,7 +696,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.send_outlined, size: 18),
-                  label: const Text('Send test notification now'),
+                  label: Text(l10n.settingsDiagSendTestNow),
                   onPressed: () async {
                     Navigator.pop(context);
                     final ok = await NotificationService.sendTestNotification();
@@ -704,8 +705,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         SnackBar(
                           content: Text(
                             ok
-                                ? 'Test sent - you should see it within 2 seconds'
-                                : 'Test failed - check notification permissions',
+                                ? l10n.settingsDiagTestSent
+                                : l10n.settingsDiagTestFailed,
                           ),
                           backgroundColor:
                               ok ? AppColors.forest700 : AppColors.blush600,
@@ -721,7 +722,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.battery_alert_outlined, size: 18),
-                  label: const Text('Open Battery Settings'),
+                  label: Text(l10n.settingsDiagOpenBatterySettings),
                   onPressed: () {
                     NotificationService.openBatteryOptimizationSettings();
                   },
@@ -825,7 +826,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
       error: (e, _) => Scaffold(
         backgroundColor: AppColors.stone50,
-        body: Center(child: Text('Error: $e')),
+        body: Center(
+            child: Text(AppLocalizations.of(context).homeErrorPrefix('$e'))),
       ),
       data: (profile) {
         // Router-level redirect handles null-profile (see main.dart).
@@ -926,7 +928,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _SectionLabel('My Motivation'),
+                child: _SectionLabel(l10n.settingsMyMotivationLabel),
               ),
             ),
             SliverToBoxAdapter(
@@ -934,8 +936,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                 child: _MotivationSection(
                   icon: Icons.spa_outlined,
-                  title: 'My Reasons to Quit',
-                  placeholder: 'e.g. To be healthier',
+                  title: l10n.settingsReasonsToQuitTitle,
+                  placeholder: l10n.settingsReasonsToQuitHint,
                   items: profile.myReasons,
                   onAdd: (v) => _addReason(profile, v),
                   onRemove: (i) => _removeReasonAt(profile, i),
@@ -947,8 +949,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                 child: _MotivationSection(
                   icon: Icons.thumb_up_alt_outlined,
-                  title: 'Pros of Sobriety',
-                  placeholder: 'e.g. More energy',
+                  title: l10n.settingsProsTitle,
+                  placeholder: l10n.settingsProsHint,
                   items: profile.pros,
                   onAdd: (v) => _addPro(profile, v),
                   onRemove: (i) => _removeProAt(profile, i),
@@ -960,8 +962,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                 child: _MotivationSection(
                   icon: Icons.thumb_down_alt_outlined,
-                  title: "Cons I'm Leaving Behind",
-                  placeholder: 'e.g. Feeling anxious',
+                  title: l10n.settingsConsTitle,
+                  placeholder: l10n.settingsConsHint,
                   items: profile.cons,
                   onAdd: (v) => _addCon(profile, v),
                   onRemove: (i) => _removeConAt(profile, i),
@@ -991,7 +993,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _SectionLabel('App security'),
+                child: _SectionLabel(l10n.settingsAppSecurityLabel),
               ),
             ),
             SliverToBoxAdapter(
@@ -1010,7 +1012,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: _SectionLabel('Notifications'),
+                child: _SectionLabel(l10n.settingsNotificationsLabel),
               ),
             ),
             SliverToBoxAdapter(
@@ -1026,7 +1028,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: _SectionLabel('Diagnostics'),
+                  child: _SectionLabel(l10n.settingsDiagnosticsLabel),
                 ),
               ),
               SliverToBoxAdapter(
@@ -1037,8 +1039,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     padding: EdgeInsets.zero,
                     child: _SettingsRow(
                       icon: Icons.schedule_outlined,
-                      label: 'Check scheduled reminders',
-                      value: 'Verify alarms, permissions, and timezone',
+                      label: l10n.settingsCheckScheduledReminders,
+                      value: l10n.settingsCheckScheduledRemindersSub,
                       onTap: () => _showScheduledNotifDiagnostic(context),
                     ),
                   ),
@@ -1058,7 +1060,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                child: _SectionLabel('About'),
+                child: _SectionLabel(l10n.settingsAboutLabel),
               ),
             ),
             SliverToBoxAdapter(
@@ -1084,7 +1086,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Version 6.1.0',
+                      l10n.settingsVersionLabel('6.1.0'),
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.stone400,
                       ),
@@ -1123,6 +1125,7 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final initials = profile.username.trim().isNotEmpty
         ? profile.username
             .trim()
@@ -1176,7 +1179,7 @@ class _ProfileHeader extends StatelessWidget {
                         child: Text(
                           profile.username.isNotEmpty
                               ? profile.username
-                              : 'Your name',
+                              : l10n.settingsYourName,
                           style: AppTextStyles.titleLarge
                               .copyWith(color: Colors.white),
                         ),
@@ -1191,7 +1194,7 @@ class _ProfileHeader extends StatelessWidget {
                 GestureDetector(
                   onTap: onEditDate,
                   child: Text(
-                    'Sober since $dateLabel',
+                    l10n.settingsSoberSinceDate(dateLabel),
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.forest200),
                   ),
@@ -1209,7 +1212,9 @@ class _ProfileHeader extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        '${profile.currency}${profile.dailySpend.toStringAsFixed(0)}/day · tap to edit',
+                        l10n.settingsDailySpendChip(
+                          '${profile.currency}${profile.dailySpend.toStringAsFixed(0)}',
+                        ),
                         style: AppTextStyles.caption
                             .copyWith(color: AppColors.forest100),
                       ),
@@ -1235,8 +1240,7 @@ class _ProfileHeader extends StatelessWidget {
                             size: 12, color: AppColors.honey300),
                         const SizedBox(width: 4),
                         Text(
-                          '$pledgeStreak calm '
-                          '${pledgeStreak == 1 ? 'day' : 'days'} pledged',
+                          l10n.settingsPledgeStreakBadge(pledgeStreak),
                           style: AppTextStyles.caption
                               .copyWith(color: AppColors.honey200),
                         ),
@@ -1256,7 +1260,7 @@ class _ProfileHeader extends StatelessWidget {
                 Text(moneyLabel!,
                     style: AppTextStyles.titleMedium
                         .copyWith(color: AppColors.honey300)),
-                Text('saved',
+                Text(l10n.settingsSavedLabel,
                     style: AppTextStyles.bodySmall
                         .copyWith(color: AppColors.forest200)),
               ],
@@ -1282,6 +1286,7 @@ class _SavingsGoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final hasGoal = profile.savingsGoal != null && profile.savingsGoal! > 0;
     final saved = stats?.moneySaved ?? 0;
     final progress =
@@ -1302,7 +1307,8 @@ class _SavingsGoalCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              profile.savingsGoalName ?? 'Savings goal',
+                              profile.savingsGoalName ??
+                                  l10n.settingsSavingsGoalLabel,
                               style: AppTextStyles.titleSmall,
                             ),
                           ),
@@ -1325,8 +1331,10 @@ class _SavingsGoalCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${profile.currency}${NumberFormat('#,##0.00').format(saved)}'
-                        ' of ${profile.currency}${NumberFormat('#,##0.00').format(profile.savingsGoal!)}',
+                        l10n.settingsSavingsProgress(
+                          '${profile.currency}${NumberFormat('#,##0.00').format(saved)}',
+                          '${profile.currency}${NumberFormat('#,##0.00').format(profile.savingsGoal!)}',
+                        ),
                         style: AppTextStyles.bodySmall,
                       ),
                     ],
@@ -1335,15 +1343,15 @@ class _SavingsGoalCard extends StatelessWidget {
                 Divider(height: 1, color: AppColors.stone100),
                 _SettingsRow(
                   icon: Icons.edit_outlined,
-                  label: 'Edit goal',
+                  label: l10n.settingsEditGoal,
                   onTap: onEdit,
                 ),
               ],
             )
           : _SettingsRow(
               icon: Icons.flag_outlined,
-              label: 'Set a savings goal',
-              value: 'Track what you\'re saving up for',
+              label: l10n.settingsSetSavingsGoal,
+              value: l10n.settingsSetSavingsGoalSub,
               onTap: onEdit,
             ),
     );
@@ -1359,6 +1367,7 @@ class _EmergencyContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ec = profile.emergencyContact;
 
     return SolidCard(
@@ -1429,8 +1438,8 @@ class _EmergencyContactCard extends StatelessWidget {
             )
           : _SettingsRow(
               icon: Icons.contact_emergency_outlined,
-              label: 'Add emergency contact',
-              value: 'Someone to reach when you need support',
+              label: l10n.settingsAddEmergencyContact,
+              value: l10n.settingsAddEmergencyContactSub,
               onTap: onEdit,
             ),
     );
@@ -1572,7 +1581,8 @@ class _MotivationSectionState extends State<_MotivationSection> {
                 if (widget.items.isEmpty)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                    child: Text('No items added yet.',
+                    child: Text(
+                        AppLocalizations.of(context).settingsNoItemsYet,
                         style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.stone400,
                             fontStyle: FontStyle.italic)),
@@ -1686,6 +1696,7 @@ class _WeeklyGoalsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xl,
       padding: EdgeInsets.zero,
@@ -1722,7 +1733,7 @@ class _WeeklyGoalsCard extends StatelessWidget {
           _SettingsRow(
             icon: Icons.add_circle_outline,
             iconColor: AppColors.forest600,
-            label: 'Add weekly goal',
+            label: l10n.settingsAddWeeklyGoalTitle,
             onTap: onAdd,
           ),
         ],
@@ -1754,6 +1765,7 @@ class _SecurityCardState extends State<_SecurityCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xl,
       padding: EdgeInsets.zero,
@@ -1779,15 +1791,15 @@ class _SecurityCardState extends State<_SecurityCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('App lock',
+                        Text(l10n.settingsLockMethodLabel,
                             style: AppTextStyles.titleSmall
                                 .copyWith(color: AppColors.forest700)),
                         Text(
                           widget.current == 'none'
-                              ? 'No lock'
+                              ? l10n.settingsLockNoneLabel
                               : widget.current == 'biometric'
-                                  ? 'Biometric'
-                                  : 'PIN',
+                                  ? l10n.settingsLockBiometricLabel
+                                  : l10n.settingsLockPinLabel,
                           style: AppTextStyles.caption
                               .copyWith(color: AppColors.stone500),
                         ),
@@ -1819,24 +1831,24 @@ class _SecurityCardState extends State<_SecurityCard> {
                 Divider(height: 1, color: AppColors.stone100),
                 _LockOption(
                   icon: Icons.lock_open_outlined,
-                  label: 'No lock',
-                  subtitle: 'App opens immediately',
+                  label: l10n.settingsLockNoneLabel,
+                  subtitle: l10n.settingsLockNoneSub,
                   selected: widget.current == 'none',
                   onTap: widget.onNone,
                   borderBottom: true,
                 ),
                 _LockOption(
                   icon: Icons.fingerprint_rounded,
-                  label: 'Biometric',
-                  subtitle: 'Fingerprint or face unlock',
+                  label: l10n.settingsLockBiometricLabel,
+                  subtitle: l10n.settingsLockBiometricSub,
                   selected: widget.current == 'biometric',
                   onTap: widget.onBiometric,
                   borderBottom: true,
                 ),
                 _LockOption(
                   icon: Icons.pin_outlined,
-                  label: 'PIN',
-                  subtitle: '4-digit numeric PIN',
+                  label: l10n.settingsLockPinLabel,
+                  subtitle: l10n.settingsLockPinSub,
                   selected: widget.current == 'pin',
                   onTap: widget.onPin,
                 ),
@@ -1855,8 +1867,8 @@ class _SecurityCardState extends State<_SecurityCard> {
                         Expanded(
                           child: Text(
                             widget.current == 'pin'
-                                ? 'If you forget your PIN, your data cannot be recovered without a backup. Set one up in Profile → Backup.'
-                                : 'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.',
+                                ? l10n.settingsLockPinRecoveryWarning
+                                : l10n.settingsLockBiometricRecoveryWarning,
                             style: AppTextStyles.bodySmall.copyWith(
                                 color: AppColors.honey500, height: 1.4),
                           ),
@@ -1964,7 +1976,7 @@ class _MoreCard extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ── Records group ──────────────────────────────────────────────────
-        const _SectionLabel('Records'),
+        _SectionLabel(l10n.settingsRecordsGroupLabel),
         const SizedBox(height: 8),
         SolidCard(
           borderRadius: AppRadius.xl,
@@ -1973,19 +1985,19 @@ class _MoreCard extends ConsumerWidget {
             children: [
               _SettingsRow(
                 icon: Icons.bar_chart_outlined,
-                label: 'My history',
+                label: l10n.settingsMyHistory,
                 onTap: () => context.push('/history'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.grid_view_rounded,
-                label: 'Activity heatmap',
+                label: l10n.settingsHeatmapLabel,
                 onTap: () => context.push('/heatmap'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.insights_outlined,
-                label: 'Mood & craving insights',
+                label: l10n.settingsMoodCravingInsights,
                 onTap: () {
                   ref.read(progressTabProvider.notifier).state = 1;
                   context.go('/progress');
@@ -1994,15 +2006,14 @@ class _MoreCard extends ConsumerWidget {
               ),
               _SettingsRow(
                 icon: Icons.emoji_events_outlined,
-                label: 'Milestone cards',
+                label: l10n.settingsMilestoneCards,
                 onTap: () => context.push('/milestone'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.article_outlined,
-                label: 'Weekly Care Summary',
-                value:
-                    'Create a private summary to share with someone you trust.',
+                label: l10n.weeklySummaryTitle,
+                value: l10n.settingsWeeklyCareSummarySub,
                 onTap: () => context.push('/weekly-care-summary'),
               ),
             ],
@@ -2010,7 +2021,7 @@ class _MoreCard extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         // ── Tools & App group ──────────────────────────────────────────────
-        const _SectionLabel('Tools & App'),
+        _SectionLabel(l10n.settingsToolsAppGroupLabel),
         const SizedBox(height: 8),
         SolidCard(
           borderRadius: AppRadius.xl,
@@ -2019,38 +2030,38 @@ class _MoreCard extends ConsumerWidget {
             children: [
               _SettingsRow(
                 icon: Icons.psychology_outlined,
-                label: 'CBT thought tools',
+                label: l10n.settingsCbtThoughtTools,
                 onTap: () => context.push('/cbt'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.mail_outline_rounded,
-                label: 'Letters to future you',
+                label: l10n.letterTitle,
                 onTap: () => context.push('/future-letter'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.checklist_rounded,
-                label: 'Pre-craving plan',
+                label: l10n.settingsPreCravingPlan,
                 onTap: () => context.push('/pre-craving-plan'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.people_outline_rounded,
-                label: 'Recovery groups',
+                label: l10n.settingsRecoveryGroups,
                 onTap: () => context.push('/groups'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.event_available_outlined,
-                label: 'Meeting planner',
+                label: l10n.settingsMeetingPlanner,
                 onTap: () => context.push('/meetings'),
                 borderBottom: true,
               ),
               _SettingsRow(
                 icon: Icons.phone_in_talk_outlined,
                 iconColor: AppColors.blush500,
-                label: 'Crisis lines',
+                label: l10n.crisisTitle,
                 onTap: () => context.push('/crisis'),
                 borderBottom: true,
               ),
@@ -2125,6 +2136,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final profile = widget.profile;
     return SolidCard(
       borderRadius: AppRadius.xl,
@@ -2148,7 +2160,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                       size: 16, color: AppColors.forest600),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text('Notifications',
+                    child: Text(l10n.settingsNotificationsLabel,
                         style: AppTextStyles.titleSmall
                             .copyWith(color: AppColors.forest700)),
                   ),
@@ -2217,15 +2229,14 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                             children: [
                               Text(
                                 _notificationsEnabled!
-                                    ? 'System notifications enabled'
-                                    : 'System notifications blocked',
+                                    ? l10n.settingsSystemNotifsEnabled
+                                    : l10n.settingsSystemNotifsBlocked,
                                 style: AppTextStyles.bodyMedium,
                               ),
                               Text(
                                 _notificationsEnabled!
-                                    ? 'Your reminders will appear on time.'
-                                    : 'Reminders will not appear until '
-                                        'enabled in system settings.',
+                                    ? l10n.settingsSystemNotifsEnabledSub
+                                    : l10n.settingsSystemNotifsBlockedSub,
                                 style: AppTextStyles.caption
                                     .copyWith(color: AppColors.stone500),
                               ),
@@ -2249,7 +2260,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                               backgroundColor: AppColors.forest50,
                             ),
                             child: Text(
-                              'Fix it',
+                              l10n.settingsFixItAction,
                               style: AppTextStyles.labelMedium.copyWith(
                                   color: AppColors.forest700,
                                   fontWeight: FontWeight.w600),
@@ -2261,18 +2272,18 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                   ),
                 _SettingsRow(
                   icon: Icons.notifications_outlined,
-                  label: 'Check-in & reminders',
-                  value: 'Morning & evening times',
+                  label: l10n.settingsCheckInReminders,
+                  value: l10n.settingsMorningEveningTimes,
                   onTap: widget.onEditReminders,
                   borderBottom: true,
                 ),
                 _SettingsRow(
                   icon: Icons.dark_mode_outlined,
-                  label: 'Appearance',
+                  label: l10n.settingsAppearance,
                   value: switch (ref.watch(themeModeProvider)) {
-                    ThemeMode.light => 'Light',
-                    ThemeMode.dark => 'Dark',
-                    ThemeMode.system => 'Match system',
+                    ThemeMode.light => l10n.settingsThemeLight,
+                    ThemeMode.dark => l10n.settingsThemeDark,
+                    ThemeMode.system => l10n.settingsThemeSystem,
                   },
                   onTap: _editAppearance,
                   borderBottom: true,
@@ -2310,7 +2321,7 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                       ),
                       const SizedBox(width: 14),
                       Expanded(
-                        child: Text('Haptic feedback',
+                        child: Text(l10n.settingsHapticFeedback,
                             style: AppTextStyles.bodyMedium),
                       ),
                       Switch(
@@ -2346,10 +2357,10 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Imperial units',
+                            Text(l10n.settingsImperialUnits,
                                 style: AppTextStyles.bodyMedium),
                             Text(
-                              'Distance in miles instead of km',
+                              l10n.settingsImperialUnitsSub,
                               style: AppTextStyles.caption
                                   .copyWith(color: AppColors.stone500),
                             ),
@@ -2378,13 +2389,14 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
   }
 
   Future<void> _editAppearance() async {
+    final l10n = AppLocalizations.of(context);
     final current = ref.read(themeModeProvider);
     final picked = await showDialog<ThemeMode>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text('Appearance', style: AppTextStyles.titleMedium),
+        title: Text(l10n.settingsAppearance, style: AppTextStyles.titleMedium),
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -2392,11 +2404,19 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
             for (final (mode, label, hint) in [
               (
                 ThemeMode.light,
-                'Light',
-                'Warm cream — the classic Stillwater look'
+                l10n.settingsThemeLight,
+                l10n.settingsThemeLightHint
               ),
-              (ThemeMode.dark, 'Dark', 'Dim forest tones for late nights'),
-              (ThemeMode.system, 'Match system', 'Follow your phone setting'),
+              (
+                ThemeMode.dark,
+                l10n.settingsThemeDark,
+                l10n.settingsThemeDarkHint
+              ),
+              (
+                ThemeMode.system,
+                l10n.settingsThemeSystem,
+                l10n.settingsThemeSystemHint
+              ),
             ])
               RadioListTile<ThemeMode>(
                 value: mode,
@@ -2547,6 +2567,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.stone50,
@@ -2571,9 +2592,10 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Notifications', style: AppTextStyles.titleMedium),
+          Text(l10n.settingsNotificationsLabel,
+              style: AppTextStyles.titleMedium),
           const SizedBox(height: 2),
-          Text('Check-in and reminder schedule',
+          Text(l10n.settingsCheckInReminderSchedule,
               style:
                   AppTextStyles.bodySmall.copyWith(color: AppColors.stone500)),
           const SizedBox(height: 20),
@@ -2586,14 +2608,14 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
               children: [
                 _SheetTimeRow(
                   icon: Icons.wb_sunny_outlined,
-                  label: 'Morning check-in',
+                  label: l10n.settingsMorningCheckIn,
                   value: _fmt(_morning),
                   onTap: () => _pickTime(true),
                   borderBottom: true,
                 ),
                 _SheetTimeRow(
                   icon: Icons.nights_stay_outlined,
-                  label: 'Evening reminder',
+                  label: l10n.settingsEveningReminder,
                   value: _fmt(_evening),
                   onTap: () => _pickTime(false),
                 ),
@@ -2609,19 +2631,19 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
             child: Column(
               children: [
                 _SheetToggleRow(
-                  label: 'Motivation messages',
+                  label: l10n.settingsMotivationMessages,
                   value: _motivation,
                   onChanged: (v) => setState(() => _motivation = v),
                   borderBottom: true,
                 ),
                 _SheetToggleRow(
-                  label: 'Daily reminders',
+                  label: l10n.settingsDailyReminders,
                   value: _reminders,
                   onChanged: (v) => setState(() => _reminders = v),
                   borderBottom: true,
                 ),
                 _SheetToggleRow(
-                  label: 'Milestone alerts',
+                  label: l10n.settingsMilestoneAlerts,
                   value: _milestones,
                   onChanged: (v) => setState(() => _milestones = v),
                 ),
@@ -2665,11 +2687,10 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
                 if (!context.mounted) return;
                 if (ok && enabled) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       behavior: SnackBarBehavior.floating,
-                      content:
-                          Text('Test sent — check your notification shade.'),
-                      duration: Duration(seconds: 4),
+                      content: Text(l10n.settingsTestSentShade),
+                      duration: const Duration(seconds: 4),
                     ),
                   );
                 } else {
@@ -2677,11 +2698,9 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
                     SnackBar(
                       behavior: SnackBarBehavior.floating,
                       duration: const Duration(seconds: 6),
-                      content: const Text(
-                          'Test could not post. Notifications appear to be '
-                          'blocked for Journey Forward.'),
+                      content: Text(l10n.settingsTestCouldNotPost),
                       action: SnackBarAction(
-                        label: 'OPEN SETTINGS',
+                        label: l10n.settingsOpenSettingsAction,
                         onPressed:
                             NotificationService.openSystemNotificationSettings,
                       ),
@@ -2691,7 +2710,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
               },
               icon: const Icon(Icons.notifications_active_outlined, size: 18),
               label: Text(
-                'Send test notification',
+                l10n.settingsSendTestNotification,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.forest700),
               ),
@@ -2923,17 +2942,6 @@ class _AboutCardState extends State<_AboutCard> {
   static const _playStoreUrl =
       'https://play.google.com/store/apps/details?id=com.journeyforward.journey_forward';
 
-  static const _bodyText =
-      'Recovery and personal growth are rarely a straight line. Having walked a difficult road myself, I know how heavy some days can feel — and how exhausting it can be to use tools filled with noise, pressure, and distraction.\n\n'
-      'When you are trying to heal or rebuild, the last thing you need is advertising, attention-grabbing notifications, or the worry that your deeply personal reflections are being harvested.\n\n'
-      'Your recovery is not a data product.\n\n'
-      'I built Journey Forward to be a quiet alternative: no ads, no accounts, no tracking analytics, and no built-in cloud sync. It is designed as a private, offline-first sanctuary for honest days and steady progress.\n\n'
-      'Because Journey Forward has no accounts, analytics, tracking, or cloud sync, I have no way of seeing how you experience the app, what feels confusing, or what features might help you most. If something is not working, or if you have an idea for a future improvement, you are welcome to contact me directly.\n\n'
-      'This app is not here to shame you, score you, or punish you for difficult moments. It is here to help you return — to your reason, your routines, your breath, and the next small step forward.\n\n'
-      'I am also working toward language support, including Zulu and Afrikaans, so Journey Forward can become more welcoming while keeping its privacy-first foundation.\n\n'
-      'My hope is that this space helps you find grounding, reflection, and the grace to take one honest step at a time.\n\n'
-      '— Shawn';
-
   Future<void> _shareApp() async {
     final uri = Uri.parse(_playStoreUrl);
     if (await canLaunchUrl(uri)) {
@@ -2943,6 +2951,7 @@ class _AboutCardState extends State<_AboutCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xl,
       padding: EdgeInsets.zero,
@@ -2966,7 +2975,7 @@ class _AboutCardState extends State<_AboutCard> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'About Journey Forward',
+                      l10n.settingsAboutTitle,
                       style: AppTextStyles.titleSmall
                           .copyWith(color: AppColors.forest700),
                     ),
@@ -3001,7 +3010,7 @@ class _AboutCardState extends State<_AboutCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _bodyText,
+                        l10n.settingsAboutBody,
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.stone700,
                           height: 1.6,
@@ -3040,7 +3049,7 @@ class _AboutCardState extends State<_AboutCard> {
                               ScaffoldMessenger.of(context)
                                 ..hideCurrentSnackBar()
                                 ..showSnackBar(SnackBar(
-                                  content: const Text('Email copied'),
+                                  content: Text(l10n.settingsEmailCopied),
                                   backgroundColor: AppColors.forest600,
                                   behavior: SnackBarBehavior.floating,
                                   duration: const Duration(seconds: 2),
@@ -3080,7 +3089,7 @@ class _AboutCardState extends State<_AboutCard> {
                           ),
                           icon: const Icon(Icons.share_outlined, size: 18),
                           label: Text(
-                            'Share app',
+                            l10n.settingsShareApp,
                             style: AppTextStyles.labelMedium
                                 .copyWith(color: AppColors.forest700),
                           ),
@@ -3161,16 +3170,17 @@ class _SpendDialogState extends State<_SpendDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
       backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-      title: Text(AppLocalizations.of(context).settingsDailySpendLabel,
+      title: Text(l10n.settingsDailySpendLabel,
           style: AppTextStyles.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('How much did you spend per day?',
+          Text(l10n.settingsSpendPerDayQuestion,
               style: AppTextStyles.bodySmall),
           const SizedBox(height: 12),
           TextField(
@@ -3203,7 +3213,7 @@ class _SpendDialogState extends State<_SpendDialog> {
             style: AppTextStyles.bodyMedium,
           ),
           const SizedBox(height: 14),
-          Text('Currency', style: AppTextStyles.bodySmall),
+          Text(l10n.settingsCurrencyLabel, style: AppTextStyles.bodySmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -3296,7 +3306,7 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
         H.heavy();
         setState(() {
           _entered = '';
-          _error = 'PINs don\'t match. Try again.';
+          _error = AppLocalizations.of(context).onbPinMismatchError;
           _step = 0;
           _first = '';
         });
@@ -3306,15 +3316,20 @@ class _PinSetupDialogState extends State<_PinSetupDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
       backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-      title: Text(_step == 0 ? 'Set a PIN' : 'Confirm PIN',
+      title: Text(
+          _step == 0 ? l10n.settingsSetAPin : l10n.onbPinConfirmButton,
           style: AppTextStyles.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_step == 0 ? 'Enter a 4-digit PIN' : 'Enter your PIN again',
+          Text(
+              _step == 0
+                  ? l10n.settingsEnter4DigitPin
+                  : l10n.settingsEnterPinAgain,
               style: AppTextStyles.bodySmall),
           const SizedBox(height: 20),
           // Dot indicators

@@ -1,0 +1,16 @@
+{
+  "backupShareSubject": { "en": "Journey Forward Backup", "desc": "Subject line for the OS share sheet when exporting an unencrypted (plain JSON) backup file." },
+  "backupShareSubjectEncrypted": { "en": "Journey Forward Backup (encrypted)", "desc": "Subject line for the OS share sheet when exporting an encrypted (.jfwbk) backup file." },
+  "backupProtectTitle": { "en": "Protect your backup?", "desc": "Title of the dialog shown before exporting, asking whether to passphrase-protect the backup." },
+  "backupEnterPassphraseTitle": { "en": "Enter backup passphrase", "desc": "Title of the dialog shown when restoring an encrypted backup, prompting for the passphrase." },
+  "backupProtectDesc": { "en": "Set a passphrase to encrypt the backup file. Without it, anyone with the file can read your journal.", "desc": "Body text of the export passphrase dialog explaining why encryption is recommended." },
+  "backupEnterPassphraseDesc": { "en": "This file is encrypted. Type the passphrase you used when exporting.", "desc": "Body text of the restore passphrase dialog, prompting for the passphrase used at export time." },
+  "backupPassphraseLabel": { "en": "Passphrase", "desc": "Text field label for the backup passphrase input." },
+  "backupConfirmPassphraseLabel": { "en": "Confirm passphrase", "desc": "Text field label for the confirm-passphrase input shown only when exporting." },
+  "backupSkipPlainJson": { "en": "Skip (plain JSON)", "desc": "Button that skips encryption and exports an unencrypted plain JSON backup." },
+  "backupPassphraseEmptyError": { "en": "Passphrase cannot be empty.", "desc": "Validation error shown when the passphrase field is left blank." },
+  "backupPassphraseMismatchError": { "en": "Passphrases do not match.", "desc": "Validation error shown when the passphrase and confirm-passphrase fields differ." },
+  "backupPassphraseTooShortError": { "en": "Use at least 8 characters — longer is safer.", "desc": "Validation error shown when the export passphrase is shorter than 8 characters." },
+  "backupEncryptButton": { "en": "Encrypt", "desc": "Confirm button in the export passphrase dialog that encrypts the backup." },
+  "backupUnlockButton": { "en": "Unlock", "desc": "Confirm button in the restore passphrase dialog that decrypts the backup." }
+}

@@ -71,6 +71,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final thought = _thoughtCtrl.text.trim();
     final reframe = _reframeCtrl.text.trim();
     if (thought.isEmpty || reframe.isEmpty) return;
@@ -83,7 +84,7 @@ class _CbtScreenState extends ConsumerState<CbtScreen> {
           thought,
           'negative',
           strength: _selectedDistortion,
-          notes: 'Reframe: $reframe',
+          notes: l10n.cbtReframeNotePrefix(reframe),
         );
 
     setState(() {
