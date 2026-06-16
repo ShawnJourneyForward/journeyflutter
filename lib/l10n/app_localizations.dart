@@ -5503,6 +5503,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'System default'**
   String get settingsLanguageSystem;
+
+  /// Generic Delete button/action
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get commonDelete;
+
+  /// A duration in hours
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String commonHours(int count);
+
+  /// Meetings screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Meetings'**
+  String get meetingsTitle;
+
+  /// Meetings screen subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Plan recovery meetings, sponsor calls, and therapy sessions. Get a quiet reminder before each one.'**
+  String get meetingsSubtitle;
+
+  /// Button: create a new meeting
+  ///
+  /// In en, this message translates to:
+  /// **'New meeting'**
+  String get meetingsNew;
+
+  /// Button: add a meeting
+  ///
+  /// In en, this message translates to:
+  /// **'Add meeting'**
+  String get meetingsAdd;
+
+  /// Section header for future meetings (a count is appended after it)
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get meetingsUpcoming;
+
+  /// Section header for past meetings (a count is appended after it)
+  ///
+  /// In en, this message translates to:
+  /// **'Past'**
+  String get meetingsPast;
+
+  /// Confirm dialog title when deleting a meeting
+  ///
+  /// In en, this message translates to:
+  /// **'Delete meeting?'**
+  String get meetingsDeleteTitle;
+
+  /// Confirm dialog body when deleting a meeting
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove \"{title}\" from your schedule.'**
+  String meetingsDeleteBody(String title);
+
+  /// Empty state title on the meetings screen
+  ///
+  /// In en, this message translates to:
+  /// **'No meetings yet'**
+  String get meetingsEmptyTitle;
+
+  /// Empty state body on the meetings screen
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"New meeting\" to schedule your first one. We\'ll quietly remind you before it starts.'**
+  String get meetingsEmptyBody;
+
+  /// Title of the editor sheet when editing an existing meeting
+  ///
+  /// In en, this message translates to:
+  /// **'Edit meeting'**
+  String get meetingsEdit;
+
+  /// Meeting editor: name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get meetingsFieldName;
+
+  /// Meeting editor: date field label
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get meetingsFieldDate;
+
+  /// Meeting editor: time field label
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get meetingsFieldTime;
+
+  /// Meeting editor: location field label
+  ///
+  /// In en, this message translates to:
+  /// **'Where (optional)'**
+  String get meetingsFieldWhere;
+
+  /// Meeting editor: notes field label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get meetingsFieldNotes;
+
+  /// Meeting editor: name field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. AA Monday night'**
+  String get meetingsNameHint;
+
+  /// Meeting editor: location field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom, church hall, etc.'**
+  String get meetingsWhereHint;
+
+  /// Meeting editor: notes field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to remember'**
+  String get meetingsNotesHint;
+
+  /// Validation message when the meeting name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please give your meeting a name'**
+  String get meetingsNameRequired;
+
+  /// Meeting editor: reminder toggle label
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me before'**
+  String get meetingsRemindToggle;
+
+  /// Meeting editor: reminder-on subtitle; {label} is a duration like '15 min'
+  ///
+  /// In en, this message translates to:
+  /// **'A quiet notification will fire {label} early.'**
+  String meetingsRemindOn(String label);
+
+  /// Meeting editor: reminder-off subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder will be sent.'**
+  String get meetingsRemindOff;
+
+  /// Meeting editor: label above the reminder-timing chips
+  ///
+  /// In en, this message translates to:
+  /// **'How early?'**
+  String get meetingsHowEarly;
+
+  /// Button: save edits to an existing meeting
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get meetingsSaveChanges;
+
+  /// Reminder chip on a meeting card; {label} is a duration like '15 min'
+  ///
+  /// In en, this message translates to:
+  /// **'🔔 {label} before'**
+  String meetingsReminderChip(String label);
 }
 
 class _AppLocalizationsDelegate

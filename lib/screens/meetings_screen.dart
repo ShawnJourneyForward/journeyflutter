@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
@@ -15,11 +16,19 @@ import '../utils/notification_service.dart';
 // therapy sessions, etc. Each meeting is persisted locally (no cloud) and
 // can fire an optional one-shot reminder N minutes before it starts.
 
+/// Localised "15 min" / "1 hour" / "1 day" label for a reminder offset.
+String _reminderDurationLabel(AppLocalizations l10n, int minutes) {
+  if (minutes >= 1440) return l10n.commonDays(minutes ~/ 1440);
+  if (minutes >= 60) return l10n.commonHours(minutes ~/ 60);
+  return l10n.commonMin(minutes);
+}
+
 class MeetingsScreen extends ConsumerWidget {
   const MeetingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(meetingsProvider);
     final all = async.valueOrNull ?? [];
     final now = DateTime.now();
@@ -36,7 +45,7 @@ class MeetingsScreen extends ConsumerWidget {
           elevation: 2,
           onPressed: () => _openEditor(context, ref),
           icon: const Icon(Icons.add_rounded),
-          label: const Text('New meeting'),
+          label: Text(l10n.meetingsNew),
         ),
       ),
       body: SafeArea(
@@ -53,7 +62,7 @@ class MeetingsScreen extends ConsumerWidget {
             const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 16),
-              child: Text('Meetings',
+              child: Text(l10n.meetingsTitle,
                   style: AppTextStyles.greetingSerif.copyWith(
                       fontSize: 32,
                       color: AppColors.forestDark,
@@ -63,7 +72,7 @@ class MeetingsScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(left: 16),
               child: Text(
-                'Plan recovery meetings, sponsor calls, and therapy sessions. Get a quiet reminder before each one.',
+                l10n.meetingsSubtitle,
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone500, height: 1.4),
               ),
@@ -73,7 +82,7 @@ class MeetingsScreen extends ConsumerWidget {
               _EmptyState(onAdd: () => _openEditor(context, ref))
             else ...[
               if (upcoming.isNotEmpty) ...[
-                _SectionLabel('Upcoming · ${upcoming.length}'),
+                _SectionLabel('${l10n.meetingsUpcoming} · ${upcoming.length}'),
                 const SizedBox(height: 10),
                 ...upcoming.map((m) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -86,7 +95,7 @@ class MeetingsScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
               ],
               if (past.isNotEmpty) ...[
-                _SectionLabel('Past · ${past.length}'),
+                _SectionLabel('${l10n.meetingsPast} · ${past.length}'),
                 const SizedBox(height: 10),
                 ...past.map((m) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -127,27 +136,28 @@ class MeetingsScreen extends ConsumerWidget {
     Meeting m,
   ) async {
     H.light();
+    final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.card,
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text('Delete meeting?', style: AppTextStyles.titleMedium),
+        title: Text(l10n.meetingsDeleteTitle, style: AppTextStyles.titleMedium),
         content: Text(
-          'This will remove "${m.title}" from your schedule.',
+          l10n.meetingsDeleteBody(m.title),
           style: AppTextStyles.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel',
+            child: Text(l10n.commonCancel,
                 style: AppTextStyles.labelMedium
                     .copyWith(color: AppColors.stone500)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.blush500),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Delete',
+            child: Text(l10n.commonDelete,
                 style: AppTextStyles.labelMedium.copyWith(color: Colors.white)),
           ),
         ],
@@ -167,6 +177,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xxl,
       padding: const EdgeInsets.all(28),
@@ -181,12 +192,12 @@ class _EmptyState extends StatelessWidget {
                 size: 32, color: AppColors.forest600),
           ),
           const SizedBox(height: 16),
-          Text('No meetings yet',
+          Text(l10n.meetingsEmptyTitle,
               style: AppTextStyles.titleMedium
                   .copyWith(color: AppColors.forest700)),
           const SizedBox(height: 6),
           Text(
-            'Tap "New meeting" to schedule your first one. We\'ll quietly remind you before it starts.',
+            l10n.meetingsEmptyBody,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.stone500),
           ),
@@ -194,7 +205,7 @@ class _EmptyState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onAdd,
             icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('Add meeting'),
+            label: Text(l10n.meetingsAdd),
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.forest700,
               foregroundColor: AppColors.onForest,
@@ -241,6 +252,7 @@ class _MeetingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final dayLabel = DateFormat('EEE d MMM').format(meeting.dateTime);
     final timeLabel = DateFormat('HH:mm').format(meeting.dateTime);
     return SolidCard(
@@ -332,7 +344,8 @@ class _MeetingCard extends StatelessWidget {
                           borderRadius: AppRadius.pill,
                         ),
                         child: Text(
-                          '🔔 ${_formatReminder(meeting.reminderMinutesBefore)} before',
+                          l10n.meetingsReminderChip(_reminderDurationLabel(
+                              l10n, meeting.reminderMinutesBefore)),
                           style: AppTextStyles.caption.copyWith(
                               color: AppColors.forest700, fontSize: 10),
                         ),
@@ -343,7 +356,7 @@ class _MeetingCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onDelete,
-                tooltip: 'Delete',
+                tooltip: l10n.commonDelete,
                 icon: Icon(Icons.delete_outline_rounded,
                     color: AppColors.stone400, size: 20),
               ),
@@ -354,17 +367,6 @@ class _MeetingCard extends StatelessWidget {
     );
   }
 
-  String _formatReminder(int minutes) {
-    if (minutes >= 1440) {
-      final d = minutes ~/ 1440;
-      return d == 1 ? '1 day' : '$d days';
-    }
-    if (minutes >= 60) {
-      final h = minutes ~/ 60;
-      return h == 1 ? '1 hour' : '$h hours';
-    }
-    return '$minutes min';
-  }
 }
 
 // ─── Editor sheet (add / edit) ───────────────────────────────────────────────
@@ -387,13 +389,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
   late int _reminderMinutes;
   bool _saving = false;
 
-  static const _reminderOptions = [
-    (5, '5 min'),
-    (15, '15 min'),
-    (30, '30 min'),
-    (60, '1 hour'),
-    (1440, '1 day'),
-  ];
+  static const _reminderOptionMinutes = [5, 15, 30, 60, 1440];
 
   @override
   void initState() {
@@ -460,10 +456,11 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please give your meeting a name',
+        content: Text(l10n.meetingsNameRequired,
             style: AppTextStyles.bodySmall.copyWith(color: Colors.white)),
         backgroundColor: AppColors.blush500,
         behavior: SnackBarBehavior.floating,
@@ -506,6 +503,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isEdit = widget.existing != null;
     final dayLabel = DateFormat('EEE d MMM yyyy').format(_dateTime);
     final timeLabel = DateFormat('HH:mm').format(_dateTime);
@@ -537,18 +535,18 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                   ),
                 ),
               ),
-              Text(isEdit ? 'Edit meeting' : 'New meeting',
+              Text(isEdit ? l10n.meetingsEdit : l10n.meetingsNew,
                   style: AppTextStyles.titleLarge
                       .copyWith(color: AppColors.forest700)),
               const SizedBox(height: 16),
 
               // Title
               _LabeledField(
-                label: 'Name',
+                label: l10n.meetingsFieldName,
                 child: TextField(
                   controller: _titleCtrl,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: _fieldDecoration('e.g. AA Monday night'),
+                  decoration: _fieldDecoration(l10n.meetingsNameHint),
                 ),
               ),
               const SizedBox(height: 14),
@@ -558,7 +556,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                 children: [
                   Expanded(
                     child: _LabeledField(
-                      label: 'Date',
+                      label: l10n.meetingsFieldDate,
                       child: _PickerTile(
                         icon: Icons.calendar_today_rounded,
                         label: dayLabel,
@@ -569,7 +567,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _LabeledField(
-                      label: 'Time',
+                      label: l10n.meetingsFieldTime,
                       child: _PickerTile(
                         icon: Icons.schedule_rounded,
                         label: timeLabel,
@@ -583,23 +581,23 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
 
               // Location
               _LabeledField(
-                label: 'Where (optional)',
+                label: l10n.meetingsFieldWhere,
                 child: TextField(
                   controller: _locationCtrl,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: _fieldDecoration('Zoom, church hall, etc.'),
+                  decoration: _fieldDecoration(l10n.meetingsWhereHint),
                 ),
               ),
               const SizedBox(height: 14),
 
               // Notes
               _LabeledField(
-                label: 'Notes (optional)',
+                label: l10n.meetingsFieldNotes,
                 child: TextField(
                   controller: _notesCtrl,
                   maxLines: 2,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: _fieldDecoration('Anything to remember'),
+                  decoration: _fieldDecoration(l10n.meetingsNotesHint),
                 ),
               ),
               const SizedBox(height: 18),
@@ -617,12 +615,13 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                     H.selection();
                     setState(() => _notify = v);
                   },
-                  title:
-                      Text('Remind me before', style: AppTextStyles.titleSmall),
+                  title: Text(l10n.meetingsRemindToggle,
+                      style: AppTextStyles.titleSmall),
                   subtitle: Text(
                     _notify
-                        ? 'A quiet notification will fire ${_reminderLabel()} early.'
-                        : 'No reminder will be sent.',
+                        ? l10n.meetingsRemindOn(
+                            _reminderDurationLabel(l10n, _reminderMinutes))
+                        : l10n.meetingsRemindOff,
                     style: AppTextStyles.caption
                         .copyWith(color: AppColors.stone500),
                   ),
@@ -631,16 +630,16 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
               if (_notify) ...[
                 const SizedBox(height: 10),
                 _LabeledField(
-                  label: 'How early?',
+                  label: l10n.meetingsHowEarly,
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: _reminderOptions.map((opt) {
-                      final sel = _reminderMinutes == opt.$1;
+                    children: _reminderOptionMinutes.map((m) {
+                      final sel = _reminderMinutes == m;
                       return GestureDetector(
                         onTap: () {
                           H.selection();
-                          setState(() => _reminderMinutes = opt.$1);
+                          setState(() => _reminderMinutes = m);
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -654,7 +653,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                                   : AppColors.stone200,
                             ),
                           ),
-                          child: Text(opt.$2,
+                          child: Text(_reminderDurationLabel(l10n, m),
                               style: AppTextStyles.labelMedium.copyWith(
                                   color:
                                       sel ? Colors.white : AppColors.stone600)),
@@ -685,7 +684,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2.4),
                         )
-                      : Text(isEdit ? 'Save changes' : 'Add meeting',
+                      : Text(isEdit ? l10n.meetingsSaveChanges : l10n.meetingsAdd,
                           style: AppTextStyles.labelLarge
                               .copyWith(color: Colors.white)),
                 ),
@@ -696,15 +695,6 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
       ),
     );
   }
-
-  String _reminderLabel() => switch (_reminderMinutes) {
-        5 => '5 minutes',
-        15 => '15 minutes',
-        30 => '30 minutes',
-        60 => '1 hour',
-        1440 => '1 day',
-        _ => '$_reminderMinutes min',
-      };
 
   InputDecoration _fieldDecoration(String hint) => InputDecoration(
         hintText: hint,

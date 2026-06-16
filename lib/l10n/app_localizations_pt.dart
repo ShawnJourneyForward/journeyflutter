@@ -3008,4 +3008,104 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsLanguageSystem => 'System default';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String commonHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get meetingsTitle => 'Meetings';
+
+  @override
+  String get meetingsSubtitle =>
+      'Plan recovery meetings, sponsor calls, and therapy sessions. Get a quiet reminder before each one.';
+
+  @override
+  String get meetingsNew => 'New meeting';
+
+  @override
+  String get meetingsAdd => 'Add meeting';
+
+  @override
+  String get meetingsUpcoming => 'Upcoming';
+
+  @override
+  String get meetingsPast => 'Past';
+
+  @override
+  String get meetingsDeleteTitle => 'Delete meeting?';
+
+  @override
+  String meetingsDeleteBody(String title) {
+    return 'This will remove \"$title\" from your schedule.';
+  }
+
+  @override
+  String get meetingsEmptyTitle => 'No meetings yet';
+
+  @override
+  String get meetingsEmptyBody =>
+      'Tap \"New meeting\" to schedule your first one. We\'ll quietly remind you before it starts.';
+
+  @override
+  String get meetingsEdit => 'Edit meeting';
+
+  @override
+  String get meetingsFieldName => 'Name';
+
+  @override
+  String get meetingsFieldDate => 'Date';
+
+  @override
+  String get meetingsFieldTime => 'Time';
+
+  @override
+  String get meetingsFieldWhere => 'Where (optional)';
+
+  @override
+  String get meetingsFieldNotes => 'Notes (optional)';
+
+  @override
+  String get meetingsNameHint => 'e.g. AA Monday night';
+
+  @override
+  String get meetingsWhereHint => 'Zoom, church hall, etc.';
+
+  @override
+  String get meetingsNotesHint => 'Anything to remember';
+
+  @override
+  String get meetingsNameRequired => 'Please give your meeting a name';
+
+  @override
+  String get meetingsRemindToggle => 'Remind me before';
+
+  @override
+  String meetingsRemindOn(String label) {
+    return 'A quiet notification will fire $label early.';
+  }
+
+  @override
+  String get meetingsRemindOff => 'No reminder will be sent.';
+
+  @override
+  String get meetingsHowEarly => 'How early?';
+
+  @override
+  String get meetingsSaveChanges => 'Save changes';
+
+  @override
+  String meetingsReminderChip(String label) {
+    return '🔔 $label before';
+  }
 }
