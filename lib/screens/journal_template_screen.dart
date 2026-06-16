@@ -255,7 +255,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                         children: [
                           Icon(m.icon, size: 16, color: m.color),
                           const SizedBox(width: 6),
-                          Text(m.label,
+                          Text(m.localizedLabel(l10n),
                               style: AppTextStyles.labelSmall
                                   .copyWith(color: m.color)),
                         ],

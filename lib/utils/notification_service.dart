@@ -3,10 +3,14 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show MethodChannel, PlatformException;
+import 'package:flutter/widgets.dart' show Locale, WidgetsBinding;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
+
+import '../l10n/app_localizations.dart';
+import '../providers/app_providers.dart'; // for LocaleNotifier.prefsKey
 
 class NotifScheduleResult {
   final bool success;
@@ -63,42 +67,60 @@ class NotificationService {
   ];
   static const _savingsTiers = [50, 100, 250, 500, 1000, 2500, 5000, 10000];
 
-  static const _milestoneMessages = {
-    1: '1 Day Sober. The first step is the hardest. You showed up.',
-    2: '2 Days Sober. Two days in a row. You\'re doing this.',
-    3: '3 Days Sober. Day three is one of the hardest. You\'re still here.',
-    5: '5 Days Sober. Five days of showing up for yourself.',
-    7: '7 Days Sober. One full week — that takes real courage.',
-    10: '10 Days Sober. Double digits. Quietly, steadily, you keep going.',
-    14: '14 Days Sober. Two weeks. Your body and mind are already responding.',
-    21: '21 Days Sober. Three weeks. New routines are starting to take root.',
-    30: '30 Days Sober. One month of choosing yourself, one day at a time.',
-    60: '60 Days Sober. Two months. Every single day has mattered.',
-    90: '90 Days Sober. Three months. Keep going at your own pace.',
-    180: '180 Days Sober. Half a year. That\'s a lot of days showing up.',
-    365:
-        '1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.',
-    730: '2 Years Sober. Two years of choosing yourself, over and over again.',
-    1095: '3 Years Sober. Three years. Your path forward is your own.',
-  };
+  static Map<int, String> _milestoneMessages(AppLocalizations l) => {
+        1: l.notifMilestone1d,
+        2: l.notifMilestone2d,
+        3: l.notifMilestone3d,
+        5: l.notifMilestone5d,
+        7: l.notifMilestone7d,
+        10: l.notifMilestone10d,
+        14: l.notifMilestone14d,
+        21: l.notifMilestone21d,
+        30: l.notifMilestone30d,
+        60: l.notifMilestone60d,
+        90: l.notifMilestone90d,
+        180: l.notifMilestone180d,
+        365: l.notifMilestone365d,
+        730: l.notifMilestone730d,
+        1095: l.notifMilestone1095d,
+      };
 
   // ── Motivational copy ─────────────────────────────────────────────────────
 
-  static const _morningReminders = [
-    'Good morning. Your recovery is worth showing up for today.',
-    'One day at a time. You\'ve got this — check in now.',
-    'Morning check-in — Log your mood and set your intentions.',
-    'Your sober journey continues today. Open the app and check in.',
-    'A new day, a fresh start. Take a moment to ground yourself.',
-  ];
+  static List<String> _morningReminders(AppLocalizations l) => [
+        l.notifMorning0,
+        l.notifMorning1,
+        l.notifMorning2,
+        l.notifMorning3,
+        l.notifMorning4,
+      ];
 
-  static const _eveningReminders = [
-    'You\'ve made it through another day — Log your progress.',
-    'Evening check-in — How did your day go? Log it and reflect.',
-    'Don\'t forget to log today before it slips away.',
-    'Great job today — Take a moment to reflect and log your day.',
-    'You kept going today. Log tonight before you sleep.',
-  ];
+  static List<String> _eveningReminders(AppLocalizations l) => [
+        l.notifEvening0,
+        l.notifEvening1,
+        l.notifEvening2,
+        l.notifEvening3,
+        l.notifEvening4,
+      ];
+
+  // ── Localization helper (no BuildContext available in a static service) ────
+  //
+  // Loads AppLocalizations for the user's chosen language. Mirrors the locale
+  // resolution used by LocaleNotifier: an explicit 'app_locale' pref overrides
+  // the platform locale; falls back to English if loading the chosen locale
+  // fails for any reason.
+  static Future<AppLocalizations> _l10n() async {
+    final prefs = await SharedPreferences.getInstance();
+    final code = prefs.getString(LocaleNotifier.prefsKey); // 'app_locale'
+    final locale = (code != null && code.isNotEmpty)
+        ? Locale(code)
+        : (WidgetsBinding.instance.platformDispatcher.locale);
+    try {
+      return await AppLocalizations.delegate.load(locale);
+    } catch (_) {
+      return await AppLocalizations.delegate.load(const Locale('en'));
+    }
+  }
 
   // ── Initialise ───────────────────────────────────────────────────────────
 
@@ -260,6 +282,8 @@ class NotificationService {
         }
       }
 
+      final l = await _l10n();
+
       final morningStr = prefs.getString('notif_morning') ?? '08:00';
       final eveningStr = prefs.getString('notif_evening') ?? '20:00';
       final wantMotiv = prefs.getBool('notif_motivation') ?? true;
@@ -282,10 +306,10 @@ class NotificationService {
       // Pick a stable body text based on today's date so repeated
       // launches don't re-roll different text.
       final dayIndex = DateTime.now().millisecondsSinceEpoch ~/ 86400000;
-      final morningBody =
-          _morningReminders[dayIndex % _morningReminders.length];
-      final eveningBody =
-          _eveningReminders[dayIndex % _eveningReminders.length];
+      final morningList = _morningReminders(l);
+      final eveningList = _eveningReminders(l);
+      final morningBody = morningList[dayIndex % morningList.length];
+      final eveningBody = eveningList[dayIndex % eveningList.length];
 
       final details = NotificationDetails(
         android: AndroidNotificationDetails(
@@ -312,7 +336,7 @@ class NotificationService {
         // Morning motivation notification (ID 1)
         await _plugin.zonedSchedule(
           1,
-          'Journey Forward',
+          l.appTitle,
           morningBody,
           _nextInstanceOf(morningTime.hour, morningTime.minute),
           details,
@@ -327,7 +351,7 @@ class NotificationService {
         // Evening reminder notification (ID 2)
         await _plugin.zonedSchedule(
           2,
-          'Journey Forward',
+          l.appTitle,
           eveningBody,
           _nextInstanceOf(eveningTime.hour, eveningTime.minute),
           details,
@@ -355,13 +379,14 @@ class NotificationService {
   static Future<void> fireDayMilestone(int days) async {
     if (!_milestonesEnabled) return;
     if (!_milestoneDays.contains(days)) return;
-    final msg = _milestoneMessages[days];
+    final l = await _l10n();
+    final msg = _milestoneMessages(l)[days];
     if (msg == null) return;
 
     try {
       await _plugin.show(
         10000 + days,
-        'Milestone Reached',
+        l.notifMilestoneTitle,
         msg,
         NotificationDetails(
           android: AndroidNotificationDetails(
@@ -387,14 +412,15 @@ class NotificationService {
   static Future<void> fireSavingsMilestone(int tier, String currency) async {
     if (!_milestonesEnabled) return;
     if (!_savingsTiers.contains(tier)) return;
+    final l = await _l10n();
     final tierIndex = _savingsTiers.indexOf(tier);
     final fmt = '$currency${tier.toStringAsFixed(0)}';
-    final body = 'You\'ve saved $fmt through sobriety. Keep going!';
+    final body = l.notifSavingsBody(fmt);
 
     try {
       await _plugin.show(
         20000 + tierIndex,
-        'Savings Milestone',
+        l.notifSavingsTitle,
         body,
         NotificationDetails(
           android: AndroidNotificationDetails(
@@ -445,15 +471,16 @@ class NotificationService {
       await _plugin.cancel(id);
       final fireAt = when.subtract(Duration(minutes: minutesBefore));
       if (!fireAt.isAfter(DateTime.now())) return; // past — nothing to fire
+      final l = await _l10n();
       final tzWhen = tz.TZDateTime.from(fireAt, tz.local);
       final timeLabel =
           '${when.hour.toString().padLeft(2, '0')}:${when.minute.toString().padLeft(2, '0')}';
       final body = location == null || location.isEmpty
-          ? '$title at $timeLabel'
-          : '$title at $timeLabel · $location';
+          ? l.notifMeetingBody(title, timeLabel)
+          : l.notifMeetingBodyLocation(title, timeLabel, location);
       await _plugin.zonedSchedule(
         id,
-        'Meeting reminder',
+        l.notifMeetingTitle,
         body,
         tzWhen,
         NotificationDetails(
@@ -605,10 +632,11 @@ class NotificationService {
   // denied or the channel is muted at the system level.
   static Future<bool> sendTestNotification() async {
     try {
+      final l = await _l10n();
       await _plugin.show(
         99, // dedicated test ID — won't collide with any scheduled range
-        'Journey Forward',
-        'Test notification — your reminders are working.',
+        l.appTitle,
+        l.notifTestBody,
         NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,

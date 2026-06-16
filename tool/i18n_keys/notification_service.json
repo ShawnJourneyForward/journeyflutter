@@ -1,0 +1,160 @@
+{
+  "notifMilestoneTitle": {
+    "en": "Milestone Reached",
+    "desc": "Notification title shown when the user reaches a sober-day milestone."
+  },
+  "notifSavingsTitle": {
+    "en": "Savings Milestone",
+    "desc": "Notification title shown when the user reaches a money-saved milestone."
+  },
+  "notifMeetingTitle": {
+    "en": "Meeting reminder",
+    "desc": "Notification title for a scheduled recovery meeting / sponsor call / therapy reminder."
+  },
+  "notifTestBody": {
+    "en": "Test notification — your reminders are working.",
+    "desc": "Body of the diagnostic test notification fired from Settings to verify the reminder pipeline. Keep the em dash (—)."
+  },
+  "notifSavingsBody": {
+    "en": "You've saved {amount} through sobriety. Keep going!",
+    "desc": "Body of the savings-milestone notification. {amount} is a pre-formatted currency string (e.g. \"$100\").",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "$100"
+      }
+    }
+  },
+  "notifMeetingBody": {
+    "en": "{title} at {time}",
+    "desc": "Meeting-reminder notification body when no location is set. {title} is the meeting name, {time} is a 24h HH:mm clock label.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "AA Monday night"
+      },
+      "time": {
+        "type": "String",
+        "example": "19:30"
+      }
+    }
+  },
+  "notifMeetingBodyLocation": {
+    "en": "{title} at {time} · {location}",
+    "desc": "Meeting-reminder notification body when a location is set. {title} is the meeting name, {time} is a 24h HH:mm clock label, {location} is the place. Keep the middle dot separator ( · ).",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "AA Monday night"
+      },
+      "time": {
+        "type": "String",
+        "example": "19:30"
+      },
+      "location": {
+        "type": "String",
+        "example": "Church hall"
+      }
+    }
+  },
+  "notifMorning0": {
+    "en": "Good morning. Your recovery is worth showing up for today.",
+    "desc": "Morning daily-motivation notification body, variant 0 of 5 (chosen by day-of-year rotation)."
+  },
+  "notifMorning1": {
+    "en": "One day at a time. You've got this — check in now.",
+    "desc": "Morning daily-motivation notification body, variant 1 of 5. Keep the em dash (—)."
+  },
+  "notifMorning2": {
+    "en": "Morning check-in — Log your mood and set your intentions.",
+    "desc": "Morning daily-motivation notification body, variant 2 of 5. Keep the em dash (—)."
+  },
+  "notifMorning3": {
+    "en": "Your sober journey continues today. Open the app and check in.",
+    "desc": "Morning daily-motivation notification body, variant 3 of 5."
+  },
+  "notifMorning4": {
+    "en": "A new day, a fresh start. Take a moment to ground yourself.",
+    "desc": "Morning daily-motivation notification body, variant 4 of 5."
+  },
+  "notifEvening0": {
+    "en": "You've made it through another day — Log your progress.",
+    "desc": "Evening daily-reminder notification body, variant 0 of 5. Keep the em dash (—)."
+  },
+  "notifEvening1": {
+    "en": "Evening check-in — How did your day go? Log it and reflect.",
+    "desc": "Evening daily-reminder notification body, variant 1 of 5. Keep the em dash (—)."
+  },
+  "notifEvening2": {
+    "en": "Don't forget to log today before it slips away.",
+    "desc": "Evening daily-reminder notification body, variant 2 of 5."
+  },
+  "notifEvening3": {
+    "en": "Great job today — Take a moment to reflect and log your day.",
+    "desc": "Evening daily-reminder notification body, variant 3 of 5. Keep the em dash (—)."
+  },
+  "notifEvening4": {
+    "en": "You kept going today. Log tonight before you sleep.",
+    "desc": "Evening daily-reminder notification body, variant 4 of 5."
+  },
+  "notifMilestone1d": {
+    "en": "1 Day Sober. The first step is the hardest. You showed up.",
+    "desc": "Body of the 1-day sober-milestone notification."
+  },
+  "notifMilestone2d": {
+    "en": "2 Days Sober. Two days in a row. You're doing this.",
+    "desc": "Body of the 2-day sober-milestone notification."
+  },
+  "notifMilestone3d": {
+    "en": "3 Days Sober. Day three is one of the hardest. You're still here.",
+    "desc": "Body of the 3-day sober-milestone notification."
+  },
+  "notifMilestone5d": {
+    "en": "5 Days Sober. Five days of showing up for yourself.",
+    "desc": "Body of the 5-day sober-milestone notification."
+  },
+  "notifMilestone7d": {
+    "en": "7 Days Sober. One full week — that takes real courage.",
+    "desc": "Body of the 7-day (one week) sober-milestone notification. Keep the em dash (—)."
+  },
+  "notifMilestone10d": {
+    "en": "10 Days Sober. Double digits. Quietly, steadily, you keep going.",
+    "desc": "Body of the 10-day sober-milestone notification."
+  },
+  "notifMilestone14d": {
+    "en": "14 Days Sober. Two weeks. Your body and mind are already responding.",
+    "desc": "Body of the 14-day (two weeks) sober-milestone notification."
+  },
+  "notifMilestone21d": {
+    "en": "21 Days Sober. Three weeks. New routines are starting to take root.",
+    "desc": "Body of the 21-day (three weeks) sober-milestone notification."
+  },
+  "notifMilestone30d": {
+    "en": "30 Days Sober. One month of choosing yourself, one day at a time.",
+    "desc": "Body of the 30-day (one month) sober-milestone notification."
+  },
+  "notifMilestone60d": {
+    "en": "60 Days Sober. Two months. Every single day has mattered.",
+    "desc": "Body of the 60-day (two months) sober-milestone notification."
+  },
+  "notifMilestone90d": {
+    "en": "90 Days Sober. Three months. Keep going at your own pace.",
+    "desc": "Body of the 90-day (three months) sober-milestone notification."
+  },
+  "notifMilestone180d": {
+    "en": "180 Days Sober. Half a year. That's a lot of days showing up.",
+    "desc": "Body of the 180-day (half a year) sober-milestone notification."
+  },
+  "notifMilestone365d": {
+    "en": "1 Year Sober. 365 days. Take a moment to acknowledge how far you've come.",
+    "desc": "Body of the 1-year (365 days) sober-milestone notification."
+  },
+  "notifMilestone730d": {
+    "en": "2 Years Sober. Two years of choosing yourself, over and over again.",
+    "desc": "Body of the 2-year sober-milestone notification."
+  },
+  "notifMilestone1095d": {
+    "en": "3 Years Sober. Three years. Your path forward is your own.",
+    "desc": "Body of the 3-year sober-milestone notification."
+  }
+}

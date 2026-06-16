@@ -6988,4 +6988,603 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get meditationSelfCompassionStep6 =>
       'Say those words to yourself. You deserve them too.';
+
+  @override
+  String get notifMilestoneTitle => 'Milestone Reached';
+
+  @override
+  String get notifSavingsTitle => 'Savings Milestone';
+
+  @override
+  String get notifMeetingTitle => 'Meeting reminder';
+
+  @override
+  String get notifTestBody => 'Test notification — your reminders are working.';
+
+  @override
+  String notifSavingsBody(String amount) {
+    return 'You\'ve saved $amount through sobriety. Keep going!';
+  }
+
+  @override
+  String notifMeetingBody(String title, String time) {
+    return '$title at $time';
+  }
+
+  @override
+  String notifMeetingBodyLocation(String title, String time, String location) {
+    return '$title at $time · $location';
+  }
+
+  @override
+  String get notifMorning0 =>
+      'Good morning. Your recovery is worth showing up for today.';
+
+  @override
+  String get notifMorning1 =>
+      'One day at a time. You\'ve got this — check in now.';
+
+  @override
+  String get notifMorning2 =>
+      'Morning check-in — Log your mood and set your intentions.';
+
+  @override
+  String get notifMorning3 =>
+      'Your sober journey continues today. Open the app and check in.';
+
+  @override
+  String get notifMorning4 =>
+      'A new day, a fresh start. Take a moment to ground yourself.';
+
+  @override
+  String get notifEvening0 =>
+      'You\'ve made it through another day — Log your progress.';
+
+  @override
+  String get notifEvening1 =>
+      'Evening check-in — How did your day go? Log it and reflect.';
+
+  @override
+  String get notifEvening2 =>
+      'Don\'t forget to log today before it slips away.';
+
+  @override
+  String get notifEvening3 =>
+      'Great job today — Take a moment to reflect and log your day.';
+
+  @override
+  String get notifEvening4 =>
+      'You kept going today. Log tonight before you sleep.';
+
+  @override
+  String get notifMilestone1d =>
+      '1 Day Sober. The first step is the hardest. You showed up.';
+
+  @override
+  String get notifMilestone2d =>
+      '2 Days Sober. Two days in a row. You\'re doing this.';
+
+  @override
+  String get notifMilestone3d =>
+      '3 Days Sober. Day three is one of the hardest. You\'re still here.';
+
+  @override
+  String get notifMilestone5d =>
+      '5 Days Sober. Five days of showing up for yourself.';
+
+  @override
+  String get notifMilestone7d =>
+      '7 Days Sober. One full week — that takes real courage.';
+
+  @override
+  String get notifMilestone10d =>
+      '10 Days Sober. Double digits. Quietly, steadily, you keep going.';
+
+  @override
+  String get notifMilestone14d =>
+      '14 Days Sober. Two weeks. Your body and mind are already responding.';
+
+  @override
+  String get notifMilestone21d =>
+      '21 Days Sober. Three weeks. New routines are starting to take root.';
+
+  @override
+  String get notifMilestone30d =>
+      '30 Days Sober. One month of choosing yourself, one day at a time.';
+
+  @override
+  String get notifMilestone60d =>
+      '60 Days Sober. Two months. Every single day has mattered.';
+
+  @override
+  String get notifMilestone90d =>
+      '90 Days Sober. Three months. Keep going at your own pace.';
+
+  @override
+  String get notifMilestone180d =>
+      '180 Days Sober. Half a year. That\'s a lot of days showing up.';
+
+  @override
+  String get notifMilestone365d =>
+      '1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.';
+
+  @override
+  String get notifMilestone730d =>
+      '2 Years Sober. Two years of choosing yourself, over and over again.';
+
+  @override
+  String get notifMilestone1095d =>
+      '3 Years Sober. Three years. Your path forward is your own.';
+
+  @override
+  String get moodGreat => 'Great';
+
+  @override
+  String get moodGood => 'Good';
+
+  @override
+  String get moodOkay => 'Okay';
+
+  @override
+  String get moodHard => 'Hard';
+
+  @override
+  String get moodCrisis => 'Crisis';
+
+  @override
+  String get subMoodAnxious => 'anxious';
+
+  @override
+  String get subMoodAshamed => 'ashamed';
+
+  @override
+  String get subMoodLonely => 'lonely';
+
+  @override
+  String get subMoodAngry => 'angry';
+
+  @override
+  String get subMoodGrieving => 'grieving';
+
+  @override
+  String get subMoodNumb => 'numb';
+
+  @override
+  String get subMoodOverwhelmed => 'overwhelmed';
+
+  @override
+  String get subMoodCraving => 'craving';
+
+  @override
+  String get subMoodProud => 'proud';
+
+  @override
+  String get subMoodEnergized => 'energized';
+
+  @override
+  String get subMoodPeaceful => 'peaceful';
+
+  @override
+  String get subMoodGrateful => 'grateful';
+
+  @override
+  String get subMoodHopeful => 'hopeful';
+
+  @override
+  String get subMoodConnected => 'connected';
+
+  @override
+  String get subMoodFocused => 'focused';
+
+  @override
+  String get subMoodFree => 'free';
+
+  @override
+  String get promptCatReflection => 'Reflection';
+
+  @override
+  String get promptCatGratitude => 'Gratitude';
+
+  @override
+  String get promptCatHard => 'Hard day';
+
+  @override
+  String get promptCatWins => 'Wins';
+
+  @override
+  String get promptCatCraving => 'Craving';
+
+  @override
+  String get promptCatPeople => 'People';
+
+  @override
+  String get journalPromptR1 =>
+      'What pulled at me today — and what held me steady?';
+
+  @override
+  String get journalPromptR2 => 'If today had a colour, what would it be? Why?';
+
+  @override
+  String get journalPromptR3 =>
+      'What did my body tell me today that I almost ignored?';
+
+  @override
+  String get journalPromptR4 =>
+      'Where did I show up for myself today, even imperfectly?';
+
+  @override
+  String get journalPromptR5 => 'What truth am I avoiding right now?';
+
+  @override
+  String get journalPromptR6 =>
+      'What story did I tell myself today — and was it kind, or just familiar?';
+
+  @override
+  String get journalPromptR7 =>
+      'What would the wisest version of me say about today?';
+
+  @override
+  String get journalPromptR8 => 'What is one thing I am ready to set down?';
+
+  @override
+  String get journalPromptR9 => 'What feeling have I been outrunning?';
+
+  @override
+  String get journalPromptR10 => 'When did I feel most like myself today?';
+
+  @override
+  String get journalPromptG1 =>
+      'Three small things I am grateful for right now.';
+
+  @override
+  String get journalPromptG2 =>
+      'Someone who made my life easier this week — and why.';
+
+  @override
+  String get journalPromptG3 =>
+      'A body part that did its job today without me noticing.';
+
+  @override
+  String get journalPromptG4 => 'A sound, smell, or taste that landed today.';
+
+  @override
+  String get journalPromptG5 =>
+      'A thing I have now that past-me would have begged for.';
+
+  @override
+  String get journalPromptG6 => 'A small comfort that softened a hard moment.';
+
+  @override
+  String get journalPromptG7 =>
+      'A piece of music, a view, a meal — what fed me today?';
+
+  @override
+  String get journalPromptG8 =>
+      'Who in my life right now is steady? Name them.';
+
+  @override
+  String get journalPromptG9 =>
+      'A skill I have today that I did not have a year ago.';
+
+  @override
+  String get journalPromptG10 =>
+      'One ordinary moment today that I want to remember.';
+
+  @override
+  String get journalPromptH1 =>
+      'What hurt today? Just name it — no fix, no spin.';
+
+  @override
+  String get journalPromptH2 =>
+      'If this feeling could speak, what would it say it needs?';
+
+  @override
+  String get journalPromptH3 => 'What part of today felt unfair?';
+
+  @override
+  String get journalPromptH4 =>
+      'Is there a feeling I am calling anger that is actually something else underneath?';
+
+  @override
+  String get journalPromptH5 =>
+      'What would I say to a friend who was where I am right now?';
+
+  @override
+  String get journalPromptH6 =>
+      'What is the smallest next step I can take, even if I do not feel like it?';
+
+  @override
+  String get journalPromptH7 =>
+      'Who can I tell about this — even one person, even one sentence?';
+
+  @override
+  String get journalPromptH8 =>
+      'What am I making this mean about me — and is that true?';
+
+  @override
+  String get journalPromptH9 =>
+      'What did today take from me? What did it leave?';
+
+  @override
+  String get journalPromptH10 =>
+      'If I could fast-forward 24 hours, what would I want to be true?';
+
+  @override
+  String get journalPromptW1 => 'A moment today I am quietly proud of.';
+
+  @override
+  String get journalPromptW2 =>
+      'Something I did today that past-me could not have done.';
+
+  @override
+  String get journalPromptW3 =>
+      'A risk I took — however small — and how it landed.';
+
+  @override
+  String get journalPromptW4 => 'Where did I choose myself today?';
+
+  @override
+  String get journalPromptW5 => 'A boundary I held, even if no one noticed.';
+
+  @override
+  String get journalPromptW6 => 'A craving I rode through.';
+
+  @override
+  String get journalPromptW7 => 'A conversation I am glad I had.';
+
+  @override
+  String get journalPromptW8 => 'Something I finished. Anything.';
+
+  @override
+  String get journalPromptW9 => 'A way my body felt strong today.';
+
+  @override
+  String get journalPromptW10 =>
+      'A way I treated myself the way I would treat someone I love.';
+
+  @override
+  String get journalPromptC1 =>
+      'When did the urge start today, and what was happening around me?';
+
+  @override
+  String get journalPromptC2 => 'What was my body doing when the craving hit?';
+
+  @override
+  String get journalPromptC3 => 'What was the lie the craving was telling me?';
+
+  @override
+  String get journalPromptC4 =>
+      'What did I actually need underneath the craving — rest, connection, food, quiet?';
+
+  @override
+  String get journalPromptC5 => 'How long did it last before it began to pass?';
+
+  @override
+  String get journalPromptC6 =>
+      'What did I do instead — and how do I feel about that choice now?';
+
+  @override
+  String get journalPromptC7 => 'Who or what helped me ride this one out?';
+
+  @override
+  String get journalPromptC8 =>
+      'If this craving returns tomorrow, what is one thing I can have ready?';
+
+  @override
+  String get journalPromptC9 =>
+      'What would the version of me a year sober say to this craving?';
+
+  @override
+  String get journalPromptC10 =>
+      'What is the craving costing me, even when I do not use?';
+
+  @override
+  String get journalPromptP1 =>
+      'Who do I owe an honest sentence to — even if I never say it?';
+
+  @override
+  String get journalPromptP2 =>
+      'A relationship that feels lighter than it did a year ago.';
+
+  @override
+  String get journalPromptP3 =>
+      'Someone I keep replaying conversations with — what is unfinished there?';
+
+  @override
+  String get journalPromptP4 =>
+      'A person I keep meaning to reach out to — what is one sentence I could send?';
+
+  @override
+  String get journalPromptP5 =>
+      'Where do I feel most seen lately? Where do I feel most invisible?';
+
+  @override
+  String get journalPromptP6 =>
+      'What is one boundary I am proud of — even a small one?';
+
+  @override
+  String get journalPromptP7 =>
+      'Who in my life has earned more of me? Who has earned less?';
+
+  @override
+  String get journalPromptP8 =>
+      'A thing someone said to me that I am still carrying.';
+
+  @override
+  String get journalPromptP9 =>
+      'What would a healthier version of me say to the people in my life right now?';
+
+  @override
+  String get journalPromptP10 =>
+      'Who do I want to be remembered as — by the people closest to me?';
+
+  @override
+  String get visionIconGuide => 'Guide';
+
+  @override
+  String get visionIconStrength => 'Strength';
+
+  @override
+  String get visionIconLove => 'Love';
+
+  @override
+  String get visionIconHome => 'Home';
+
+  @override
+  String get visionIconFamily => 'Family';
+
+  @override
+  String get visionIconSavings => 'Savings';
+
+  @override
+  String get visionIconLearn => 'Learn';
+
+  @override
+  String get visionIconGrowth => 'Growth';
+
+  @override
+  String get visionIconJourney => 'Journey';
+
+  @override
+  String get visionIconCreate => 'Create';
+
+  @override
+  String get visionIconMove => 'Move';
+
+  @override
+  String get visionIconStillness => 'Stillness';
+
+  @override
+  String get visionIconWisdom => 'Wisdom';
+
+  @override
+  String get visionIconAim => 'Aim';
+
+  @override
+  String get visionIconHope => 'Hope';
+
+  @override
+  String get visionIconPeace => 'Peace';
+
+  @override
+  String get visionIconSupport => 'Support';
+
+  @override
+  String get visionIconBloom => 'Bloom';
+
+  @override
+  String get visionIconMilestone => 'Milestone';
+
+  @override
+  String get visionIconSpark => 'Spark';
+
+  @override
+  String get visionCategoryHealth => 'Health';
+
+  @override
+  String get visionCategoryFamily => 'Family';
+
+  @override
+  String get visionCategoryCareer => 'Career';
+
+  @override
+  String get visionCategoryGrowth => 'Growth';
+
+  @override
+  String get visionCategoryFreedom => 'Freedom';
+
+  @override
+  String get visionCategoryAdventure => 'Adventure';
+
+  @override
+  String get visionCategoryService => 'Service';
+
+  @override
+  String get visionCategoryCreativity => 'Creativity';
+
+  @override
+  String get visionCategoryUncategorised => 'Uncategorised';
+
+  @override
+  String get visionStarterFreedomYearTitle => 'One year of freedom';
+
+  @override
+  String get visionStarterFreedomYearAffirmation =>
+      'I am building a life I love, one sober day at a time.';
+
+  @override
+  String get visionStarterPresentParentTitle => 'Be the parent I want to be';
+
+  @override
+  String get visionStarterPresentParentAffirmation =>
+      'I am present, patient, and proud of how I show up for my family.';
+
+  @override
+  String get visionStarterRun5kTitle => 'Run a 5K';
+
+  @override
+  String get visionStarterRun5kAffirmation =>
+      'I am strong, I move with purpose, and my body is reclaiming itself.';
+
+  @override
+  String get visionStarterSaveMeaningfulTitle =>
+      'Save for something meaningful';
+
+  @override
+  String get visionStarterSaveMeaningfulAffirmation =>
+      'Every day sober is money in my pocket and possibility in my future.';
+
+  @override
+  String get visionStarterLearnSkillTitle => 'Learn a new skill';
+
+  @override
+  String get visionStarterLearnSkillAffirmation =>
+      'I am curious, I am capable, and I keep growing.';
+
+  @override
+  String get visionStarterHealRelationshipTitle => 'Heal a relationship';
+
+  @override
+  String get visionStarterHealRelationshipAffirmation =>
+      'I lead with honesty and humility. The right people are coming closer.';
+
+  @override
+  String get cravingResponseWalked => 'Walked away / outside';
+
+  @override
+  String get cravingResponseCalled => 'Called someone';
+
+  @override
+  String get cravingResponseBreathed => 'Breathed / urge-surfed';
+
+  @override
+  String get cravingResponseJournaled => 'Journaled / wrote';
+
+  @override
+  String get cravingResponseWater => 'Drank water / ate';
+
+  @override
+  String get cravingResponseGrounded => 'Grounded / prayed / meditated';
+
+  @override
+  String get cravingTimeAm => 'AM';
+
+  @override
+  String get cravingTimePm => 'PM';
+
+  @override
+  String cravingHourMeridiem(int hour, String meridiem) {
+    return '$hour $meridiem';
+  }
+
+  @override
+  String cravingRiskWindowRange(String start, String end) {
+    return '$start–$end';
+  }
+
+  @override
+  String get journalReauthUnlockEntry => 'Unlock this entry';
+
+  @override
+  String get journalReauthIncorrectPin => 'Incorrect PIN';
 }

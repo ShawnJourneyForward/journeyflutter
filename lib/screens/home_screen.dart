@@ -3257,7 +3257,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                     ),
                   ),
                   child: Text(
-                    opt.$2,
+                    localizedHaltLabel(l10n, opt.$1),
                     style: AppTextStyles.labelMedium.copyWith(
                       color: selected ? AppColors.honey600 : AppColors.stone600,
                     ),
@@ -3410,7 +3410,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                     ),
                   ),
                   child: Text(
-                    r.label,
+                    r.localizedLabel(l10n),
                     style: AppTextStyles.labelMedium.copyWith(
                       color:
                           selected ? AppColors.forest700 : AppColors.stone600,
@@ -3491,7 +3491,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
     final responseLabel = kCravingResponses
         .firstWhere((r) => r.slug == e.responseChosen,
             orElse: () => CravingResponse(e.responseChosen!, e.responseChosen!))
-        .label
+        .localizedLabel(l10n)
         .toLowerCase();
     final outcomePart = e.outcome == 'stayed_sober'
         ? l10n.homeLastTimeOutcomeSober

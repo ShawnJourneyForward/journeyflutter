@@ -8,6 +8,7 @@
 // same result. That makes them trivial to wrap in a Riverpod Provider and
 // also trivial to unit-test in isolation later.
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 
 /// A response option the craving sheet offers. The label is what the user
@@ -16,7 +17,29 @@ class CravingResponse {
   final String slug;
   final String label;
   const CravingResponse(this.slug, this.label);
+
+  /// Localised response label, resolved by stable [slug]. Falls back to the
+  /// English [label] for any unknown slug (e.g. legacy persisted values).
+  String localizedLabel(AppLocalizations l) => switch (slug) {
+        'walked' => l.cravingResponseWalked,
+        'called' => l.cravingResponseCalled,
+        'breathed' => l.cravingResponseBreathed,
+        'journaled' => l.cravingResponseJournaled,
+        'water' => l.cravingResponseWater,
+        'grounded' => l.cravingResponseGrounded,
+        _ => label,
+      };
 }
+
+/// Localised label for a HALT slug ('hungry', 'angry', 'lonely', 'tired').
+/// Falls back to the raw slug for any unknown value.
+String localizedHaltLabel(AppLocalizations l, String slug) => switch (slug) {
+      'hungry' => l.haltHungry,
+      'angry' => l.haltAngry,
+      'lonely' => l.haltLonely,
+      'tired' => l.haltTired,
+      _ => slug,
+    };
 
 /// Canonical menu of responses. Keep short — long lists fragment the data
 /// and weaken the insight signal. Six is the sweet spot.
@@ -52,6 +75,11 @@ class ResponseStat {
     required this.totalUses,
     required this.soberOutcomes,
   });
+
+  /// Localised response label, resolved by stable [slug]. Falls back to the
+  /// English [label].
+  String localizedLabel(AppLocalizations l) =>
+      CravingResponse(slug, label).localizedLabel(l);
 }
 
 /// Compute "what worked" — for each response strategy the user has tried at
@@ -133,6 +161,19 @@ class RiskWindow {
     }
 
     return '${fmt(startHour)}–${fmt((startHour + 3) % 24)}';
+  }
+
+  /// Localised "8–11 PM" style label. AM/PM markers and the range separator
+  /// are resolved through [AppLocalizations] so the format can adapt per
+  /// locale; falls back structurally to the English [label] format.
+  String localizedLabel(AppLocalizations l) {
+    String fmt(int h) {
+      final h12 = h % 12 == 0 ? 12 : h % 12;
+      final meridiem = h < 12 ? l.cravingTimeAm : l.cravingTimePm;
+      return l.cravingHourMeridiem(h12, meridiem);
+    }
+
+    return l.cravingRiskWindowRange(fmt(startHour), fmt((startHour + 3) % 24));
   }
 }
 

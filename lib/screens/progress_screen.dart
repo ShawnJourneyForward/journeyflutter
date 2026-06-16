@@ -554,7 +554,7 @@ class _RiskWindowCard extends ConsumerWidget {
                       style: AppTextStyles.titleMedium),
                 ),
                 Text(
-                  window.label,
+                  window.localizedLabel(l10n),
                   style: AppTextStyles.labelLarge
                       .copyWith(color: AppColors.honey600),
                 ),

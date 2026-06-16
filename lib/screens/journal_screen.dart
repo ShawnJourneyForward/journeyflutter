@@ -1182,7 +1182,7 @@ class _DiaryEmptyState extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            p.text,
+                            p.localizedText(l10n),
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.stone700,
                               fontStyle: FontStyle.italic,
@@ -1288,7 +1288,7 @@ class _JournalCard extends ConsumerWidget {
                 children: [
                   Icon(mood.icon, size: 18, color: mood.color),
                   const SizedBox(width: 6),
-                  Text(mood.label,
+                  Text(mood.localizedLabel(l10n),
                       style:
                           AppTextStyles.labelSmall.copyWith(color: mood.color)),
                   if (entry.subMood != null && entry.subMood!.isNotEmpty) ...[
@@ -1304,7 +1304,7 @@ class _JournalCard extends ConsumerWidget {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        entry.subMood!,
+                        localizedSubMood(l10n, entry.subMood!),
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone500),
                         overflow: TextOverflow.ellipsis,
@@ -1481,7 +1481,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
     // If we were opened from a starter prompt, drop a soft header into the
     // text field so the user sees what they're answering.
     if (seed != null && _ctrl.text.isEmpty) {
-      _ctrl.text = '${seed.text}\n\n';
+      _ctrl.text = '${seed.localizedText(AppLocalizations.of(context))}\n\n';
       _ctrl.selection =
           TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
     }
@@ -1642,12 +1642,13 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
   }
 
   void _pickPrompt(JournalPrompt p) {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _promptId = p.id;
       _promptPickerOpen = false;
       // Soft-prepend to the text field so the user sees what they're answering.
       if (_ctrl.text.trim().isEmpty) {
-        _ctrl.text = '${p.text}\n\n';
+        _ctrl.text = '${p.localizedText(l10n)}\n\n';
         _ctrl.selection =
             TextSelection.fromPosition(TextPosition(offset: _ctrl.text.length));
       }
@@ -1792,7 +1793,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               Text(m.emoji,
                                   style: const TextStyle(fontSize: 20)),
                               const SizedBox(height: 2),
-                              Text(m.label,
+                              Text(m.localizedLabel(l10n),
                                   style: AppTextStyles.labelSmall.copyWith(
                                     color:
                                         selected ? m.color : AppColors.stone400,
@@ -1848,7 +1849,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                           ),
                                         ),
                                         child: Text(
-                                          s,
+                                          localizedSubMood(l10n, s),
                                           style:
                                               AppTextStyles.labelSmall.copyWith(
                                             color: selected
@@ -2120,8 +2121,8 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
           : DateTime.now().difference(mostRecent.date),
     );
     final suggestedPrompt = dailyPromptFor(suggestedCategory);
-    final headlineText =
-        activePrompt?.text ?? l10n.journalSuggestedPrompt(suggestedPrompt.text);
+    final headlineText = activePrompt?.localizedText(l10n) ??
+        l10n.journalSuggestedPrompt(suggestedPrompt.localizedText(l10n));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2220,7 +2221,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                       Row(
                                         children: [
                                           Text(
-                                            cat.label.toUpperCase(),
+                                            cat.localizedLabel(l10n).toUpperCase(),
                                             style:
                                                 AppTextStyles.overline.copyWith(
                                               color: cat.color,
@@ -2246,7 +2247,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                       ),
                                       const SizedBox(height: 1),
                                       Text(
-                                        prompt.text,
+                                        prompt.localizedText(l10n),
                                         style: AppTextStyles.bodySmall.copyWith(
                                           color: AppColors.stone700,
                                           fontStyle: FontStyle.italic,
@@ -2320,7 +2321,8 @@ class _DraftRestoreBanner extends StatelessWidget {
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        l10n.journalDraftChars(mood.label, draft.text.length),
+                        l10n.journalDraftChars(
+                            mood.localizedLabel(l10n), draft.text.length),
                         style: AppTextStyles.bodySmall
                             .copyWith(color: AppColors.stone500),
                         overflow: TextOverflow.ellipsis,
@@ -3096,6 +3098,7 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: Row(
@@ -3103,7 +3106,7 @@ class _SectionHeader extends StatelessWidget {
           Icon(info.icon, size: 16, color: info.color),
           const SizedBox(width: 8),
           Text(
-            info.label.toUpperCase(),
+            info.localizedLabel(l10n).toUpperCase(),
             style: AppTextStyles.overline.copyWith(
               color: info.color,
               letterSpacing: 1.2,
@@ -3200,7 +3203,7 @@ class _VisionEmptyState extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          s.title,
+                          s.localizedTitle(l10n),
                           style: AppTextStyles.bodyMedium
                               .copyWith(color: AppColors.stone800),
                         ),
@@ -3509,11 +3512,13 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
     super.initState();
     final ex = widget.existingItem;
     final st = widget.starter;
-    _titleCtrl = TextEditingController(text: ex?.title ?? st?.title ?? '');
+    final l10n = AppLocalizations.of(context);
+    _titleCtrl = TextEditingController(
+        text: ex?.title ?? st?.localizedTitle(l10n) ?? '');
     _descCtrl = TextEditingController(text: ex?.description ?? '');
     _whyCtrl = TextEditingController(text: ex?.whyItMatters ?? '');
-    _affirmCtrl =
-        TextEditingController(text: ex?.affirmation ?? st?.affirmation ?? '');
+    _affirmCtrl = TextEditingController(
+        text: ex?.affirmation ?? st?.localizedAffirmation(l10n) ?? '');
     _milestoneCtrl = TextEditingController();
     _iconKey = ex?.emoji ?? st?.iconKey ?? 'guide';
     _category = ex?.category ?? st?.category ?? VisionCategory.none;
@@ -3828,7 +3833,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                         size: 14,
                         color: selected ? info.color : AppColors.stone400),
                     const SizedBox(width: 6),
-                    Text(info.label,
+                    Text(info.localizedLabel(l10n),
                         style: AppTextStyles.labelMedium.copyWith(
                             color: selected ? info.color : AppColors.stone600)),
                   ],
@@ -3882,7 +3887,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    o.label,
+                    o.localizedLabel(l10n),
                     style: TextStyle(
                       fontSize: 9,
                       color: selected ? o.color : AppColors.stone400,

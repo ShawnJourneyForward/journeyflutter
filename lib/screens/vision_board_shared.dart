@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 
@@ -22,6 +23,31 @@ class VisionIconOption {
   final IconData icon;
   final String label;
   final Color color;
+
+  /// Localised icon label, resolved by stable [key]. Falls back to English.
+  String localizedLabel(AppLocalizations l) => switch (key) {
+        'guide' => l.visionIconGuide,
+        'strength' => l.visionIconStrength,
+        'love' => l.visionIconLove,
+        'home' => l.visionIconHome,
+        'family' => l.visionIconFamily,
+        'savings' => l.visionIconSavings,
+        'learn' => l.visionIconLearn,
+        'growth' => l.visionIconGrowth,
+        'journey' => l.visionIconJourney,
+        'create' => l.visionIconCreate,
+        'move' => l.visionIconMove,
+        'stillness' => l.visionIconStillness,
+        'wisdom' => l.visionIconWisdom,
+        'aim' => l.visionIconAim,
+        'hope' => l.visionIconHope,
+        'peace' => l.visionIconPeace,
+        'support' => l.visionIconSupport,
+        'bloom' => l.visionIconBloom,
+        'milestone' => l.visionIconMilestone,
+        'spark' => l.visionIconSpark,
+        _ => label,
+      };
 }
 
 final kVisionIcons = <VisionIconOption>[
@@ -149,6 +175,20 @@ class VisionCategoryInfo {
   final String label;
   final IconData icon;
   final Color color;
+
+  /// Localised category label, resolved by the stable [category] enum.
+  /// Falls back to English.
+  String localizedLabel(AppLocalizations l) => switch (category) {
+        VisionCategory.health => l.visionCategoryHealth,
+        VisionCategory.family => l.visionCategoryFamily,
+        VisionCategory.career => l.visionCategoryCareer,
+        VisionCategory.growth => l.visionCategoryGrowth,
+        VisionCategory.freedom => l.visionCategoryFreedom,
+        VisionCategory.adventure => l.visionCategoryAdventure,
+        VisionCategory.service => l.visionCategoryService,
+        VisionCategory.creativity => l.visionCategoryCreativity,
+        VisionCategory.none => l.visionCategoryUncategorised,
+      };
 }
 
 final kCategoryInfo = <VisionCategoryInfo>[
@@ -206,25 +246,52 @@ VisionCategoryInfo categoryInfoFor(VisionCategory c) => kCategoryInfo
 
 class VisionStarter {
   const VisionStarter({
+    required this.id,
     required this.title,
     required this.iconKey,
     required this.category,
     this.affirmation = '',
   });
+  final String id;
   final String title;
   final String iconKey;
   final VisionCategory category;
   final String affirmation;
+
+  /// Localised starter title, resolved by stable [id]. Falls back to English.
+  String localizedTitle(AppLocalizations l) => switch (id) {
+        'freedom_year' => l.visionStarterFreedomYearTitle,
+        'present_parent' => l.visionStarterPresentParentTitle,
+        'run_5k' => l.visionStarterRun5kTitle,
+        'save_meaningful' => l.visionStarterSaveMeaningfulTitle,
+        'learn_skill' => l.visionStarterLearnSkillTitle,
+        'heal_relationship' => l.visionStarterHealRelationshipTitle,
+        _ => title,
+      };
+
+  /// Localised starter affirmation, resolved by stable [id]. Falls back to
+  /// the English [affirmation].
+  String localizedAffirmation(AppLocalizations l) => switch (id) {
+        'freedom_year' => l.visionStarterFreedomYearAffirmation,
+        'present_parent' => l.visionStarterPresentParentAffirmation,
+        'run_5k' => l.visionStarterRun5kAffirmation,
+        'save_meaningful' => l.visionStarterSaveMeaningfulAffirmation,
+        'learn_skill' => l.visionStarterLearnSkillAffirmation,
+        'heal_relationship' => l.visionStarterHealRelationshipAffirmation,
+        _ => affirmation,
+      };
 }
 
 const kStarterPrompts = <VisionStarter>[
   VisionStarter(
+    id: 'freedom_year',
     title: 'One year of freedom',
     iconKey: 'milestone',
     category: VisionCategory.freedom,
     affirmation: 'I am building a life I love, one sober day at a time.',
   ),
   VisionStarter(
+    id: 'present_parent',
     title: 'Be the parent I want to be',
     iconKey: 'family',
     category: VisionCategory.family,
@@ -232,6 +299,7 @@ const kStarterPrompts = <VisionStarter>[
         'I am present, patient, and proud of how I show up for my family.',
   ),
   VisionStarter(
+    id: 'run_5k',
     title: 'Run a 5K',
     iconKey: 'move',
     category: VisionCategory.health,
@@ -239,6 +307,7 @@ const kStarterPrompts = <VisionStarter>[
         'I am strong, I move with purpose, and my body is reclaiming itself.',
   ),
   VisionStarter(
+    id: 'save_meaningful',
     title: 'Save for something meaningful',
     iconKey: 'savings',
     category: VisionCategory.freedom,
@@ -246,12 +315,14 @@ const kStarterPrompts = <VisionStarter>[
         'Every day sober is money in my pocket and possibility in my future.',
   ),
   VisionStarter(
+    id: 'learn_skill',
     title: 'Learn a new skill',
     iconKey: 'learn',
     category: VisionCategory.growth,
     affirmation: 'I am curious, I am capable, and I keep growing.',
   ),
   VisionStarter(
+    id: 'heal_relationship',
     title: 'Heal a relationship',
     iconKey: 'support',
     category: VisionCategory.family,

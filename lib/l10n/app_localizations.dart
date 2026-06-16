@@ -12307,6 +12307,1038 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Say those words to yourself. You deserve them too.'**
   String get meditationSelfCompassionStep6;
+
+  /// Notification title shown when the user reaches a sober-day milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone Reached'**
+  String get notifMilestoneTitle;
+
+  /// Notification title shown when the user reaches a money-saved milestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings Milestone'**
+  String get notifSavingsTitle;
+
+  /// Notification title for a scheduled recovery meeting / sponsor call / therapy reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting reminder'**
+  String get notifMeetingTitle;
+
+  /// Body of the diagnostic test notification fired from Settings to verify the reminder pipeline. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'Test notification — your reminders are working.'**
+  String get notifTestBody;
+
+  /// Body of the savings-milestone notification. {amount} is a pre-formatted currency string (e.g. "$100").
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve saved {amount} through sobriety. Keep going!'**
+  String notifSavingsBody(String amount);
+
+  /// Meeting-reminder notification body when no location is set. {title} is the meeting name, {time} is a 24h HH:mm clock label.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} at {time}'**
+  String notifMeetingBody(String title, String time);
+
+  /// Meeting-reminder notification body when a location is set. {title} is the meeting name, {time} is a 24h HH:mm clock label, {location} is the place. Keep the middle dot separator ( · ).
+  ///
+  /// In en, this message translates to:
+  /// **'{title} at {time} · {location}'**
+  String notifMeetingBodyLocation(String title, String time, String location);
+
+  /// Morning daily-motivation notification body, variant 0 of 5 (chosen by day-of-year rotation).
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning. Your recovery is worth showing up for today.'**
+  String get notifMorning0;
+
+  /// Morning daily-motivation notification body, variant 1 of 5. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'One day at a time. You\'ve got this — check in now.'**
+  String get notifMorning1;
+
+  /// Morning daily-motivation notification body, variant 2 of 5. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'Morning check-in — Log your mood and set your intentions.'**
+  String get notifMorning2;
+
+  /// Morning daily-motivation notification body, variant 3 of 5.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sober journey continues today. Open the app and check in.'**
+  String get notifMorning3;
+
+  /// Morning daily-motivation notification body, variant 4 of 5.
+  ///
+  /// In en, this message translates to:
+  /// **'A new day, a fresh start. Take a moment to ground yourself.'**
+  String get notifMorning4;
+
+  /// Evening daily-reminder notification body, variant 0 of 5. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve made it through another day — Log your progress.'**
+  String get notifEvening0;
+
+  /// Evening daily-reminder notification body, variant 1 of 5. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'Evening check-in — How did your day go? Log it and reflect.'**
+  String get notifEvening1;
+
+  /// Evening daily-reminder notification body, variant 2 of 5.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t forget to log today before it slips away.'**
+  String get notifEvening2;
+
+  /// Evening daily-reminder notification body, variant 3 of 5. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'Great job today — Take a moment to reflect and log your day.'**
+  String get notifEvening3;
+
+  /// Evening daily-reminder notification body, variant 4 of 5.
+  ///
+  /// In en, this message translates to:
+  /// **'You kept going today. Log tonight before you sleep.'**
+  String get notifEvening4;
+
+  /// Body of the 1-day sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Day Sober. The first step is the hardest. You showed up.'**
+  String get notifMilestone1d;
+
+  /// Body of the 2-day sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'2 Days Sober. Two days in a row. You\'re doing this.'**
+  String get notifMilestone2d;
+
+  /// Body of the 3-day sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'3 Days Sober. Day three is one of the hardest. You\'re still here.'**
+  String get notifMilestone3d;
+
+  /// Body of the 5-day sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'5 Days Sober. Five days of showing up for yourself.'**
+  String get notifMilestone5d;
+
+  /// Body of the 7-day (one week) sober-milestone notification. Keep the em dash (—).
+  ///
+  /// In en, this message translates to:
+  /// **'7 Days Sober. One full week — that takes real courage.'**
+  String get notifMilestone7d;
+
+  /// Body of the 10-day sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'10 Days Sober. Double digits. Quietly, steadily, you keep going.'**
+  String get notifMilestone10d;
+
+  /// Body of the 14-day (two weeks) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'14 Days Sober. Two weeks. Your body and mind are already responding.'**
+  String get notifMilestone14d;
+
+  /// Body of the 21-day (three weeks) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'21 Days Sober. Three weeks. New routines are starting to take root.'**
+  String get notifMilestone21d;
+
+  /// Body of the 30-day (one month) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'30 Days Sober. One month of choosing yourself, one day at a time.'**
+  String get notifMilestone30d;
+
+  /// Body of the 60-day (two months) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'60 Days Sober. Two months. Every single day has mattered.'**
+  String get notifMilestone60d;
+
+  /// Body of the 90-day (three months) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'90 Days Sober. Three months. Keep going at your own pace.'**
+  String get notifMilestone90d;
+
+  /// Body of the 180-day (half a year) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'180 Days Sober. Half a year. That\'s a lot of days showing up.'**
+  String get notifMilestone180d;
+
+  /// Body of the 1-year (365 days) sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'1 Year Sober. 365 days. Take a moment to acknowledge how far you\'ve come.'**
+  String get notifMilestone365d;
+
+  /// Body of the 2-year sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'2 Years Sober. Two years of choosing yourself, over and over again.'**
+  String get notifMilestone730d;
+
+  /// Body of the 3-year sober-milestone notification.
+  ///
+  /// In en, this message translates to:
+  /// **'3 Years Sober. Three years. Your path forward is your own.'**
+  String get notifMilestone1095d;
+
+  /// Mood option label (mood key 'great'). Shown on the journal mood picker and entry cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Great'**
+  String get moodGreat;
+
+  /// Mood option label (mood key 'good').
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get moodGood;
+
+  /// Mood option label (mood key 'okay').
+  ///
+  /// In en, this message translates to:
+  /// **'Okay'**
+  String get moodOkay;
+
+  /// Mood option label (mood key 'hard'). Single word — distinct from the 'Hard day' label used in History.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get moodHard;
+
+  /// Mood option label (mood key 'crisis').
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis'**
+  String get moodCrisis;
+
+  /// Journal sub-mood word (lowercase) shown as a selectable chip after a hard/crisis mood. Slug: 'anxious'.
+  ///
+  /// In en, this message translates to:
+  /// **'anxious'**
+  String get subMoodAnxious;
+
+  /// Journal sub-mood chip word. Slug: 'ashamed'.
+  ///
+  /// In en, this message translates to:
+  /// **'ashamed'**
+  String get subMoodAshamed;
+
+  /// Journal sub-mood chip word. Slug: 'lonely'.
+  ///
+  /// In en, this message translates to:
+  /// **'lonely'**
+  String get subMoodLonely;
+
+  /// Journal sub-mood chip word. Slug: 'angry'.
+  ///
+  /// In en, this message translates to:
+  /// **'angry'**
+  String get subMoodAngry;
+
+  /// Journal sub-mood chip word. Slug: 'grieving'.
+  ///
+  /// In en, this message translates to:
+  /// **'grieving'**
+  String get subMoodGrieving;
+
+  /// Journal sub-mood chip word. Slug: 'numb'.
+  ///
+  /// In en, this message translates to:
+  /// **'numb'**
+  String get subMoodNumb;
+
+  /// Journal sub-mood chip word. Slug: 'overwhelmed'.
+  ///
+  /// In en, this message translates to:
+  /// **'overwhelmed'**
+  String get subMoodOverwhelmed;
+
+  /// Journal sub-mood chip word. Slug: 'craving'.
+  ///
+  /// In en, this message translates to:
+  /// **'craving'**
+  String get subMoodCraving;
+
+  /// Journal sub-mood word shown after a 'great' mood. Slug: 'proud'.
+  ///
+  /// In en, this message translates to:
+  /// **'proud'**
+  String get subMoodProud;
+
+  /// Journal sub-mood chip word. Slug: 'energized'.
+  ///
+  /// In en, this message translates to:
+  /// **'energized'**
+  String get subMoodEnergized;
+
+  /// Journal sub-mood chip word. Slug: 'peaceful'.
+  ///
+  /// In en, this message translates to:
+  /// **'peaceful'**
+  String get subMoodPeaceful;
+
+  /// Journal sub-mood chip word. Slug: 'grateful'.
+  ///
+  /// In en, this message translates to:
+  /// **'grateful'**
+  String get subMoodGrateful;
+
+  /// Journal sub-mood chip word. Slug: 'hopeful'.
+  ///
+  /// In en, this message translates to:
+  /// **'hopeful'**
+  String get subMoodHopeful;
+
+  /// Journal sub-mood chip word. Slug: 'connected'.
+  ///
+  /// In en, this message translates to:
+  /// **'connected'**
+  String get subMoodConnected;
+
+  /// Journal sub-mood chip word. Slug: 'focused'.
+  ///
+  /// In en, this message translates to:
+  /// **'focused'**
+  String get subMoodFocused;
+
+  /// Journal sub-mood chip word. Slug: 'free'.
+  ///
+  /// In en, this message translates to:
+  /// **'free'**
+  String get subMoodFree;
+
+  /// Journal prompt category label (id 'reflection').
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection'**
+  String get promptCatReflection;
+
+  /// Journal prompt category label (id 'gratitude').
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude'**
+  String get promptCatGratitude;
+
+  /// Journal prompt category label (id 'hard').
+  ///
+  /// In en, this message translates to:
+  /// **'Hard day'**
+  String get promptCatHard;
+
+  /// Journal prompt category label (id 'win').
+  ///
+  /// In en, this message translates to:
+  /// **'Wins'**
+  String get promptCatWins;
+
+  /// Journal prompt category label (id 'craving').
+  ///
+  /// In en, this message translates to:
+  /// **'Craving'**
+  String get promptCatCraving;
+
+  /// Journal prompt category label (id 'relationships').
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get promptCatPeople;
+
+  /// Journal reflection prompt r1.
+  ///
+  /// In en, this message translates to:
+  /// **'What pulled at me today — and what held me steady?'**
+  String get journalPromptR1;
+
+  /// Journal reflection prompt r2.
+  ///
+  /// In en, this message translates to:
+  /// **'If today had a colour, what would it be? Why?'**
+  String get journalPromptR2;
+
+  /// Journal reflection prompt r3.
+  ///
+  /// In en, this message translates to:
+  /// **'What did my body tell me today that I almost ignored?'**
+  String get journalPromptR3;
+
+  /// Journal reflection prompt r4.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did I show up for myself today, even imperfectly?'**
+  String get journalPromptR4;
+
+  /// Journal reflection prompt r5.
+  ///
+  /// In en, this message translates to:
+  /// **'What truth am I avoiding right now?'**
+  String get journalPromptR5;
+
+  /// Journal reflection prompt r6.
+  ///
+  /// In en, this message translates to:
+  /// **'What story did I tell myself today — and was it kind, or just familiar?'**
+  String get journalPromptR6;
+
+  /// Journal reflection prompt r7.
+  ///
+  /// In en, this message translates to:
+  /// **'What would the wisest version of me say about today?'**
+  String get journalPromptR7;
+
+  /// Journal reflection prompt r8.
+  ///
+  /// In en, this message translates to:
+  /// **'What is one thing I am ready to set down?'**
+  String get journalPromptR8;
+
+  /// Journal reflection prompt r9.
+  ///
+  /// In en, this message translates to:
+  /// **'What feeling have I been outrunning?'**
+  String get journalPromptR9;
+
+  /// Journal reflection prompt r10.
+  ///
+  /// In en, this message translates to:
+  /// **'When did I feel most like myself today?'**
+  String get journalPromptR10;
+
+  /// Journal gratitude prompt g1.
+  ///
+  /// In en, this message translates to:
+  /// **'Three small things I am grateful for right now.'**
+  String get journalPromptG1;
+
+  /// Journal gratitude prompt g2.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone who made my life easier this week — and why.'**
+  String get journalPromptG2;
+
+  /// Journal gratitude prompt g3.
+  ///
+  /// In en, this message translates to:
+  /// **'A body part that did its job today without me noticing.'**
+  String get journalPromptG3;
+
+  /// Journal gratitude prompt g4.
+  ///
+  /// In en, this message translates to:
+  /// **'A sound, smell, or taste that landed today.'**
+  String get journalPromptG4;
+
+  /// Journal gratitude prompt g5.
+  ///
+  /// In en, this message translates to:
+  /// **'A thing I have now that past-me would have begged for.'**
+  String get journalPromptG5;
+
+  /// Journal gratitude prompt g6 (also a starter prompt in the empty state).
+  ///
+  /// In en, this message translates to:
+  /// **'A small comfort that softened a hard moment.'**
+  String get journalPromptG6;
+
+  /// Journal gratitude prompt g7.
+  ///
+  /// In en, this message translates to:
+  /// **'A piece of music, a view, a meal — what fed me today?'**
+  String get journalPromptG7;
+
+  /// Journal gratitude prompt g8.
+  ///
+  /// In en, this message translates to:
+  /// **'Who in my life right now is steady? Name them.'**
+  String get journalPromptG8;
+
+  /// Journal gratitude prompt g9.
+  ///
+  /// In en, this message translates to:
+  /// **'A skill I have today that I did not have a year ago.'**
+  String get journalPromptG9;
+
+  /// Journal gratitude prompt g10.
+  ///
+  /// In en, this message translates to:
+  /// **'One ordinary moment today that I want to remember.'**
+  String get journalPromptG10;
+
+  /// Journal hard-day prompt h1.
+  ///
+  /// In en, this message translates to:
+  /// **'What hurt today? Just name it — no fix, no spin.'**
+  String get journalPromptH1;
+
+  /// Journal hard-day prompt h2.
+  ///
+  /// In en, this message translates to:
+  /// **'If this feeling could speak, what would it say it needs?'**
+  String get journalPromptH2;
+
+  /// Journal hard-day prompt h3.
+  ///
+  /// In en, this message translates to:
+  /// **'What part of today felt unfair?'**
+  String get journalPromptH3;
+
+  /// Journal hard-day prompt h4.
+  ///
+  /// In en, this message translates to:
+  /// **'Is there a feeling I am calling anger that is actually something else underneath?'**
+  String get journalPromptH4;
+
+  /// Journal hard-day prompt h5 (also a starter prompt in the empty state).
+  ///
+  /// In en, this message translates to:
+  /// **'What would I say to a friend who was where I am right now?'**
+  String get journalPromptH5;
+
+  /// Journal hard-day prompt h6.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the smallest next step I can take, even if I do not feel like it?'**
+  String get journalPromptH6;
+
+  /// Journal hard-day prompt h7.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can I tell about this — even one person, even one sentence?'**
+  String get journalPromptH7;
+
+  /// Journal hard-day prompt h8.
+  ///
+  /// In en, this message translates to:
+  /// **'What am I making this mean about me — and is that true?'**
+  String get journalPromptH8;
+
+  /// Journal hard-day prompt h9.
+  ///
+  /// In en, this message translates to:
+  /// **'What did today take from me? What did it leave?'**
+  String get journalPromptH9;
+
+  /// Journal hard-day prompt h10.
+  ///
+  /// In en, this message translates to:
+  /// **'If I could fast-forward 24 hours, what would I want to be true?'**
+  String get journalPromptH10;
+
+  /// Journal wins prompt w1.
+  ///
+  /// In en, this message translates to:
+  /// **'A moment today I am quietly proud of.'**
+  String get journalPromptW1;
+
+  /// Journal wins prompt w2.
+  ///
+  /// In en, this message translates to:
+  /// **'Something I did today that past-me could not have done.'**
+  String get journalPromptW2;
+
+  /// Journal wins prompt w3.
+  ///
+  /// In en, this message translates to:
+  /// **'A risk I took — however small — and how it landed.'**
+  String get journalPromptW3;
+
+  /// Journal wins prompt w4.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did I choose myself today?'**
+  String get journalPromptW4;
+
+  /// Journal wins prompt w5.
+  ///
+  /// In en, this message translates to:
+  /// **'A boundary I held, even if no one noticed.'**
+  String get journalPromptW5;
+
+  /// Journal wins prompt w6.
+  ///
+  /// In en, this message translates to:
+  /// **'A craving I rode through.'**
+  String get journalPromptW6;
+
+  /// Journal wins prompt w7.
+  ///
+  /// In en, this message translates to:
+  /// **'A conversation I am glad I had.'**
+  String get journalPromptW7;
+
+  /// Journal wins prompt w8.
+  ///
+  /// In en, this message translates to:
+  /// **'Something I finished. Anything.'**
+  String get journalPromptW8;
+
+  /// Journal wins prompt w9.
+  ///
+  /// In en, this message translates to:
+  /// **'A way my body felt strong today.'**
+  String get journalPromptW9;
+
+  /// Journal wins prompt w10.
+  ///
+  /// In en, this message translates to:
+  /// **'A way I treated myself the way I would treat someone I love.'**
+  String get journalPromptW10;
+
+  /// Journal craving prompt c1.
+  ///
+  /// In en, this message translates to:
+  /// **'When did the urge start today, and what was happening around me?'**
+  String get journalPromptC1;
+
+  /// Journal craving prompt c2.
+  ///
+  /// In en, this message translates to:
+  /// **'What was my body doing when the craving hit?'**
+  String get journalPromptC2;
+
+  /// Journal craving prompt c3.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the lie the craving was telling me?'**
+  String get journalPromptC3;
+
+  /// Journal craving prompt c4.
+  ///
+  /// In en, this message translates to:
+  /// **'What did I actually need underneath the craving — rest, connection, food, quiet?'**
+  String get journalPromptC4;
+
+  /// Journal craving prompt c5.
+  ///
+  /// In en, this message translates to:
+  /// **'How long did it last before it began to pass?'**
+  String get journalPromptC5;
+
+  /// Journal craving prompt c6.
+  ///
+  /// In en, this message translates to:
+  /// **'What did I do instead — and how do I feel about that choice now?'**
+  String get journalPromptC6;
+
+  /// Journal craving prompt c7.
+  ///
+  /// In en, this message translates to:
+  /// **'Who or what helped me ride this one out?'**
+  String get journalPromptC7;
+
+  /// Journal craving prompt c8.
+  ///
+  /// In en, this message translates to:
+  /// **'If this craving returns tomorrow, what is one thing I can have ready?'**
+  String get journalPromptC8;
+
+  /// Journal craving prompt c9.
+  ///
+  /// In en, this message translates to:
+  /// **'What would the version of me a year sober say to this craving?'**
+  String get journalPromptC9;
+
+  /// Journal craving prompt c10.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the craving costing me, even when I do not use?'**
+  String get journalPromptC10;
+
+  /// Journal people/relationships prompt p1.
+  ///
+  /// In en, this message translates to:
+  /// **'Who do I owe an honest sentence to — even if I never say it?'**
+  String get journalPromptP1;
+
+  /// Journal people/relationships prompt p2.
+  ///
+  /// In en, this message translates to:
+  /// **'A relationship that feels lighter than it did a year ago.'**
+  String get journalPromptP2;
+
+  /// Journal people/relationships prompt p3.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone I keep replaying conversations with — what is unfinished there?'**
+  String get journalPromptP3;
+
+  /// Journal people/relationships prompt p4.
+  ///
+  /// In en, this message translates to:
+  /// **'A person I keep meaning to reach out to — what is one sentence I could send?'**
+  String get journalPromptP4;
+
+  /// Journal people/relationships prompt p5.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do I feel most seen lately? Where do I feel most invisible?'**
+  String get journalPromptP5;
+
+  /// Journal people/relationships prompt p6.
+  ///
+  /// In en, this message translates to:
+  /// **'What is one boundary I am proud of — even a small one?'**
+  String get journalPromptP6;
+
+  /// Journal people/relationships prompt p7.
+  ///
+  /// In en, this message translates to:
+  /// **'Who in my life has earned more of me? Who has earned less?'**
+  String get journalPromptP7;
+
+  /// Journal people/relationships prompt p8.
+  ///
+  /// In en, this message translates to:
+  /// **'A thing someone said to me that I am still carrying.'**
+  String get journalPromptP8;
+
+  /// Journal people/relationships prompt p9.
+  ///
+  /// In en, this message translates to:
+  /// **'What would a healthier version of me say to the people in my life right now?'**
+  String get journalPromptP9;
+
+  /// Journal people/relationships prompt p10.
+  ///
+  /// In en, this message translates to:
+  /// **'Who do I want to be remembered as — by the people closest to me?'**
+  String get journalPromptP10;
+
+  /// Vision-board icon-picker label (key 'guide').
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get visionIconGuide;
+
+  /// Vision-board icon-picker label (key 'strength').
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get visionIconStrength;
+
+  /// Vision-board icon-picker label (key 'love').
+  ///
+  /// In en, this message translates to:
+  /// **'Love'**
+  String get visionIconLove;
+
+  /// Vision-board icon-picker label (key 'home').
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get visionIconHome;
+
+  /// Vision-board icon-picker label (key 'family').
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get visionIconFamily;
+
+  /// Vision-board icon-picker label (key 'savings').
+  ///
+  /// In en, this message translates to:
+  /// **'Savings'**
+  String get visionIconSavings;
+
+  /// Vision-board icon-picker label (key 'learn').
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get visionIconLearn;
+
+  /// Vision-board icon-picker label (key 'growth').
+  ///
+  /// In en, this message translates to:
+  /// **'Growth'**
+  String get visionIconGrowth;
+
+  /// Vision-board icon-picker label (key 'journey').
+  ///
+  /// In en, this message translates to:
+  /// **'Journey'**
+  String get visionIconJourney;
+
+  /// Vision-board icon-picker label (key 'create').
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get visionIconCreate;
+
+  /// Vision-board icon-picker label (key 'move').
+  ///
+  /// In en, this message translates to:
+  /// **'Move'**
+  String get visionIconMove;
+
+  /// Vision-board icon-picker label (key 'stillness').
+  ///
+  /// In en, this message translates to:
+  /// **'Stillness'**
+  String get visionIconStillness;
+
+  /// Vision-board icon-picker label (key 'wisdom').
+  ///
+  /// In en, this message translates to:
+  /// **'Wisdom'**
+  String get visionIconWisdom;
+
+  /// Vision-board icon-picker label (key 'aim').
+  ///
+  /// In en, this message translates to:
+  /// **'Aim'**
+  String get visionIconAim;
+
+  /// Vision-board icon-picker label (key 'hope').
+  ///
+  /// In en, this message translates to:
+  /// **'Hope'**
+  String get visionIconHope;
+
+  /// Vision-board icon-picker label (key 'peace').
+  ///
+  /// In en, this message translates to:
+  /// **'Peace'**
+  String get visionIconPeace;
+
+  /// Vision-board icon-picker label (key 'support').
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get visionIconSupport;
+
+  /// Vision-board icon-picker label (key 'bloom').
+  ///
+  /// In en, this message translates to:
+  /// **'Bloom'**
+  String get visionIconBloom;
+
+  /// Vision-board icon-picker label (key 'milestone').
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone'**
+  String get visionIconMilestone;
+
+  /// Vision-board icon-picker label (key 'spark').
+  ///
+  /// In en, this message translates to:
+  /// **'Spark'**
+  String get visionIconSpark;
+
+  /// Vision-board category label (VisionCategory.health).
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get visionCategoryHealth;
+
+  /// Vision-board category label (VisionCategory.family).
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get visionCategoryFamily;
+
+  /// Vision-board category label (VisionCategory.career).
+  ///
+  /// In en, this message translates to:
+  /// **'Career'**
+  String get visionCategoryCareer;
+
+  /// Vision-board category label (VisionCategory.growth).
+  ///
+  /// In en, this message translates to:
+  /// **'Growth'**
+  String get visionCategoryGrowth;
+
+  /// Vision-board category label (VisionCategory.freedom).
+  ///
+  /// In en, this message translates to:
+  /// **'Freedom'**
+  String get visionCategoryFreedom;
+
+  /// Vision-board category label (VisionCategory.adventure).
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure'**
+  String get visionCategoryAdventure;
+
+  /// Vision-board category label (VisionCategory.service).
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get visionCategoryService;
+
+  /// Vision-board category label (VisionCategory.creativity).
+  ///
+  /// In en, this message translates to:
+  /// **'Creativity'**
+  String get visionCategoryCreativity;
+
+  /// Vision-board category label for items with no category (VisionCategory.none).
+  ///
+  /// In en, this message translates to:
+  /// **'Uncategorised'**
+  String get visionCategoryUncategorised;
+
+  /// Vision-board sample/seed dream title (id 'freedom_year'). Pre-fills the title field; the user can edit it.
+  ///
+  /// In en, this message translates to:
+  /// **'One year of freedom'**
+  String get visionStarterFreedomYearTitle;
+
+  /// Vision-board sample dream affirmation (id 'freedom_year').
+  ///
+  /// In en, this message translates to:
+  /// **'I am building a life I love, one sober day at a time.'**
+  String get visionStarterFreedomYearAffirmation;
+
+  /// Vision-board sample dream title (id 'present_parent').
+  ///
+  /// In en, this message translates to:
+  /// **'Be the parent I want to be'**
+  String get visionStarterPresentParentTitle;
+
+  /// Vision-board sample dream affirmation (id 'present_parent').
+  ///
+  /// In en, this message translates to:
+  /// **'I am present, patient, and proud of how I show up for my family.'**
+  String get visionStarterPresentParentAffirmation;
+
+  /// Vision-board sample dream title (id 'run_5k').
+  ///
+  /// In en, this message translates to:
+  /// **'Run a 5K'**
+  String get visionStarterRun5kTitle;
+
+  /// Vision-board sample dream affirmation (id 'run_5k').
+  ///
+  /// In en, this message translates to:
+  /// **'I am strong, I move with purpose, and my body is reclaiming itself.'**
+  String get visionStarterRun5kAffirmation;
+
+  /// Vision-board sample dream title (id 'save_meaningful').
+  ///
+  /// In en, this message translates to:
+  /// **'Save for something meaningful'**
+  String get visionStarterSaveMeaningfulTitle;
+
+  /// Vision-board sample dream affirmation (id 'save_meaningful').
+  ///
+  /// In en, this message translates to:
+  /// **'Every day sober is money in my pocket and possibility in my future.'**
+  String get visionStarterSaveMeaningfulAffirmation;
+
+  /// Vision-board sample dream title (id 'learn_skill').
+  ///
+  /// In en, this message translates to:
+  /// **'Learn a new skill'**
+  String get visionStarterLearnSkillTitle;
+
+  /// Vision-board sample dream affirmation (id 'learn_skill').
+  ///
+  /// In en, this message translates to:
+  /// **'I am curious, I am capable, and I keep growing.'**
+  String get visionStarterLearnSkillAffirmation;
+
+  /// Vision-board sample dream title (id 'heal_relationship').
+  ///
+  /// In en, this message translates to:
+  /// **'Heal a relationship'**
+  String get visionStarterHealRelationshipTitle;
+
+  /// Vision-board sample dream affirmation (id 'heal_relationship').
+  ///
+  /// In en, this message translates to:
+  /// **'I lead with honesty and humility. The right people are coming closer.'**
+  String get visionStarterHealRelationshipAffirmation;
+
+  /// Craving-response chip label (slug 'walked') — what the user did when a craving hit.
+  ///
+  /// In en, this message translates to:
+  /// **'Walked away / outside'**
+  String get cravingResponseWalked;
+
+  /// Craving-response chip label (slug 'called').
+  ///
+  /// In en, this message translates to:
+  /// **'Called someone'**
+  String get cravingResponseCalled;
+
+  /// Craving-response chip label (slug 'breathed').
+  ///
+  /// In en, this message translates to:
+  /// **'Breathed / urge-surfed'**
+  String get cravingResponseBreathed;
+
+  /// Craving-response chip label (slug 'journaled').
+  ///
+  /// In en, this message translates to:
+  /// **'Journaled / wrote'**
+  String get cravingResponseJournaled;
+
+  /// Craving-response chip label (slug 'water').
+  ///
+  /// In en, this message translates to:
+  /// **'Drank water / ate'**
+  String get cravingResponseWater;
+
+  /// Craving-response chip label (slug 'grounded').
+  ///
+  /// In en, this message translates to:
+  /// **'Grounded / prayed / meditated'**
+  String get cravingResponseGrounded;
+
+  /// Morning meridiem marker for the craving risk-window time label (e.g. the 'AM' in '8–11 AM').
+  ///
+  /// In en, this message translates to:
+  /// **'AM'**
+  String get cravingTimeAm;
+
+  /// Afternoon/evening meridiem marker for the craving risk-window time label (e.g. the 'PM' in '8–11 PM').
+  ///
+  /// In en, this message translates to:
+  /// **'PM'**
+  String get cravingTimePm;
+
+  /// A single clock hour with its AM/PM marker, e.g. '8 PM'. Used to build the craving risk-window range.
+  ///
+  /// In en, this message translates to:
+  /// **'{hour} {meridiem}'**
+  String cravingHourMeridiem(int hour, String meridiem);
+
+  /// The user's highest-risk 3-hour craving window as a range, e.g. '8 PM–11 PM'. Separator is an en dash (–). {start} and {end} are each an hour+meridiem from cravingHourMeridiem.
+  ///
+  /// In en, this message translates to:
+  /// **'{start}–{end}'**
+  String cravingRiskWindowRange(String start, String end);
+
+  /// Default biometric/device-auth prompt reason when re-authenticating to view a locked journal entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock this entry'**
+  String get journalReauthUnlockEntry;
+
+  /// Inline error shown under the PIN field in the per-entry unlock dialog when the entered PIN is wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get journalReauthIncorrectPin;
 }
 
 class _AppLocalizationsDelegate

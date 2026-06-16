@@ -371,7 +371,7 @@ class _CategoryAndDate extends StatelessWidget {
         if (item.category != VisionCategory.none)
           _Chip(
             icon: cat.icon,
-            label: cat.label,
+            label: cat.localizedLabel(l10n),
             color: cat.color,
           ),
         if (daysLeft != null)

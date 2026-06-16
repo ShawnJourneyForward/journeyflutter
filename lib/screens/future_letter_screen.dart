@@ -463,7 +463,7 @@ class _WriterSheetState extends ConsumerState<_WriterSheet> {
                         borderRadius: AppRadius.pill,
                         border: Border.all(color: AppColors.stone200),
                       ),
-                      child: Text('Custom',
+                      child: Text(l10n.letterCustom,
                           style: AppTextStyles.labelMedium
                               .copyWith(color: AppColors.stone600)),
                     ),

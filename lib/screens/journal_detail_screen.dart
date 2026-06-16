@@ -266,6 +266,7 @@ class _MoodHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
@@ -280,7 +281,7 @@ class _MoodHeader extends StatelessWidget {
         children: [
           Icon(mood.icon, size: 22, color: mood.color),
           const SizedBox(width: 10),
-          Text(mood.label,
+          Text(mood.localizedLabel(l10n),
               style: AppTextStyles.titleSmall.copyWith(color: mood.color)),
           if (subMood != null && subMood!.isNotEmpty) ...[
             const SizedBox(width: 8),
@@ -293,7 +294,7 @@ class _MoodHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(subMood!,
+            Text(localizedSubMood(l10n, subMood!),
                 style: AppTextStyles.bodySmall
                     .copyWith(color: AppColors.stone600)),
           ],
@@ -331,6 +332,7 @@ class _PromptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final prompt = promptById(promptId);
     if (prompt == null) return const SizedBox.shrink();
     return Container(
@@ -348,7 +350,7 @@ class _PromptCard extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              prompt.text,
+              prompt.localizedText(l10n),
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.forest700,
                 fontStyle: FontStyle.italic,
@@ -411,7 +413,7 @@ class _EchoCard extends StatelessWidget {
               children: [
                 Icon(mood.icon, size: 14, color: mood.color),
                 const SizedBox(width: 6),
-                Text(mood.label,
+                Text(mood.localizedLabel(l10n),
                     style:
                         AppTextStyles.labelSmall.copyWith(color: mood.color)),
                 if (entry.locked) ...[

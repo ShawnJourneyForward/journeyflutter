@@ -15,6 +15,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/encrypted_store.dart';
 import '../utils/pin_hash.dart';
@@ -37,6 +38,17 @@ class MoodOption {
   final IconData icon;
   final Color color;
   final int score;
+
+  /// Localised mood label, resolved by stable [key] at display time. Falls
+  /// back to the English [label] for any unknown key.
+  String localizedLabel(AppLocalizations l) => switch (key) {
+        'great' => l.moodGreat,
+        'good' => l.moodGood,
+        'okay' => l.moodOkay,
+        'hard' => l.moodHard,
+        'crisis' => l.moodCrisis,
+        _ => label,
+      };
 }
 
 final kMoodOptions = <MoodOption>[
@@ -128,6 +140,31 @@ List<String>? subMoodsFor(String primaryMood) {
   }
 }
 
+/// Localised label for a sub-mood slug. The slug (e.g. 'anxious', 'proud') is
+/// the stable persisted value; this resolves the user-facing word, falling
+/// back to the raw slug for any unknown value.
+String localizedSubMood(AppLocalizations l, String slug) => switch (slug) {
+      // Hard / crisis vocabulary
+      'anxious' => l.subMoodAnxious,
+      'ashamed' => l.subMoodAshamed,
+      'lonely' => l.subMoodLonely,
+      'angry' => l.subMoodAngry,
+      'grieving' => l.subMoodGrieving,
+      'numb' => l.subMoodNumb,
+      'overwhelmed' => l.subMoodOverwhelmed,
+      'craving' => l.subMoodCraving,
+      // Great vocabulary
+      'proud' => l.subMoodProud,
+      'energized' => l.subMoodEnergized,
+      'peaceful' => l.subMoodPeaceful,
+      'grateful' => l.subMoodGrateful,
+      'hopeful' => l.subMoodHopeful,
+      'connected' => l.subMoodConnected,
+      'focused' => l.subMoodFocused,
+      'free' => l.subMoodFree,
+      _ => slug,
+    };
+
 // ─── Suggested tags ──────────────────────────────────────────────────────────
 // Seed list — the entry sheet merges these with the user's own previously-used
 // tags so the chips show what's most relevant to them over time.
@@ -168,12 +205,89 @@ class JournalPromptCategory {
   final IconData icon;
   final Color color;
   final List<JournalPrompt> prompts;
+
+  /// Localised category label, resolved by stable [id]. Falls back to English.
+  String localizedLabel(AppLocalizations l) => switch (id) {
+        'reflection' => l.promptCatReflection,
+        'gratitude' => l.promptCatGratitude,
+        'hard' => l.promptCatHard,
+        'win' => l.promptCatWins,
+        'craving' => l.promptCatCraving,
+        'relationships' => l.promptCatPeople,
+        _ => label,
+      };
 }
 
 class JournalPrompt {
   const JournalPrompt({required this.id, required this.text});
   final String id;
   final String text;
+
+  /// Localised prompt text, resolved by stable [id]. Falls back to the
+  /// English [text] for any unknown id.
+  String localizedText(AppLocalizations l) => switch (id) {
+        'r1' => l.journalPromptR1,
+        'r2' => l.journalPromptR2,
+        'r3' => l.journalPromptR3,
+        'r4' => l.journalPromptR4,
+        'r5' => l.journalPromptR5,
+        'r6' => l.journalPromptR6,
+        'r7' => l.journalPromptR7,
+        'r8' => l.journalPromptR8,
+        'r9' => l.journalPromptR9,
+        'r10' => l.journalPromptR10,
+        'g1' => l.journalPromptG1,
+        'g2' => l.journalPromptG2,
+        'g3' => l.journalPromptG3,
+        'g4' => l.journalPromptG4,
+        'g5' => l.journalPromptG5,
+        'g6' => l.journalPromptG6,
+        'g7' => l.journalPromptG7,
+        'g8' => l.journalPromptG8,
+        'g9' => l.journalPromptG9,
+        'g10' => l.journalPromptG10,
+        'h1' => l.journalPromptH1,
+        'h2' => l.journalPromptH2,
+        'h3' => l.journalPromptH3,
+        'h4' => l.journalPromptH4,
+        'h5' => l.journalPromptH5,
+        'h6' => l.journalPromptH6,
+        'h7' => l.journalPromptH7,
+        'h8' => l.journalPromptH8,
+        'h9' => l.journalPromptH9,
+        'h10' => l.journalPromptH10,
+        'w1' => l.journalPromptW1,
+        'w2' => l.journalPromptW2,
+        'w3' => l.journalPromptW3,
+        'w4' => l.journalPromptW4,
+        'w5' => l.journalPromptW5,
+        'w6' => l.journalPromptW6,
+        'w7' => l.journalPromptW7,
+        'w8' => l.journalPromptW8,
+        'w9' => l.journalPromptW9,
+        'w10' => l.journalPromptW10,
+        'c1' => l.journalPromptC1,
+        'c2' => l.journalPromptC2,
+        'c3' => l.journalPromptC3,
+        'c4' => l.journalPromptC4,
+        'c5' => l.journalPromptC5,
+        'c6' => l.journalPromptC6,
+        'c7' => l.journalPromptC7,
+        'c8' => l.journalPromptC8,
+        'c9' => l.journalPromptC9,
+        'c10' => l.journalPromptC10,
+        'p1' => l.journalPromptP1,
+        'p2' => l.journalPromptP2,
+        'p3' => l.journalPromptP3,
+        'p4' => l.journalPromptP4,
+        'p5' => l.journalPromptP5,
+        'p6' => l.journalPromptP6,
+        'p7' => l.journalPromptP7,
+        'p8' => l.journalPromptP8,
+        'p9' => l.journalPromptP9,
+        'p10' => l.journalPromptP10,
+        _ => text,
+      };
 }
 
 final kPromptCategories = <JournalPromptCategory>[
@@ -607,16 +721,18 @@ class JournalReauth {
   );
 
   /// One-shot re-auth. Caller passes [context] so we can show the PIN dialog
-  /// fallback ourselves; no callback hell required.
-  static Future<bool> require(BuildContext context,
-      {String reason = 'Unlock this entry'}) async {
+  /// fallback ourselves; no callback hell required. Callers may pass an
+  /// explicit [reason]; if omitted we fall back to a localised default.
+  static Future<bool> require(BuildContext context, {String? reason}) async {
+    final reasonText =
+        reason ?? AppLocalizations.of(context).journalReauthUnlockEntry;
     // 1. Try biometric / device credential. The OS handles the UI.
     try {
       final canCheck = await _auth.canCheckBiometrics;
       final isAvailable = await _auth.isDeviceSupported();
       if (canCheck || isAvailable) {
         final ok = await _auth.authenticate(
-          localizedReason: reason,
+          localizedReason: reasonText,
           options: const AuthenticationOptions(
             biometricOnly: false,
             stickyAuth: true,
@@ -644,6 +760,7 @@ class JournalReauth {
 
   static Future<bool> _showPinDialog(
       BuildContext context, String storedHash) async {
+    final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
     var error = false;
     final ok = await showDialog<bool>(
@@ -653,7 +770,7 @@ class JournalReauth {
         return StatefulBuilder(builder: (ctx, setSt) {
           return AlertDialog(
             backgroundColor: AppColors.card,
-            title: Text('Enter your PIN',
+            title: Text(l10n.lockEnterYourPin,
                 style: AppTextStyles.titleMedium
                     .copyWith(color: AppColors.stone800)),
             content: TextField(
@@ -664,7 +781,7 @@ class JournalReauth {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: '••••',
-                errorText: error ? 'Incorrect PIN' : null,
+                errorText: error ? l10n.journalReauthIncorrectPin : null,
                 counterText: '',
               ),
               style: AppTextStyles.titleLarge
@@ -680,7 +797,7 @@ class JournalReauth {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: Text('Cancel',
+                child: Text(l10n.commonCancel,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.stone500)),
               ),
@@ -692,7 +809,7 @@ class JournalReauth {
                     setSt(() => error = true);
                   }
                 },
-                child: Text('Unlock',
+                child: Text(l10n.backupUnlockButton,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.forest600)),
               ),

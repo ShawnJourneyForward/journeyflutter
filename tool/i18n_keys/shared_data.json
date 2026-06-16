@@ -1,0 +1,578 @@
+{
+  "moodGreat": {
+    "en": "Great",
+    "desc": "Mood option label (mood key 'great'). Shown on the journal mood picker and entry cards."
+  },
+  "moodGood": {
+    "en": "Good",
+    "desc": "Mood option label (mood key 'good')."
+  },
+  "moodOkay": {
+    "en": "Okay",
+    "desc": "Mood option label (mood key 'okay')."
+  },
+  "moodHard": {
+    "en": "Hard",
+    "desc": "Mood option label (mood key 'hard'). Single word — distinct from the 'Hard day' label used in History."
+  },
+  "moodCrisis": {
+    "en": "Crisis",
+    "desc": "Mood option label (mood key 'crisis')."
+  },
+  "subMoodAnxious": {
+    "en": "anxious",
+    "desc": "Journal sub-mood word (lowercase) shown as a selectable chip after a hard/crisis mood. Slug: 'anxious'."
+  },
+  "subMoodAshamed": {
+    "en": "ashamed",
+    "desc": "Journal sub-mood chip word. Slug: 'ashamed'."
+  },
+  "subMoodLonely": {
+    "en": "lonely",
+    "desc": "Journal sub-mood chip word. Slug: 'lonely'."
+  },
+  "subMoodAngry": {
+    "en": "angry",
+    "desc": "Journal sub-mood chip word. Slug: 'angry'."
+  },
+  "subMoodGrieving": {
+    "en": "grieving",
+    "desc": "Journal sub-mood chip word. Slug: 'grieving'."
+  },
+  "subMoodNumb": {
+    "en": "numb",
+    "desc": "Journal sub-mood chip word. Slug: 'numb'."
+  },
+  "subMoodOverwhelmed": {
+    "en": "overwhelmed",
+    "desc": "Journal sub-mood chip word. Slug: 'overwhelmed'."
+  },
+  "subMoodCraving": {
+    "en": "craving",
+    "desc": "Journal sub-mood chip word. Slug: 'craving'."
+  },
+  "subMoodProud": {
+    "en": "proud",
+    "desc": "Journal sub-mood word shown after a 'great' mood. Slug: 'proud'."
+  },
+  "subMoodEnergized": {
+    "en": "energized",
+    "desc": "Journal sub-mood chip word. Slug: 'energized'."
+  },
+  "subMoodPeaceful": {
+    "en": "peaceful",
+    "desc": "Journal sub-mood chip word. Slug: 'peaceful'."
+  },
+  "subMoodGrateful": {
+    "en": "grateful",
+    "desc": "Journal sub-mood chip word. Slug: 'grateful'."
+  },
+  "subMoodHopeful": {
+    "en": "hopeful",
+    "desc": "Journal sub-mood chip word. Slug: 'hopeful'."
+  },
+  "subMoodConnected": {
+    "en": "connected",
+    "desc": "Journal sub-mood chip word. Slug: 'connected'."
+  },
+  "subMoodFocused": {
+    "en": "focused",
+    "desc": "Journal sub-mood chip word. Slug: 'focused'."
+  },
+  "subMoodFree": {
+    "en": "free",
+    "desc": "Journal sub-mood chip word. Slug: 'free'."
+  },
+  "promptCatReflection": {
+    "en": "Reflection",
+    "desc": "Journal prompt category label (id 'reflection')."
+  },
+  "promptCatGratitude": {
+    "en": "Gratitude",
+    "desc": "Journal prompt category label (id 'gratitude')."
+  },
+  "promptCatHard": {
+    "en": "Hard day",
+    "desc": "Journal prompt category label (id 'hard')."
+  },
+  "promptCatWins": {
+    "en": "Wins",
+    "desc": "Journal prompt category label (id 'win')."
+  },
+  "promptCatCraving": {
+    "en": "Craving",
+    "desc": "Journal prompt category label (id 'craving')."
+  },
+  "promptCatPeople": {
+    "en": "People",
+    "desc": "Journal prompt category label (id 'relationships')."
+  },
+  "journalPromptR1": {
+    "en": "What pulled at me today — and what held me steady?",
+    "desc": "Journal reflection prompt r1."
+  },
+  "journalPromptR2": {
+    "en": "If today had a colour, what would it be? Why?",
+    "desc": "Journal reflection prompt r2."
+  },
+  "journalPromptR3": {
+    "en": "What did my body tell me today that I almost ignored?",
+    "desc": "Journal reflection prompt r3."
+  },
+  "journalPromptR4": {
+    "en": "Where did I show up for myself today, even imperfectly?",
+    "desc": "Journal reflection prompt r4."
+  },
+  "journalPromptR5": {
+    "en": "What truth am I avoiding right now?",
+    "desc": "Journal reflection prompt r5."
+  },
+  "journalPromptR6": {
+    "en": "What story did I tell myself today — and was it kind, or just familiar?",
+    "desc": "Journal reflection prompt r6."
+  },
+  "journalPromptR7": {
+    "en": "What would the wisest version of me say about today?",
+    "desc": "Journal reflection prompt r7."
+  },
+  "journalPromptR8": {
+    "en": "What is one thing I am ready to set down?",
+    "desc": "Journal reflection prompt r8."
+  },
+  "journalPromptR9": {
+    "en": "What feeling have I been outrunning?",
+    "desc": "Journal reflection prompt r9."
+  },
+  "journalPromptR10": {
+    "en": "When did I feel most like myself today?",
+    "desc": "Journal reflection prompt r10."
+  },
+  "journalPromptG1": {
+    "en": "Three small things I am grateful for right now.",
+    "desc": "Journal gratitude prompt g1."
+  },
+  "journalPromptG2": {
+    "en": "Someone who made my life easier this week — and why.",
+    "desc": "Journal gratitude prompt g2."
+  },
+  "journalPromptG3": {
+    "en": "A body part that did its job today without me noticing.",
+    "desc": "Journal gratitude prompt g3."
+  },
+  "journalPromptG4": {
+    "en": "A sound, smell, or taste that landed today.",
+    "desc": "Journal gratitude prompt g4."
+  },
+  "journalPromptG5": {
+    "en": "A thing I have now that past-me would have begged for.",
+    "desc": "Journal gratitude prompt g5."
+  },
+  "journalPromptG6": {
+    "en": "A small comfort that softened a hard moment.",
+    "desc": "Journal gratitude prompt g6 (also a starter prompt in the empty state)."
+  },
+  "journalPromptG7": {
+    "en": "A piece of music, a view, a meal — what fed me today?",
+    "desc": "Journal gratitude prompt g7."
+  },
+  "journalPromptG8": {
+    "en": "Who in my life right now is steady? Name them.",
+    "desc": "Journal gratitude prompt g8."
+  },
+  "journalPromptG9": {
+    "en": "A skill I have today that I did not have a year ago.",
+    "desc": "Journal gratitude prompt g9."
+  },
+  "journalPromptG10": {
+    "en": "One ordinary moment today that I want to remember.",
+    "desc": "Journal gratitude prompt g10."
+  },
+  "journalPromptH1": {
+    "en": "What hurt today? Just name it — no fix, no spin.",
+    "desc": "Journal hard-day prompt h1."
+  },
+  "journalPromptH2": {
+    "en": "If this feeling could speak, what would it say it needs?",
+    "desc": "Journal hard-day prompt h2."
+  },
+  "journalPromptH3": {
+    "en": "What part of today felt unfair?",
+    "desc": "Journal hard-day prompt h3."
+  },
+  "journalPromptH4": {
+    "en": "Is there a feeling I am calling anger that is actually something else underneath?",
+    "desc": "Journal hard-day prompt h4."
+  },
+  "journalPromptH5": {
+    "en": "What would I say to a friend who was where I am right now?",
+    "desc": "Journal hard-day prompt h5 (also a starter prompt in the empty state)."
+  },
+  "journalPromptH6": {
+    "en": "What is the smallest next step I can take, even if I do not feel like it?",
+    "desc": "Journal hard-day prompt h6."
+  },
+  "journalPromptH7": {
+    "en": "Who can I tell about this — even one person, even one sentence?",
+    "desc": "Journal hard-day prompt h7."
+  },
+  "journalPromptH8": {
+    "en": "What am I making this mean about me — and is that true?",
+    "desc": "Journal hard-day prompt h8."
+  },
+  "journalPromptH9": {
+    "en": "What did today take from me? What did it leave?",
+    "desc": "Journal hard-day prompt h9."
+  },
+  "journalPromptH10": {
+    "en": "If I could fast-forward 24 hours, what would I want to be true?",
+    "desc": "Journal hard-day prompt h10."
+  },
+  "journalPromptW1": {
+    "en": "A moment today I am quietly proud of.",
+    "desc": "Journal wins prompt w1."
+  },
+  "journalPromptW2": {
+    "en": "Something I did today that past-me could not have done.",
+    "desc": "Journal wins prompt w2."
+  },
+  "journalPromptW3": {
+    "en": "A risk I took — however small — and how it landed.",
+    "desc": "Journal wins prompt w3."
+  },
+  "journalPromptW4": {
+    "en": "Where did I choose myself today?",
+    "desc": "Journal wins prompt w4."
+  },
+  "journalPromptW5": {
+    "en": "A boundary I held, even if no one noticed.",
+    "desc": "Journal wins prompt w5."
+  },
+  "journalPromptW6": {
+    "en": "A craving I rode through.",
+    "desc": "Journal wins prompt w6."
+  },
+  "journalPromptW7": {
+    "en": "A conversation I am glad I had.",
+    "desc": "Journal wins prompt w7."
+  },
+  "journalPromptW8": {
+    "en": "Something I finished. Anything.",
+    "desc": "Journal wins prompt w8."
+  },
+  "journalPromptW9": {
+    "en": "A way my body felt strong today.",
+    "desc": "Journal wins prompt w9."
+  },
+  "journalPromptW10": {
+    "en": "A way I treated myself the way I would treat someone I love.",
+    "desc": "Journal wins prompt w10."
+  },
+  "journalPromptC1": {
+    "en": "When did the urge start today, and what was happening around me?",
+    "desc": "Journal craving prompt c1."
+  },
+  "journalPromptC2": {
+    "en": "What was my body doing when the craving hit?",
+    "desc": "Journal craving prompt c2."
+  },
+  "journalPromptC3": {
+    "en": "What was the lie the craving was telling me?",
+    "desc": "Journal craving prompt c3."
+  },
+  "journalPromptC4": {
+    "en": "What did I actually need underneath the craving — rest, connection, food, quiet?",
+    "desc": "Journal craving prompt c4."
+  },
+  "journalPromptC5": {
+    "en": "How long did it last before it began to pass?",
+    "desc": "Journal craving prompt c5."
+  },
+  "journalPromptC6": {
+    "en": "What did I do instead — and how do I feel about that choice now?",
+    "desc": "Journal craving prompt c6."
+  },
+  "journalPromptC7": {
+    "en": "Who or what helped me ride this one out?",
+    "desc": "Journal craving prompt c7."
+  },
+  "journalPromptC8": {
+    "en": "If this craving returns tomorrow, what is one thing I can have ready?",
+    "desc": "Journal craving prompt c8."
+  },
+  "journalPromptC9": {
+    "en": "What would the version of me a year sober say to this craving?",
+    "desc": "Journal craving prompt c9."
+  },
+  "journalPromptC10": {
+    "en": "What is the craving costing me, even when I do not use?",
+    "desc": "Journal craving prompt c10."
+  },
+  "journalPromptP1": {
+    "en": "Who do I owe an honest sentence to — even if I never say it?",
+    "desc": "Journal people/relationships prompt p1."
+  },
+  "journalPromptP2": {
+    "en": "A relationship that feels lighter than it did a year ago.",
+    "desc": "Journal people/relationships prompt p2."
+  },
+  "journalPromptP3": {
+    "en": "Someone I keep replaying conversations with — what is unfinished there?",
+    "desc": "Journal people/relationships prompt p3."
+  },
+  "journalPromptP4": {
+    "en": "A person I keep meaning to reach out to — what is one sentence I could send?",
+    "desc": "Journal people/relationships prompt p4."
+  },
+  "journalPromptP5": {
+    "en": "Where do I feel most seen lately? Where do I feel most invisible?",
+    "desc": "Journal people/relationships prompt p5."
+  },
+  "journalPromptP6": {
+    "en": "What is one boundary I am proud of — even a small one?",
+    "desc": "Journal people/relationships prompt p6."
+  },
+  "journalPromptP7": {
+    "en": "Who in my life has earned more of me? Who has earned less?",
+    "desc": "Journal people/relationships prompt p7."
+  },
+  "journalPromptP8": {
+    "en": "A thing someone said to me that I am still carrying.",
+    "desc": "Journal people/relationships prompt p8."
+  },
+  "journalPromptP9": {
+    "en": "What would a healthier version of me say to the people in my life right now?",
+    "desc": "Journal people/relationships prompt p9."
+  },
+  "journalPromptP10": {
+    "en": "Who do I want to be remembered as — by the people closest to me?",
+    "desc": "Journal people/relationships prompt p10."
+  },
+  "visionIconGuide": {
+    "en": "Guide",
+    "desc": "Vision-board icon-picker label (key 'guide')."
+  },
+  "visionIconStrength": {
+    "en": "Strength",
+    "desc": "Vision-board icon-picker label (key 'strength')."
+  },
+  "visionIconLove": {
+    "en": "Love",
+    "desc": "Vision-board icon-picker label (key 'love')."
+  },
+  "visionIconHome": {
+    "en": "Home",
+    "desc": "Vision-board icon-picker label (key 'home')."
+  },
+  "visionIconFamily": {
+    "en": "Family",
+    "desc": "Vision-board icon-picker label (key 'family')."
+  },
+  "visionIconSavings": {
+    "en": "Savings",
+    "desc": "Vision-board icon-picker label (key 'savings')."
+  },
+  "visionIconLearn": {
+    "en": "Learn",
+    "desc": "Vision-board icon-picker label (key 'learn')."
+  },
+  "visionIconGrowth": {
+    "en": "Growth",
+    "desc": "Vision-board icon-picker label (key 'growth')."
+  },
+  "visionIconJourney": {
+    "en": "Journey",
+    "desc": "Vision-board icon-picker label (key 'journey')."
+  },
+  "visionIconCreate": {
+    "en": "Create",
+    "desc": "Vision-board icon-picker label (key 'create')."
+  },
+  "visionIconMove": {
+    "en": "Move",
+    "desc": "Vision-board icon-picker label (key 'move')."
+  },
+  "visionIconStillness": {
+    "en": "Stillness",
+    "desc": "Vision-board icon-picker label (key 'stillness')."
+  },
+  "visionIconWisdom": {
+    "en": "Wisdom",
+    "desc": "Vision-board icon-picker label (key 'wisdom')."
+  },
+  "visionIconAim": {
+    "en": "Aim",
+    "desc": "Vision-board icon-picker label (key 'aim')."
+  },
+  "visionIconHope": {
+    "en": "Hope",
+    "desc": "Vision-board icon-picker label (key 'hope')."
+  },
+  "visionIconPeace": {
+    "en": "Peace",
+    "desc": "Vision-board icon-picker label (key 'peace')."
+  },
+  "visionIconSupport": {
+    "en": "Support",
+    "desc": "Vision-board icon-picker label (key 'support')."
+  },
+  "visionIconBloom": {
+    "en": "Bloom",
+    "desc": "Vision-board icon-picker label (key 'bloom')."
+  },
+  "visionIconMilestone": {
+    "en": "Milestone",
+    "desc": "Vision-board icon-picker label (key 'milestone')."
+  },
+  "visionIconSpark": {
+    "en": "Spark",
+    "desc": "Vision-board icon-picker label (key 'spark')."
+  },
+  "visionCategoryHealth": {
+    "en": "Health",
+    "desc": "Vision-board category label (VisionCategory.health)."
+  },
+  "visionCategoryFamily": {
+    "en": "Family",
+    "desc": "Vision-board category label (VisionCategory.family)."
+  },
+  "visionCategoryCareer": {
+    "en": "Career",
+    "desc": "Vision-board category label (VisionCategory.career)."
+  },
+  "visionCategoryGrowth": {
+    "en": "Growth",
+    "desc": "Vision-board category label (VisionCategory.growth)."
+  },
+  "visionCategoryFreedom": {
+    "en": "Freedom",
+    "desc": "Vision-board category label (VisionCategory.freedom)."
+  },
+  "visionCategoryAdventure": {
+    "en": "Adventure",
+    "desc": "Vision-board category label (VisionCategory.adventure)."
+  },
+  "visionCategoryService": {
+    "en": "Service",
+    "desc": "Vision-board category label (VisionCategory.service)."
+  },
+  "visionCategoryCreativity": {
+    "en": "Creativity",
+    "desc": "Vision-board category label (VisionCategory.creativity)."
+  },
+  "visionCategoryUncategorised": {
+    "en": "Uncategorised",
+    "desc": "Vision-board category label for items with no category (VisionCategory.none)."
+  },
+  "visionStarterFreedomYearTitle": {
+    "en": "One year of freedom",
+    "desc": "Vision-board sample/seed dream title (id 'freedom_year'). Pre-fills the title field; the user can edit it."
+  },
+  "visionStarterFreedomYearAffirmation": {
+    "en": "I am building a life I love, one sober day at a time.",
+    "desc": "Vision-board sample dream affirmation (id 'freedom_year')."
+  },
+  "visionStarterPresentParentTitle": {
+    "en": "Be the parent I want to be",
+    "desc": "Vision-board sample dream title (id 'present_parent')."
+  },
+  "visionStarterPresentParentAffirmation": {
+    "en": "I am present, patient, and proud of how I show up for my family.",
+    "desc": "Vision-board sample dream affirmation (id 'present_parent')."
+  },
+  "visionStarterRun5kTitle": {
+    "en": "Run a 5K",
+    "desc": "Vision-board sample dream title (id 'run_5k')."
+  },
+  "visionStarterRun5kAffirmation": {
+    "en": "I am strong, I move with purpose, and my body is reclaiming itself.",
+    "desc": "Vision-board sample dream affirmation (id 'run_5k')."
+  },
+  "visionStarterSaveMeaningfulTitle": {
+    "en": "Save for something meaningful",
+    "desc": "Vision-board sample dream title (id 'save_meaningful')."
+  },
+  "visionStarterSaveMeaningfulAffirmation": {
+    "en": "Every day sober is money in my pocket and possibility in my future.",
+    "desc": "Vision-board sample dream affirmation (id 'save_meaningful')."
+  },
+  "visionStarterLearnSkillTitle": {
+    "en": "Learn a new skill",
+    "desc": "Vision-board sample dream title (id 'learn_skill')."
+  },
+  "visionStarterLearnSkillAffirmation": {
+    "en": "I am curious, I am capable, and I keep growing.",
+    "desc": "Vision-board sample dream affirmation (id 'learn_skill')."
+  },
+  "visionStarterHealRelationshipTitle": {
+    "en": "Heal a relationship",
+    "desc": "Vision-board sample dream title (id 'heal_relationship')."
+  },
+  "visionStarterHealRelationshipAffirmation": {
+    "en": "I lead with honesty and humility. The right people are coming closer.",
+    "desc": "Vision-board sample dream affirmation (id 'heal_relationship')."
+  },
+  "cravingResponseWalked": {
+    "en": "Walked away / outside",
+    "desc": "Craving-response chip label (slug 'walked') — what the user did when a craving hit."
+  },
+  "cravingResponseCalled": {
+    "en": "Called someone",
+    "desc": "Craving-response chip label (slug 'called')."
+  },
+  "cravingResponseBreathed": {
+    "en": "Breathed / urge-surfed",
+    "desc": "Craving-response chip label (slug 'breathed')."
+  },
+  "cravingResponseJournaled": {
+    "en": "Journaled / wrote",
+    "desc": "Craving-response chip label (slug 'journaled')."
+  },
+  "cravingResponseWater": {
+    "en": "Drank water / ate",
+    "desc": "Craving-response chip label (slug 'water')."
+  },
+  "cravingResponseGrounded": {
+    "en": "Grounded / prayed / meditated",
+    "desc": "Craving-response chip label (slug 'grounded')."
+  },
+  "cravingTimeAm": {
+    "en": "AM",
+    "desc": "Morning meridiem marker for the craving risk-window time label (e.g. the 'AM' in '8–11 AM')."
+  },
+  "cravingTimePm": {
+    "en": "PM",
+    "desc": "Afternoon/evening meridiem marker for the craving risk-window time label (e.g. the 'PM' in '8–11 PM')."
+  },
+  "cravingHourMeridiem": {
+    "en": "{hour} {meridiem}",
+    "desc": "A single clock hour with its AM/PM marker, e.g. '8 PM'. Used to build the craving risk-window range.",
+    "placeholders": {
+      "hour": {
+        "type": "int"
+      },
+      "meridiem": {
+        "type": "String"
+      }
+    }
+  },
+  "cravingRiskWindowRange": {
+    "en": "{start}–{end}",
+    "desc": "The user's highest-risk 3-hour craving window as a range, e.g. '8 PM–11 PM'. Separator is an en dash (–). {start} and {end} are each an hour+meridiem from cravingHourMeridiem.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "journalReauthUnlockEntry": {
+    "en": "Unlock this entry",
+    "desc": "Default biometric/device-auth prompt reason when re-authenticating to view a locked journal entry."
+  },
+  "journalReauthIncorrectPin": {
+    "en": "Incorrect PIN",
+    "desc": "Inline error shown under the PIN field in the per-entry unlock dialog when the entered PIN is wrong."
+  }
+}
