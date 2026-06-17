@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adaptive-icon background: forest green with a soft lighter glow behind
-     the mark (slightly above centre, matching the brand tile). -->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#3E745A"/>
-        </shape>
-    </item>
-    <item>
-        <shape android:shape="rectangle">
-            <gradient
-                android:type="radial"
-                android:centerX="0.5"
-                android:centerY="0.47"
-                android:gradientRadius="58dp"
-                android:startColor="#4C8668"
-                android:endColor="#003E745A"/>
-        </shape>
-    </item>
-</layer-list>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FBF4E3"/>
+</shape>

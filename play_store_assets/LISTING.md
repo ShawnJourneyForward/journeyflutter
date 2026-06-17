@@ -112,6 +112,6 @@ crisis, contact your local emergency number.
 
 | Asset | Status |
 |---|---|
-| App icon 512 | `app_icon_512_v2.png` ✅ |
+| App icon 512 | `app_icon_512_v3.png` ✅ (wave-leaf; `app_icon_1024.png` is the 1024 source) |
 | Feature graphic 1024×500 | `feature_graphic_1024x500.png` ✅ |
 | Phone screenshots | 6 in `playstore_screenshots/phone/` — **`05_journal.png` is black (FLAG_SECURE) and must be recaptured with the lock/secure-window temporarily relaxed or via a debug build** |
