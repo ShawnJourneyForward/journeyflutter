@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:journey_forward/l10n/app_locales.dart';
 
 Map<String, dynamic> _readArb(File file) {
   return jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
@@ -66,25 +67,38 @@ void main() {
       }
     });
 
-    test('non-English locale files are not exact English clones',
-        skip: 'TODO: real translations not yet written — '
-            'app ships English-only for now. '
-            'Remove skip when translations are added.', () {
+    test('ENABLED non-English locales are genuinely translated, not English '
+        'clones', () {
+      // Only languages actually listed in kSupportedLanguages ship to users.
+      // Stub ARBs (af/es/pt/zu) that are still English mirrors are intentionally
+      // NOT enabled, so they are excluded here. This test is dormant while the
+      // app is English-only and activates the moment a language is enabled —
+      // catching a half-translated (English-clone) ARB before it can ship.
+      final enabledCodes = kSupportedLanguages
+          .map((l) => l.locale.languageCode)
+          .where((c) => c != 'en')
+          .toSet();
+      if (enabledCodes.isEmpty) return;
+
       final english = _readArb(englishFile);
       final englishValues = Map<String, dynamic>.fromEntries(
         english.entries.where((entry) => !entry.key.startsWith('@')),
       );
 
-      for (final file in arbFiles.where((f) => f.path != englishFile.path)) {
+      for (final code in enabledCodes) {
+        final file = File('lib/l10n/app_$code.arb');
+        expect(file.existsSync(), isTrue,
+            reason: 'enabled locale "$code" has no app_$code.arb');
         final locale = _readArb(file);
-        final differingValues = englishValues.entries.where((entry) {
-          return locale[entry.key] != entry.value;
-        }).length;
-
+        final differing = englishValues.entries
+            .where((entry) => locale[entry.key] != entry.value)
+            .length;
+        final translatedRatio = differing / englishValues.length;
         expect(
-          differingValues,
-          greaterThan(0),
-          reason: '${file.path} is identical to English across all strings',
+          translatedRatio,
+          greaterThan(0.5),
+          reason: 'app_$code.arb is >50% identical to English across strings '
+              '— it looks untranslated; do not enable it until translated.',
         );
       }
     });

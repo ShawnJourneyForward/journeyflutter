@@ -9515,7 +9515,7 @@ abstract class AppLocalizations {
   /// Field label for the vision item photo picker.
   ///
   /// In en, this message translates to:
-  /// **'Photos help you feel it (up to 4)'**
+  /// **'Photos help you feel it (up to 20)'**
   String get visionPhotosLabel;
 
   /// Button label to add the first photo to a vision item.
@@ -9524,10 +9524,10 @@ abstract class AppLocalizations {
   /// **'Add your first photo'**
   String get visionAddFirstPhoto;
 
-  /// Button label to add another photo, showing how many of 4 are used.
+  /// Button label to add another photo, showing how many of 20 are used.
   ///
   /// In en, this message translates to:
-  /// **'Add another ({count}/4)'**
+  /// **'Add another ({count}/20)'**
   String visionAddAnotherPhoto(int count);
 
   /// Privacy note under the vision item photo picker.
@@ -13339,6 +13339,726 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incorrect PIN'**
   String get journalReauthIncorrectPin;
+
+  /// SnackBar shown when an emergency-contact call button can't launch the phone dialer; {number} is the contact's phone number so the user can still dial it manually.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the dialer. Call {number} directly.'**
+  String emergencyCallFailed(String number);
+
+  /// Tappable crisis/help affordance shown on the lock screen before the app is unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Need help right now?'**
+  String get lockScreenNeedHelp;
+
+  /// SnackBar shown when a picked vision-board photo could not be copied into permanent storage, so it was not added.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that photo. Please try again.'**
+  String get visionPhotoSaveFailed;
+
+  /// Android notification channel description shown in the system notification settings for this app.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminders and milestone alerts'**
+  String get notifChannelDescription;
+
+  /// Short tagline shown under the Refuge Recovery group name on the Support Groups screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Mindfulness-based recovery'**
+  String get groupRefugeTagline;
+
+  /// Description paragraph for the Refuge Recovery support group, shown when its card is expanded.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses Buddhist principles and meditation as the foundation for recovery. No requirement to be Buddhist — the focus is on compassion, mindfulness, and the causes of suffering.'**
+  String get groupRefugeDesc;
+
+  /// Approach tags for the Refuge Recovery support group, split on ' · ' into chips. Keep the ' · ' separators.
+  ///
+  /// In en, this message translates to:
+  /// **'Mindfulness · Buddhist-informed · Meditation'**
+  String get groupRefugeApproach;
+
+  /// Where the Refuge Recovery support group is available, shown next to a location icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Worldwide · Online'**
+  String get groupRefugeRegions;
+
+  /// Short tagline shown under the Celebrate Recovery group name on the Support Groups screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Faith-based recovery'**
+  String get groupCelebrateTagline;
+
+  /// Description paragraph for the Celebrate Recovery support group, shown when its card is expanded.
+  ///
+  /// In en, this message translates to:
+  /// **'A Christ-centred 12-step programme for hurts, habits, and hang-ups. Runs through local churches. Welcoming to anyone dealing with addiction or life struggles.'**
+  String get groupCelebrateDesc;
+
+  /// Approach tags for the Celebrate Recovery support group, split on ' · ' into chips. Keep the ' · ' separators.
+  ///
+  /// In en, this message translates to:
+  /// **'12-step · Christian · Faith-based'**
+  String get groupCelebrateApproach;
+
+  /// Where the Celebrate Recovery support group is available, shown next to a location icon. 'SA' means South Africa.
+  ///
+  /// In en, this message translates to:
+  /// **'Worldwide · Many SA churches'**
+  String get groupCelebrateRegions;
+
+  /// Short tagline shown under the Women for Sobriety group name on the Support Groups screen. 'WFS' is the organisation's abbreviation.
+  ///
+  /// In en, this message translates to:
+  /// **'WFS — women-only support'**
+  String get groupWfsTagline;
+
+  /// Description paragraph for the Women for Sobriety support group, shown when its card is expanded.
+  ///
+  /// In en, this message translates to:
+  /// **'A programme specifically for women, focusing on building positive emotions, self-worth, and a new life. Online and in-person meetings.'**
+  String get groupWfsDesc;
+
+  /// Approach tags for the Women for Sobriety support group, split on ' · ' into chips. Keep the ' · ' separators.
+  ///
+  /// In en, this message translates to:
+  /// **'Women-only · Positive focus · Empowerment'**
+  String get groupWfsApproach;
+
+  /// Where the Women for Sobriety support group is available, shown next to a location icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Worldwide · Online'**
+  String get groupWfsRegions;
+
+  /// Short tagline shown under the LifeRing Secular Recovery group name on the Support Groups screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-spiritual peer support'**
+  String get groupLifeRingTagline;
+
+  /// Description paragraph for the LifeRing Secular Recovery support group, shown when its card is expanded.
+  ///
+  /// In en, this message translates to:
+  /// **'Secular, non-religious peer support. No steps, no higher power. Focus on sobriety, secularity, and self-help. Online and in-person.'**
+  String get groupLifeRingDesc;
+
+  /// Approach tags for the LifeRing Secular Recovery support group, split on ' · ' into chips. Keep the ' · ' separators.
+  ///
+  /// In en, this message translates to:
+  /// **'Secular · Non-12-step · Self-directed'**
+  String get groupLifeRingApproach;
+
+  /// Where the LifeRing Secular Recovery support group is available, shown next to a location icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Worldwide · Online'**
+  String get groupLifeRingRegions;
+
+  /// Short tagline shown under the Online Sobriety Communities group name on the Support Groups screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Digital support — always available'**
+  String get groupOnlineTagline;
+
+  /// Description paragraph for the Online Sobriety Communities entry, shown when its card is expanded. 'r/stopdrinking', 'SoberGrid', and 'Sober.com' are proper names — keep them as-is.
+  ///
+  /// In en, this message translates to:
+  /// **'Communities like r/stopdrinking, SoberGrid, and Sober.com offer 24/7 peer support, accountability partners, and daily check-ins — right from your phone.'**
+  String get groupOnlineDesc;
+
+  /// Approach tags for the Online Sobriety Communities entry, split on ' · ' into chips. Keep the ' · ' separators.
+  ///
+  /// In en, this message translates to:
+  /// **'Online · Anonymous · 24/7'**
+  String get groupOnlineApproach;
+
+  /// Where the Online Sobriety Communities are available, shown next to a location icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Global · Always online'**
+  String get groupOnlineRegions;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Journal').
+  ///
+  /// In en, this message translates to:
+  /// **'Journal'**
+  String get weeklySummarySupportJournal;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Craving support').
+  ///
+  /// In en, this message translates to:
+  /// **'Craving support'**
+  String get weeklySummarySupportCraving;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Thought exercises').
+  ///
+  /// In en, this message translates to:
+  /// **'Thought exercises'**
+  String get weeklySummarySupportThought;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Movement').
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get weeklySummarySupportMovement;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Sleep log').
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep log'**
+  String get weeklySummarySupportSleep;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Gratitude').
+  ///
+  /// In en, this message translates to:
+  /// **'Gratitude'**
+  String get weeklySummarySupportGratitude;
+
+  /// Short support-category label used to name the most-used care practice in the weekly summary reflection (e.g. 'Most used support: Daily pledge').
+  ///
+  /// In en, this message translates to:
+  /// **'Daily pledge'**
+  String get weeklySummarySupportPledge;
+
+  /// Fallback support-category label used in the weekly summary reflection when no single care practice stands out (e.g. 'Most used support: Various').
+  ///
+  /// In en, this message translates to:
+  /// **'Various'**
+  String get weeklySummarySupportVarious;
+
+  /// Subtitle line under the title in the shared weekly-summary PDF header. {appName} is the app name (Journey Forward) and {range} is the formatted date range, e.g. '01 Jun 2026 – 07 Jun 2026'.
+  ///
+  /// In en, this message translates to:
+  /// **'{appName}  •  {range}'**
+  String weeklySummaryPdfHeaderLine(String appName, String range);
+
+  /// Small italic footer line at the bottom-right of the shared weekly-summary PDF, attributing the document to the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated by Journey Forward'**
+  String get weeklySummaryPdfGeneratedBy;
+
+  /// No description provided for @learnedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What I\'ve learned'**
+  String get learnedTitle;
+
+  /// No description provided for @learnedShareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my plan'**
+  String get learnedShareButton;
+
+  /// No description provided for @learnedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiet patterns from your own check-ins — kept on this device, no judgement.'**
+  String get learnedSubtitle;
+
+  /// No description provided for @learnedEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your insights are still growing'**
+  String get learnedEmptyTitle;
+
+  /// No description provided for @learnedEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'As you log how cravings go and what you did about them, this page fills with what actually works for you. Nothing to get right — just keep checking in.'**
+  String get learnedEmptyBody;
+
+  /// No description provided for @learnedEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Check in now'**
+  String get learnedEmptyCta;
+
+  /// No description provided for @learnedWorkedHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT\'S WORKED FOR YOU'**
+  String get learnedWorkedHeader;
+
+  /// No description provided for @learnedWorkedIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'When you tried these, here\'s how often the urge passed without a slip.'**
+  String get learnedWorkedIntro;
+
+  /// No description provided for @learnedWorkedStat.
+  ///
+  /// In en, this message translates to:
+  /// **'stayed sober {sober} of {total}'**
+  String learnedWorkedStat(int sober, int total);
+
+  /// No description provided for @learnedRiskHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR TENDER HOURS'**
+  String get learnedRiskHeader;
+
+  /// No description provided for @learnedRiskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of your {total} logged cravings landed around {window}. Worth planning something steadying for then.'**
+  String learnedRiskBody(int count, int total, String window);
+
+  /// No description provided for @learnedHaltHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT\'S OFTEN UNDERNEATH'**
+  String get learnedHaltHeader;
+
+  /// No description provided for @learnedHaltBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cravings most often showed up when you were:'**
+  String get learnedHaltBody;
+
+  /// No description provided for @learnedTimesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 time} other{{count} times}}'**
+  String learnedTimesCount(int count);
+
+  /// No description provided for @learnedTriggersHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR COMMON TRIGGERS'**
+  String get learnedTriggersHeader;
+
+  /// No description provided for @learnedTriggersIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The situations you\'ve named most often:'**
+  String get learnedTriggersIntro;
+
+  /// No description provided for @learnedTriggerChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} ×{count}'**
+  String learnedTriggerChip(String label, int count);
+
+  /// No description provided for @learnedWinsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR WINS'**
+  String get learnedWinsHeader;
+
+  /// No description provided for @learnedWinsRidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 urge ridden out} other{{count} urges ridden out}}'**
+  String learnedWinsRidden(int count);
+
+  /// No description provided for @learnedWinsSober.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{stayed sober through 1 craving} other{stayed sober through {count} cravings}}'**
+  String learnedWinsSober(int count);
+
+  /// No description provided for @learnedPlanHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR PLAN WHEN A CRAVING HITS'**
+  String get learnedPlanHeader;
+
+  /// No description provided for @learnedPlanEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t written a plan yet. A few lines now can carry you through a hard moment later.'**
+  String get learnedPlanEmpty;
+
+  /// No description provided for @learnedPlanCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create my plan'**
+  String get learnedPlanCreate;
+
+  /// No description provided for @learnedPlanEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit plan'**
+  String get learnedPlanEdit;
+
+  /// No description provided for @learnedReasonsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'WHY YOU\'RE DOING THIS'**
+  String get learnedReasonsHeader;
+
+  /// No description provided for @learnedFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Slips are information, not failure. Every line here is something you learned by showing up.'**
+  String get learnedFooter;
+
+  /// No description provided for @learnedShareHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'My recovery safety plan'**
+  String get learnedShareHeading;
+
+  /// No description provided for @tippTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TIPP — fast reset'**
+  String get tippTitle;
+
+  /// No description provided for @tippIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When it spikes past thinking'**
+  String get tippIntroTitle;
+
+  /// No description provided for @tippIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'These four shift your body chemistry in minutes — no thinking required. Pick one and follow along.'**
+  String get tippIntro;
+
+  /// No description provided for @tippTempLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature'**
+  String get tippTempLabel;
+
+  /// No description provided for @tippTempWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Cold on your face slows a racing heart fast.'**
+  String get tippTempWhy;
+
+  /// No description provided for @tippTempStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill a bowl with cold water, or grab a cold pack or ice.'**
+  String get tippTempStep1;
+
+  /// No description provided for @tippTempStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your breath and put your face in the cold water — or hold the cold to your eyes and cheeks — for about 30 seconds.'**
+  String get tippTempStep2;
+
+  /// No description provided for @tippTempStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice your body settle as your heart rate drops. Repeat once if you need to.'**
+  String get tippTempStep3;
+
+  /// No description provided for @tippIntenseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Intense movement'**
+  String get tippIntenseLabel;
+
+  /// No description provided for @tippIntenseWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'A short burst burns off the surge of stress hormones.'**
+  String get tippIntenseWhy;
+
+  /// No description provided for @tippIntenseStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick something you can do hard for a short burst — jumping jacks, running on the spot, fast stairs.'**
+  String get tippIntenseStep1;
+
+  /// No description provided for @tippIntenseStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Go all-out for 1 to 5 minutes, until you\'re a little out of breath.'**
+  String get tippIntenseStep2;
+
+  /// No description provided for @tippIntenseStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Let your breathing come back down. The urge usually drops with it.'**
+  String get tippIntenseStep3;
+
+  /// No description provided for @tippPacedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paced breathing'**
+  String get tippPacedLabel;
+
+  /// No description provided for @tippPacedWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Longer out-breaths than in-breaths switch on the body\'s calming system.'**
+  String get tippPacedWhy;
+
+  /// No description provided for @tippPacedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the circle. The out-breath is the longest part.'**
+  String get tippPacedHint;
+
+  /// No description provided for @tippBreatheIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe in'**
+  String get tippBreatheIn;
+
+  /// No description provided for @tippHold.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get tippHold;
+
+  /// No description provided for @tippBreatheOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe out'**
+  String get tippBreatheOut;
+
+  /// No description provided for @tippPmrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paired muscle relaxation'**
+  String get tippPmrLabel;
+
+  /// No description provided for @tippPmrWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Tense as you breathe in, release as you breathe out — tension leaves with the breath.'**
+  String get tippPmrWhy;
+
+  /// No description provided for @tippPmrStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe in and tense a muscle group — fists, shoulders, or jaw — firmly but not to the point of pain.'**
+  String get tippPmrStep1;
+
+  /// No description provided for @tippPmrStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the tension for a few seconds while you notice it.'**
+  String get tippPmrStep2;
+
+  /// No description provided for @tippPmrStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathe out and let it go all at once. Move through your body, group by group.'**
+  String get tippPmrStep3;
+
+  /// No description provided for @tippStartTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Start 30-second timer'**
+  String get tippStartTimer;
+
+  /// No description provided for @tippTimerRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String tippTimerRemaining(int seconds);
+
+  /// No description provided for @tippNeedMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Need more than this right now?'**
+  String get tippNeedMore;
+
+  /// No description provided for @tippCrisisButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisis lines'**
+  String get tippCrisisButton;
+
+  /// No description provided for @emergencyTippTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TIPP reset'**
+  String get emergencyTippTitle;
+
+  /// No description provided for @progressLearnedCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What I\'ve learned'**
+  String get progressLearnedCardTitle;
+
+  /// No description provided for @progressLearnedCardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your patterns & safety plan, from your own logs'**
+  String get progressLearnedCardSubtitle;
+
+  /// No description provided for @slipSupportTryTipp.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a TIPP reset'**
+  String get slipSupportTryTipp;
+
+  /// No description provided for @slipSupportTryTippSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast body-based skills for when it spikes'**
+  String get slipSupportTryTippSub;
+
+  /// No description provided for @planToolkitTippLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TIPP reset'**
+  String get planToolkitTippLabel;
+
+  /// No description provided for @planToolkitTippSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperature · move · breathe · release'**
+  String get planToolkitTippSub;
+
+  /// No description provided for @a11ySoberDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days, {hours} hours, {minutes} minutes, {seconds} seconds sober'**
+  String a11ySoberDuration(int days, int hours, int minutes, int seconds);
+
+  /// No description provided for @a11yCountdownDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {days} days, {hours} hours, {minutes} minutes, {seconds} seconds'**
+  String a11yCountdownDuration(int days, int hours, int minutes, int seconds);
+
+  /// No description provided for @a11yHeatmapSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Cravings heatmap, last 28 days. None logged yet.} =1{Cravings heatmap, last 28 days. 1 logged.} other{Cravings heatmap, last 28 days. {count} logged.}}'**
+  String a11yHeatmapSummary(int count);
+
+  /// No description provided for @a11yHeatmapDayCravings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no cravings} =1{1 craving} other{{count} cravings}}'**
+  String a11yHeatmapDayCravings(int count);
+
+  /// No description provided for @challengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'100-day challenge'**
+  String get challengeTitle;
+
+  /// No description provided for @challengeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One hundred days, marked off one at a time.'**
+  String get challengeSubtitle;
+
+  /// No description provided for @challengeCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} days'**
+  String challengeCountLabel(int done, int total);
+
+  /// No description provided for @challengeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a day to tick it off. Press and hold to add a sticker or clear it.'**
+  String get challengeHint;
+
+  /// No description provided for @challengeOnDay.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on day {day} of your streak.'**
+  String challengeOnDay(int day);
+
+  /// No description provided for @challengeComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'All 100 days. What a thing you\'ve done. 🏆'**
+  String get challengeComplete;
+
+  /// No description provided for @challengeStickerSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}'**
+  String challengeStickerSheetTitle(int day);
+
+  /// No description provided for @challengePickSticker.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a sticker'**
+  String get challengePickSticker;
+
+  /// No description provided for @challengeClearDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear this day'**
+  String get challengeClearDay;
+
+  /// No description provided for @challengeShareSectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARE YOUR PROGRESS'**
+  String get challengeShareSectionLabel;
+
+  /// No description provided for @challengeShareButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my progress'**
+  String get challengeShareButton;
+
+  /// No description provided for @challengeShareCardBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'100 DAYS SOBER'**
+  String get challengeShareCardBrand;
+
+  /// No description provided for @challengeShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of my 100 sober days, marked off. 🌱 One day at a time.'**
+  String challengeShareText(int done);
+
+  /// No description provided for @challengeReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset challenge'**
+  String get challengeReset;
+
+  /// No description provided for @challengeResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset the challenge?'**
+  String get challengeResetTitle;
+
+  /// No description provided for @challengeResetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears every day you have marked off. Your sobriety streak and all your other data stay exactly as they are.'**
+  String get challengeResetBody;
+
+  /// No description provided for @challengeResetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get challengeResetConfirm;
+
+  /// No description provided for @challengeResetCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my progress'**
+  String get challengeResetCancel;
+
+  /// No description provided for @challengeA11yDayDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}, marked off'**
+  String challengeA11yDayDone(int day);
+
+  /// No description provided for @challengeA11yDayTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day}, not yet marked'**
+  String challengeA11yDayTodo(int day);
 }
 
 class _AppLocalizationsDelegate

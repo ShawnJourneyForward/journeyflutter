@@ -15,6 +15,7 @@ import '../theme/app_theme.dart';
 import '../utils/backup_crypto.dart';
 import '../utils/encrypted_store.dart';
 import '../utils/haptic_service.dart';
+import '../utils/vision_image_store.dart';
 
 // ─── Keys exported in a backup ────────────────────────────────────────────────
 
@@ -40,6 +41,8 @@ const _exportKeys = [
   'recovery_capital',
   // v6.0 — urge timer wins
   'urge_rides',
+  // v6.3 — 100-day challenge grid (ticked days + emoji stickers)
+  'hundred_day_challenge',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
@@ -75,9 +78,24 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
       // All sensitive data now lives in EncryptedStore (migrated at startup).
       // Plain SharedPreferences no longer holds any personal content.
+      // readStrict THROWS on a transient Keystore failure (vs. returning null
+      // for a genuinely-absent key), so a collection we can't read aborts the
+      // whole export instead of being silently dropped from the file — caught
+      // below and surfaced as "export failed".
       for (final key in _exportKeys) {
-        final val = await EncryptedStore.read(key);
+        final val = await EncryptedStore.readStrict(key);
         if (val != null) data[key] = val;
+      }
+
+      // Bundle the Vision Board photo BYTES (not just the filenames). Without
+      // this, a backup restored on a NEW install references image files that
+      // don't exist and every vision photo renders blank — the primary backup
+      // use case silently losing data. Additive: stored under a new top-level
+      // key, old importers ignore it.
+      final images = <String, String>{};
+      for (final name in _collectVisionImageNames(data['vision_board'])) {
+        final b64 = await VisionImageStore.readBytesB64(name);
+        if (b64 != null) images[name] = b64;
       }
 
       final payload = const JsonEncoder.withIndent('  ').convert({
@@ -85,6 +103,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         'version': '1',
         'exportedAt': DateTime.now().toIso8601String(),
         'data': data,
+        if (images.isNotEmpty) 'images': images,
       });
 
       final fileContents =
@@ -407,13 +426,32 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       // older/partial backup must never silently erase newer data. A restore
       // overwrites what the backup contains and leaves everything else intact.
 
+      // Re-materialise any bundled Vision Board photo files so restored vision
+      // items resolve their images on a fresh install. Best-effort and additive
+      // — backups made before this feature simply have no 'images' block.
+      final imagesBlock = parsed['images'];
+      if (imagesBlock is Map) {
+        for (final entry in imagesBlock.entries) {
+          final name = entry.key;
+          final b64 = entry.value;
+          if (name is String && b64 is String) {
+            await VisionImageStore.writeBytesB64(name, b64);
+          }
+        }
+      }
+
       // Remove any legacy plaintext data and stale lockMethod from prefs.
       await prefs.remove('profile');
       await prefs.remove('lockMethod');
 
-      // Invalidate the profile provider so the UI reloads from encrypted
-      // storage immediately without requiring an app restart.
-      ref.invalidate(profileProvider);
+      // Invalidate EVERY provider backed by a restored key — not just the
+      // profile. The collection notifiers live in the shell's IndexedStack and
+      // keep their pre-restore (often empty) cache otherwise; the UI would show
+      // stale data AND, because each mutator writes [new, ...state], the user's
+      // next edit would persist that stale list straight over the freshly
+      // restored key — silently discarding the whole restore. Refreshing all of
+      // them rebuilds each from the just-written encrypted storage.
+      _invalidateRestoredProviders();
 
       if (mounted) {
         _showSnack(l10n.backupRestoredSuccess);
@@ -425,6 +463,60 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     } finally {
       if (mounted) setState(() => _importing = false);
     }
+  }
+
+  /// Collect the bare managed image filenames referenced by the vision_board
+  /// JSON, so their bytes can be bundled into the backup. Ignores legacy
+  /// absolute paths (anything containing a path separator).
+  Set<String> _collectVisionImageNames(String? visionRaw) {
+    final names = <String>{};
+    if (visionRaw == null) return names;
+    try {
+      final list = jsonDecode(visionRaw) as List<dynamic>;
+      for (final item in list) {
+        if (item is Map<String, dynamic>) {
+          final paths = item['imagePaths'];
+          if (paths is List) {
+            for (final p in paths) {
+              if (p is String &&
+                  p.isNotEmpty &&
+                  !p.contains('/') &&
+                  !p.contains(r'\')) {
+                names.add(p);
+              }
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // Malformed vision_board JSON — nothing to bundle, export still proceeds.
+    }
+    return names;
+  }
+
+  /// Refresh every provider whose underlying storage key can be overwritten by
+  /// a restore, so the live UI reflects the restored data and no stale cached
+  /// list can be written back over it. Keep in sync with [_exportKeys].
+  void _invalidateRestoredProviders() {
+    ref.invalidate(profileProvider);
+    ref.invalidate(journalProvider);
+    ref.invalidate(gratitudeProvider);
+    ref.invalidate(allGratitudeProvider);
+    ref.invalidate(slipProvider);
+    ref.invalidate(visionBoardProvider);
+    ref.invalidate(affirmationProvider);
+    ref.invalidate(cravingProvider);
+    ref.invalidate(thoughtProvider);
+    ref.invalidate(activityProvider);
+    ref.invalidate(sleepProvider);
+    ref.invalidate(futureLetterProvider);
+    ref.invalidate(hardDayProvider);
+    ref.invalidate(thoughtRecordProvider);
+    ref.invalidate(meetingsProvider);
+    ref.invalidate(intentionProvider);
+    ref.invalidate(recoveryCapitalProvider);
+    ref.invalidate(urgeRideProvider);
+    ref.invalidate(hundredDayChallengeProvider);
   }
 
   void _showSnack(String msg, {bool error = false}) {

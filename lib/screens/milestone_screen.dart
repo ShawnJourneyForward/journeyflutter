@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import '../utils/locale_format.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../components/glass_card.dart';
@@ -1133,7 +1132,7 @@ class _StatsRow extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    '$currency${NumberFormat('#,##0').format(moneySaved)}',
+                    formatMoney(moneySaved, symbol: currency, pattern: '#,##0'),
                     style: AppTextStyles.moneyNumber.copyWith(fontSize: 26),
                   ),
                   const SizedBox(height: 2),

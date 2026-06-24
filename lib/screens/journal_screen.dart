@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/vision_image_store.dart';
 import '../utils/voice_input.dart';
 import '../providers/app_providers.dart';
 import '../l10n/app_localizations.dart';
@@ -2435,6 +2436,12 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
       l10n,
     );
     final all = _allAffirmations(personal, custom, defaults);
+    // Customs sit AFTER the personal cards in `all` (personal ++ custom ++
+    // defaults). The card delete affordance must map back into `custom` from
+    // this offset — gating on a bare `i < custom.length` deletes the wrong
+    // card whenever the user has any personal cards.
+    final customStart = personal.length;
+    bool isCustomAt(int i) => i >= customStart && i < customStart + custom.length;
 
     return Stack(
       children: [
@@ -2450,7 +2457,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                 itemBuilder: (_, i) => _AffirmCard(
                   text: all[i],
                   isFavourite: _favourites.contains(all[i]),
-                  isCustom: i < custom.length,
+                  isCustom: isCustomAt(i),
                   onFavourite: () => setState(() {
                     if (_favourites.contains(all[i])) {
                       _favourites.remove(all[i]);
@@ -2458,9 +2465,10 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                       _favourites.add(all[i]);
                     }
                   }),
-                  onDelete: i < custom.length
-                      ? () =>
-                          ref.read(affirmationProvider.notifier).remove(all[i])
+                  onDelete: isCustomAt(i)
+                      ? () => ref
+                          .read(affirmationProvider.notifier)
+                          .remove(custom[i - customStart])
                       : null,
                 ),
               ),
@@ -3250,8 +3258,16 @@ class _VisionCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final accent = visionAccent(item);
     final opt = visionOptionFor(item.emoji);
-    final hasPhoto =
-        item.imagePaths.isNotEmpty && File(item.imagePaths.first).existsSync();
+    // Resolve to the photos that actually exist on disk (matching the detail
+    // screen), so the cover and the count badge never disagree — a card whose
+    // FIRST stored photo is missing used to show no cover yet a "📷 2" badge.
+    final resolvedPhotos = item.imagePaths
+        .map(VisionImageStore.fileFor)
+        .whereType<File>()
+        .toList();
+    final photoFile = resolvedPhotos.isEmpty ? null : resolvedPhotos.first;
+    final hasPhoto = photoFile != null;
+    final photoCount = resolvedPhotos.length;
     final progress = item.progress;
     final hasMilestones = item.milestones.isNotEmpty;
 
@@ -3287,9 +3303,19 @@ class _VisionCard extends StatelessWidget {
                 if (hasPhoto)
                   SizedBox(
                     height: 90,
-                    child: Image.file(
-                      File(item.imagePaths.first),
-                      fit: BoxFit.cover,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.file(photoFile, fit: BoxFit.cover),
+                        // Tell the user at a glance there's more than one photo
+                        // to open — the single cover used to hide the rest.
+                        if (photoCount > 1)
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: _PhotoCountBadge(count: photoCount),
+                          ),
+                      ],
                     ),
                   ),
                 Expanded(
@@ -3505,6 +3531,10 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   _SheetTab _tab = _SheetTab.vision;
 
+  /// Max photos per vision item. The detail thumbnail strip, fullscreen viewer
+  /// and card count badge all scale to any count, so this is the only knob.
+  static const _maxVisionPhotos = 20;
+
   bool get _isEdit => widget.existingItem != null;
 
   @override
@@ -3540,13 +3570,26 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
 
   // ── Photo handling ───────────────────────────────────────────────────────
   Future<void> _pickImage() async {
-    if (_imagePaths.length >= 4) return; // cap at 4
+    if (_imagePaths.length >= _maxVisionPhotos) return;
     final picker = ImagePicker();
     final picked =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
-    if (picked != null && mounted) {
-      setState(() => _imagePaths.add(picked.path));
+    if (picked == null || !mounted) return;
+    // Copy into permanent storage and persist only the filename. The picker's
+    // own path points at a cache file Android will eventually delete — storing
+    // it directly is what used to make vision photos vanish.
+    final stored = await VisionImageStore.save(picked.path);
+    if (!mounted) return;
+    if (stored == null) {
+      // The copy failed. Do NOT fall back to picked.path — persisting that
+      // cache path is exactly the bug that made photos disappear. Surface the
+      // failure and drop the pick instead.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).visionPhotoSaveFailed)),
+      );
+      return;
     }
+    setState(() => _imagePaths.add(stored));
   }
 
   // ── Milestone handling ───────────────────────────────────────────────────
@@ -3956,7 +3999,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         const SizedBox(height: 10),
         if (_imagePaths.isNotEmpty)
           GridView.count(
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 10,
@@ -3970,7 +4013,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
             ],
           ),
         if (_imagePaths.isNotEmpty) const SizedBox(height: 12),
-        if (_imagePaths.length < 4)
+        if (_imagePaths.length < _maxVisionPhotos)
           GestureDetector(
             onTap: _pickImage,
             child: Container(
@@ -4234,6 +4277,40 @@ class _SheetTabBar extends StatelessWidget {
 
 // ─── Photo tile (with remove button) ─────────────────────────────────────────
 
+/// Small "📷 N" pill shown on a board card whose vision has multiple photos,
+/// so the extra photos behind the cover are discoverable.
+class _PhotoCountBadge extends StatelessWidget {
+  const _PhotoCountBadge({required this.count});
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.photo_library_rounded,
+              size: 11, color: Colors.white),
+          const SizedBox(width: 3),
+          Text(
+            '$count',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _PhotoTile extends StatelessWidget {
   const _PhotoTile({required this.path, required this.onRemove});
   final String path;
@@ -4246,7 +4323,7 @@ class _PhotoTile extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.file(File(path), fit: BoxFit.cover),
+          Image.file(File(VisionImageStore.resolve(path)), fit: BoxFit.cover),
           Positioned(
             top: 6,
             right: 6,

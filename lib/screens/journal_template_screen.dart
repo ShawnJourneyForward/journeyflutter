@@ -155,8 +155,28 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
     return tags.where((t) => t.isNotEmpty).toSet().toList();
   }
 
+  bool _hasUserContent() {
+    bool filled(TextEditingController c) => c.text.trim().isNotEmpty;
+    return filled(_grat1) ||
+        filled(_grat2) ||
+        filled(_grat3) ||
+        filled(_wins) ||
+        filled(_cravings) ||
+        filled(_intention) ||
+        filled(_affirmation) ||
+        _anchors.values.any((checked) => checked);
+  }
+
   Future<void> _save() async {
     if (_saving) return;
+    // Guard against an all-empty save: _composeBody always writes the title +
+    // date lines, so without this an untouched form would create a junk entry
+    // (title + date + 'reflection' tag) that pollutes the diary, the writing
+    // streak, and on-this-day echoes.
+    if (!_hasUserContent()) {
+      Navigator.of(context).pop();
+      return;
+    }
     setState(() => _saving = true);
     H.medium();
     final body = _composeBody(AppLocalizations.of(context));

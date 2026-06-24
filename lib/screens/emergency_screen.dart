@@ -282,6 +282,13 @@ class _HomeTab extends ConsumerWidget {
         '/urge-timer'
       ),
       (
+        Icons.bolt_rounded,
+        l10n.emergencyTippTitle,
+        AppColors.honey600,
+        null,
+        '/tipp'
+      ),
+      (
         Icons.play_circle_outline,
         l10n.emergencyPlayTapeTitle,
         AppColors.stone500,
@@ -302,6 +309,13 @@ class _HomeTab extends ConsumerWidget {
         null,
         '/puzzle'
       ),
+      (
+        Icons.calendar_view_month_rounded,
+        l10n.challengeTitle,
+        AppColors.honey500,
+        null,
+        '/challenge'
+      ),
     ];
 
     return ListView(
@@ -315,7 +329,21 @@ class _HomeTab extends ConsumerWidget {
         // Emergency call button
         if (ec != null) ...[
           GestureDetector(
-            onTap: () => launchUrl(Uri.parse('tel:${ec.phone}')),
+            onTap: () async {
+              // Guard the dialer launch: on a device with no dialer, or an
+              // unlaunchable number, an unguarded launchUrl throws an unhandled
+              // async exception and the user — mid-crisis — gets zero feedback.
+              final messenger = ScaffoldMessenger.of(context);
+              final failMsg = l10n.emergencyCallFailed(ec.phone);
+              final uri = Uri(scheme: 'tel', path: ec.phone);
+              try {
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
+                  return;
+                }
+              } catch (_) {/* fall through to the fallback below */}
+              messenger.showSnackBar(SnackBar(content: Text(failMsg)));
+            },
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -1427,6 +1455,7 @@ class _MeditationTabState extends State<_MeditationTab>
 
   // ── Urge Surfing audio player ──────────────────────────────────────────────
   final _player = AudioPlayer();
+  StreamSubscription<bool>? _playingSub;
   bool _audioReady = false;
   bool _audioError = false;
 
@@ -1442,7 +1471,7 @@ class _MeditationTabState extends State<_MeditationTab>
   void initState() {
     super.initState();
     _initAudio();
-    _player.playingStream.listen((playing) {
+    _playingSub = _player.playingStream.listen((playing) {
       if (!mounted) return;
       if (playing) {
         _pulseCtrl.repeat(reverse: true);
@@ -1464,8 +1493,12 @@ class _MeditationTabState extends State<_MeditationTab>
 
   @override
   void dispose() {
-    _pulseCtrl.dispose();
+    // Cancel the playing-stream subscription FIRST so the listener can't fire
+    // against an already-disposed _pulseCtrl during teardown, then dispose the
+    // player (terminates the stream) before the controller it drives.
+    _playingSub?.cancel();
     _player.dispose();
+    _pulseCtrl.dispose();
     super.dispose();
   }
 

@@ -11,6 +11,7 @@ import '../models/thought_record.dart';
 import '../models/urge_ride.dart';
 import '../models/user_profile.dart';
 import '../utils/encrypted_store.dart';
+import '../utils/vision_image_store.dart';
 
 // ─── Secure storage helper ───────────────────────────────────────────────────
 //
@@ -384,13 +385,10 @@ final allGratitudeProvider = FutureProvider<List<GratitudeEntry>>((ref) async {
   // Re-run when today's gratitude changes
   ref.watch(gratitudeProvider);
   final raw = await EncryptedStore.read('gratitude');
-  if (raw == null) return [];
-  final list = (jsonDecode(raw) as List<dynamic>);
-  return list
-      .map((e) => GratitudeEntry.fromJson(e as Map<String, dynamic>))
-      .toList()
-      .reversed
-      .toList();
+  // Reuse the same tolerant parser as every other read path: a single
+  // malformed row must not throw the whole History gratitude list into an
+  // error/empty state.
+  return _safeParseList(raw, GratitudeEntry.fromJson).reversed.toList();
 });
 
 // ─── Weekly goal completion toggles (persisted) ───────────────────────────────
@@ -494,6 +492,127 @@ final missionTogglesProvider =
     NotifierProvider<MissionTogglesNotifier, Set<int>>(
         MissionTogglesNotifier.new);
 
+// ─── 100-Day Sober Challenge (tick-off grid with emoji stickers) ──────────────
+//
+// A self-directed 100-day tracker: the user marks each day complete with a
+// plain tick or a chosen emoji "sticker", and can share the filled-in grid.
+// Stored in EncryptedStore (recovery progress is personal) under a NEW key —
+// additive to the frozen storage contract; it never touches an existing key.
+//
+// On-disk shape (frozen, additive-only):
+//   { "days": { "1": "✅", "7": "🔥", … }, "startedAt": "<ISO8601>" }
+// `days` keys are day numbers 1–100 as strings; values are the emoji sticker.
+// An absent day = not yet completed. `startedAt` is stamped the first time any
+// day is marked (purely informational — the grid is manual, not calendar-bound).
+
+class ChallengeState {
+  /// day number (1–100) → emoji sticker. A plain tick is just '✅'.
+  final Map<int, String> days;
+  final DateTime? startedAt;
+
+  const ChallengeState({this.days = const {}, this.startedAt});
+
+  int get completed => days.length;
+  bool get isComplete => completed >= HundredDayChallengeNotifier.total;
+  double get progress =>
+      (completed / HundredDayChallengeNotifier.total).clamp(0.0, 1.0);
+
+  factory ChallengeState.fromJson(Map<String, dynamic> j) {
+    final parsed = <int, String>{};
+    final raw = j['days'];
+    if (raw is Map) {
+      raw.forEach((k, v) {
+        final day = int.tryParse(k.toString());
+        final emoji = v?.toString();
+        // Keep only valid 1–100 day numbers carrying a non-empty sticker, so a
+        // single corrupt entry can never crowd the grid or inflate the count.
+        if (day != null &&
+            day >= 1 &&
+            day <= HundredDayChallengeNotifier.total &&
+            emoji != null &&
+            emoji.isNotEmpty) {
+          parsed[day] = emoji;
+        }
+      });
+    }
+    return ChallengeState(
+      days: parsed,
+      startedAt: _nullableParseDate(j['startedAt'] as String?),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'days': {for (final e in days.entries) e.key.toString(): e.value},
+        if (startedAt != null) 'startedAt': startedAt!.toIso8601String(),
+      };
+}
+
+class HundredDayChallengeNotifier extends AsyncNotifier<ChallengeState> {
+  static const _key = 'hundred_day_challenge';
+  static const total = 100;
+
+  @override
+  Future<ChallengeState> build() async {
+    final raw = await EncryptedStore.read(_key);
+    if (raw == null) return const ChallengeState();
+    try {
+      return ChallengeState.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (e) {
+      // Never wipe on a read failure — return empty in memory but leave the
+      // stored bytes untouched so a transient decode error can't destroy the
+      // user's progress (same rule as every other collection here).
+      debugPrint('[HundredDayChallenge] decode failed: $e');
+      return const ChallengeState();
+    }
+  }
+
+  // Serialize writes so two rapid taps can't read the same snapshot and clobber
+  // each other.
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(ChallengeState next) async {
+    await EncryptedStore.write(_key, jsonEncode(next.toJson()));
+    state = AsyncData(next);
+  }
+
+  /// Mark [day] complete with [emoji] (defaults to a plain tick). Replaces any
+  /// existing sticker on that day. Stamps `startedAt` the first time.
+  Future<void> setSticker(int day, {String emoji = '✅'}) =>
+      _writeLock = _writeLock.then((_) async {
+        if (day < 1 || day > total || emoji.isEmpty) return;
+        final current = state.valueOrNull ?? const ChallengeState();
+        final days = Map<int, String>.from(current.days)..[day] = emoji;
+        await _persist(ChallengeState(
+          days: days,
+          startedAt: current.startedAt ?? DateTime.now(),
+        ));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[HundredDayChallenge] write error: $e');
+      });
+
+  /// Clear a single day's mark. Keeps `startedAt` — emptying the grid isn't a
+  /// fresh start; that's an explicit [reset].
+  Future<void> clearDay(int day) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? const ChallengeState();
+        if (!current.days.containsKey(day)) return;
+        final days = Map<int, String>.from(current.days)..remove(day);
+        await _persist(ChallengeState(days: days, startedAt: current.startedAt));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[HundredDayChallenge] write error: $e');
+      });
+
+  /// Wipe the whole challenge — explicit user action, behind a confirm dialog.
+  Future<void> reset() => _writeLock = _writeLock.then((_) async {
+        await _persist(const ChallengeState());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[HundredDayChallenge] write error: $e');
+      });
+}
+
+final hundredDayChallengeProvider =
+    AsyncNotifierProvider<HundredDayChallengeNotifier, ChallengeState>(
+        HundredDayChallengeNotifier.new);
+
 // ─── Journal entries ──────────────────────────────────────────────────────────
 
 class JournalEntry {
@@ -509,7 +628,12 @@ class JournalEntry {
   final String? promptId; // which seed prompt the user picked, if any
   final bool locked; // requires re-auth to view; hide preview in list
   final DateTime? editedAt; // null until the user edits the original entry
-  final List<String> attachments; // reserved for v2.1 (photos / audio paths)
+  // Reserved for v2.1 (photos / audio). When wired, this MUST follow the
+  // VisionImageStore pattern: copy the picked file into app-owned storage and
+  // persist only the BARE FILENAME here — never an image_picker/cache path, or
+  // it reproduces the vision-board cache-path data-loss bug. The on-disk JSON
+  // shape is frozen (additive-only), so this field can't be repurposed later.
+  final List<String> attachments;
 
   const JournalEntry({
     required this.id,
@@ -540,9 +664,12 @@ class JournalEntry {
       }
     }
     return JournalEntry(
-      id: j['id'] as String,
+      // Tolerant required-field reads: a missing/wrong-typed id or text must not
+      // throw out of fromJson and silently drop the whole journal entry.
+      id: (j['id'] as String?) ??
+          'gen_${DateTime.now().microsecondsSinceEpoch}',
       date: _safeParseDate(j['date'] as String?),
-      text: j['text'] as String,
+      text: (j['text'] as String?) ?? '',
       mood: (j['mood'] as String?) ?? 'okay',
       subMood: j['subMood'] as String?,
       tags: tagList,
@@ -1079,92 +1206,125 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
     return _safeParseList(await EncryptedStore.read(_key), VisionItem.fromJson);
   }
 
-  Future<void> add(VisionItem item) async {
-    final current = state.valueOrNull ?? [];
-    final updated = [...current, item];
+  // Serialize writes so two rapid mutations (e.g. tapping a milestone then a
+  // pin/achieve toggle, or a photo-adding saveItem racing an inline toggle)
+  // can't read the same `state.valueOrNull` snapshot and clobber each other.
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<VisionItem> updated) async {
     await EncryptedStore.write(
         _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
     state = AsyncData(updated);
   }
 
-  Future<void> saveItem(VisionItem item) async {
-    final current = state.valueOrNull ?? [];
-    final updated = current.map((e) => e.id == item.id ? item : e).toList();
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> add(VisionItem item) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist([...current, item]);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 
-  Future<void> remove(String id) async {
-    final current = state.valueOrNull ?? [];
-    final updated = current.where((e) => e.id != id).toList();
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> saveItem(VisionItem item) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final priorMatches = current.where((e) => e.id == item.id).toList();
+        final updated =
+            current.map((e) => e.id == item.id ? item : e).toList();
+        await _persist(updated);
+        // Reclaim disk for photos dropped during an edit (remove/replace).
+        // Only ever touches managed bare filenames; delete() guards legacy
+        // paths. Done after the successful write so a failed save keeps files.
+        if (priorMatches.isNotEmpty) {
+          final kept = item.imagePaths.toSet();
+          for (final p in priorMatches.first.imagePaths) {
+            if (!kept.contains(p)) await VisionImageStore.delete(p);
+          }
+        }
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
+
+  Future<void> remove(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final removed = current.where((e) => e.id == id).toList();
+        await _persist(current.where((e) => e.id != id).toList());
+        // Reclaim disk for the deleted card's photos. Best-effort and only ever
+        // touches files we own (managed bare filenames) — never legacy paths.
+        for (final e in removed) {
+          for (final p in e.imagePaths) {
+            await VisionImageStore.delete(p);
+          }
+        }
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 
   /// Toggle the pinned flag. Cap at 3 pinned dreams so the home "North Star"
   /// card stays focused — extra pins are silently ignored.
-  Future<void> togglePinned(String id) async {
-    final current = state.valueOrNull ?? [];
-    final pinnedCount = current.where((e) => e.pinned).length;
-    final updated = current.map((e) {
-      if (e.id != id) return e;
-      if (!e.pinned && pinnedCount >= 3) return e; // cap reached
-      return e.copyWith(pinned: !e.pinned);
-    }).toList();
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> togglePinned(String id) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final pinnedCount = current.where((e) => e.pinned).length;
+        final updated = current.map((e) {
+          if (e.id != id) return e;
+          if (!e.pinned && pinnedCount >= 3) return e; // cap reached
+          return e.copyWith(pinned: !e.pinned);
+        }).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 
   /// Flip the achieved flag. Stamps `achievedDate` on transition to true,
   /// clears it on transition back to active.
-  Future<void> toggleAchieved(String id) async {
-    final current = state.valueOrNull ?? [];
-    final updated = current.map((e) {
-      if (e.id != id) return e;
-      final nowAchieved = !e.achieved;
-      return e.copyWith(
-        achieved: nowAchieved,
-        achievedDate: nowAchieved ? DateTime.now() : null,
-      );
-    }).toList();
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> toggleAchieved(String id) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.map((e) {
+          if (e.id != id) return e;
+          final nowAchieved = !e.achieved;
+          return e.copyWith(
+            achieved: nowAchieved,
+            achievedDate: nowAchieved ? DateTime.now() : null,
+          );
+        }).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 
   /// Flip a single milestone done/undone.
-  Future<void> toggleMilestone(String itemId, String milestoneId) async {
-    final current = state.valueOrNull ?? [];
-    final updated = current.map((e) {
-      if (e.id != itemId) return e;
-      final newMilestones = e.milestones
-          .map((m) => m.id == milestoneId ? m.copyWith(done: !m.done) : m)
-          .toList();
-      return e.copyWith(milestones: newMilestones);
-    }).toList();
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> toggleMilestone(String itemId, String milestoneId) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.map((e) {
+          if (e.id != itemId) return e;
+          final newMilestones = e.milestones
+              .map((m) => m.id == milestoneId ? m.copyWith(done: !m.done) : m)
+              .toList();
+          return e.copyWith(milestones: newMilestones);
+        }).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 
   /// Persist a custom ordering (after drag-reorder on the board).
-  Future<void> reorder(List<String> orderedIds) async {
-    final current = state.valueOrNull ?? [];
-    final byId = {for (final e in current) e.id: e};
-    final updated = <VisionItem>[
-      for (final id in orderedIds)
-        if (byId.containsKey(id)) byId[id]!,
-      // Append anything missing from the order list so nothing is lost.
-      for (final e in current)
-        if (!orderedIds.contains(e.id)) e,
-    ];
-    await EncryptedStore.write(
-        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
-    state = AsyncData(updated);
-  }
+  Future<void> reorder(List<String> orderedIds) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final byId = {for (final e in current) e.id: e};
+        final updated = <VisionItem>[
+          for (final id in orderedIds)
+            if (byId.containsKey(id)) byId[id]!,
+          // Append anything missing from the order list so nothing is lost.
+          for (final e in current)
+            if (!orderedIds.contains(e.id)) e,
+        ];
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[VisionBoardNotifier] write error: $e');
+      });
 }
 
 final visionBoardProvider =
@@ -1196,10 +1356,13 @@ class Slip {
   });
 
   factory Slip.fromJson(Map<String, dynamic> j) => Slip(
-        id: j['id'] as String,
+        id: (j['id'] as String?) ??
+            'gen_${DateTime.now().microsecondsSinceEpoch}',
         date: _safeParseDate(j['date'] as String?),
-        streakDays: j['streakDays'] as int,
-        previousSoberDate: j['previousSoberDate'] as String,
+        // Tolerant int read: a backup may round-trip an int as a double, and
+        // `5.0 as int` throws — which would drop the whole slip record.
+        streakDays: (j['streakDays'] as num?)?.toInt() ?? 0,
+        previousSoberDate: (j['previousSoberDate'] as String?) ?? '',
         note: j['note'] as String?,
       );
 
@@ -1312,9 +1475,12 @@ class CravingEntry {
   });
 
   factory CravingEntry.fromJson(Map<String, dynamic> j) => CravingEntry(
-        id: j['id'] as String,
+        id: (j['id'] as String?) ??
+            'gen_${DateTime.now().microsecondsSinceEpoch}',
         date: _safeParseDate(j['date'] as String?),
-        intensity: j['intensity'] as int,
+        // Tolerant int read (a round-tripped double would throw `as int` and
+        // drop the whole craving record).
+        intensity: (j['intensity'] as num?)?.toInt() ?? 0,
         trigger: j['trigger'] as String?,
         severity: j['severity'] as String?,
         triggers: ((j['triggers'] as List<dynamic>?) ??
@@ -1439,13 +1605,15 @@ class DailyIntention {
   });
 
   factory DailyIntention.fromJson(Map<String, dynamic> j) => DailyIntention(
-        id: j['id'] as String,
+        id: (j['id'] as String?) ??
+            'gen_${DateTime.now().microsecondsSinceEpoch}',
         date: _safeParseDate(j['date'] as String?),
         text: (j['text'] as String?) ?? '',
         outcome: j['outcome'] as String?,
-        reviewedAt: j['reviewedAt'] != null
-            ? _safeParseDate(j['reviewedAt'] as String?)
-            : null,
+        // Optional date: a non-null but unparseable value must stay null, NOT
+        // become the year-2000 sentinel (which would fabricate a real-looking
+        // "evening review happened" timestamp). _nullableParseDate handles both.
+        reviewedAt: _nullableParseDate(j['reviewedAt'] as String?),
       );
 
   Map<String, dynamic> toJson() => {

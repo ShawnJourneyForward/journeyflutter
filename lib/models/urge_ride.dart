@@ -1,3 +1,5 @@
+import '../utils/safe_parse.dart';
+
 /// A completed "ride the wave" — the user stayed with an urge until it
 /// passed instead of acting on it. Every recorded ride is a win: ending the
 /// timer early via "I'm steady now" still counts (the urge passed sooner).
@@ -15,9 +17,9 @@ class UrgeRide {
   });
 
   factory UrgeRide.fromJson(Map<String, dynamic> j) => UrgeRide(
-        id: j['id'] as String,
-        date: DateTime.parse(j['date'] as String),
-        seconds: (j['seconds'] as num).toInt(),
+        id: safeId(j['id']),
+        date: safeParseDate(j['date']),
+        seconds: safeInt(j['seconds']),
       );
 
   Map<String, dynamic> toJson() => {

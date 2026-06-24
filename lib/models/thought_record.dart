@@ -4,6 +4,7 @@
 // prescribe.
 
 import '../l10n/app_localizations.dart';
+import '../utils/safe_parse.dart';
 
 class ThoughtRecord {
   final String id;
@@ -31,8 +32,8 @@ class ThoughtRecord {
   });
 
   factory ThoughtRecord.fromJson(Map<String, dynamic> j) => ThoughtRecord(
-        id: j['id'] as String,
-        date: DateTime.parse(j['date'] as String),
+        id: safeId(j['id']),
+        date: safeParseDate(j['date']),
         situation: j['situation'] as String? ?? '',
         automaticThought: j['automaticThought'] as String? ?? '',
         distortions: ((j['distortions'] as List<dynamic>?) ?? const [])

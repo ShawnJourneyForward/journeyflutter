@@ -117,6 +117,7 @@ class _WeeklyCareSummaryScreenState
   // ── Reflection text ─────────────────────────────────────────────────────────
 
   String _reflection({
+    required AppLocalizations l10n,
     required int journalCount,
     required int cravingCount,
     required int thoughtCount,
@@ -142,7 +143,7 @@ class _WeeklyCareSummaryScreenState
         pledgeCount;
 
     if (totalEntries == 0) {
-      return 'No care entries were recorded for this period. A quiet week still counts.';
+      return l10n.weeklySummaryNoActivity;
     }
 
     // Count unique care days
@@ -168,14 +169,16 @@ class _WeeklyCareSummaryScreenState
       }
     }
 
+    // Each bucket maps its localized display label → count, so the winning
+    // label is already translated when shown in "Most used support: …".
     final counts = {
-      'Journal': journalCount,
-      'Craving support': cravingCount,
-      'Thought exercises': thoughtCount,
-      'Movement': activityCount,
-      'Sleep log': sleepCount,
-      'Gratitude': gratitudeCount,
-      'Daily pledge': pledgeCount,
+      l10n.weeklySummarySupportJournal: journalCount,
+      l10n.weeklySummarySupportCraving: cravingCount,
+      l10n.weeklySummarySupportThought: thoughtCount,
+      l10n.weeklySummarySupportMovement: activityCount,
+      l10n.weeklySummarySupportSleep: sleepCount,
+      l10n.weeklySummarySupportGratitude: gratitudeCount,
+      l10n.weeklySummarySupportPledge: pledgeCount,
     };
 
     String? mostUsed;
@@ -188,9 +191,9 @@ class _WeeklyCareSummaryScreenState
     });
 
     final n = careDays.length;
-    return 'You returned to your care practices on $n ${n == 1 ? 'day' : 'days'} this week.\n'
-        'Most used support: ${mostUsed ?? 'Various'}\n'
-        'A quiet week of showing up still counts.';
+    return '${l10n.weeklySummaryCareDays(n)}\n'
+        '${l10n.weeklySummaryMostUsed(mostUsed ?? l10n.weeklySummarySupportVarious)}\n'
+        '${l10n.weeklySummaryQuietWeek}';
   }
 
   // ── PDF generation ──────────────────────────────────────────────────────────
@@ -203,6 +206,7 @@ class _WeeklyCareSummaryScreenState
   // text carries the meaning either way.
 
   Future<void> _sharePdf({
+    required AppLocalizations l10n,
     required DateTimeRange range,
     required int journalCount,
     required int cravingCount,
@@ -232,13 +236,13 @@ class _WeeklyCareSummaryScreenState
     final dateRangeLabel = '$startLabel – $endLabel';
 
     final rows = [
-      ('Journal entries', journalCount),
-      ('Craving support used', cravingCount),
-      ('Thought exercises', thoughtCount),
-      ('Movement / activity', activityCount),
-      ('Sleep logs', sleepCount),
-      ('Daily gratitude', gratitudeCount),
-      ('Daily pledge', pledgeCount),
+      (l10n.weeklySummaryJournalEntries, journalCount),
+      (l10n.weeklySummaryCravingSupport, cravingCount),
+      (l10n.weeklySummaryThoughtExercises, thoughtCount),
+      (l10n.weeklySummaryMovement, activityCount),
+      (l10n.weeklySummarySleepLogs, sleepCount),
+      (l10n.weeklySummaryDailyGratitude, gratitudeCount),
+      (l10n.weeklySummaryDailyPledge, pledgeCount),
     ];
 
     // ── Reusable widget builders ────────────────────────────────────────────
@@ -365,7 +369,7 @@ class _WeeklyCareSummaryScreenState
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Text(
-                            'Weekly Care Summary',
+                            l10n.weeklySummaryTitle,
                             style: pw.TextStyle(
                               font: pw.Font.timesBold(),
                               fontSize: 24,
@@ -374,7 +378,8 @@ class _WeeklyCareSummaryScreenState
                           ),
                           pw.SizedBox(height: 2),
                           pw.Text(
-                            'Journey Forward  •  $dateRangeLabel',
+                            l10n.weeklySummaryPdfHeaderLine(
+                                l10n.weeklySummaryAppName, dateRangeLabel),
                             style: pw.TextStyle(
                               font: pw.Font.helvetica(),
                               fontSize: 11,
@@ -391,7 +396,7 @@ class _WeeklyCareSummaryScreenState
                 pw.SizedBox(height: 14),
 
                 // ── Care recorded section ─────────────────────────────────
-                sectionHeader('Care recorded'),
+                sectionHeader(l10n.weeklySummaryCareRecorded),
                 pw.SizedBox(height: 8),
                 ...rows.map((r) => summaryRow(r.$1, r.$2)),
 
@@ -400,7 +405,7 @@ class _WeeklyCareSummaryScreenState
                 pw.SizedBox(height: 14),
 
                 // ── Reflection ─────────────────────────────────────────────
-                sectionHeader('Reflection'),
+                sectionHeader(l10n.weeklySummaryReflection),
                 pw.SizedBox(height: 8),
                 pw.Padding(
                   padding: const pw.EdgeInsets.only(left: 32),
@@ -422,13 +427,12 @@ class _WeeklyCareSummaryScreenState
                 // ── Privacy note ──────────────────────────────────────────
                 // Body intentionally matches l10n.weeklySummaryPrivacyNoteBody
                 // so PDF and on-screen read the same to the recipient.
-                sectionHeader('Privacy note'),
+                sectionHeader(l10n.weeklySummaryPrivacyNote),
                 pw.SizedBox(height: 8),
                 pw.Padding(
                   padding: const pw.EdgeInsets.only(left: 32),
                   child: pw.Text(
-                    'This summary was created on your device and shared '
-                    'only because you chose to share it.',
+                    l10n.weeklySummaryPrivacyNoteBody,
                     style: pw.TextStyle(
                       font: pw.Font.helvetica(),
                       fontSize: 11,
@@ -443,7 +447,7 @@ class _WeeklyCareSummaryScreenState
                 pw.Container(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                    'Generated by Journey Forward',
+                    l10n.weeklySummaryPdfGeneratedBy,
                     style: pw.TextStyle(
                       font: pw.Font.helveticaOblique(),
                       fontSize: 9,
@@ -468,7 +472,7 @@ class _WeeklyCareSummaryScreenState
 
     await Share.shareXFiles(
       [XFile(file.path)],
-      subject: 'Weekly Care Summary',
+      subject: l10n.weeklySummaryTitle,
     );
   }
 
@@ -605,6 +609,7 @@ class _WeeklyCareSummaryScreenState
         profile != null ? _pledgeCount(profile, rangeStart, rangeEnd) : 0;
 
     final reflectionText = _reflection(
+      l10n: l10n,
       journalCount: journalCount,
       cravingCount: cravingCount,
       thoughtCount: thoughtCount,
@@ -926,6 +931,7 @@ class _WeeklyCareSummaryScreenState
                                     setState(() => _generatingPdf = true);
                                     try {
                                       await _sharePdf(
+                                        l10n: l10n,
                                         range: range,
                                         journalCount: journalCount,
                                         cravingCount: cravingCount,

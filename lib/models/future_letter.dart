@@ -3,6 +3,8 @@
 // the calendar unlock date from the profile's sober date when the letter is
 // created so changing the sober date later does NOT shift the unlock target.
 
+import '../utils/safe_parse.dart';
+
 class FutureLetter {
   final String id;
   final DateTime writtenAt;
@@ -32,11 +34,11 @@ class FutureLetter {
   bool unlockedAt(DateTime now) => !now.isBefore(unlockAt);
 
   factory FutureLetter.fromJson(Map<String, dynamic> j) => FutureLetter(
-        id: j['id'] as String,
-        writtenAt: DateTime.parse(j['writtenAt'] as String),
-        unlockAt: DateTime.parse(j['unlockAt'] as String),
-        unlockDay: (j['unlockDay'] as num).toInt(),
-        body: j['body'] as String,
+        id: safeId(j['id']),
+        writtenAt: safeParseDate(j['writtenAt']),
+        unlockAt: safeParseDate(j['unlockAt']),
+        unlockDay: safeInt(j['unlockDay']),
+        body: safeString(j['body']),
         opened: (j['opened'] as bool?) ?? false,
       );
 

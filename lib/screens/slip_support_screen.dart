@@ -197,6 +197,51 @@ class _SlipSupportScreenState extends ConsumerState<SlipSupportScreen> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 12),
+
+                      // ── TIPP fast reset link ────────────────────────────
+                      GestureDetector(
+                        onTap: () {
+                          H.light();
+                          context.push('/tipp');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.card,
+                            borderRadius: AppRadius.luxury,
+                            border: Border.all(color: AppColors.softBorder),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppColors.honey50,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.bolt_rounded,
+                                    size: 20, color: AppColors.honey600),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(l10n.slipSupportTryTipp,
+                                        style: AppTextStyles.titleSmall),
+                                    Text(l10n.slipSupportTryTippSub,
+                                        style: AppTextStyles.bodySmall),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right_rounded,
+                                  size: 20, color: AppColors.stone300),
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 20),
 
                       // ── Distraction toolkit ─────────────────────────────

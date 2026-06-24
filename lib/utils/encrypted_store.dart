@@ -56,6 +56,30 @@ class EncryptedStore {
     return null;
   }
 
+  /// Like [read], but THROWS [EncryptedStoreException] when every attempt fails
+  /// on a transient Keystore error. An absent key still returns null without
+  /// throwing. Use this on the BACKUP EXPORT path: [read] returns null for BOTH
+  /// "absent" and "transiently unreadable", so exporting with it can silently
+  /// omit a collection the user still has — handing them a backup they believe
+  /// is complete. readStrict lets export abort loudly instead.
+  static Future<String?> readStrict(String key) async {
+    Object? lastError;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await _storage.read(key: key);
+      } catch (e) {
+        lastError = e;
+        debugPrint(
+            '[EncryptedStore] readStrict($key) attempt ${attempt + 1} failed: $e');
+        if (attempt < 2) {
+          await Future.delayed(Duration(milliseconds: 120 * (attempt + 1)));
+        }
+      }
+    }
+    throw EncryptedStoreException(
+        'Secure read failed for key "$key" after retries: $lastError');
+  }
+
   /// Write a value (encrypts via Keystore).
   /// Throws [EncryptedStoreException] if the write fails so callers are
   /// not left believing sensitive data was persisted when it was not.

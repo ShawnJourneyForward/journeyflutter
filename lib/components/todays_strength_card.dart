@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
@@ -18,6 +19,19 @@ import 'glass_card.dart';
 // Designed to NEVER show all three at once — the slot with the most
 // actionable information for THIS user wins. Surfacing four cards in a row
 // is noise.
+
+// Localized day-name + time-window for the craving pattern, formatted off the
+// active app locale (Intl.defaultLocale) rather than the old English-only
+// getters on CravingPattern (which leaked English into the translated card).
+// Jan 2024 starts on a Monday, so DateTime(2024,1,weekday) maps 1→Mon … 7→Sun.
+String _localizedWeekday(int weekday) =>
+    DateFormat.EEEE(Intl.defaultLocale).format(DateTime(2024, 1, weekday));
+
+String _localizedHourWindow(int startHour) {
+  String h(int hr) =>
+      DateFormat.j(Intl.defaultLocale).format(DateTime(2024, 1, 1, hr % 24));
+  return '${h(startHour)}–${h((startHour + 2) % 24)}';
+}
 
 class TodaysStrengthCard extends ConsumerWidget {
   const TodaysStrengthCard({super.key});
@@ -85,7 +99,8 @@ class TodaysStrengthCard extends ConsumerWidget {
               colour: AppColors.forest700,
               bg: AppColors.forest50,
               title: l10n.strengthPatternTitle(
-                  pattern.weekdayLabel, pattern.timeLabel),
+                  _localizedWeekday(pattern.weekday),
+                  _localizedHourWindow(pattern.startHour)),
               subtitle: l10n.strengthPatternSub(
                   pattern.count, pattern.totalCravings),
               actionLabel: l10n.commonPlan,

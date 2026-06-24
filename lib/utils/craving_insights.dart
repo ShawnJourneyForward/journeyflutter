@@ -213,3 +213,92 @@ Map<String, int> haltPrevalence(List<CravingEntry> all) {
     ..sort((a, b) => b.value.compareTo(a.value));
   return Map.fromEntries(sorted);
 }
+
+// ─── Trigger frequency — the user's own words ────────────────────────────────
+
+/// One trigger the user has logged, with how often it appeared. The label is
+/// the user's own text (preserved with its first-seen casing); `count` is how
+/// many cravings named it.
+class TriggerStat {
+  final String label;
+  final int count;
+  const TriggerStat({required this.label, required this.count});
+}
+
+/// The triggers that most often accompany the user's cravings, most-frequent
+/// first. Triggers are free text the user typed, so we de-duplicate
+/// case-insensitively (trimmed) but display the first casing we saw. A single
+/// one-off trigger is signal too, so there's no minimum — callers cap the list.
+/// Reads both the modern [CravingEntry.triggers] list and the legacy single
+/// [CravingEntry.trigger] field so older logs still count.
+List<TriggerStat> topTriggers(List<CravingEntry> all) {
+  final counts = <String, int>{}; // normalized key → count
+  final display = <String, String>{}; // normalized key → first-seen casing
+  void tally(String? raw) {
+    final text = raw?.trim();
+    if (text == null || text.isEmpty) return;
+    final key = text.toLowerCase();
+    counts[key] = (counts[key] ?? 0) + 1;
+    display.putIfAbsent(key, () => text);
+  }
+
+  for (final e in all) {
+    if (e.triggers.isNotEmpty) {
+      for (final t in e.triggers) {
+        tally(t);
+      }
+    } else {
+      // Only fall back to the single legacy field when there's no list, so a
+      // record that has both doesn't double-count its primary trigger.
+      tally(e.trigger);
+    }
+  }
+
+  final out = counts.entries
+      .map((e) => TriggerStat(label: display[e.key]!, count: e.value))
+      .toList()
+    ..sort((a, b) {
+      final c = b.count.compareTo(a.count);
+      return c != 0 ? c : a.label.toLowerCase().compareTo(b.label.toLowerCase());
+    });
+  return out;
+}
+
+// ─── Outcome tally — stayed sober vs slipped vs unclear ───────────────────────
+
+/// How the user's logged cravings resolved. Only counts cravings that recorded
+/// an outcome — quick-logs without one are excluded from every field so the
+/// "stayed sober" count is never inflated by un-tagged entries.
+class OutcomeTally {
+  final int stayedSober;
+  final int slipped;
+  final int unclear;
+  const OutcomeTally({
+    required this.stayedSober,
+    required this.slipped,
+    required this.unclear,
+  });
+
+  /// Cravings that recorded any outcome at all.
+  int get totalWithOutcome => stayedSober + slipped + unclear;
+}
+
+OutcomeTally outcomeTally(List<CravingEntry> all) {
+  var sober = 0, slipped = 0, unclear = 0;
+  for (final e in all) {
+    switch (e.outcome) {
+      case 'stayed_sober':
+        sober++;
+        break;
+      case 'slipped':
+        slipped++;
+        break;
+      case 'unclear':
+        unclear++;
+        break;
+      default:
+        break; // no outcome recorded — excluded
+    }
+  }
+  return OutcomeTally(stayedSober: sober, slipped: slipped, unclear: unclear);
+}

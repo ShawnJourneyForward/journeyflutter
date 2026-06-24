@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,6 +25,12 @@ class _LockScreenState extends State<LockScreen>
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
+
+  // Brute-force throttle state (new, additive secure-storage keys — never reuse
+  // profile JSON fields). Persisted so a force-stop can't reset the cooldown.
+  static const _pinFailCountKey = 'pin_fail_count';
+  static const _pinLockoutUntilKey = 'pin_lockout_until';
+
   final _auth = LocalAuthentication();
 
   String _lockMethod = 'none';
@@ -202,6 +206,19 @@ class _LockScreenState extends State<LockScreen>
   }
 
   Future<void> _verifyPin() async {
+    // Brute-force throttle: a 4-digit PIN is only 10,000 values. Enforce an
+    // escalating, persisted cooldown before checking the entered PIN.
+    final lockoutUntil = await _readLockoutUntil();
+    if (lockoutUntil != null && DateTime.now().isBefore(lockoutUntil)) {
+      if (!mounted) return;
+      setState(() {
+        _error = AppLocalizations.of(context).lockTooManyAttempts;
+        _entered = '';
+      });
+      _shakeCtrl.forward(from: 0);
+      return;
+    }
+
     final v2 = await _storage.read(key: PinHash.storageKey);
     final legacy = await _storage.read(key: PinHash.legacyKey);
     if (!mounted) return;
@@ -215,24 +232,60 @@ class _LockScreenState extends State<LockScreen>
       return;
     }
 
-    bool ok = false;
-    if (v2 != null) {
-      ok = PinHash.verify(_entered, v2);
-    } else {
-      // Legacy unsalted SHA-256 — verify, then transparently migrate to v2.
-      final entered = sha256.convert(utf8.encode(_entered)).toString();
-      ok = entered == legacy;
-      if (ok) {
-        await PinHash.writeNew(_storage, _entered);
-      }
+    // PinHash.verify handles BOTH the v2 salt:key format and a legacy unsalted
+    // sha256 hash (constant-time in both). Verify against whichever exists.
+    final stored = v2 ?? legacy!;
+    final ok = PinHash.verify(_entered, stored);
+    if (ok && v2 == null) {
+      // Transparently migrate the legacy hash to v2 on first successful unlock.
+      await PinHash.writeNew(_storage, _entered);
     }
 
     if (ok) {
+      // Clear throttle state on success.
+      await _storage.delete(key: _pinFailCountKey);
+      await _storage.delete(key: _pinLockoutUntilKey);
       H.medium();
       _unlock();
     } else {
-      _wrongPin();
+      final lockedOut = await _registerFailedAttempt();
+      if (!mounted) return;
+      if (lockedOut) {
+        setState(() {
+          _error = AppLocalizations.of(context).lockTooManyAttempts;
+          _entered = '';
+        });
+        _shakeCtrl.forward(from: 0);
+      } else {
+        _wrongPin();
+      }
     }
+  }
+
+  Future<DateTime?> _readLockoutUntil() async {
+    final raw = await _storage.read(key: _pinLockoutUntilKey);
+    return raw == null ? null : DateTime.tryParse(raw);
+  }
+
+  /// Record a failed PIN attempt and apply an escalating cooldown. Returns true
+  /// when the attempt count has triggered (or is within) a lockout window.
+  Future<bool> _registerFailedAttempt() async {
+    final raw = await _storage.read(key: _pinFailCountKey);
+    final count = (int.tryParse(raw ?? '') ?? 0) + 1;
+    await _storage.write(key: _pinFailCountKey, value: count.toString());
+    Duration? cooldown;
+    if (count >= 15) {
+      cooldown = const Duration(minutes: 15);
+    } else if (count >= 10) {
+      cooldown = const Duration(minutes: 5);
+    } else if (count >= 5) {
+      cooldown = const Duration(seconds: 30);
+    }
+    if (cooldown == null) return false;
+    final until = DateTime.now().add(cooldown);
+    await _storage.write(
+        key: _pinLockoutUntilKey, value: until.toIso8601String());
+    return true;
   }
 
   void _wrongPin() {
@@ -294,7 +347,7 @@ class _LockScreenState extends State<LockScreen>
                   icon: Icon(Icons.support_rounded,
                       size: 16, color: AppColors.blush600),
                   label: Text(
-                    'Need help right now?',
+                    AppLocalizations.of(context).lockScreenNeedHelp,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.blush600),
                   ),

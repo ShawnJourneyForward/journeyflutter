@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../utils/locale_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
@@ -438,9 +439,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _midnightTimer = Timer(delay, () {
       if (!mounted) return;
       ref.invalidate(gratitudeProvider);
+      // The mission list, quote and milestone check are all day-seeded and
+      // cached once per HomeScreen lifecycle. Clear them at midnight so an app
+      // left open overnight rolls over to the new day's content / re-checks
+      // milestones instead of showing yesterday's.
+      ref.invalidate(missionTogglesProvider);
       setState(() {
         _editingPledge = false;
         _editingGratitude = false;
+        _cachedMissions = null;
+        _cachedQuote = null;
+        _milestonesChecked = false;
       });
       _scheduleMidnightReset(); // re-arm for the next midnight
     });
@@ -770,14 +779,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final days = SoberStats.compute(profile, now).days;
 
     // ── Day milestones ──────────────────────────────────────────────────────
-    if (milestoneDays.contains(days) &&
-        !profile.firedMilestoneDays.contains(days)) {
-      await NotificationService.fireDayMilestone(days);
+    // Fire EVERY reached-but-unfired milestone, not just an exact-day match.
+    // If the user didn't open the app on the precise milestone day (days jumps
+    // 89 → 91), the day-7/30 celebration would otherwise be lost forever.
+    // firedMilestoneDays keeps this idempotent. We post a single notification
+    // for the highest reached milestone (to avoid a burst) but mark all reached
+    // ones fired so each fires at most once. In normal day-by-day use only one
+    // milestone is ever unfired, so this is identical to the old behaviour.
+    final unfired = milestoneDays
+        .where((d) => days >= d && !profile.firedMilestoneDays.contains(d))
+        .toList();
+    if (unfired.isNotEmpty) {
+      final highest = unfired.reduce((a, b) => a > b ? a : b);
+      await NotificationService.fireDayMilestone(highest);
       H.heavy();
       if (mounted) {
         await ref.read(profileProvider.notifier).patch(
               (p) => p.copyWith(
-                firedMilestoneDays: [...p.firedMilestoneDays, days],
+                firedMilestoneDays: [...p.firedMilestoneDays, ...unfired],
               ),
             );
       }
@@ -1449,7 +1468,16 @@ class _LiveCounter extends ConsumerWidget {
         children: [
           _TimeSoberLabel(countdown: countdown),
           const SizedBox(height: 10),
-          Row(
+          // Screen readers get one coherent spoken summary instead of four
+          // bare numbers ("5", "12", "30", "45"). The visual tiles are excluded
+          // so they aren't read twice.
+          Semantics(
+            container: true,
+            label: countdown
+                ? l10n.a11yCountdownDuration(days, hours, minutes, seconds)
+                : l10n.a11ySoberDuration(days, hours, minutes, seconds),
+            child: ExcludeSemantics(
+              child: Row(
             children: [
               Expanded(
                 child: _CounterTile(
@@ -1479,6 +1507,8 @@ class _LiveCounter extends ConsumerWidget {
                 ),
               ),
             ],
+          ),
+            ),
           ),
         ],
       ),
@@ -1658,14 +1688,8 @@ class _MoneyCard extends ConsumerWidget {
     );
   }
 
-  static String _formatMoney(String currency, double amount) {
-    if (currency == 'R') {
-      return NumberFormat.currency(
-              locale: 'en_ZA', symbol: 'R', decimalDigits: 2)
-          .format(amount);
-    }
-    return '$currency${NumberFormat('#,##0.00').format(amount)}';
-  }
+  static String _formatMoney(String currency, double amount) =>
+      formatMoney(amount, symbol: currency);
 }
 
 // \u2500\u2500\u2500 Savings goal bottom sheet \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500

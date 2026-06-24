@@ -87,10 +87,24 @@ class BackupCrypto {
     if (v != _version) {
       throw BackupCryptoException('Unsupported backup version: $v');
     }
-    final salt = base64Decode(m['salt'] as String);
-    final nonce = base64Decode(m['nonce'] as String);
-    final ct = base64Decode(m['ct'] as String);
-    final mac = base64Decode(m['mac'] as String);
+    // A file that merely *looks* encrypted (has v/salt/nonce/ct/mac keys) may
+    // still be truncated or hand-edited — the casts/base64 below would throw
+    // TypeError/FormatException, which bypass the import's BackupCryptoException
+    // handler and surface a generic failure. Normalise them to the dedicated
+    // "corrupt backup" message.
+    late final Uint8List salt;
+    late final Uint8List nonce;
+    late final Uint8List ct;
+    late final Uint8List mac;
+    try {
+      salt = base64Decode(m['salt'] as String);
+      nonce = base64Decode(m['nonce'] as String);
+      ct = base64Decode(m['ct'] as String);
+      mac = base64Decode(m['mac'] as String);
+    } catch (_) {
+      throw BackupCryptoException(
+          'Backup file is corrupt or not a valid encrypted backup.');
+    }
 
     final (encKey, macKey) = _deriveKeys(passphrase, salt);
 

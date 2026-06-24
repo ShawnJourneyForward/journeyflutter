@@ -3,6 +3,8 @@
 // progress so users can see how many battles they've won, not just their
 // uninterrupted streak.
 
+import '../utils/safe_parse.dart';
+
 class HardDay {
   final String id;
   final DateTime date;
@@ -11,8 +13,8 @@ class HardDay {
   const HardDay({required this.id, required this.date, this.note});
 
   factory HardDay.fromJson(Map<String, dynamic> j) => HardDay(
-        id: j['id'] as String,
-        date: DateTime.parse(j['date'] as String),
+        id: safeId(j['id']),
+        date: safeParseDate(j['date']),
         note: j['note'] as String?,
       );
 

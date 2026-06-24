@@ -18,6 +18,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
+import '../utils/vision_image_store.dart';
 import 'vision_board_shared.dart';
 
 class VisionDetailScreen extends ConsumerWidget {
@@ -55,8 +56,13 @@ class VisionDetailScreen extends ConsumerWidget {
 
     final accent = visionAccent(item);
     final opt = visionOptionFor(item.emoji);
-    final hasPhoto =
-        item.imagePaths.isNotEmpty && File(item.imagePaths.first).existsSync();
+    // Resolve every stored photo to a real on-disk file. Bare filenames are
+    // re-joined to the live documents dir by VisionImageStore; missing files
+    // (e.g. legacy cache paths the OS already cleared) drop out here.
+    final photos = item.imagePaths
+        .map(VisionImageStore.fileFor)
+        .whereType<File>()
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -66,7 +72,7 @@ class VisionDetailScreen extends ConsumerWidget {
             item: item,
             accent: accent,
             opt: opt,
-            hasPhoto: hasPhoto,
+            photos: photos,
             onEdit: () => onEdit(item),
             onTogglePin: () async {
               H.medium();
@@ -118,6 +124,13 @@ class VisionDetailScreen extends ConsumerWidget {
                   if (item.achieved) _AchievedBanner(date: item.achievedDate),
                   _CategoryAndDate(item: item, accent: accent),
                   const SizedBox(height: 18),
+                  // Swipeable thumbnail strip — the hero only shows the cover,
+                  // so this is how the other photos become reachable. Tap any
+                  // to open the fullscreen, zoomable viewer.
+                  if (photos.length > 1) ...[
+                    _PhotoStrip(photos: photos),
+                    const SizedBox(height: 18),
+                  ],
                   if (item.affirmation.isNotEmpty)
                     _AffirmationCard(text: item.affirmation, accent: accent),
                   if (item.milestones.isNotEmpty) ...[
@@ -159,7 +172,7 @@ class _DetailAppBar extends StatelessWidget {
     required this.item,
     required this.accent,
     required this.opt,
-    required this.hasPhoto,
+    required this.photos,
     required this.onEdit,
     required this.onTogglePin,
     required this.onToggleAchieved,
@@ -168,7 +181,7 @@ class _DetailAppBar extends StatelessWidget {
   final VisionItem item;
   final Color accent;
   final VisionIconOption opt;
-  final bool hasPhoto;
+  final List<File> photos;
   final VoidCallback onEdit;
   final VoidCallback onTogglePin;
   final VoidCallback onToggleAchieved;
@@ -176,6 +189,7 @@ class _DetailAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final hasPhoto = photos.isNotEmpty;
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
@@ -236,9 +250,13 @@ class _DetailAppBar extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Background — photo or accented gradient.
+            // Background — photo or accented gradient. Tapping the cover opens
+            // the fullscreen, swipeable, zoomable viewer at the first photo.
             if (hasPhoto)
-              Image.file(File(item.imagePaths.first), fit: BoxFit.cover)
+              GestureDetector(
+                onTap: () => _openVisionPhotoViewer(context, photos, 0),
+                child: Image.file(photos.first, fit: BoxFit.cover),
+              )
             else
               DecoratedBox(
                 decoration: BoxDecoration(
@@ -719,6 +737,149 @@ class _ProseCard extends StatelessWidget {
                 .copyWith(color: AppColors.stone700, height: 1.5),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Photo strip + fullscreen viewer ─────────────────────────────────────────
+
+/// Horizontal, scrollable thumbnail row of every photo on a vision. Shown only
+/// when there's more than one (a single photo already fills the hero). Tapping
+/// a thumbnail opens the zoomable, swipeable fullscreen viewer at that index.
+class _PhotoStrip extends StatelessWidget {
+  const _PhotoStrip({required this.photos});
+  final List<File> photos;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.photo_library_outlined,
+                size: 16, color: AppColors.forest500),
+            const SizedBox(width: 6),
+            Text(l10n.visionPhotosLabel,
+                style: AppTextStyles.overline.copyWith(color: AppColors.forest500)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 88,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: photos.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (_, i) => GestureDetector(
+              onTap: () {
+                H.selection();
+                _openVisionPhotoViewer(context, photos, i);
+              },
+              child: ClipRRect(
+                borderRadius: AppRadius.md,
+                child: Image.file(
+                  photos[i],
+                  width: 88,
+                  height: 88,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Push the fullscreen photo viewer, starting at [initialIndex].
+void _openVisionPhotoViewer(
+    BuildContext context, List<File> photos, int initialIndex) {
+  Navigator.of(context).push(MaterialPageRoute(
+    fullscreenDialog: true,
+    builder: (_) =>
+        _PhotoViewerScreen(photos: photos, initialIndex: initialIndex),
+  ));
+}
+
+/// Fullscreen, black-backed photo viewer. Swipe between photos, pinch/double
+/// to zoom each one (InteractiveViewer), tap the X to close.
+class _PhotoViewerScreen extends StatefulWidget {
+  const _PhotoViewerScreen({required this.photos, required this.initialIndex});
+  final List<File> photos;
+  final int initialIndex;
+
+  @override
+  State<_PhotoViewerScreen> createState() => _PhotoViewerScreenState();
+}
+
+class _PhotoViewerScreenState extends State<_PhotoViewerScreen> {
+  late final PageController _controller;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex;
+    _controller = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final photos = widget.photos;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _controller,
+              itemCount: photos.length,
+              onPageChanged: (i) => setState(() => _index = i),
+              itemBuilder: (_, i) => InteractiveViewer(
+                minScale: 1,
+                maxScale: 4,
+                child: Center(child: Image.file(photos[i], fit: BoxFit.contain)),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close_rounded,
+                    color: Colors.white, size: 28),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+            if (photos.length > 1)
+              Positioned(
+                top: 16,
+                right: 16,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${_index + 1} / ${photos.length}',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

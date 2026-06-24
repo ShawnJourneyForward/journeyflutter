@@ -122,6 +122,21 @@
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>
         </intent>
+        <!-- canLaunchUrl() resolves tel:/sms:/mailto: via ACTION_VIEW on
+             Android 11+. Without these the emergency call / contact buttons
+             would report "can't launch" and silently no-op. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="sms"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="mailto"/>
+        </intent>
         <!-- speech_to_text needs to enumerate any installed speech service
              (Google "Speech Services", Samsung Voice, etc.) on Android 11+. -->
         <intent>

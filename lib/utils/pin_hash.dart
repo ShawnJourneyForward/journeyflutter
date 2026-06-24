@@ -48,8 +48,19 @@ class PinHash {
     return '${base64.encode(salt)}:${base64.encode(derived)}';
   }
 
-  /// Constant-time verify a typed PIN against a previously stored encoded hash.
+  /// Constant-time verify a typed PIN against a previously stored hash.
+  ///
+  /// Transparently accepts BOTH formats: the modern `salt:key` (v2) and a
+  /// legacy unsalted `sha256(pin)` hex string (no ':'). Handling legacy here
+  /// (rather than only at the lock screen) means every caller — including the
+  /// per-entry journal re-auth — accepts a correct legacy PIN, and the compare
+  /// is constant-time in both paths.
   static bool verify(String pin, String stored) {
+    if (!stored.contains(':')) {
+      // Legacy unsalted SHA-256 hex. Compare constant-time over the hex bytes.
+      final entered = sha256.convert(utf8.encode(pin)).toString();
+      return _constantTimeEquals(utf8.encode(entered), utf8.encode(stored));
+    }
     final parts = stored.split(':');
     if (parts.length != 2) return false;
     late final Uint8List salt;

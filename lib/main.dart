@@ -13,9 +13,11 @@ import 'l10n/app_locales.dart';
 import 'providers/app_providers.dart';
 import 'theme/app_theme.dart';
 import 'utils/haptic_service.dart';
+import 'utils/locale_format.dart';
 import 'utils/notification_service.dart';
 import 'utils/secure_window.dart';
 import 'utils/storage_migration.dart';
+import 'utils/vision_image_store.dart';
 // ─── Screen imports ───────────────────────────────────────────────────────────
 import 'screens/backup_screen.dart';
 import 'screens/crisis_screen.dart';
@@ -37,9 +39,12 @@ import 'screens/settings_screen.dart';
 import 'screens/cbt_screen.dart';
 import 'screens/future_letter_screen.dart';
 import 'screens/heatmap_screen.dart';
+import 'screens/hundred_day_challenge_screen.dart';
+import 'screens/learned_screen.dart';
 import 'screens/pre_craving_plan_screen.dart';
 import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
+import 'screens/tipp_screen.dart';
 import 'screens/urge_timer_screen.dart';
 import 'screens/weekly_care_summary_screen.dart';
 
@@ -103,6 +108,15 @@ void main() async {
     debugPrint('[main] notification setup failed: $e');
   }
 
+  // Prepare the Vision Board image directory and cache its path so photo
+  // rendering can resolve persisted filenames synchronously. Guarded — a
+  // failure here must never block startup (it only degrades photo display).
+  try {
+    await VisionImageStore.init();
+  } catch (e) {
+    debugPrint('[main] vision image store init failed: $e');
+  }
+
   // Lock to portrait
   try {
     await SystemChrome.setPreferredOrientations([
@@ -111,6 +125,18 @@ void main() async {
     ]);
   } catch (e) {
     debugPrint('[main] orientation lock failed: $e');
+  }
+
+  // Wire intl to the active locale so dates and money follow the chosen
+  // language (not en_US). Pre-load date symbols for every enabled language,
+  // then point Intl at the saved/device locale before the first frame.
+  try {
+    await initIntlDateFormatting();
+    final device = WidgetsBinding.instance.platformDispatcher.locale;
+    applyIntlLocale(
+        effectiveLocaleTag(LocaleNotifier.fromRaw(initialLocaleRaw), device));
+  } catch (e) {
+    debugPrint('[main] intl locale init failed: $e');
   }
 
   // Transparent status bar, dark icons on cream background
@@ -202,6 +228,12 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
   DateTime? _backgroundedAt;
   static const _relockGrace = Duration(seconds: 10);
 
+  // Whether we've raised FLAG_SECURE for the current background excursion, so
+  // the app-switcher / Recents thumbnail shows a blank tile for EVERY screen
+  // (not just the per-tab-protected Journal). Guards against double-counting
+  // when both `paused` and `hidden` fire for one background cycle.
+  bool _backgroundSecured = false;
+
   @override
   void initState() {
     super.initState();
@@ -211,6 +243,15 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
     // navigation (e.g. the SOS widget's route below) could land past the
     // lock before the user has authenticated.
     LockGate.locked = widget.lockMethod != 'none';
+    // A configured lock means the user wants privacy → hold FLAG_SECURE for the
+    // whole session. This covers EVERY screen (including CBT, thought records,
+    // journal detail, heatmap, vision detail, future letter — which have no
+    // per-screen SecureScreen) against screenshots and the Recents preview,
+    // not just the per-tab-protected Journal. Reference-counted, so it composes
+    // with the per-tab toggle and the background blank.
+    if (widget.lockMethod != 'none') {
+      SecureWindow.enable();
+    }
     _router = _buildRouter(
       hasProfile: widget.hasProfile,
       lockMethod: widget.lockMethod,
@@ -250,9 +291,20 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
       case AppLifecycleState.paused:
       case AppLifecycleState.hidden:
         _backgroundedAt = DateTime.now();
+        // Blank the Recents/app-switcher snapshot for the whole app.
+        if (!_backgroundSecured) {
+          _backgroundSecured = true;
+          SecureWindow.enable();
+        }
         break;
 
       case AppLifecycleState.resumed:
+        // Release the background blank (returns to each screen's own secure
+        // state via SecureWindow's reference count).
+        if (_backgroundSecured) {
+          _backgroundSecured = false;
+          SecureWindow.disable();
+        }
         // Drain any widget-tap route once the re-lock logic below has
         // settled (post-frame, so it sees the final lock state).
         WidgetsBinding.instance
@@ -336,6 +388,12 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
           isDark ? Brightness.light : Brightness.dark,
     ));
 
+    // Keep intl's formatting locale in lock-step with the displayed language so
+    // a runtime switch re-localizes every DateFormat / money amount too.
+    final chosenLocale = ref.watch(localeProvider);
+    applyIntlLocale(effectiveLocaleTag(
+        chosenLocale, WidgetsBinding.instance.platformDispatcher.locale));
+
     return MaterialApp.router(
       title: 'Journey Forward',
       theme: buildAppTheme(
@@ -354,7 +412,7 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
       // follow the device; the Settings → Language picker overrides it. To add
       // a language: drop a translated app_<code>.arb in lib/l10n, run
       // `flutter gen-l10n`, and add one entry to kSupportedLanguages.
-      locale: ref.watch(localeProvider),
+      locale: chosenLocale,
       supportedLocales: kSupportedLocales,
       routerConfig: _router,
     );
@@ -386,6 +444,7 @@ class LockGate {
     '/emergency',
     '/crisis',
     '/urge-timer',
+    '/tipp',
   };
   static bool isAllowedWhileLocked(String location) =>
       _crisisAllowedWhenLocked.contains(location);
@@ -563,6 +622,18 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/pre-craving-plan',
         builder: (_, __) => const PreCravingPlanScreen(),
+      ),
+      GoRoute(
+        path: '/learned',
+        builder: (_, __) => const LearnedScreen(),
+      ),
+      GoRoute(
+        path: '/tipp',
+        builder: (_, __) => const TippScreen(),
+      ),
+      GoRoute(
+        path: '/challenge',
+        builder: (_, __) => const HundredDayChallengeScreen(),
       ),
       GoRoute(
         path: '/weekly-care-summary',

@@ -18,21 +18,33 @@ class SecureWindow {
 
   static const _channel = MethodChannel('com.journeyforward/secure_window');
 
+  // Reference count so overlapping callers compose safely: the per-tab Journal
+  // toggle, each SecureScreen wrapper, and the app-wide background blank can all
+  // request FLAG_SECURE independently. The native flag is set when the count
+  // goes 0→1 and cleared only when it returns to 0 — so leaving one secure
+  // screen while another is still active (or while backgrounded) never clears
+  // protection prematurely.
+  static int _refs = 0;
+
   static Future<void> enable() async {
-    if (!defaultTargetPlatform.toString().contains('android')) return;
-    try {
-      await _channel.invokeMethod('enable');
-    } catch (e) {
-      debugPrint('[SecureWindow] enable failed: $e');
-    }
+    _refs++;
+    if (_refs != 1) return; // already secured
+    await _invoke('enable');
   }
 
   static Future<void> disable() async {
+    if (_refs == 0) return; // nothing to release
+    _refs--;
+    if (_refs != 0) return; // still held by another caller
+    await _invoke('disable');
+  }
+
+  static Future<void> _invoke(String method) async {
     if (!defaultTargetPlatform.toString().contains('android')) return;
     try {
-      await _channel.invokeMethod('disable');
+      await _channel.invokeMethod(method);
     } catch (e) {
-      debugPrint('[SecureWindow] disable failed: $e');
+      debugPrint('[SecureWindow] $method failed: $e');
     }
   }
 }

@@ -83,6 +83,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     setState(() {
       _goingForward = forward;
       _step = next;
+      // Entering the PIN step always starts a clean create→confirm cycle. Without
+      // this, navigating BACK onto the step can re-show the confirm screen
+      // pre-filled and let the user finish, skipping re-confirmation.
+      if (next == _Step.pin) {
+        _pinConfirming = false;
+        _pin = '';
+        _pinConfirm = '';
+        _pinError = null;
+      }
     });
   }
 

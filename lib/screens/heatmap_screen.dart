@@ -778,9 +778,23 @@ class _DayTile extends StatelessWidget {
                 ? AppColors.stone200
                 : AppColors.stone700;
 
-    return GestureDetector(
+    // Per-tile spoken label: a colour-coded grid is invisible to a screen
+    // reader, so each tappable day announces its date + craving count and the
+    // bare day-number inside is excluded to avoid reading "5" with no context.
+    final l10n = AppLocalizations.of(context);
+    final dateLabel = MaterialLocalizations.of(context).formatFullDate(date);
+    final semanticLabel = (isFuture || isPreStart)
+        ? dateLabel
+        : '$dateLabel, ${l10n.a11yHeatmapDayCravings(count)}';
+
+    return Semantics(
+      label: semanticLabel,
+      button: onTap != null,
       onTap: onTap,
-      child: Container(
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
         width: size,
         height: size,
         decoration: BoxDecoration(
@@ -804,7 +818,7 @@ class _DayTile extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 

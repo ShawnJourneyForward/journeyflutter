@@ -404,17 +404,32 @@ class _LiveDHMSRow extends ConsumerWidget {
     final liveStats =
         (live ? ref.watch(soberStatsProvider) : ref.read(soberStatsProvider)) ??
             fallback;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _CounterUnit(value: liveStats?.days ?? 0, label: l10n.progressUnitDays),
-        _Colon(),
-        _CounterUnit(value: liveStats?.hours ?? 0, label: l10n.progressUnitHrs),
-        _Colon(),
-        _CounterUnit(value: liveStats?.minutes ?? 0, label: l10n.progressUnitMin),
-        _Colon(),
-        _CounterUnit(value: liveStats?.seconds ?? 0, label: l10n.progressUnitSec),
-      ],
+    return Semantics(
+      container: true,
+      label: l10n.a11ySoberDuration(
+        liveStats?.days ?? 0,
+        liveStats?.hours ?? 0,
+        liveStats?.minutes ?? 0,
+        liveStats?.seconds ?? 0,
+      ),
+      child: ExcludeSemantics(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _CounterUnit(
+                value: liveStats?.days ?? 0, label: l10n.progressUnitDays),
+            _Colon(),
+            _CounterUnit(
+                value: liveStats?.hours ?? 0, label: l10n.progressUnitHrs),
+            _Colon(),
+            _CounterUnit(
+                value: liveStats?.minutes ?? 0, label: l10n.progressUnitMin),
+            _Colon(),
+            _CounterUnit(
+                value: liveStats?.seconds ?? 0, label: l10n.progressUnitSec),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -470,6 +485,10 @@ class _InsightsTab extends ConsumerWidget {
         const _RecoveryCapitalCard(),
         const SizedBox(height: 14),
 
+        // ── "What I've learned" — synthesised safety plan from own logs ──
+        const _LearnedEntryCard(),
+        const SizedBox(height: 14),
+
         // ── Risk window — "your tender hours" ──────────────────────────
         // Only renders when the user's own logs show real time-of-day
         // clustering (see topRiskWindow's noise guard). Fully on-device.
@@ -515,6 +534,60 @@ class _InsightsTab extends ConsumerWidget {
           quote: l10n.progressInsightThoughtsQuote,
         ),
       ],
+    );
+  }
+}
+
+// ─── "What I've learned" entry card ──────────────────────────────────────────
+// Opens the synthesised, plain-language safety plan built entirely from the
+// user's own on-device logs (cravings / urge rides / their reasons + plan).
+
+class _LearnedEntryCard extends StatelessWidget {
+  const _LearnedEntryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return GestureDetector(
+      onTap: () {
+        H.selection();
+        context.push('/learned');
+      },
+      child: SolidCard(
+        borderRadius: AppRadius.xl,
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.mintChip,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.auto_stories_outlined,
+                  color: AppColors.forest600, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.progressLearnedCardTitle,
+                      style: AppTextStyles.titleSmall
+                          .copyWith(color: AppColors.forest700)),
+                  const SizedBox(height: 2),
+                  Text(l10n.progressLearnedCardSubtitle,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.stone500, height: 1.4)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right_rounded,
+                color: AppColors.stone400, size: 22),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -720,11 +793,14 @@ class _InsightTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Title row
-          Text(
-            l10n.progressInsightTitle14Days(title),
-            style:
-                AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
+          // ── Title row (heading for screen-reader section navigation)
+          Semantics(
+            header: true,
+            child: Text(
+              l10n.progressInsightTitle14Days(title),
+              style:
+                  AppTextStyles.titleSmall.copyWith(color: AppColors.forest700),
+            ),
           ),
           const SizedBox(height: 4),
 
@@ -1199,7 +1275,14 @@ class _MiniHeatmap extends ConsumerWidget {
 
           // ── 4 rows × 7 cols = 28 days, each labelled with the day number
           //    and showing the craving count when one or more were logged.
-          LayoutBuilder(builder: (ctx, constraints) {
+          //    The colour-coded grid is invisible to a screen reader, so the
+          //    whole thing carries one spoken summary and the cells are excluded.
+          Semantics(
+            container: true,
+            label: l10n.a11yHeatmapSummary(
+                counts.values.fold<int>(0, (a, b) => a + b)),
+            child: ExcludeSemantics(
+              child: LayoutBuilder(builder: (ctx, constraints) {
             const labelW = 28.0;
             const gap = 4.0;
             final cellSize = ((constraints.maxWidth - labelW - gap * 6) / 7)
@@ -1259,7 +1342,7 @@ class _MiniHeatmap extends ConsumerWidget {
                 );
               }),
             );
-          }),
+          }))),
 
           const SizedBox(height: 10),
 

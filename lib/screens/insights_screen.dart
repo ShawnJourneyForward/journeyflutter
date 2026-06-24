@@ -304,7 +304,13 @@ class _ChartCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: AppTextStyles.titleSmall),
+            // Heading so a screen-reader user can jump chart-to-chart; the
+            // fl_chart body itself carries no useful semantics, but the
+            // accompanying stat chips above expose the same numbers as text.
+            Semantics(
+              header: true,
+              child: Text(title, style: AppTextStyles.titleSmall),
+            ),
             const SizedBox(height: 14),
             SizedBox(height: chartHeight, child: child),
           ],

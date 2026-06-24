@@ -32,14 +32,29 @@ When done, send the file back with your language column filled in.
 
 ## For the developer — adding a finished language
 
-1. Save the translator's column into `lib/l10n/app_<code>.arb` (one key per line,
-   same keys as `app_en.arb`). The existing `app_af.arb` / `app_es.arb` /
-   `app_pt.arb` / `app_zu.arb` files are scaffolds you can overwrite.
+1. Drop the translator's filled-in CSV back at
+   `TRANSLATIONS/journey_forward_strings.csv`, then import the language column
+   straight into its ARB — this validates as it goes (fails loudly on a missing
+   key, a dropped `{placeholder}`, or a broken plural; writes nothing if so):
+
+   ```
+   python tool/import_translation_csv.py es        # reads the "Spanish (es)" column
+   ```
+
+   (Use `--allow-missing` to ship English for any still-blank rows.)
 2. Run `flutter gen-l10n`.
 3. Add one line to `kSupportedLanguages` in `lib/l10n/app_locales.dart`, e.g.
    `AppLanguage(Locale('es'), 'Spanish', 'Español'),`.
-4. That's it — the Settings → Language picker and `MaterialApp.supportedLocales`
+4. `flutter test test/unit/localization_keys_test.dart` — the "not an English
+   clone" check activates automatically once a language is enabled and fails a
+   half-translated ARB before it can ship.
+5. That's it — the Settings → Language picker and `MaterialApp.supportedLocales`
    both read from that list, so the language goes live with no other changes.
+   `intl` date/number/currency formatting follows the active locale automatically.
+
+> Non-Latin scripts (CJK, Arabic, Cyrillic, …) additionally need a script-covering
+> font added to `fontFamilyFallback`, and a right-to-left language needs an RTL
+> layout pass — the current Fraunces/Inter fonts cover af/es/pt/zu (all LTR).
 
 ## Regenerating this CSV
 

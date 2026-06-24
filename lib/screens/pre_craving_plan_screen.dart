@@ -39,6 +39,13 @@ List<_ToolkitExercise> _kToolkitExercises(AppLocalizations l10n) => [
         route: '/emergency',
       ),
       _ToolkitExercise(
+        label: l10n.planToolkitTippLabel,
+        sub: l10n.planToolkitTippSub,
+        icon: Icons.bolt_rounded,
+        color: AppColors.honey600,
+        route: '/tipp',
+      ),
+      _ToolkitExercise(
         label: l10n.planToolkitGroundingLabel,
         sub: l10n.planToolkitGroundingSub,
         icon: Icons.touch_app_rounded,

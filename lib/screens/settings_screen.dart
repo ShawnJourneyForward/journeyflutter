@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../utils/locale_format.dart';
 import 'package:local_auth/local_auth.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -190,12 +191,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return;
     }
     final amt = double.tryParse(result['amount'] as String);
+    // Coerce a non-positive amount to null (a dead goal that can never
+    // progress) so this dialog agrees with the home goal sheet, which already
+    // does `amount > 0 ? amount : null`.
+    final goal = (amt != null && amt > 0) ? amt : null;
+    final goalName = (result['name'] as String).isEmpty
+        ? null
+        : result['name'] as String;
     await ref.read(profileProvider.notifier).patch(
           (p) => p.copyWith(
-            savingsGoalName: (result['name'] as String).isEmpty
-                ? null
-                : result['name'] as String,
-            savingsGoal: amt,
+            savingsGoalName: goal == null ? null : goalName,
+            savingsGoal: goal,
           ),
         );
   }
@@ -418,13 +424,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     H.light();
     final l10n = AppLocalizations.of(context);
     final prefs = await ref.read(prefsProvider.future);
-    TimeOfDay parseTime(String s) {
+    // Tolerant parse: a malformed stored value (empty, missing colon, restored
+    // from a partial backup) must not throw an unhandled future that leaves the
+    // reminders sheet unable to open. Falls back to the supplied default.
+    TimeOfDay parseTime(String s, TimeOfDay fallback) {
       final parts = s.split(':');
-      return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+      if (parts.length != 2) return fallback;
+      final h = int.tryParse(parts[0]);
+      final m = int.tryParse(parts[1]);
+      if (h == null || m == null) return fallback;
+      return TimeOfDay(hour: h.clamp(0, 23), minute: m.clamp(0, 59));
     }
 
-    final morning = parseTime(prefs.getString('notif_morning') ?? '08:00');
-    final evening = parseTime(prefs.getString('notif_evening') ?? '20:00');
+    final morning = parseTime(
+        prefs.getString('notif_morning') ?? '08:00', const TimeOfDay(hour: 8, minute: 0));
+    final evening = parseTime(
+        prefs.getString('notif_evening') ?? '20:00', const TimeOfDay(hour: 20, minute: 0));
     final motiv = prefs.getBool('notif_motivation') ?? true;
     final remind = prefs.getBool('notif_reminders') ?? true;
     final mileston = prefs.getBool('notif_milestones') ?? true;
@@ -853,7 +868,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         soberDate != null ? DateFormat('d MMMM yyyy').format(soberDate) : '—';
     final moneySaved = stats?.moneySaved ?? 0;
     final moneyLabel = profile.dailySpend > 0
-        ? '${profile.currency}${NumberFormat('#,##0.00').format(moneySaved)}'
+        ? formatMoney(moneySaved, symbol: profile.currency)
         : null;
 
     return Scaffold(
@@ -1126,13 +1141,17 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final initials = profile.username.trim().isNotEmpty
-        ? profile.username
-            .trim()
-            .split(' ')
-            .take(2)
-            .map((w) => w[0].toUpperCase())
-            .join()
+    // Split on ANY whitespace run and drop empties: a plain split(' ') yields
+    // '' for internal double-spaces (common on mobile keyboards), and ''[0]
+    // throws RangeError — which would red-screen the whole Settings screen and
+    // lock the user out of editing their name / sober date / lock setup.
+    final nameWords = profile.username
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    final initials = nameWords.isNotEmpty
+        ? nameWords.take(2).map((w) => w[0].toUpperCase()).join()
         : '?';
 
     // Full-bleed forest banner — rows removed, all four corners round.
@@ -1332,8 +1351,9 @@ class _SavingsGoalCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         l10n.settingsSavingsProgress(
-                          '${profile.currency}${NumberFormat('#,##0.00').format(saved)}',
-                          '${profile.currency}${NumberFormat('#,##0.00').format(profile.savingsGoal!)}',
+                          formatMoney(saved, symbol: profile.currency),
+                          formatMoney(profile.savingsGoal!,
+                              symbol: profile.currency),
                         ),
                         style: AppTextStyles.bodySmall,
                       ),
@@ -2559,10 +2579,12 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
   }
 
   String _fmt(TimeOfDay t) {
-    final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
-    final m = t.minute.toString().padLeft(2, '0');
-    final p = t.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$h:$m $p';
+    // Clock format + meridiem follow the device/locale (24-hour where that's
+    // the convention) instead of a hardcoded English 12-hour "AM/PM".
+    return MaterialLocalizations.of(context).formatTimeOfDay(
+      t,
+      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+    );
   }
 
   @override

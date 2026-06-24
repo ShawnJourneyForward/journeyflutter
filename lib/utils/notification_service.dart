@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../l10n/app_localizations.dart';
+import '../l10n/app_locales.dart'; // for kSupportedLanguages (enabled langs)
 import '../providers/app_providers.dart'; // for LocaleNotifier.prefsKey
 
 class NotifScheduleResult {
@@ -49,16 +50,10 @@ class NotificationService {
 
   static const _channelId = 'journey_forward_main';
   static const _channelName = 'Journey Forward';
+  // English fallback for the per-notification channelDescription field (not
+  // user-visible once the channel exists — Android shows the CHANNEL's stored
+  // description, set at creation in init() in the user's language).
   static const _channelDesc = 'Daily reminders and milestone alerts';
-
-  static const _androidChannel = AndroidNotificationChannel(
-    _channelId,
-    _channelName,
-    description: _channelDesc,
-    importance: Importance.high, // heads-up banner on Android
-    playSound: true,
-    enableVibration: true,
-  );
 
   // ── Milestone constants ───────────────────────────────────────────────────
 
@@ -112,11 +107,23 @@ class NotificationService {
   static Future<AppLocalizations> _l10n() async {
     final prefs = await SharedPreferences.getInstance();
     final code = prefs.getString(LocaleNotifier.prefsKey); // 'app_locale'
-    final locale = (code != null && code.isNotEmpty)
-        ? Locale(code)
-        : (WidgetsBinding.instance.platformDispatcher.locale);
+    final device = WidgetsBinding.instance.platformDispatcher.locale;
+    // Resolve to an ENABLED language only — the same set the UI ships
+    // (kSupportedLanguages). Loading off the raw device/pref locale would push
+    // notifications in a language whose .arb stub merely exists but isn't yet
+    // enabled, so the user would get (say) Spanish alerts under an English UI.
+    final enabled =
+        kSupportedLanguages.map((l) => l.locale.languageCode).toSet();
+    final String langCode;
+    if (code != null && code.isNotEmpty && enabled.contains(code)) {
+      langCode = code;
+    } else if (enabled.contains(device.languageCode)) {
+      langCode = device.languageCode;
+    } else {
+      langCode = 'en';
+    }
     try {
-      return await AppLocalizations.delegate.load(locale);
+      return await AppLocalizations.delegate.load(Locale(langCode));
     } catch (_) {
       return await AppLocalizations.delegate.load(const Locale('en'));
     }
@@ -142,10 +149,23 @@ class NotificationService {
         const InitializationSettings(android: androidInit, iOS: iosInit),
       );
 
-      // Create the Android channel so notifications can be posted.
+      // Create the Android channel so notifications can be posted. Resolve the
+      // description in the user's language (this is the one shown in the system
+      // notification settings; Android caches it after first creation).
       final androidImpl = _plugin.resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>();
-      await androidImpl?.createNotificationChannel(_androidChannel);
+      String channelDesc = _channelDesc;
+      try {
+        channelDesc = (await _l10n()).notifChannelDescription;
+      } catch (_) {/* fall back to English const */}
+      await androidImpl?.createNotificationChannel(AndroidNotificationChannel(
+        _channelId,
+        _channelName,
+        description: channelDesc,
+        importance: Importance.high, // heads-up banner on Android
+        playSound: true,
+        enableVibration: true,
+      ));
     } catch (e, st) {
       debugPrint('[NotificationService] init failed: $e\n$st');
     }

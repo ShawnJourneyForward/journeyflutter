@@ -13,6 +13,7 @@ import '../utils/haptic_service.dart';
 
 class _Group {
   const _Group({
+    required this.code,
     required this.name,
     required this.tagline,
     required this.description,
@@ -23,6 +24,11 @@ class _Group {
     this.regions,
   });
 
+  /// Stable identifier used to resolve translated copy at display time.
+  /// The English fields below remain the source of truth and the fallback
+  /// for any unknown code (mirrors the resolver pattern in
+  /// models/thought_record.dart and screens/crisis_screen.dart).
+  final String code;
   final String name;
   final String tagline;
   final String description;
@@ -31,10 +37,65 @@ class _Group {
   final Color accentColor;
   final String? website;
   final String? regions;
+
+  // ── Localised accessors ─────────────────────────────────────────────────
+  // Proper-noun group [name]s are intentionally left untranslated.
+
+  String localizedTagline(AppLocalizations l) => switch (code) {
+        'aa' => l.groupAaTagline,
+        'smart' => l.groupSmartTagline,
+        'na' => l.groupNaTagline,
+        'refuge' => l.groupRefugeTagline,
+        'celebrate' => l.groupCelebrateTagline,
+        'wfs' => l.groupWfsTagline,
+        'lifering' => l.groupLifeRingTagline,
+        'online' => l.groupOnlineTagline,
+        _ => tagline,
+      };
+
+  String localizedDescription(AppLocalizations l) => switch (code) {
+        'aa' => l.groupAaDesc,
+        'smart' => l.groupSmartDesc,
+        'na' => l.groupNaDesc,
+        'refuge' => l.groupRefugeDesc,
+        'celebrate' => l.groupCelebrateDesc,
+        'wfs' => l.groupWfsDesc,
+        'lifering' => l.groupLifeRingDesc,
+        'online' => l.groupOnlineDesc,
+        _ => description,
+      };
+
+  String localizedApproach(AppLocalizations l) => switch (code) {
+        'aa' => l.groupAaApproach,
+        'smart' => l.groupSmartApproach,
+        'na' => l.groupNaApproach,
+        'refuge' => l.groupRefugeApproach,
+        'celebrate' => l.groupCelebrateApproach,
+        'wfs' => l.groupWfsApproach,
+        'lifering' => l.groupLifeRingApproach,
+        'online' => l.groupOnlineApproach,
+        _ => approach,
+      };
+
+  String? localizedRegions(AppLocalizations l) {
+    if (regions == null) return null;
+    return switch (code) {
+      'aa' => l.groupAaRegions,
+      'smart' => l.groupSmartRegions,
+      'na' => l.groupNaRegions,
+      'refuge' => l.groupRefugeRegions,
+      'celebrate' => l.groupCelebrateRegions,
+      'wfs' => l.groupWfsRegions,
+      'lifering' => l.groupLifeRingRegions,
+      'online' => l.groupOnlineRegions,
+      _ => regions,
+    };
+  }
 }
 
 final _groups = [
   _Group(
+    code: 'aa',
     name: 'Alcoholics Anonymous',
     tagline: 'AA',
     description:
@@ -47,6 +108,7 @@ final _groups = [
     regions: 'Worldwide · South Africa: aa.org.za',
   ),
   _Group(
+    code: 'smart',
     name: 'SMART Recovery',
     tagline: 'Self-Management & Recovery Training',
     description:
@@ -59,6 +121,7 @@ final _groups = [
     regions: 'Worldwide · South Africa: smartrecovery.org.za',
   ),
   _Group(
+    code: 'na',
     name: 'Narcotics Anonymous',
     tagline: 'NA',
     description:
@@ -71,6 +134,7 @@ final _groups = [
     regions: 'Worldwide',
   ),
   _Group(
+    code: 'refuge',
     name: 'Refuge Recovery',
     tagline: 'Mindfulness-based recovery',
     description:
@@ -84,6 +148,7 @@ final _groups = [
     regions: 'Worldwide · Online',
   ),
   _Group(
+    code: 'celebrate',
     name: 'Celebrate Recovery',
     tagline: 'Faith-based recovery',
     description:
@@ -97,6 +162,7 @@ final _groups = [
     regions: 'Worldwide · Many SA churches',
   ),
   _Group(
+    code: 'wfs',
     name: 'Women for Sobriety',
     tagline: 'WFS — women-only support',
     description:
@@ -109,6 +175,7 @@ final _groups = [
     regions: 'Worldwide · Online',
   ),
   _Group(
+    code: 'lifering',
     name: 'LifeRing Secular Recovery',
     tagline: 'Non-spiritual peer support',
     description:
@@ -121,6 +188,7 @@ final _groups = [
     regions: 'Worldwide · Online',
   ),
   _Group(
+    code: 'online',
     name: 'Online Sobriety Communities',
     tagline: 'Digital support — always available',
     description:
@@ -240,6 +308,7 @@ class _GroupCardState extends State<_GroupCard> {
   @override
   Widget build(BuildContext context) {
     final g = widget.group;
+    final l10n = AppLocalizations.of(context);
     return SolidCard(
       borderRadius: AppRadius.xl,
       padding: EdgeInsets.zero,
@@ -274,7 +343,7 @@ class _GroupCardState extends State<_GroupCard> {
                       children: [
                         Text(g.name, style: AppTextStyles.titleSmall),
                         const SizedBox(height: 2),
-                        Text(g.tagline,
+                        Text(g.localizedTagline(l10n),
                             style: AppTextStyles.bodySmall
                                 .copyWith(color: AppColors.stone500)),
                       ],
@@ -307,7 +376,7 @@ class _GroupCardState extends State<_GroupCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(g.description,
+                      Text(g.localizedDescription(l10n),
                           style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.stone600, height: 1.55)),
                       const SizedBox(height: 12),
@@ -315,7 +384,8 @@ class _GroupCardState extends State<_GroupCard> {
                       Wrap(
                         spacing: 6,
                         runSpacing: 6,
-                        children: g.approach.split(' · ').map((tag) {
+                        children:
+                            g.localizedApproach(l10n).split(' · ').map((tag) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
@@ -337,7 +407,7 @@ class _GroupCardState extends State<_GroupCard> {
                           Icon(Icons.location_on_outlined,
                               size: 14, color: AppColors.stone400),
                           const SizedBox(width: 6),
-                          Text(g.regions!,
+                          Text(g.localizedRegions(l10n) ?? g.regions!,
                               style: AppTextStyles.bodySmall
                                   .copyWith(color: AppColors.stone500)),
                         ]),
