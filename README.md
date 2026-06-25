@@ -3,8 +3,10 @@
 A compassionate, privacy-first sobriety companion built with Flutter.
 Designed for Android using the **Stillwater Aesthetic System** — calm, warm, and human.
 
-**Current version:** 6.1.0+2
-**Latest release APK:** `build/app/outputs/flutter-apk/app-release.apk` (~77 MB, built locally — produce a signed AAB for Play Store submission)
+**Current version:** 6.3.0+20
+**Latest release APK:** `build/app/outputs/flutter-apk/app-release.apk` (~80 MB, built locally — produce a signed AAB for Play Store submission)
+
+> **This release is fully offline** — it ships with **no `INTERNET` permission** (the Strava integration is disabled for launch), so Play Data Safety is an honest "no data collected, no data shared". Bottom nav is **6 tabs**: Home · Progress · Toolkit · Journal · **Planner** · Profile.
 
 ---
 

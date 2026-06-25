@@ -13,6 +13,8 @@
 
 This policy explains, in plain language, exactly what data the app handles, where it goes, and how to control it. The short version: it stays on your phone, and only you can see it.
 
+> **This release (6.3.0) is fully offline.** It ships with **no `INTERNET` permission** and makes **no network connection of any kind** — there is nothing to send and no way to send it. The optional **Strava** integration described below (§2, §5, §5a, §6 and the dependency notes) is **disabled and not present in this build**; those sections apply only to a future build that re-enables it. For Google Play **Data safety**, this app collects **no data** and shares **no data**.
+
 There are two opt-in exceptions, and both are entirely under your control:
 
 - **Voice dictation (§5).** If you use the optional voice-dictation feature for journaling, your spoken audio is handed to your phone's own speech-recognition service, which on many Android devices is provided by Google and may process audio in the cloud. That's an OS-level service we don't control; everything the app itself does is local.

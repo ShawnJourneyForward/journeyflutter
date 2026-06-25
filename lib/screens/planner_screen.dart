@@ -538,8 +538,9 @@ class _DowLabel extends StatelessWidget {
   Widget build(BuildContext context) => Expanded(
         child: Center(
           child: Text(label,
+              // stone500 (not stone400) for WCAG AA contrast on the calendar.
               style:
-                  AppTextStyles.caption.copyWith(color: AppColors.stone400)),
+                  AppTextStyles.caption.copyWith(color: AppColors.stone500)),
         ),
       );
 }
@@ -628,7 +629,7 @@ class _PlannerDayTile extends StatelessWidget {
                                       : FontWeight.w400,
                                   color: primary != null
                                       ? sessionTypeColor(primary.type)
-                                      : AppColors.stone400,
+                                      : AppColors.stone500,
                                   height: 1,
                                 ),
                               ),
@@ -1261,7 +1262,7 @@ class _GoalTimelineSection extends StatelessWidget {
                 child: Text(
                   '· ${l10n.plannerTrainingNotStarted}',
                   style: AppTextStyles.caption
-                      .copyWith(color: AppColors.stone400),
+                      .copyWith(color: AppColors.stone500),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

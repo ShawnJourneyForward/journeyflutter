@@ -19,6 +19,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../utils/encrypted_store.dart';
 import '../utils/pin_hash.dart';
+import '../utils/pin_lockout.dart';
 
 // ─── Primary moods ───────────────────────────────────────────────────────────
 // The five values that already exist in stored entries. Don't rename keys.
@@ -762,12 +763,42 @@ class JournalReauth {
       BuildContext context, String storedHash) async {
     final l10n = AppLocalizations.of(context);
     final ctrl = TextEditingController();
-    var error = false;
+
+    // Unified brute-force throttle shared with the lock screen (same persisted
+    // keys), so the journal re-auth can't be hammered to dodge the main lockout.
+    final lockedAtOpen = await PinLockout.lockedUntil();
+    if (!context.mounted) {
+      ctrl.dispose();
+      return false;
+    }
+    String? errorText =
+        lockedAtOpen != null ? l10n.lockTooManyAttempts : null;
+
     final ok = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
       builder: (ctx) {
         return StatefulBuilder(builder: (ctx, setSt) {
+          Future<void> attempt(String v) async {
+            if (await PinLockout.lockedUntil() != null) {
+              if (ctx.mounted) {
+                setSt(() => errorText = l10n.lockTooManyAttempts);
+              }
+              return;
+            }
+            if (PinHash.verify(v, storedHash)) {
+              await PinLockout.reset();
+              if (ctx.mounted) Navigator.pop(ctx, true);
+              return;
+            }
+            final locked = await PinLockout.registerFailure();
+            if (ctx.mounted) {
+              setSt(() => errorText = locked != null
+                  ? l10n.lockTooManyAttempts
+                  : l10n.journalReauthIncorrectPin);
+            }
+          }
+
           return AlertDialog(
             backgroundColor: AppColors.card,
             title: Text(l10n.lockEnterYourPin,
@@ -781,18 +812,12 @@ class JournalReauth {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: '••••',
-                errorText: error ? l10n.journalReauthIncorrectPin : null,
+                errorText: errorText,
                 counterText: '',
               ),
               style: AppTextStyles.titleLarge
                   .copyWith(color: AppColors.stone800, letterSpacing: 8),
-              onSubmitted: (v) {
-                if (PinHash.verify(v, storedHash)) {
-                  Navigator.pop(ctx, true);
-                } else {
-                  setSt(() => error = true);
-                }
-              },
+              onSubmitted: attempt,
             ),
             actions: [
               TextButton(
@@ -802,13 +827,7 @@ class JournalReauth {
                         .copyWith(color: AppColors.stone500)),
               ),
               TextButton(
-                onPressed: () {
-                  if (PinHash.verify(ctrl.text, storedHash)) {
-                    Navigator.pop(ctx, true);
-                  } else {
-                    setSt(() => error = true);
-                  }
-                },
+                onPressed: () => attempt(ctrl.text),
                 child: Text(l10n.backupUnlockButton,
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.forest600)),

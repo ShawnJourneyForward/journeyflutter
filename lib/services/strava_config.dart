@@ -17,10 +17,16 @@
 library;
 
 /// Strava API application Client ID (numeric, shown as a string).
-const String stravaClientId = "260905";
+///
+/// BLANKED for the offline launch — no live credential is compiled into the
+/// shipped binary. To re-enable Strava, refill from a build-time --dart-define
+/// or an untracked config rather than a committed const, and ROTATE the secret
+/// first (the previous value is exposed in git history). See [kStravaEnabled].
+const String stravaClientId = "";
 
 /// Strava API application Client Secret. Embedded/extractable — see file header.
-const String stravaClientSecret = "703778af1171ac03026b904b7b623e5b99b6d482";
+/// BLANKED for the offline launch (see [stravaClientId]).
+const String stravaClientSecret = "";
 
 /// Custom URL scheme registered for the OAuth redirect.
 ///
