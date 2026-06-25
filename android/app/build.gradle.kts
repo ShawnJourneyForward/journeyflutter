@@ -58,7 +58,7 @@ android {
     defaultConfig {
         applicationId = "com.journeyforward.journey_forward"
         minSdk = 24          // covers ~99.5% of active devices; required floor for several plugins
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35       // pinned (Play's current target requirement) — explicit, not Flutter-derived
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 

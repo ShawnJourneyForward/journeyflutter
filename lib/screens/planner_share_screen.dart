@@ -319,7 +319,7 @@ class _ShareCard extends StatelessWidget {
                     size: 16, color: AppColors.forest600),
               ),
               const SizedBox(width: 10),
-              Text('Journey Forward',
+              Text(AppLocalizations.of(context).appTitle,
                   style: AppTextStyles.titleSmall
                       .copyWith(color: AppColors.forest700)),
             ],

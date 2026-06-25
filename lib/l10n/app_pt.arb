@@ -4991,5 +4991,9 @@
   "plannerClearImportedTitle": "Remove imported activities?",
   "@plannerClearImportedTitle": {"description": "Confirm-dialog title for clearing imported activities."},
   "plannerClearImportedBody": "This removes {count} activities imported from Strava. Your manually-logged activities are kept.",
-  "@plannerClearImportedBody": {"description": "Confirm-dialog body for clearing imported activities.", "placeholders": {"count": {"type": "int"}}}
+  "@plannerClearImportedBody": {"description": "Confirm-dialog body for clearing imported activities.", "placeholders": {"count": {"type": "int"}}},
+  "onbLanguageHeadline": "Choose your language",
+  "@onbLanguageHeadline": {"description": "Onboarding language-picker step headline (shown only when more than one language is enabled)."},
+  "onbLanguageSub": "You can change this anytime in Settings.",
+  "@onbLanguageSub": {"description": "Onboarding language-picker step subtitle."}
 }

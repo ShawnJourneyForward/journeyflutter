@@ -15,11 +15,22 @@ import '../utils/notification_service.dart';
 import '../utils/pin_hash.dart';
 import '../utils/plant_logic.dart';
 import '../components/back_button.dart';
+import '../l10n/app_locales.dart';
 import '../l10n/app_localizations.dart';
 
 // ─── Step enum ────────────────────────────────────────────────────────────────
 
-enum _Step { welcome, name, date, spend, security, pin, notifications, finish }
+enum _Step {
+  language, // only shown when >1 language is enabled (see _steps)
+  welcome,
+  name,
+  date,
+  spend,
+  security,
+  pin,
+  notifications,
+  finish,
+}
 
 // ─── Onboarding Screen ────────────────────────────────────────────────────────
 
@@ -58,6 +69,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   List<_Step> get _steps {
     final all = [
+      // Language picker LEADS onboarding, but only once there's an actual
+      // choice — i.e. a real translation has been enabled in kSupportedLanguages.
+      // While the app ships English-only this is omitted entirely (no dead
+      // single-option screen); the moment a language is uncommented it appears
+      // first, so the rest of onboarding runs in the chosen language.
+      if (kSupportedLanguages.length > 1) _Step.language,
       _Step.welcome,
       _Step.name,
       _Step.date,
@@ -77,6 +94,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
+    // Start on the first applicable step — the language picker when it's present
+    // (>1 language enabled), otherwise welcome.
+    _step = _steps.first;
   }
 
   void _navigateTo(_Step next, {bool forward = true}) {
@@ -407,6 +427,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildStep() {
     return switch (_step) {
+      _Step.language => _LanguageStep(
+          selected: ref.watch(localeProvider),
+          onSelect: (loc) => ref.read(localeProvider.notifier).set(loc),
+        ),
       _Step.welcome => _WelcomeStep(onBegin: _next),
       _Step.name => _NameStep(
           value: _username,
@@ -615,6 +639,94 @@ class _WelcomeStep extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+// ─── Step: Language ───────────────────────────────────────────────────────────
+// Only reached when kSupportedLanguages has more than one entry. Lists each
+// enabled language by its endonym (native name) plus a "System default" option,
+// and writes the choice straight to localeProvider so the app — including the
+// rest of onboarding — re-localizes live.
+
+class _LanguageStep extends StatelessWidget {
+  const _LanguageStep({required this.selected, required this.onSelect});
+  final Locale? selected; // null = follow the device language
+  final ValueChanged<Locale?> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return _StepShell(
+      headline: l10n.onbLanguageHeadline,
+      sub: l10n.onbLanguageSub,
+      child: Column(
+        children: [
+          _LanguageOption(
+            label: l10n.settingsLanguageSystem,
+            selected: selected == null,
+            onTap: () => onSelect(null),
+          ),
+          ...kSupportedLanguages.map((lang) => _LanguageOption(
+                label: lang.nativeName,
+                selected:
+                    selected?.languageCode == lang.locale.languageCode,
+                onTap: () => onSelect(lang.locale),
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class _LanguageOption extends StatelessWidget {
+  const _LanguageOption({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        H.selection();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.mintChip : AppColors.card,
+          borderRadius: AppRadius.xxl,
+          border: Border.all(
+            color: selected ? AppColors.forest600 : AppColors.softBorder,
+            width: selected ? 1.5 : 1,
+          ),
+          boxShadow: selected ? AppShadows.card : null,
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.language_rounded,
+                size: 20,
+                color: selected ? AppColors.forest600 : AppColors.stone400),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(label,
+                  style: AppTextStyles.titleSmall.copyWith(
+                      color:
+                          selected ? AppColors.forest700 : AppColors.stone800)),
+            ),
+            if (selected)
+              Icon(Icons.check_rounded,
+                  size: 18, color: AppColors.forest600),
+          ],
+        ),
+      ),
     );
   }
 }

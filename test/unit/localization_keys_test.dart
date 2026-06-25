@@ -51,6 +51,27 @@ void main() {
       }
     });
 
+    test('translator CSV covers every app_en.arb key', () {
+      // Guards the recurring "CSV fell behind the ARB" bug: a community
+      // translator works from TRANSLATIONS/journey_forward_strings.csv, so it
+      // must contain every current key. Regenerate with
+      //   python tool/gen_translation_csv.py
+      // whenever this fails. Robust to multi-line quoted English values: each
+      // DATA row begins "<Section>,<Key>," and neither column contains a comma,
+      // so a row-anchored match finds the keys without a full CSV parse.
+      final csv = File('TRANSLATIONS/journey_forward_strings.csv');
+      if (!csv.existsSync()) return; // doc not present in this checkout — skip
+      final present = RegExp(r'(?:^|\n)[A-Za-z0-9]+,([A-Za-z0-9_]+),')
+          .allMatches(csv.readAsStringSync())
+          .map((m) => m.group(1)!)
+          .toSet();
+      final missing = _messageKeys(_readArb(englishFile)).difference(present);
+      expect(missing, isEmpty,
+          reason: 'These app_en.arb keys are missing from the translator CSV — '
+              'run: python tool/gen_translation_csv.py\nMissing: '
+              '${missing.take(12).toList()}');
+    });
+
     test('placeholder names match across locale files', () {
       final english = _readArb(englishFile);
       final englishKeys = _messageKeys(english);

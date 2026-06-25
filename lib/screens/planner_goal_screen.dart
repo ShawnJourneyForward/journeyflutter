@@ -191,11 +191,19 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
 
   Future<DateTime?> _pickDate(DateTime initial) {
     final now = DateTime.now();
+    final first = DateTime(now.year - 5);
+    final last = DateTime(now.year + 5);
+    // Clamp into [first, last] — showDatePicker ASSERTS (crashes) if initialDate
+    // is outside the range, which happens when editing a goal whose saved date
+    // is older than the window. Widen firstDate too so genuinely old dates load.
+    final init = initial.isBefore(first)
+        ? first
+        : (initial.isAfter(last) ? last : initial);
     return showDatePicker(
       context: context,
-      initialDate: initial,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 5),
+      initialDate: init,
+      firstDate: first,
+      lastDate: last,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: Theme.of(ctx).colorScheme.copyWith(
@@ -927,17 +935,22 @@ class _GoalSessionsSectionState extends ConsumerState<_GoalSessionsSection> {
     }
 
     final firstWeek = _mondayOf(anchor!);
-    final lastContent =
-        sessions.isNotEmpty ? _mondayOf(sessions.last.date) : firstWeek;
-    final endWeek =
-        goal?.endDate != null ? _mondayOf(goal!.endDate!) : firstWeek;
-    var target = lastContent.isAfter(endWeek) ? lastContent : endWeek;
-    // One trailing empty week to plan the "next" into, when there's content.
-    if (sessions.isNotEmpty && !target.isAfter(lastContent)) {
-      target = lastContent.add(const Duration(days: 7));
-    }
-    final weekCount =
-        ((target.difference(firstWeek).inDays / 7).floor() + 1).clamp(1, 30);
+    int weekIdx(DateTime d) =>
+        (_mondayOf(d).difference(firstWeek).inDays / 7).floor();
+    // Weeks that actually hold sessions must ALWAYS render (never clamped away).
+    final lastContentIdx =
+        sessions.isEmpty ? 0 : weekIdx(sessions.last.date);
+    // Extend toward the goal date too, but cap the EMPTY trailing scaffold at a
+    // ~1-year horizon so a far-off goal date doesn't render dozens of blank
+    // weeks. A trailing empty week gives a "plan the next one" slot.
+    final endIdx = goal?.endDate == null ? 0 : weekIdx(goal!.endDate!);
+    final scaffoldIdx = endIdx > 52 ? 52 : endIdx;
+    final trailingIdx = sessions.isEmpty ? 0 : lastContentIdx + 1;
+    var lastIdx = lastContentIdx;
+    if (scaffoldIdx > lastIdx) lastIdx = scaffoldIdx;
+    if (trailingIdx > lastIdx) lastIdx = trailingIdx;
+    if (lastIdx > 156) lastIdx = 156; // 3-year runaway guard
+    final weekCount = lastIdx + 1;
 
     // Bucket each session into its week (sessions are already date-ascending,
     // so each week's list stays ordered).

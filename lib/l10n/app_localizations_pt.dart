@@ -8603,4 +8603,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String plannerClearImportedBody(int count) {
     return 'This removes $count activities imported from Strava. Your manually-logged activities are kept.';
   }
+
+  @override
+  String get onbLanguageHeadline => 'Choose your language';
+
+  @override
+  String get onbLanguageSub => 'You can change this anytime in Settings.';
 }

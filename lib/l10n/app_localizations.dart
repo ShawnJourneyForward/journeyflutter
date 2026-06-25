@@ -15079,6 +15079,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This removes {count} activities imported from Strava. Your manually-logged activities are kept.'**
   String plannerClearImportedBody(int count);
+
+  /// Onboarding language-picker step headline (shown only when more than one language is enabled).
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your language'**
+  String get onbLanguageHeadline;
+
+  /// Onboarding language-picker step subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this anytime in Settings.'**
+  String get onbLanguageSub;
 }
 
 class _AppLocalizationsDelegate
