@@ -18,7 +18,10 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.7.3" apply false
+    // 8.9.x required by androidx.browser:browser:1.9.0 (pulled in by
+    // flutter_web_auth_2 5.x's Auth Tab support). Gradle wrapper is 8.12, which
+    // supports AGP up to 8.10, so no wrapper bump is needed.
+    id("com.android.application") version "8.9.2" apply false
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 

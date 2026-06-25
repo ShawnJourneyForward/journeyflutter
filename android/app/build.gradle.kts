@@ -61,6 +61,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // NOTE: flutter_web_auth_2 5.x dropped the appAuthRedirectScheme
+        // manifest-placeholder mechanism. The OAuth redirect activity
+        // (com.linusu.flutter_web_auth_2.CallbackActivity) is now declared
+        // explicitly in src/main/AndroidManifest.xml; its <data android:scheme>
+        // must equal stravaCallbackScheme in lib/services/strava_config.dart.
     }
 
     signingConfigs {

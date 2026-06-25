@@ -1,13 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- ── NO network permission ───────────────────────────────────────────
-         Removed INTERNET permission entirely. The app is fully offline:
-           - Fonts are bundled (assets/fonts/Inter-Variable.ttf, Fraunces-Variable.ttf)
-           - No analytics SDKs
-           - No crash reporting
-           - No cloud sync
-         The Play Store "Data safety" form must reflect this — declare
-         "No data collected" and "No data shared". -->
+    <!-- ── Network: offline-by-default, Strava is the one opt-in exception ──
+         The app ships no analytics, no crash reporting, no cloud sync, and
+         bundles all fonts/assets (Inter-Variable.ttf, Fraunces-Variable.ttf).
+         The INTERNET permission exists for exactly ONE feature: when the user
+         explicitly connects Strava in the Planner, the app performs an OAuth
+         token exchange and downloads the user's own activities directly,
+         device <-> Strava over HTTPS. Nothing is routed through a server of
+         ours, and no traffic happens until the user taps "Connect Strava".
+         usesCleartextTraffic stays false — all Strava traffic is HTTPS only.
+         The Play "Data safety" form must declare Fitness data (and Location
+         if any activity GPS fields are imported) as collected-but-on-device;
+         no data is shared. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- ── Notifications ──────────────────────────────────────────────────── -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -58,6 +63,25 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- ── Strava OAuth callback (flutter_web_auth_2 ≥ 5.x) ──────────────
+             5.x no longer auto-injects this via the appAuthRedirectScheme
+             manifest placeholder — the host app must declare the
+             CallbackActivity itself. The android:scheme below MUST equal
+             stravaCallbackScheme in lib/services/strava_config.dart (an
+             RFC-3986-valid scheme: NO underscore). taskAffinity="" is required
+             by 5.x so the auth tab returns to our task, not a new one. -->
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.journeyforward.oauth"/>
             </intent-filter>
         </activity>
 

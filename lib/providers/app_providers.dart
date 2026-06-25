@@ -7,6 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/future_letter.dart';
 import '../models/hard_day.dart';
+import '../models/planner_activity.dart';
+import '../models/planner_goal.dart';
+import '../models/planner_session.dart';
+import '../models/planner_settings.dart';
+import '../models/planner_weight_log.dart';
 import '../models/thought_record.dart';
 import '../models/urge_ride.dart';
 import '../models/user_profile.dart';
@@ -612,6 +617,630 @@ class HundredDayChallengeNotifier extends AsyncNotifier<ChallengeState> {
 final hundredDayChallengeProvider =
     AsyncNotifierProvider<HundredDayChallengeNotifier, ChallengeState>(
         HundredDayChallengeNotifier.new);
+
+// ─── Planner ──────────────────────────────────────────────────────────────────
+//
+// A lightweight training/health planner: race & weight & habit goals, a plan of
+// scheduled sessions, a body-weight timeline, logged activities (manual or
+// imported from Strava) and one settings record. All five collections live in
+// EncryptedStore under NEW additive keys (planner_goals / planner_sessions /
+// planner_weight_logs / planner_activities / planner_settings) and follow the
+// exact same never-wipe-on-read-failure + serialized-write pattern as every
+// other notifier in this file. Strava OAuth tokens themselves live in
+// flutter_secure_storage (key `strava_tokens`) and are deliberately NOT here.
+//
+// Models carry their own tolerant fromJson (lib/utils/safe_parse.dart); the
+// notifiers just decode/encode lists and serialize writes through a _writeLock.
+
+// ─── Planner goals ──────────────────────────────────────────────────────────
+
+class PlannerGoalNotifier extends AsyncNotifier<List<PlannerGoal>> {
+  static const _key = 'planner_goals';
+
+  @override
+  Future<List<PlannerGoal>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    // Never wipe on a malformed entry / decode failure — return what parses
+    // (or []) and leave the stored bytes untouched.
+    return _safeParseList(raw, PlannerGoal.fromJson)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  // Serialize writes so two rapid mutations can't read the same snapshot and
+  // clobber each other.
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<PlannerGoal> updated) async {
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  Future<void> add(PlannerGoal goal) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist([goal, ...current]);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerGoalNotifier] write error: $e');
+      });
+
+  // Named `updateGoal` (not `update`) because AsyncNotifier already has an
+  // inherited `update` for transforming state — same reason JournalNotifier
+  // uses `editEntry`.
+  Future<void> updateGoal(PlannerGoal goal) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated =
+            current.map((e) => e.id == goal.id ? goal : e).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerGoalNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.id != id).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerGoalNotifier] write error: $e');
+      });
+
+  /// Archive (soft-hide) a goal without deleting its data — keeps history and
+  /// linked sessions intact (same don't-destroy-user-data ethos as slips).
+  Future<void> archive(String id, {bool archived = true}) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current
+            .map((e) => e.id == id ? e.copyWith(archived: archived) : e)
+            .toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerGoalNotifier] write error: $e');
+      });
+}
+
+final plannerGoalProvider =
+    AsyncNotifierProvider<PlannerGoalNotifier, List<PlannerGoal>>(
+        PlannerGoalNotifier.new);
+
+// ─── Planner sessions (the plan) ─────────────────────────────────────────────
+
+class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
+  static const _key = 'planner_sessions';
+
+  @override
+  Future<List<PlannerSession>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    return _safeParseList(raw, PlannerSession.fromJson)
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<PlannerSession> updated) async {
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  Future<void> add(PlannerSession session) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = [...current, session]
+          ..sort((a, b) => a.date.compareTo(b.date));
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  // Named `updateSession` (not `update`) to avoid clashing with AsyncNotifier's
+  // inherited `update`.
+  Future<void> updateSession(PlannerSession session) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current
+            .map((e) => e.id == session.id ? session : e)
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.id != id).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  /// Set a session's completion state both ways.
+  ///
+  /// When [completed] is true the session is stamped with [activityId] (the
+  /// logged activity that fulfilled it, or null for a bare completion). When
+  /// [completed] is false the session is reset to incomplete AND its activity
+  /// link is cleared, so it never keeps pointing at a possibly-deleted activity.
+  Future<void> setComplete(String id, bool completed, {String? activityId}) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current.map((e) {
+          if (e.id != id) return e;
+          return completed
+              ? e.copyWith(completed: true, completedActivityId: activityId)
+              : e.copyWith(completed: false, clearActivity: true);
+        }).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  /// Mark a session complete and link it to the logged activity that fulfilled
+  /// it (pass `activityId: null` to mark complete without a linked activity).
+  /// Idempotent: re-marking simply re-stamps the link. Thin wrapper over
+  /// [setComplete] for callers that only ever complete.
+  Future<void> markComplete(String id, String? activityId) =>
+      setComplete(id, true, activityId: activityId);
+
+  /// Reset a session to incomplete and drop any linked-activity stamp.
+  Future<void> markIncomplete(String id) => setComplete(id, false);
+
+}
+
+final plannerSessionProvider =
+    AsyncNotifierProvider<PlannerSessionNotifier, List<PlannerSession>>(
+        PlannerSessionNotifier.new);
+
+// ─── Planner body-weight timeline ────────────────────────────────────────────
+
+class PlannerWeightNotifier extends AsyncNotifier<List<PlannerWeightLog>> {
+  static const _key = 'planner_weight_logs';
+
+  @override
+  Future<List<PlannerWeightLog>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    return _safeParseList(raw, PlannerWeightLog.fromJson)
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<PlannerWeightLog> updated) async {
+    // Keep the on-disk list chronologically sorted so trend charts can read it
+    // straight through.
+    updated.sort((a, b) => a.date.compareTo(b.date));
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  Future<void> add(PlannerWeightLog log) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist([...current, log]);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerWeightNotifier] write error: $e');
+      });
+
+  // Named `updateLog` (not `update`) to avoid clashing with AsyncNotifier's
+  // inherited `update`.
+  Future<void> updateLog(PlannerWeightLog log) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated =
+            current.map((e) => e.id == log.id ? log : e).toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerWeightNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.id != id).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerWeightNotifier] write error: $e');
+      });
+}
+
+final plannerWeightProvider =
+    AsyncNotifierProvider<PlannerWeightNotifier, List<PlannerWeightLog>>(
+        PlannerWeightNotifier.new);
+
+// ─── Planner logged activities (manual + Strava) ─────────────────────────────
+
+class PlannerActivityNotifier extends AsyncNotifier<List<PlannerActivity>> {
+  static const _key = 'planner_activities';
+
+  @override
+  Future<List<PlannerActivity>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    return _safeParseList(raw, PlannerActivity.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<PlannerActivity> updated) async {
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  /// Add a manually-entered activity (newest first).
+  Future<void> add(PlannerActivity activity) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = [activity, ...current]
+          ..sort((a, b) => b.date.compareTo(a.date));
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerActivityNotifier] write error: $e');
+      });
+
+  /// Add a Strava-imported activity, de-duplicated by [PlannerActivity.stravaId]
+  /// so re-syncing the same window never creates duplicates. An activity with a
+  /// null/empty stravaId is treated as not-yet-seen and added.
+  Future<void> addImported(PlannerActivity activity) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final sid = activity.stravaId;
+        if (sid != null &&
+            sid.isNotEmpty &&
+            current.any((e) => e.stravaId == sid)) {
+          return; // already imported — skip silently
+        }
+        final updated = [activity, ...current]
+          ..sort((a, b) => b.date.compareTo(a.date));
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerActivityNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.id != id).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerActivityNotifier] write error: $e');
+      });
+}
+
+final plannerActivityProvider =
+    AsyncNotifierProvider<PlannerActivityNotifier, List<PlannerActivity>>(
+        PlannerActivityNotifier.new);
+
+// ─── Planner settings (single record) ────────────────────────────────────────
+
+class PlannerSettingsNotifier extends AsyncNotifier<PlannerSettings> {
+  static const _key = 'planner_settings';
+
+  @override
+  Future<PlannerSettings> build() async {
+    final raw = await EncryptedStore.read(_key);
+    if (raw == null) return const PlannerSettings();
+    try {
+      return PlannerSettings.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (e) {
+      // Never wipe on a read failure — return a default in memory but leave the
+      // stored bytes untouched (same rule as the 100-day challenge record).
+      debugPrint('[PlannerSettingsNotifier] decode failed: $e');
+      return const PlannerSettings();
+    }
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(PlannerSettings next) async {
+    await EncryptedStore.write(_key, jsonEncode(next.toJson()));
+    state = AsyncData(next);
+  }
+
+  // Every mutator reads the live value (never a stale default) so a write that
+  // lands before build() resolves can't blow away the persisted record.
+  PlannerSettings get _current => state.valueOrNull ?? const PlannerSettings();
+
+  Future<void> setStravaConnected(bool connected) =>
+      _writeLock = _writeLock.then((_) async {
+        await _persist(_current.copyWith(stravaConnected: connected));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSettingsNotifier] write error: $e');
+      });
+
+  Future<void> setLastStravaSync(DateTime? when) =>
+      _writeLock = _writeLock.then((_) async {
+        await _persist(when == null
+            ? _current.copyWith(clearLastStravaSync: true)
+            : _current.copyWith(lastStravaSync: when));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSettingsNotifier] write error: $e');
+      });
+
+  Future<void> setActiveGoalId(String? goalId) =>
+      _writeLock = _writeLock.then((_) async {
+        await _persist(goalId == null
+            ? _current.copyWith(clearActiveGoalId: true)
+            : _current.copyWith(activeGoalId: goalId));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSettingsNotifier] write error: $e');
+      });
+
+  /// Disconnect Strava: clear the connected flag and the last-sync stamp in one
+  /// write. (The OAuth tokens in flutter_secure_storage are cleared separately
+  /// by the Strava service — they never live in this record.)
+  Future<void> disconnectStrava() => _writeLock = _writeLock.then((_) async {
+        await _persist(_current.copyWith(
+          stravaConnected: false,
+          clearLastStravaSync: true,
+        ));
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSettingsNotifier] write error: $e');
+      });
+}
+
+final plannerSettingsProvider =
+    AsyncNotifierProvider<PlannerSettingsNotifier, PlannerSettings>(
+        PlannerSettingsNotifier.new);
+
+// ─── Derived planner providers ───────────────────────────────────────────────
+
+/// The active goal id: the explicit settings.activeGoalId if set, otherwise the
+/// most recently created non-archived goal. Null when there is no usable goal.
+final activeGoalIdProvider = Provider<String?>((ref) {
+  final settingsId =
+      ref.watch(plannerSettingsProvider).valueOrNull?.activeGoalId;
+  final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
+  if (settingsId != null && goals.any((g) => g.id == settingsId)) {
+    return settingsId;
+  }
+  // Goals are stored newest-first; fall back to the newest non-archived one.
+  for (final g in goals) {
+    if (!g.archived) return g.id;
+  }
+  return null;
+});
+
+/// Today's planned session for the active plan, or null if there is none. Date
+/// match is calendar-day granular (ignores time). When the active goal has a
+/// session today that one wins; otherwise any session dated today is returned.
+final todaySessionProvider = Provider<PlannerSession?>((ref) {
+  final sessions = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+  if (sessions.isEmpty) return null;
+  final now = DateTime.now();
+  bool isToday(DateTime d) =>
+      d.year == now.year && d.month == now.month && d.day == now.day;
+
+  final activeGoalId = ref.watch(activeGoalIdProvider);
+  if (activeGoalId != null) {
+    for (final s in sessions) {
+      if (s.goalId == activeGoalId && isToday(s.date)) return s;
+    }
+  }
+  for (final s in sessions) {
+    if (isToday(s.date)) return s;
+  }
+  return null;
+});
+
+/// All sessions falling within the current Monday-first week (Mon 00:00 →
+/// following Mon 00:00), sorted by date. Used by the "this week" planner view
+/// and the weekly-progress ring.
+final currentWeekSessionsProvider = Provider<List<PlannerSession>>((ref) {
+  final sessions = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final weekStart = today.subtract(Duration(days: today.weekday - 1));
+  final weekEnd = weekStart.add(const Duration(days: 7));
+  return sessions
+      .where((s) => !s.date.isBefore(weekStart) && s.date.isBefore(weekEnd))
+      .toList()
+    ..sort((a, b) => a.date.compareTo(b.date));
+});
+
+/// True when the user has any usable plan: at least one non-archived goal OR an
+/// explicit active-goal id in settings. Gates the planner's empty state.
+final hasActivePlanProvider = Provider<bool>((ref) {
+  final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
+  if (goals.any((g) => !g.archived)) return true;
+  final settings = ref.watch(plannerSettingsProvider).valueOrNull;
+  return settings?.activeGoalId != null;
+});
+
+/// Pace verdict for an exercise campaign — how progress compares to time spent.
+enum GoalPace { ahead, onTrack, behind, done, noTarget }
+
+/// Derived, non-persisted snapshot of an exercise goal's campaign progress.
+/// Computed from the logged activities that fall inside the goal's date window
+/// (EVERY discipline counts) measured against the goal's [measure] + target.
+class GoalCampaignStats {
+  final ExerciseMeasure measure;
+  final double loggedValue; // canonical sum: km / minutes / count
+  final double? targetValue; // canonical target (null = open-ended)
+  final double progress; // 0..1 (0 when no target set)
+  final int activityCount; // activities counted in the window
+  final int? daysTotal; // window length, null without a full window
+  final int? daysElapsed; // 0..daysTotal
+  final int? daysLeft; // >= 0
+  final double? timeFraction; // 0..1 through the window
+  final double? perWeekToFinish; // canonical/week to finish on time
+  final GoalPace pace;
+
+  const GoalCampaignStats({
+    required this.measure,
+    required this.loggedValue,
+    required this.targetValue,
+    required this.progress,
+    required this.activityCount,
+    required this.daysTotal,
+    required this.daysElapsed,
+    required this.daysLeft,
+    required this.timeFraction,
+    required this.perWeekToFinish,
+    required this.pace,
+  });
+}
+
+DateTime _dayFloor(DateTime d) => DateTime(d.year, d.month, d.day);
+
+/// Compute campaign stats for an exercise [goal] from the logged activities in
+/// its window. Pure helper shared by [goalProgressForProvider] and
+/// [goalCampaignStatsProvider].
+GoalCampaignStats _exerciseCampaignStats(
+  PlannerGoal goal,
+  List<PlannerActivity> activities,
+) {
+  final measure = goal.measure ?? ExerciseMeasure.distance;
+  final now = DateTime.now();
+  final windowStart = _dayFloor(goal.startDate ?? goal.createdAt);
+  // Sum up to the deadline (or now when open-ended). Once the deadline passes,
+  // later activities no longer count toward this campaign.
+  final hardEnd = goal.endDate;
+  final sumEnd =
+      hardEnd == null ? now : (now.isBefore(hardEnd) ? now : hardEnd);
+
+  bool inWindow(DateTime d) => !d.isBefore(windowStart) && !d.isAfter(sumEnd);
+
+  var logged = 0.0;
+  var count = 0;
+  for (final a in activities) {
+    if (!inWindow(a.date)) continue;
+    count++;
+    switch (measure) {
+      case ExerciseMeasure.distance:
+        logged += a.distanceKm ?? 0;
+        break;
+      case ExerciseMeasure.time:
+        logged += a.minutes.toDouble();
+        break;
+      case ExerciseMeasure.sessions:
+        logged += 1;
+        break;
+    }
+  }
+
+  final target =
+      (goal.targetValue != null && goal.targetValue! > 0) ? goal.targetValue : null;
+  final progress =
+      target == null ? 0.0 : (logged / target).clamp(0.0, 1.0).toDouble();
+
+  int? daysTotal, daysElapsed, daysLeft;
+  double? timeFraction;
+  if (goal.startDate != null && hardEnd != null) {
+    final start = _dayFloor(goal.startDate!);
+    final end = _dayFloor(hardEnd);
+    final total = end.difference(start).inDays;
+    if (total > 0) {
+      daysTotal = total;
+      final elapsed = _dayFloor(now).difference(start).inDays;
+      daysElapsed = elapsed.clamp(0, total).toInt();
+      daysLeft = (total - elapsed).clamp(0, total).toInt();
+      timeFraction = (daysElapsed / total).clamp(0.0, 1.0).toDouble();
+    }
+  } else if (hardEnd != null) {
+    // End-only goal still yields a countdown.
+    final left = _dayFloor(hardEnd).difference(_dayFloor(now)).inDays;
+    daysLeft = left < 0 ? 0 : left;
+  }
+
+  double? perWeek;
+  if (target != null) {
+    final remaining =
+        (target - logged).clamp(0.0, double.infinity).toDouble();
+    if (daysLeft != null && daysLeft > 0) {
+      perWeek = remaining / (daysLeft / 7.0);
+    } else if (daysLeft == null) {
+      perWeek = null; // open-ended — no deadline to pace against
+    } else {
+      perWeek = remaining; // deadline today/passed: show what's left
+    }
+  }
+
+  GoalPace pace;
+  if (target == null) {
+    pace = GoalPace.noTarget;
+  } else if (progress >= 1.0) {
+    pace = GoalPace.done;
+  } else if (timeFraction == null) {
+    pace = GoalPace.onTrack; // no window to judge against
+  } else if (progress >= timeFraction + 0.02) {
+    pace = GoalPace.ahead;
+  } else if (progress < timeFraction - 0.10) {
+    pace = GoalPace.behind;
+  } else {
+    pace = GoalPace.onTrack;
+  }
+
+  return GoalCampaignStats(
+    measure: measure,
+    loggedValue: logged,
+    targetValue: target,
+    progress: progress,
+    activityCount: count,
+    daysTotal: daysTotal,
+    daysElapsed: daysElapsed,
+    daysLeft: daysLeft,
+    timeFraction: timeFraction,
+    perWeekToFinish: perWeek,
+    pace: pace,
+  );
+}
+
+/// Progress (0..1) toward a SPECIFIC goal by id. For an exercise goal this is
+/// the logged-activity total (any discipline, inside the goal window) over the
+/// target; for a weight goal it's how far current weight has moved from start
+/// toward the goal weight. 0.0 when the id is null/unknown or unmeasurable.
+///
+/// Per-goal (not active-only) so every goal card shows its own real bar.
+final goalProgressForProvider = Provider.family<double, String?>((ref, goalId) {
+  if (goalId == null) return 0.0;
+  final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
+  PlannerGoal? goal;
+  for (final g in goals) {
+    if (g.id == goalId) {
+      goal = g;
+      break;
+    }
+  }
+  if (goal == null) return 0.0;
+
+  switch (goal.type) {
+    case GoalType.weight:
+      final start = goal.startWeightKg;
+      final target = goal.goalWeightKg;
+      if (start == null || target == null || start == target) return 0.0;
+      final logs = ref.watch(plannerWeightProvider).valueOrNull ?? const [];
+      if (logs.isEmpty) return 0.0;
+      // Logs are stored oldest-first; the last one is the latest weight.
+      final current = logs.last.weightKg;
+      return ((current - start) / (target - start)).clamp(0.0, 1.0).toDouble();
+    case GoalType.exercise:
+      final activities =
+          ref.watch(plannerActivityProvider).valueOrNull ?? const [];
+      return _exerciseCampaignStats(goal, activities).progress;
+  }
+});
+
+/// Full campaign stats for an exercise goal by id (countdown, pace, per-week
+/// target). Null for weight goals (their detail lives in the body-journey) and
+/// for unknown ids.
+final goalCampaignStatsProvider =
+    Provider.family<GoalCampaignStats?, String?>((ref, goalId) {
+  if (goalId == null) return null;
+  final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
+  PlannerGoal? goal;
+  for (final g in goals) {
+    if (g.id == goalId) {
+      goal = g;
+      break;
+    }
+  }
+  if (goal == null || goal.type != GoalType.exercise) return null;
+  final activities =
+      ref.watch(plannerActivityProvider).valueOrNull ?? const [];
+  return _exerciseCampaignStats(goal, activities);
+});
+
+/// Progress (0..1) toward the ACTIVE goal — a thin wrapper over
+/// [goalProgressForProvider] for the current active-goal id.
+final goalProgressProvider = Provider<double>((ref) {
+  final activeGoalId = ref.watch(activeGoalIdProvider);
+  return ref.watch(goalProgressForProvider(activeGoalId));
+});
 
 // ─── Journal entries ──────────────────────────────────────────────────────────
 
@@ -1709,7 +2338,9 @@ final todaysIntentionProvider = Provider<DailyIntention?>((ref) {
   for (final e in list) {
     if (e.date.year == now.year &&
         e.date.month == now.month &&
-        e.date.day == now.day) return e;
+        e.date.day == now.day) {
+      return e;
+    }
   }
   return null;
 });
@@ -1841,7 +2472,9 @@ final thisWeekCapitalProvider = Provider<RecoveryCapitalWeek?>((ref) {
   for (final e in list) {
     if (e.weekStart.year == weekStart.year &&
         e.weekStart.month == weekStart.month &&
-        e.weekStart.day == weekStart.day) return e;
+        e.weekStart.day == weekStart.day) {
+      return e;
+    }
   }
   return null;
 });

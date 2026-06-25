@@ -8048,4 +8048,464 @@ class AppLocalizationsPt extends AppLocalizations {
   String challengeA11yDayTodo(int day) {
     return 'Day $day, not yet marked';
   }
+
+  @override
+  String get navPlanner => 'Plan';
+
+  @override
+  String get plannerTabOverview => 'Overview';
+
+  @override
+  String get plannerTabPlanner => 'Planner';
+
+  @override
+  String get plannerTabStreaks => 'Streaks';
+
+  @override
+  String get plannerMyGoals => 'My goals';
+
+  @override
+  String get plannerAddGoal => 'Add goal';
+
+  @override
+  String get plannerNoGoals => 'No goals yet. Add one to start your plan.';
+
+  @override
+  String get plannerGoalTypeRace => 'Race';
+
+  @override
+  String get plannerGoalTypeWeight => 'Weight';
+
+  @override
+  String get plannerGoalTypeHabit => 'Habit';
+
+  @override
+  String get plannerGoalTypeExercise => 'Exercise';
+
+  @override
+  String get plannerGoalNameLabel => 'Goal name';
+
+  @override
+  String get plannerGoalNameHint => 'e.g. Two Oceans Half';
+
+  @override
+  String get plannerMeasureLabel => 'Track progress by';
+
+  @override
+  String get plannerMeasureDistance => 'Distance';
+
+  @override
+  String get plannerMeasureTime => 'Active time';
+
+  @override
+  String get plannerMeasureSessions => 'Sessions';
+
+  @override
+  String get plannerTargetLabel => 'Target';
+
+  @override
+  String get plannerStartDateLabel => 'Start date';
+
+  @override
+  String get plannerEndDateLabel => 'Goal date';
+
+  @override
+  String get plannerPaceAhead => 'Ahead of pace';
+
+  @override
+  String get plannerPaceOnTrack => 'On track';
+
+  @override
+  String get plannerPaceBehind => 'Behind pace';
+
+  @override
+  String get plannerGoalReached => 'Goal reached!';
+
+  @override
+  String get plannerInProgress => 'In progress';
+
+  @override
+  String plannerDaysLeft(int count) {
+    return '$count days left';
+  }
+
+  @override
+  String plannerPerWeekHint(String amount) {
+    return '~$amount / week to finish on time';
+  }
+
+  @override
+  String plannerLoggedOfTarget(String logged, String target) {
+    return '$logged of $target';
+  }
+
+  @override
+  String get plannerArchiveGoal => 'Archive goal';
+
+  @override
+  String get plannerUnarchiveGoal => 'Restore goal';
+
+  @override
+  String get plannerDisciplineRun => 'Run';
+
+  @override
+  String get plannerDisciplineRide => 'Ride';
+
+  @override
+  String get plannerDisciplineSwim => 'Swim';
+
+  @override
+  String get plannerDisciplineWalk => 'Walk';
+
+  @override
+  String get plannerDisciplineHike => 'Hike';
+
+  @override
+  String get plannerDisciplineGym => 'Gym';
+
+  @override
+  String get plannerDisciplineYoga => 'Yoga';
+
+  @override
+  String get plannerDisciplineCardio => 'Cardio';
+
+  @override
+  String get plannerDisciplineOther => 'Other';
+
+  @override
+  String get plannerTotalActiveTime => 'Total active time';
+
+  @override
+  String get plannerByActivity => 'By activity';
+
+  @override
+  String plannerActivityCount(int count) {
+    return '$count activities';
+  }
+
+  @override
+  String plannerDurationHm(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String get plannerActivityTypeLabel => 'Activity';
+
+  @override
+  String get plannerActivityDateLabel => 'Date';
+
+  @override
+  String get plannerMetricEffort => 'Effort (1–10)';
+
+  @override
+  String get plannerMetricElevation => 'Elevation gain';
+
+  @override
+  String get plannerMetricPoolLength => 'Pool length';
+
+  @override
+  String get plannerStrengthExercises => 'Exercises';
+
+  @override
+  String get plannerStrengthExerciseHint => 'Exercise';
+
+  @override
+  String get plannerStrengthAddExercise => 'Add exercise';
+
+  @override
+  String get plannerStrengthSets => 'Sets';
+
+  @override
+  String get plannerStrengthReps => 'Reps';
+
+  @override
+  String get plannerStrengthWeight => 'Weight';
+
+  @override
+  String get plannerUnitMeters => 'm';
+
+  @override
+  String get plannerUnitFeet => 'ft';
+
+  @override
+  String plannerEffortValue(int value) {
+    return 'RPE $value';
+  }
+
+  @override
+  String plannerStrengthSummary(int count) {
+    return '$count exercises';
+  }
+
+  @override
+  String get plannerUnitSpeedKmh => 'km/h';
+
+  @override
+  String get plannerUnitSpeedMph => 'mph';
+
+  @override
+  String get plannerUnitPace100m => '/100m';
+
+  @override
+  String get plannerShareProgress => 'Share progress';
+
+  @override
+  String get plannerShareHeading => 'My training';
+
+  @override
+  String get plannerRange1Week => '1 week';
+
+  @override
+  String get plannerRange2Weeks => '2 weeks';
+
+  @override
+  String get plannerRange4Weeks => '4 weeks';
+
+  @override
+  String get plannerRangeAll => 'All time';
+
+  @override
+  String get plannerShareCta => 'Share';
+
+  @override
+  String get plannerShareMessage => 'My training on Journey Forward';
+
+  @override
+  String get plannerRace10k => '10K';
+
+  @override
+  String get plannerRaceHalf => 'Half marathon';
+
+  @override
+  String get plannerRaceFull => 'Marathon';
+
+  @override
+  String get plannerRaceComrades => 'Comrades';
+
+  @override
+  String plannerGoalProgress(int percent) {
+    return '$percent% there';
+  }
+
+  @override
+  String get plannerSessionEasyRun => 'Easy run';
+
+  @override
+  String get plannerSessionIntervals => 'Intervals';
+
+  @override
+  String get plannerSessionTempo => 'Tempo';
+
+  @override
+  String get plannerSessionLongRun => 'Long run';
+
+  @override
+  String get plannerSessionRest => 'Rest';
+
+  @override
+  String get plannerSessionCrossTrain => 'Cross-train';
+
+  @override
+  String get plannerSessionSwim => 'Swim';
+
+  @override
+  String get plannerSessionOther => 'Other';
+
+  @override
+  String plannerSessionLine(String label, String distance) {
+    return '$label · $distance';
+  }
+
+  @override
+  String get plannerCurrentWeek => 'This week';
+
+  @override
+  String get plannerMarkComplete => 'Mark complete';
+
+  @override
+  String get plannerMarkIncomplete => 'Mark incomplete';
+
+  @override
+  String get plannerAddSession => 'Add session';
+
+  @override
+  String get plannerEditSession => 'Edit session';
+
+  @override
+  String get plannerDeleteSession => 'Delete session';
+
+  @override
+  String get plannerUsePreset => 'Use a preset plan';
+
+  @override
+  String get plannerBuildYourOwn => 'Build your own';
+
+  @override
+  String get plannerPlanStartDate => 'Plan start date';
+
+  @override
+  String get plannerPreset10k => 'Couch to 10K';
+
+  @override
+  String get plannerPresetHalf => 'Half marathon build';
+
+  @override
+  String get plannerPresetFull => 'Marathon build';
+
+  @override
+  String get plannerPresetComrades => 'Comrades build';
+
+  @override
+  String get plannerCurrentStreak => 'Current streak';
+
+  @override
+  String plannerWeeklyProgress(int percent) {
+    return '$percent% of this week';
+  }
+
+  @override
+  String plannerWorkoutsOfTarget(int done, int total) {
+    return '$done of $total workouts';
+  }
+
+  @override
+  String get plannerBodyJourney => 'Body journey';
+
+  @override
+  String get plannerCurrentWeight => 'Current weight';
+
+  @override
+  String get plannerChangeSinceStart => 'Change since start';
+
+  @override
+  String get plannerGoalWeight => 'Goal weight';
+
+  @override
+  String get plannerWeightTrend => 'Weight trend';
+
+  @override
+  String get plannerAddWeightEntry => 'Add weight entry';
+
+  @override
+  String get plannerWeightReflection => 'Reflection';
+
+  @override
+  String get plannerWeightMilestone => 'Milestone';
+
+  @override
+  String plannerWeightSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String get plannerUnitKg => 'kg';
+
+  @override
+  String get plannerUnitLb => 'lb';
+
+  @override
+  String get plannerUnitPaceKm => 'min/km';
+
+  @override
+  String get plannerUnitPaceMi => 'min/mi';
+
+  @override
+  String get settingsImperialWeight => 'Use pounds (lb)';
+
+  @override
+  String get settingsImperialWeightSub => 'Show weight in lb instead of kg';
+
+  @override
+  String get plannerConnectStrava => 'Connect Strava';
+
+  @override
+  String get plannerStravaNotConfigured =>
+      'Strava isn\'t set up in this build.';
+
+  @override
+  String get plannerPoweredByStrava => 'Powered by Strava';
+
+  @override
+  String get plannerStravaPrivacyTitle => 'About Strava sync';
+
+  @override
+  String get plannerStravaPrivacyBody =>
+      'Your activities are fetched directly from Strava to your phone. Journey Forward has no server and never sees your account.';
+
+  @override
+  String get plannerStravaReadOnly => 'Read-only access';
+
+  @override
+  String get plannerStravaDirect => 'Direct device connection';
+
+  @override
+  String get plannerStravaNoServer => 'No server involved';
+
+  @override
+  String get plannerStravaDisconnect => 'Disconnect Strava';
+
+  @override
+  String plannerStravaImported(int count) {
+    return 'Imported $count activities';
+  }
+
+  @override
+  String get plannerStravaRateLimited =>
+      'Strava is rate-limiting requests. Try again later.';
+
+  @override
+  String get plannerSourceManual => 'Manual';
+
+  @override
+  String get plannerSourceStrava => 'Strava';
+
+  @override
+  String get plannerHistory => 'History';
+
+  @override
+  String get plannerInsights => 'Insights';
+
+  @override
+  String get plannerDistanceTrend => 'Distance trend';
+
+  @override
+  String get plannerWeeklyVolume => 'Weekly volume';
+
+  @override
+  String get plannerAvgPace => 'Average pace';
+
+  @override
+  String get plannerAvgHeartRate => 'Avg heart rate';
+
+  @override
+  String get plannerHabitMetricLabel => 'Metric (what you\'re counting)';
+
+  @override
+  String get plannerHabitTargetLabel => 'Target';
+
+  @override
+  String get plannerTotalDistance => 'Total distance';
+
+  @override
+  String get plannerNoActivities => 'No activities logged yet.';
+
+  @override
+  String get homeTodaySessionTitle => 'Today\'s session';
+
+  @override
+  String get homeRestDay => 'Rest day';
+
+  @override
+  String get homeTodaySessionCta => 'Open planner';
+
+  @override
+  String get plannerA11yDayDone => 'Workout done';
+
+  @override
+  String get plannerA11yDayTodo => 'Workout planned';
+
+  @override
+  String plannerA11yProgressRing(int percent) {
+    return '$percent percent of weekly goal complete';
+  }
 }

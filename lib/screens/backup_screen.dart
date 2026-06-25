@@ -43,10 +43,24 @@ const _exportKeys = [
   'urge_rides',
   // v6.3 — 100-day challenge grid (ticked days + emoji stickers)
   'hundred_day_challenge',
+  // v6.4 planner — goals, sessions, weight logs, activities, settings
+  'planner_goals',
+  'planner_sessions',
+  'planner_weight_logs',
+  'planner_activities',
+  'planner_settings',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
+  //
+  // strava_tokens is also intentionally excluded: OAuth tokens live in
+  // flutter_secure_storage and never travel in a backup (mirrors lockMethod) —
+  // tokens are device-bound and re-granted by re-connecting Strava on restore.
 ];
+
+/// Public alias of [_exportKeys] so tests can assert the backup roundtrip
+/// against the REAL exported-key list rather than a hand-maintained copy.
+const List<String> kBackupExportKeys = _exportKeys;
 
 // ─── Backup Screen ────────────────────────────────────────────────────────────
 
@@ -368,6 +382,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       for (final entry in data.entries) {
         if (entry.key == 'lockMethod') continue; // never restore lock state
         if (entry.key == 'profile') continue; // sanitised below
+        // Allowlist-driven: only ever write keys we snapshotted for rollback.
+        // A key not in _exportKeys was never captured in the snapshot, so a
+        // failed write could not be rolled back — and an attacker-crafted or
+        // foreign backup could otherwise smuggle in unsanctioned keys (e.g.
+        // strava_tokens, which deliberately never travels in a backup). Skip
+        // anything outside the sanctioned set.
+        if (!_exportKeys.contains(entry.key)) continue;
         if (entry.value is String) {
           writes[entry.key] = entry.value as String;
         }
@@ -517,6 +538,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     ref.invalidate(recoveryCapitalProvider);
     ref.invalidate(urgeRideProvider);
     ref.invalidate(hundredDayChallengeProvider);
+    // v6.4 planner
+    ref.invalidate(plannerGoalProvider);
+    ref.invalidate(plannerSessionProvider);
+    ref.invalidate(plannerWeightProvider);
+    ref.invalidate(plannerActivityProvider);
+    ref.invalidate(plannerSettingsProvider);
   }
 
   void _showSnack(String msg, {bool error = false}) {

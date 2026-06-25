@@ -69,6 +69,14 @@
 -keepattributes InnerClasses
 -keepattributes EnclosingMethod
 
+# ── flutter_web_auth_2 5.x (Strava OAuth) ────────────────────────────────────
+# 5.x requires the host app to declare the CallbackActivity itself in
+# src/main/AndroidManifest.xml. Manifest-referenced activities are already R8
+# keep-roots, but the OAuth redirect is a critical, hard-to-test path, so we
+# keep the whole plugin package explicitly as cheap insurance against R8 ever
+# stripping or renaming CallbackActivity / AuthenticationManagementActivity.
+-keep class com.linusu.flutter_web_auth_2.** { *; }
+
 # ── App-specific ─────────────────────────────────────────────────────────────
 -keep class com.journeyforward.journey_forward.** { *; }
 

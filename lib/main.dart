@@ -31,6 +31,12 @@ import 'screens/lock_screen.dart';
 import 'screens/meetings_screen.dart';
 import 'screens/milestone_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/planner_screen.dart';
+import 'screens/planner_body_journey_screen.dart';
+import 'screens/planner_goal_screen.dart';
+import 'screens/planner_history_screen.dart';
+import 'screens/planner_insights_screen.dart';
+import 'screens/planner_share_screen.dart';
 import 'screens/privacy_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/puzzle_screen.dart';
@@ -523,28 +529,35 @@ GoRouter _buildRouter({
               builder: (_, __) => const HomeScreen(),
             ),
           ]),
-          // Tab 1 — Progress
+          // Tab 1 — Planner
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/planner',
+              builder: (_, __) => const PlannerScreen(),
+            ),
+          ]),
+          // Tab 2 — Progress
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/progress',
               builder: (_, __) => const ProgressScreen(),
             ),
           ]),
-          // Tab 2 — Emergency / Calm Toolkit
+          // Tab 3 — Emergency / Calm Toolkit
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/emergency',
               builder: (_, __) => const EmergencyScreen(),
             ),
           ]),
-          // Tab 3 — Journal
+          // Tab 4 — Journal
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/journal',
               builder: (_, __) => const JournalScreen(),
             ),
           ]),
-          // Tab 4 — Profile / Settings
+          // Tab 5 — Profile / Settings
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/settings',
@@ -639,6 +652,31 @@ GoRouter _buildRouter({
         path: '/weekly-care-summary',
         builder: (_, __) => const WeeklyCareSummaryScreen(),
       ),
+
+      // ── Planner sub-screens (pushed from the Planner tab) ────────────────────
+      GoRoute(
+        path: '/planner-goal',
+        // `extra` carries the id of the goal being edited; null → new goal.
+        builder: (_, state) => PlannerGoalScreen(
+          goalId: state.extra is String ? state.extra as String : null,
+        ),
+      ),
+      GoRoute(
+        path: '/planner-body-journey',
+        builder: (_, __) => const PlannerBodyJourneyScreen(),
+      ),
+      GoRoute(
+        path: '/planner-history',
+        builder: (_, __) => const PlannerHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/planner-insights',
+        builder: (_, __) => const PlannerInsightsScreen(),
+      ),
+      GoRoute(
+        path: '/planner-share',
+        builder: (_, __) => const PlannerShareScreen(),
+      ),
     ],
   );
 }
@@ -646,7 +684,7 @@ GoRouter _buildRouter({
 // ─── App shell (bottom nav bar) ──────────────────────────────────────────────
 
 // Tab index that requires screenshot/recording protection.
-const _kSecureTabIndex = 3; // Journal
+const _kSecureTabIndex = 4; // Journal
 
 class _AppShell extends StatelessWidget {
   const _AppShell({required this.navigationShell});
@@ -672,6 +710,10 @@ class _AppShell extends StatelessWidget {
           label: l10n.navHome,
           icon: Icons.home_outlined,
           activeIcon: Icons.home_rounded),
+      _NavTab(
+          label: l10n.navPlanner,
+          icon: Icons.directions_run_outlined,
+          activeIcon: Icons.directions_run_rounded),
       _NavTab(
           label: l10n.navProgress,
           icon: Icons.monitor_heart_outlined,
@@ -756,14 +798,21 @@ class _StillwaterNavBar extends StatelessWidget {
                                 ? AppColors.forest
                                 : AppColors.mistGrey),
                         const SizedBox(height: 5),
-                        Text(tab.label,
-                            style: AppTextStyles.caption.copyWith(
-                              color: selected
-                                  ? AppColors.forest
-                                  : AppColors.mistGrey,
-                              fontWeight:
-                                  selected ? FontWeight.w700 : FontWeight.w500,
-                            )),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(tab.label,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.clip,
+                              style: AppTextStyles.caption.copyWith(
+                                color: selected
+                                    ? AppColors.forest
+                                    : AppColors.mistGrey,
+                                fontWeight: selected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                              )),
+                        ),
                         const SizedBox(height: 5),
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 180),

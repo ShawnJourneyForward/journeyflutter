@@ -14059,6 +14059,864 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Day {day}, not yet marked'**
   String challengeA11yDayTodo(int day);
+
+  /// Bottom-nav / tab label for the training & body planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get navPlanner;
+
+  /// Planner sub-tab label: overview of goals and today.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get plannerTabOverview;
+
+  /// Planner sub-tab label: the weekly plan editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Planner'**
+  String get plannerTabPlanner;
+
+  /// Planner sub-tab label: streaks and weekly progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Streaks'**
+  String get plannerTabStreaks;
+
+  /// Section heading listing the user's training/body goals.
+  ///
+  /// In en, this message translates to:
+  /// **'My goals'**
+  String get plannerMyGoals;
+
+  /// Button to create a new planner goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add goal'**
+  String get plannerAddGoal;
+
+  /// Empty-state shown when the planner has no goals.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals yet. Add one to start your plan.'**
+  String get plannerNoGoals;
+
+  /// Goal-type label: training for a race.
+  ///
+  /// In en, this message translates to:
+  /// **'Race'**
+  String get plannerGoalTypeRace;
+
+  /// Goal-type label: a body-weight goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get plannerGoalTypeWeight;
+
+  /// Goal-type label: a recurring fitness habit.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit'**
+  String get plannerGoalTypeHabit;
+
+  /// Goal-type label: a dated exercise/training campaign fed by any logged activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get plannerGoalTypeExercise;
+
+  /// Field label for the free-text goal name.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal name'**
+  String get plannerGoalNameLabel;
+
+  /// Placeholder example for the goal-name field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Two Oceans Half'**
+  String get plannerGoalNameHint;
+
+  /// Label above the exercise-goal measure picker (distance / time / sessions).
+  ///
+  /// In en, this message translates to:
+  /// **'Track progress by'**
+  String get plannerMeasureLabel;
+
+  /// Exercise-goal measure: total distance across activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get plannerMeasureDistance;
+
+  /// Exercise-goal measure: total active minutes across activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Active time'**
+  String get plannerMeasureTime;
+
+  /// Exercise-goal measure: a count of logged activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions'**
+  String get plannerMeasureSessions;
+
+  /// Field label for the exercise-goal target value.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get plannerTargetLabel;
+
+  /// Field label for a goal's start date.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get plannerStartDateLabel;
+
+  /// Field label for a goal's end / target date.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal date'**
+  String get plannerEndDateLabel;
+
+  /// On-track verdict: progress is ahead of where the time elapsed suggests.
+  ///
+  /// In en, this message translates to:
+  /// **'Ahead of pace'**
+  String get plannerPaceAhead;
+
+  /// On-track verdict: progress roughly matches time elapsed.
+  ///
+  /// In en, this message translates to:
+  /// **'On track'**
+  String get plannerPaceOnTrack;
+
+  /// On-track verdict: progress is behind where the time elapsed suggests.
+  ///
+  /// In en, this message translates to:
+  /// **'Behind pace'**
+  String get plannerPaceBehind;
+
+  /// Shown when an exercise goal hits 100% of its target.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal reached!'**
+  String get plannerGoalReached;
+
+  /// Neutral status when a goal has no target to pace against.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get plannerInProgress;
+
+  /// Countdown to a goal's end date.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String plannerDaysLeft(int count);
+
+  /// Adaptive weekly pace needed to finish a goal by its date.
+  ///
+  /// In en, this message translates to:
+  /// **'~{amount} / week to finish on time'**
+  String plannerPerWeekHint(String amount);
+
+  /// Progress detail, e.g. '110 km of 200 km'.
+  ///
+  /// In en, this message translates to:
+  /// **'{logged} of {target}'**
+  String plannerLoggedOfTarget(String logged, String target);
+
+  /// Button: soft-hide a goal without deleting its data.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive goal'**
+  String get plannerArchiveGoal;
+
+  /// Button: restore a previously archived goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore goal'**
+  String get plannerUnarchiveGoal;
+
+  /// Exercise discipline: running.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get plannerDisciplineRun;
+
+  /// Exercise discipline: cycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get plannerDisciplineRide;
+
+  /// Exercise discipline: swimming.
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get plannerDisciplineSwim;
+
+  /// Exercise discipline: walking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get plannerDisciplineWalk;
+
+  /// Exercise discipline: hiking.
+  ///
+  /// In en, this message translates to:
+  /// **'Hike'**
+  String get plannerDisciplineHike;
+
+  /// Exercise discipline: strength / gym.
+  ///
+  /// In en, this message translates to:
+  /// **'Gym'**
+  String get plannerDisciplineGym;
+
+  /// Exercise discipline: yoga / mobility.
+  ///
+  /// In en, this message translates to:
+  /// **'Yoga'**
+  String get plannerDisciplineYoga;
+
+  /// Exercise discipline: generic cardio / cross-training.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio'**
+  String get plannerDisciplineCardio;
+
+  /// Exercise discipline: anything else.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get plannerDisciplineOther;
+
+  /// Insights metric: summed active minutes across all activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Total active time'**
+  String get plannerTotalActiveTime;
+
+  /// Insights section header above the per-discipline tiles.
+  ///
+  /// In en, this message translates to:
+  /// **'By activity'**
+  String get plannerByActivity;
+
+  /// Count of activities in a discipline tile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} activities'**
+  String plannerActivityCount(int count);
+
+  /// Active-time duration formatted as hours and minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String plannerDurationHm(int hours, int minutes);
+
+  /// Field label above the discipline picker in the manual log sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get plannerActivityTypeLabel;
+
+  /// Field label for the activity date in the manual log sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get plannerActivityDateLabel;
+
+  /// Field label for perceived effort / RPE.
+  ///
+  /// In en, this message translates to:
+  /// **'Effort (1–10)'**
+  String get plannerMetricEffort;
+
+  /// Field label for elevation gain on a run/ride/walk/hike.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation gain'**
+  String get plannerMetricElevation;
+
+  /// Field label for the pool length on a swim.
+  ///
+  /// In en, this message translates to:
+  /// **'Pool length'**
+  String get plannerMetricPoolLength;
+
+  /// Section header above the gym exercise list.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get plannerStrengthExercises;
+
+  /// Placeholder for a gym exercise name (e.g. Bench press).
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get plannerStrengthExerciseHint;
+
+  /// Button to add another exercise row to a gym activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get plannerStrengthAddExercise;
+
+  /// Field label for number of sets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get plannerStrengthSets;
+
+  /// Field label for number of reps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get plannerStrengthReps;
+
+  /// Field label for the weight lifted.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get plannerStrengthWeight;
+
+  /// Abbreviation for metres.
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get plannerUnitMeters;
+
+  /// Abbreviation for feet.
+  ///
+  /// In en, this message translates to:
+  /// **'ft'**
+  String get plannerUnitFeet;
+
+  /// Compact effort readout in history, e.g. 'RPE 7'.
+  ///
+  /// In en, this message translates to:
+  /// **'RPE {value}'**
+  String plannerEffortValue(int value);
+
+  /// History summary of a gym activity's exercise count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} exercises'**
+  String plannerStrengthSummary(int count);
+
+  /// Speed unit (metric) for cycling.
+  ///
+  /// In en, this message translates to:
+  /// **'km/h'**
+  String get plannerUnitSpeedKmh;
+
+  /// Speed unit (imperial) for cycling.
+  ///
+  /// In en, this message translates to:
+  /// **'mph'**
+  String get plannerUnitSpeedMph;
+
+  /// Swim pace unit (per 100 metres).
+  ///
+  /// In en, this message translates to:
+  /// **'/100m'**
+  String get plannerUnitPace100m;
+
+  /// Action + screen title for sharing a training summary image.
+  ///
+  /// In en, this message translates to:
+  /// **'Share progress'**
+  String get plannerShareProgress;
+
+  /// Heading on the shareable training-summary card.
+  ///
+  /// In en, this message translates to:
+  /// **'My training'**
+  String get plannerShareHeading;
+
+  /// Date-range option: the last 7 days.
+  ///
+  /// In en, this message translates to:
+  /// **'1 week'**
+  String get plannerRange1Week;
+
+  /// Date-range option: the last 14 days.
+  ///
+  /// In en, this message translates to:
+  /// **'2 weeks'**
+  String get plannerRange2Weeks;
+
+  /// Date-range option: the last 28 days.
+  ///
+  /// In en, this message translates to:
+  /// **'4 weeks'**
+  String get plannerRange4Weeks;
+
+  /// Date-range option: all logged activity.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get plannerRangeAll;
+
+  /// Button to share the training summary image.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get plannerShareCta;
+
+  /// Default text accompanying the shared training-summary image.
+  ///
+  /// In en, this message translates to:
+  /// **'My training on Journey Forward'**
+  String get plannerShareMessage;
+
+  /// Race-distance label for a 10-kilometre race.
+  ///
+  /// In en, this message translates to:
+  /// **'10K'**
+  String get plannerRace10k;
+
+  /// Race-distance label for a half marathon.
+  ///
+  /// In en, this message translates to:
+  /// **'Half marathon'**
+  String get plannerRaceHalf;
+
+  /// Race-distance label for a full marathon.
+  ///
+  /// In en, this message translates to:
+  /// **'Marathon'**
+  String get plannerRaceFull;
+
+  /// Race-distance label for the Comrades ultramarathon.
+  ///
+  /// In en, this message translates to:
+  /// **'Comrades'**
+  String get plannerRaceComrades;
+
+  /// Progress label for a goal, e.g. '60% there'.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% there'**
+  String plannerGoalProgress(int percent);
+
+  /// Session-type label: an easy-paced run.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy run'**
+  String get plannerSessionEasyRun;
+
+  /// Session-type label: interval training.
+  ///
+  /// In en, this message translates to:
+  /// **'Intervals'**
+  String get plannerSessionIntervals;
+
+  /// Session-type label: a tempo run.
+  ///
+  /// In en, this message translates to:
+  /// **'Tempo'**
+  String get plannerSessionTempo;
+
+  /// Session-type label: a long endurance run.
+  ///
+  /// In en, this message translates to:
+  /// **'Long run'**
+  String get plannerSessionLongRun;
+
+  /// Session-type label: a rest day.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get plannerSessionRest;
+
+  /// Session-type label: cross-training.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross-train'**
+  String get plannerSessionCrossTrain;
+
+  /// Session-type label: a swim session.
+  ///
+  /// In en, this message translates to:
+  /// **'Swim'**
+  String get plannerSessionSwim;
+
+  /// Session-type label: another kind of session.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get plannerSessionOther;
+
+  /// One-line session summary, e.g. 'Long run · 18 km'.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {distance}'**
+  String plannerSessionLine(String label, String distance);
+
+  /// Heading for the current training week.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get plannerCurrentWeek;
+
+  /// Action to mark a session as completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark complete'**
+  String get plannerMarkComplete;
+
+  /// Action to un-mark a completed session.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark incomplete'**
+  String get plannerMarkIncomplete;
+
+  /// Button to add a training session to the plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Add session'**
+  String get plannerAddSession;
+
+  /// Button to edit a training session.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit session'**
+  String get plannerEditSession;
+
+  /// Button to delete a training session.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete session'**
+  String get plannerDeleteSession;
+
+  /// Option to start from a built-in training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a preset plan'**
+  String get plannerUsePreset;
+
+  /// Option to build a custom training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Build your own'**
+  String get plannerBuildYourOwn;
+
+  /// Label for the date the training plan begins.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan start date'**
+  String get plannerPlanStartDate;
+
+  /// Name of the 10K preset training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Couch to 10K'**
+  String get plannerPreset10k;
+
+  /// Name of the half-marathon preset training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Half marathon build'**
+  String get plannerPresetHalf;
+
+  /// Name of the marathon preset training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Marathon build'**
+  String get plannerPresetFull;
+
+  /// Name of the Comrades preset training plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Comrades build'**
+  String get plannerPresetComrades;
+
+  /// Label for the current training streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Current streak'**
+  String get plannerCurrentStreak;
+
+  /// Weekly completion progress, e.g. '75% of this week'.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of this week'**
+  String plannerWeeklyProgress(int percent);
+
+  /// Workouts completed versus target this week.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} workouts'**
+  String plannerWorkoutsOfTarget(int done, int total);
+
+  /// Heading for the weight / body-journey screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Body journey'**
+  String get plannerBodyJourney;
+
+  /// Label for the latest recorded weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Current weight'**
+  String get plannerCurrentWeight;
+
+  /// Label for weight change since the journey began.
+  ///
+  /// In en, this message translates to:
+  /// **'Change since start'**
+  String get plannerChangeSinceStart;
+
+  /// Label for the target body weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal weight'**
+  String get plannerGoalWeight;
+
+  /// Heading for the weight-over-time chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend'**
+  String get plannerWeightTrend;
+
+  /// Button to log a new weight reading.
+  ///
+  /// In en, this message translates to:
+  /// **'Add weight entry'**
+  String get plannerAddWeightEntry;
+
+  /// Label for an optional note on a weight entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Reflection'**
+  String get plannerWeightReflection;
+
+  /// Label for a weight milestone marker.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone'**
+  String get plannerWeightMilestone;
+
+  /// Caption noting the start date of a weight comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String plannerWeightSince(String date);
+
+  /// Unit abbreviation for kilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get plannerUnitKg;
+
+  /// Unit abbreviation for pounds.
+  ///
+  /// In en, this message translates to:
+  /// **'lb'**
+  String get plannerUnitLb;
+
+  /// Pace unit: minutes per kilometre.
+  ///
+  /// In en, this message translates to:
+  /// **'min/km'**
+  String get plannerUnitPaceKm;
+
+  /// Pace unit: minutes per mile.
+  ///
+  /// In en, this message translates to:
+  /// **'min/mi'**
+  String get plannerUnitPaceMi;
+
+  /// Settings toggle to display weight in pounds instead of kilograms.
+  ///
+  /// In en, this message translates to:
+  /// **'Use pounds (lb)'**
+  String get settingsImperialWeight;
+
+  /// Sub-label for the imperial-weight settings toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show weight in lb instead of kg'**
+  String get settingsImperialWeightSub;
+
+  /// Button to link a Strava account.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Strava'**
+  String get plannerConnectStrava;
+
+  /// Message shown when Strava API credentials are absent.
+  ///
+  /// In en, this message translates to:
+  /// **'Strava isn\'t set up in this build.'**
+  String get plannerStravaNotConfigured;
+
+  /// Attribution required by Strava's brand guidelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Powered by Strava'**
+  String get plannerPoweredByStrava;
+
+  /// Title of the Strava privacy explainer.
+  ///
+  /// In en, this message translates to:
+  /// **'About Strava sync'**
+  String get plannerStravaPrivacyTitle;
+
+  /// Body of the Strava privacy explainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your activities are fetched directly from Strava to your phone. Journey Forward has no server and never sees your account.'**
+  String get plannerStravaPrivacyBody;
+
+  /// Note that Strava access is read-only.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only access'**
+  String get plannerStravaReadOnly;
+
+  /// Note that the Strava connection is phone-to-Strava.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct device connection'**
+  String get plannerStravaDirect;
+
+  /// Note that no Journey Forward server is involved in Strava sync.
+  ///
+  /// In en, this message translates to:
+  /// **'No server involved'**
+  String get plannerStravaNoServer;
+
+  /// Button to unlink the Strava account.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect Strava'**
+  String get plannerStravaDisconnect;
+
+  /// Confirmation after importing Strava activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} activities'**
+  String plannerStravaImported(int count);
+
+  /// Message shown when Strava returns a rate-limit error.
+  ///
+  /// In en, this message translates to:
+  /// **'Strava is rate-limiting requests. Try again later.'**
+  String get plannerStravaRateLimited;
+
+  /// Activity-source label: entered by hand.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get plannerSourceManual;
+
+  /// Activity-source label: imported from Strava.
+  ///
+  /// In en, this message translates to:
+  /// **'Strava'**
+  String get plannerSourceStrava;
+
+  /// Heading for the activity history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get plannerHistory;
+
+  /// Heading for the training insights screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get plannerInsights;
+
+  /// Heading for the distance-over-time chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance trend'**
+  String get plannerDistanceTrend;
+
+  /// Heading for the weekly training-volume chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly volume'**
+  String get plannerWeeklyVolume;
+
+  /// Label for average pace across activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Average pace'**
+  String get plannerAvgPace;
+
+  /// Label for the average heart-rate input field (in bpm) on a logged activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg heart rate'**
+  String get plannerAvgHeartRate;
+
+  /// Label for the free-text field naming what a habit goal counts, e.g. 'sessions'.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric (what you\'re counting)'**
+  String get plannerHabitMetricLabel;
+
+  /// Label for the numeric target-value field of a habit goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get plannerHabitTargetLabel;
+
+  /// Label for cumulative distance covered.
+  ///
+  /// In en, this message translates to:
+  /// **'Total distance'**
+  String get plannerTotalDistance;
+
+  /// Empty-state for the activity history / insights.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities logged yet.'**
+  String get plannerNoActivities;
+
+  /// Home-screen card title for today's planned training session.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s session'**
+  String get homeTodaySessionTitle;
+
+  /// Home-screen label shown when today is a planned rest day.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day'**
+  String get homeRestDay;
+
+  /// Home-screen button opening the training planner.
+  ///
+  /// In en, this message translates to:
+  /// **'Open planner'**
+  String get homeTodaySessionCta;
+
+  /// Screen-reader label for a completed workout day.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout done'**
+  String get plannerA11yDayDone;
+
+  /// Screen-reader label for a planned (not yet done) workout day.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout planned'**
+  String get plannerA11yDayTodo;
+
+  /// Screen-reader label for the weekly-progress ring.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} percent of weekly goal complete'**
+  String plannerA11yProgressRing(int percent);
 }
 
 class _AppLocalizationsDelegate

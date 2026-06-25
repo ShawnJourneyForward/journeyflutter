@@ -37,6 +37,8 @@ class UserProfile {
   final bool highContrast;
   // When true the activity sheet labels distance in miles instead of km.
   final bool useImperial;
+  // When true weight is displayed in pounds instead of kilograms.
+  final bool useImperialWeight;
 
   const UserProfile({
     required this.username,
@@ -62,6 +64,7 @@ class UserProfile {
     this.preCravingLinks = const [],
     this.highContrast = false,
     this.useImperial = false,
+    this.useImperialWeight = false,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> j) => UserProfile(
@@ -115,6 +118,7 @@ class UserProfile {
             const [],
         highContrast: (j['highContrast'] as bool?) ?? false,
         useImperial: (j['useImperial'] as bool?) ?? false,
+        useImperialWeight: (j['useImperialWeight'] as bool?) ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -142,6 +146,7 @@ class UserProfile {
         'preCravingLinks': preCravingLinks,
         'highContrast': highContrast,
         'useImperial': useImperial,
+        'useImperialWeight': useImperialWeight,
       };
 
   String toJsonString() => jsonEncode(toJson());
@@ -170,6 +175,7 @@ class UserProfile {
     List<String>? preCravingLinks,
     bool? highContrast,
     bool? useImperial,
+    bool? useImperialWeight,
   }) =>
       UserProfile(
         username: username ?? this.username,
@@ -202,6 +208,7 @@ class UserProfile {
         preCravingLinks: preCravingLinks ?? this.preCravingLinks,
         highContrast: highContrast ?? this.highContrast,
         useImperial: useImperial ?? this.useImperial,
+        useImperialWeight: useImperialWeight ?? this.useImperialWeight,
       );
 }
 

@@ -44,3 +44,39 @@ int safeInt(Object? v, {int fallback = 0}) {
 String safeId(Object? v) => (v is String && v.isNotEmpty)
     ? v
     : 'gen_${DateTime.now().microsecondsSinceEpoch}';
+
+/// Read a required double, falling back to [fallback] for a null/wrong-typed
+/// value. Tolerates a backup that round-tripped it as an int or a String.
+double safeDouble(Object? v, {double fallback = 0}) {
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v) ?? fallback;
+  return fallback;
+}
+
+/// Read an OPTIONAL double. Returns null for a null/wrong-typed/unparseable
+/// value, preserving the "not set" meaning (never fabricates a 0).
+double? safeNullableDouble(Object? v) {
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v);
+  return null;
+}
+
+/// Read an OPTIONAL int. Returns null for a null/wrong-typed/unparseable value
+/// (a backup may have round-tripped it as a double). Never fabricates a 0.
+int? safeNullableInt(Object? v) {
+  if (v is num) return v.toInt();
+  if (v is String) return int.tryParse(v);
+  return null;
+}
+
+/// Read a bool, falling back to [fallback] for a null/wrong-typed value. Also
+/// tolerates the common 1/0 and "true"/"false" string encodings from backups.
+bool safeBool(Object? v, {bool fallback = false}) {
+  if (v is bool) return v;
+  if (v is num) return v != 0;
+  if (v is String) {
+    if (v == 'true') return true;
+    if (v == 'false') return false;
+  }
+  return fallback;
+}

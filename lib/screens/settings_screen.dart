@@ -14,10 +14,12 @@ import '../l10n/app_localizations.dart';
 import '../l10n/app_locales.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
+import '../services/strava_config.dart';
 import '../theme/app_theme.dart';
 import '../utils/haptic_service.dart';
 import '../utils/notification_service.dart';
 import '../utils/pin_hash.dart';
+import 'planner_strava_sheet.dart';
 
 // ─── Settings Screen ──────────────────────────────────────────────────────────
 
@@ -2085,6 +2087,13 @@ class _MoreCard extends ConsumerWidget {
                 onTap: () => context.push('/crisis'),
                 borderBottom: true,
               ),
+              if (stravaConfigured)
+                _SettingsRow(
+                  icon: Icons.directions_run_rounded,
+                  label: l10n.plannerConnectStrava,
+                  onTap: () => showStravaSheet(context, ref),
+                  borderBottom: true,
+                ),
               _SettingsRow(
                 icon: Icons.backup_outlined,
                 label: l10n.settingsBackupLabel,
@@ -2393,6 +2402,49 @@ class _NotificationsCardState extends ConsumerState<_NotificationsCard>
                           H.selection();
                           ref.read(profileProvider.notifier).patch(
                                 (p) => p.copyWith(useImperial: val),
+                              );
+                        },
+                        activeColor: AppColors.forest600,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.forest50,
+                          borderRadius: AppRadius.sm,
+                        ),
+                        child: Icon(Icons.monitor_weight_outlined,
+                            size: 18, color: AppColors.forest700),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l10n.settingsImperialWeight,
+                                style: AppTextStyles.bodyMedium),
+                            Text(
+                              l10n.settingsImperialWeightSub,
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.stone500),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: profile.useImperialWeight,
+                        onChanged: (val) {
+                          H.selection();
+                          ref.read(profileProvider.notifier).patch(
+                                (p) => p.copyWith(useImperialWeight: val),
                               );
                         },
                         activeColor: AppColors.forest600,

@@ -9,13 +9,16 @@ import '../utils/locale_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/planner_session.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../theme/planner_palette.dart';
 import '../utils/craving_insights.dart';
 import '../utils/haptic_service.dart';
 import '../utils/notification_service.dart';
 import 'daily_practice_sheets.dart';
+import 'planner_screen.dart' show sessionTypeLabel;
 import '../utils/plant_logic.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
@@ -626,6 +629,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           RepaintBoundary(child: _MyReasonCard(profile: profile)),
+          // Planner: today's training session. Guarded so it only appears once
+          // the user has an active plan — recovery content above stays primary.
+          // Reads the date-granular todaySessionProvider (NOT soberStats) so its
+          // rebuild can't land on a scroll frame and reintroduce jitter.
+          if (ref.watch(hasActivePlanProvider))
+            const RepaintBoundary(child: _TodaySessionCard()),
           if (profile.weeklyGoals.isNotEmpty)
             RepaintBoundary(
               child: _WeeklyGoalsCard(
@@ -2882,6 +2891,106 @@ class _RecoveryBanner extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Today's Training Session Card (planner) ─────────────────────────────────
+//
+// Mirrors _RecoveryBanner: GestureDetector → LuxuryCard with an IconChip +
+// overline header + chevron, a body line, and a footer CTA. Tapping opens the
+// Planner tab. It watches the *date-granular* todaySessionProvider (refreshes
+// only at midnight), never the per-second soberStatsProvider, so its rebuild
+// can never land on a scroll frame — keeping the Home list jitter-free. Only
+// inserted into the cards list when hasActivePlanProvider is true.
+class _TodaySessionCard extends ConsumerWidget {
+  const _TodaySessionCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final session = ref.watch(todaySessionProvider);
+
+    // No session scheduled today → rest day. Treat an explicit rest-type
+    // session the same way so the body always reads as a rest day.
+    final isRest = session == null || session.type == SessionType.rest;
+
+    final IconData icon =
+        isRest ? Icons.bedtime_rounded : sessionTypeIcon(session.type);
+    final Color chipBg =
+        isRest ? AppColors.mintChip : sessionTypeTint(session.type);
+    final Color chipColor =
+        isRest ? AppColors.forest : sessionTypeColor(session.type);
+
+    // Build the body line. For a real session, reuse the exact planner idiom:
+    // sessionTypeLabel + formatDistance → plannerSessionLine. Distance is
+    // canonical KM, rendered unit-aware via the locale formatter.
+    String body;
+    if (isRest) {
+      body = l10n.homeRestDay;
+    } else {
+      final imperial = ref.watch(profileProvider).valueOrNull?.useImperial ??
+          false;
+      final label = sessionTypeLabel(l10n, session.type);
+      final distance = session.plannedDistanceKm == null
+          ? ''
+          : formatDistance(session.plannedDistanceKm!,
+              imperial: imperial, l10n: l10n);
+      body = distance.isEmpty
+          ? label
+          : l10n.plannerSessionLine(label, distance);
+    }
+
+    return GestureDetector(
+      onTap: () {
+        H.light();
+        context.go('/planner');
+      },
+      child: LuxuryCard(
+        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Header ──────────────────────────────────────────────────
+            Row(
+              children: [
+                IconChip(
+                  icon: icon,
+                  backgroundColor: chipBg,
+                  color: chipColor,
+                  size: 38,
+                ),
+                const SizedBox(width: 12),
+                Text(l10n.homeTodaySessionTitle,
+                    style: AppTextStyles.overline),
+                const Spacer(),
+                Icon(Icons.chevron_right_rounded,
+                    color: AppColors.mistGrey, size: 20),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // ── Today's session line (or rest day) ──────────────────────
+            Text(
+              body,
+              style: AppTextStyles.titleSmall.copyWith(
+                color: AppColors.forestDark,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // ── Footer CTA ──────────────────────────────────────────────
+            Text(
+              l10n.homeTodaySessionCta,
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.forest,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),
