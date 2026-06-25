@@ -4981,5 +4981,7 @@
   "plannerNoSessionsYet": "No sessions planned yet",
   "@plannerNoSessionsYet": {"description": "Empty-state shown when a goal (or day) has no planned sessions."},
   "plannerWeekLabel": "Week {number}",
-  "@plannerWeekLabel": {"description": "Week heading in a goal's plan view (relative to training start).", "placeholders": {"number": {"type": "int"}}}
+  "@plannerWeekLabel": {"description": "Week heading in a goal's plan view (relative to training start).", "placeholders": {"number": {"type": "int"}}},
+  "plannerHealthDisclaimer": "Before starting any fitness or health activity, make sure you're fit to do so. If in doubt, check with your GP or a qualified health professional.",
+  "@plannerHealthDisclaimer": {"description": "Health/safety disclaimer shown at the bottom of the planner overview."}
 }

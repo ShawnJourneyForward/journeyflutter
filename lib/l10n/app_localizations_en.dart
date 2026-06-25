@@ -8584,4 +8584,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String plannerWeekLabel(int number) {
     return 'Week $number';
   }
+
+  @override
+  String get plannerHealthDisclaimer =>
+      'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.';
 }

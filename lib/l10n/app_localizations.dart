@@ -15049,6 +15049,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Week {number}'**
   String plannerWeekLabel(int number);
+
+  /// Health/safety disclaimer shown at the bottom of the planner overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.'**
+  String get plannerHealthDisclaimer;
 }
 
 class _AppLocalizationsDelegate

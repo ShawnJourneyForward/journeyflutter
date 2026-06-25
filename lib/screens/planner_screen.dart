@@ -257,6 +257,24 @@ class _OverviewTab extends ConsumerWidget {
             ],
           ),
         ),
+
+        // ── Health & safety note ──────────────────────────────────────────
+        const SizedBox(height: 18),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.info_outline_rounded,
+                size: 16, color: AppColors.stone400),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.plannerHealthDisclaimer,
+                style:
+                    AppTextStyles.caption.copyWith(color: AppColors.stone400),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
