@@ -212,6 +212,38 @@ void main() {
       expect(json['completed'], false); // always written.
       expect(json['type'], 'rest');
     });
+
+    test('skipped round-trips and isPending reflects the tri-state', () {
+      final pending = PlannerSession(
+          id: 's4', date: DateTime(2026, 5, 22), type: SessionType.easyRun);
+      expect(pending.isPending, isTrue);
+      expect(pending.skipped, isFalse);
+
+      final skipped = pending.copyWith(skipped: true);
+      expect(skipped.isPending, isFalse);
+
+      final decoded = PlannerSession.fromJson(roundTrip(skipped.toJson()));
+      expect(decoded.skipped, isTrue);
+      expect(decoded.completed, isFalse);
+      expect(decoded.isPending, isFalse);
+    });
+
+    test('toJson always writes skipped; legacy rows default it to false', () {
+      final json = PlannerSession(
+              id: 's5', date: DateTime(2026, 5, 23), type: SessionType.tempo)
+          .toJson();
+      expect(json['skipped'], false); // always written, like completed
+
+      // A row written before skipping existed has no key → defaults false.
+      final legacy = PlannerSession.fromJson({
+        'id': 's6',
+        'date': DateTime(2026, 5, 23).toIso8601String(),
+        'type': 'tempo',
+        'completed': true,
+      });
+      expect(legacy.skipped, isFalse);
+      expect(legacy.completed, isTrue);
+    });
   });
 
   group('PlannerWeightLog', () {
@@ -490,6 +522,38 @@ void main() {
       expect(s.reps, 5);
       expect(s.weightKg, isNull);
       expect(s.volumeKg, isNull); // no weight → no tonnage
+    });
+
+    test('plan snapshot round-trips; hasPlanSnapshot reflects it', () {
+      final activity = PlannerActivity(
+        id: 'p1',
+        date: DateTime(2026, 6, 6),
+        type: SessionType.longRun,
+        minutes: 95,
+        distanceKm: 17.2,
+        plannedDistanceKm: 18,
+        plannedMinutes: 100,
+      );
+      expect(activity.hasPlanSnapshot, isTrue);
+
+      final decoded = PlannerActivity.fromJson(roundTrip(activity.toJson()));
+      expect(decoded.plannedDistanceKm, 18);
+      expect(decoded.plannedMinutes, 100);
+      expect(decoded.hasPlanSnapshot, isTrue);
+    });
+
+    test('toJson omits the plan snapshot when absent; hasPlanSnapshot false',
+        () {
+      final activity = PlannerActivity(
+        id: 'p2',
+        date: DateTime(2026, 6, 7),
+        type: SessionType.easyRun,
+        minutes: 30,
+      );
+      final json = activity.toJson();
+      expect(json.containsKey('plannedDistanceKm'), isFalse);
+      expect(json.containsKey('plannedMinutes'), isFalse);
+      expect(activity.hasPlanSnapshot, isFalse);
     });
   });
 

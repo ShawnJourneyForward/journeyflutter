@@ -229,6 +229,65 @@ void main() {
       expect(s.completedActivityId, isNull);
     });
 
+    test('markSkipped() flips skipped, clears completed + activity link',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container.read(plannerSessionProvider.future);
+      await container.read(plannerSessionProvider.notifier).add(session('s1'));
+      // Complete + link first; skipping must DROP the link (no activity logged).
+      await container
+          .read(plannerSessionProvider.notifier)
+          .markComplete('s1', 'act-1');
+      await container.read(plannerSessionProvider.notifier).markSkipped('s1');
+
+      final s = (await container.read(plannerSessionProvider.future)).single;
+      expect(s.skipped, isTrue);
+      expect(s.completed, isFalse);
+      expect(s.completedActivityId, isNull);
+      expect(s.isPending, isFalse);
+    });
+
+    test('markComplete() clears a prior skipped flag (mutually exclusive)',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container.read(plannerSessionProvider.future);
+      await container.read(plannerSessionProvider.notifier).add(session('s1'));
+      await container.read(plannerSessionProvider.notifier).markSkipped('s1');
+      await container
+          .read(plannerSessionProvider.notifier)
+          .markComplete('s1', 'act-9');
+
+      final s = (await container.read(plannerSessionProvider.future)).single;
+      expect(s.completed, isTrue);
+      expect(s.skipped, isFalse);
+      expect(s.completedActivityId, 'act-9');
+    });
+
+    test('reopen() resets a completed/skipped session to pending', () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await container.read(plannerSessionProvider.future);
+      await container.read(plannerSessionProvider.notifier).add(session('s1'));
+      await container
+          .read(plannerSessionProvider.notifier)
+          .markComplete('s1', 'act-1');
+      await container.read(plannerSessionProvider.notifier).reopen('s1');
+
+      final s = (await container.read(plannerSessionProvider.future)).single;
+      expect(s.completed, isFalse);
+      expect(s.skipped, isFalse);
+      expect(s.completedActivityId, isNull);
+      expect(s.isPending, isTrue);
+    });
+
     test('persists across a fresh container', () async {
       SharedPreferences.setMockInitialValues({});
       final c1 = ProviderContainer();
@@ -757,6 +816,84 @@ void main() {
 
       expect(container.read(goalCampaignStatsProvider('gw')), isNull);
       expect(container.read(goalProgressForProvider('gw')), closeTo(0.5, 1e-9));
+    });
+  });
+
+  // ─── Goal timeline (the overview countdown math) ───────────────────────────
+
+  group('goalTimelineFor', () {
+    PlannerGoal datedGoal({DateTime? start, DateTime? end, DateTime? created}) =>
+        PlannerGoal(
+          id: 'g',
+          createdAt: created ?? DateTime(2026, 1, 1),
+          type: GoalType.exercise,
+          title: 'Race',
+          startDate: start,
+          endDate: end,
+        );
+
+    test('returns null when the goal has no goal/end date', () {
+      expect(goalTimelineFor(datedGoal(end: null), DateTime(2026, 6, 1)),
+          isNull);
+    });
+
+    test('mid-window: bar at elapsed/total, days-left to the goal', () {
+      // Day 5 of a 10-day window.
+      final t = goalTimelineFor(
+        datedGoal(start: DateTime(2026, 1, 1), end: DateTime(2026, 1, 11)),
+        DateTime(2026, 1, 6),
+      )!;
+      expect(t.passed, isFalse);
+      expect(t.notStarted, isFalse);
+      expect(t.daysToGoal, 5);
+      expect(t.fraction, closeTo(0.5, 1e-9));
+      expect(t.start, DateTime(2026, 1, 1));
+    });
+
+    test('not started: future start → fraction 0, days-to-start set', () {
+      final t = goalTimelineFor(
+        datedGoal(start: DateTime(2026, 2, 1), end: DateTime(2026, 3, 1)),
+        DateTime(2026, 1, 20),
+      )!;
+      expect(t.notStarted, isTrue);
+      expect(t.daysToStart, 12); // Jan 20 → Feb 1
+      expect(t.fraction, 0.0);
+      expect(t.daysToGoal, 40); // Jan 20 → Mar 1 (2026 is not a leap year)
+    });
+
+    test('goal date passed: fraction 1, zero days left', () {
+      final t = goalTimelineFor(
+        datedGoal(start: DateTime(2026, 1, 1), end: DateTime(2026, 1, 10)),
+        DateTime(2026, 1, 20),
+      )!;
+      expect(t.passed, isTrue);
+      expect(t.daysToGoal, 0);
+      expect(t.fraction, 1.0);
+    });
+
+    test('goal day today: not passed, zero days left, full bar', () {
+      final t = goalTimelineFor(
+        datedGoal(start: DateTime(2026, 1, 1), end: DateTime(2026, 1, 10)),
+        DateTime(2026, 1, 10),
+      )!;
+      expect(t.passed, isFalse);
+      expect(t.daysToGoal, 0);
+      expect(t.fraction, closeTo(1.0, 1e-9));
+    });
+
+    test('no explicit start: bar creeps from the creation day, start hidden',
+        () {
+      final t = goalTimelineFor(
+        datedGoal(
+            start: null,
+            end: DateTime(2026, 1, 11),
+            created: DateTime(2026, 1, 1)),
+        DateTime(2026, 1, 6),
+      )!;
+      expect(t.start, isNull); // no explicit start → UI hides the label
+      expect(t.notStarted, isFalse);
+      expect(t.fraction, closeTo(0.5, 1e-9));
+      expect(t.daysToGoal, 5);
     });
   });
 }

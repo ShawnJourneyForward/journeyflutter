@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import '../components/glass_card.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
-import '../models/planner_activity.dart';
 import '../models/planner_goal.dart';
 import '../models/planner_session.dart';
 import '../providers/app_providers.dart';
@@ -502,11 +501,15 @@ class _PlannerDayTile extends StatelessWidget {
     final bg =
         hasSession ? sessionTypeTint(session!.type) : AppColors.stone50;
     final completed = session?.completed ?? false;
+    final skipped = session?.skipped ?? false;
 
     final dateLabel = MaterialLocalizations.of(context).formatFullDate(date);
-    final semanticLabel = hasSession
-        ? '$dateLabel, ${completed ? l10n.plannerA11yDayDone : l10n.plannerA11yDayTodo}'
-        : dateLabel;
+    final statusText = completed
+        ? l10n.plannerA11yDayDone
+        : skipped
+            ? l10n.plannerA11yDaySkipped
+            : l10n.plannerA11yDayTodo;
+    final semanticLabel = hasSession ? '$dateLabel, $statusText' : dateLabel;
 
     return Semantics(
       label: semanticLabel,
@@ -530,18 +533,21 @@ class _PlannerDayTile extends StatelessWidget {
           child: completed
               ? Icon(Icons.check_rounded,
                   size: size * 0.5, color: sessionTypeColor(session!.type))
-              : Text(
-                  '${date.day}',
-                  style: TextStyle(
-                    fontSize: size < 34 ? 10 : 11,
-                    fontWeight:
-                        hasSession ? FontWeight.w600 : FontWeight.w400,
-                    color: hasSession
-                        ? sessionTypeColor(session!.type)
-                        : AppColors.stone400,
-                    height: 1,
-                  ),
-                ),
+              : skipped
+                  ? Icon(Icons.remove_rounded,
+                      size: size * 0.5, color: AppColors.stone400)
+                  : Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        fontSize: size < 34 ? 10 : 11,
+                        fontWeight:
+                            hasSession ? FontWeight.w600 : FontWeight.w400,
+                        color: hasSession
+                            ? sessionTypeColor(session!.type)
+                            : AppColors.stone400,
+                        height: 1,
+                      ),
+                    ),
         ),
       ),
       ),
@@ -592,32 +598,47 @@ class _SessionRow extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(line,
-                    style: AppTextStyles.titleSmall
-                        .copyWith(color: AppColors.stoneText)),
+                    style: AppTextStyles.titleSmall.copyWith(
+                      // A skipped session reads as struck-through + muted.
+                      color: session.skipped
+                          ? AppColors.stone400
+                          : AppColors.stoneText,
+                      decoration: session.skipped
+                          ? TextDecoration.lineThrough
+                          : null,
+                    )),
                 const SizedBox(height: 2),
-                Text(DateFormat('EEE, d MMM').format(session.date),
-                    style: AppTextStyles.bodySmall),
+                Text(
+                  session.skipped
+                      ? '${l10n.plannerSkippedLabel}  ·  ${DateFormat('EEE, d MMM').format(session.date)}'
+                      : DateFormat('EEE, d MMM').format(session.date),
+                  style: AppTextStyles.bodySmall,
+                ),
               ],
             ),
           ),
-          // Mark-complete checkbox.
+          // Status control — 3-state: pending (empty box → close-off popup),
+          // completed (forest check), skipped (muted dash). Tap reopens a
+          // closed-off session.
           Semantics(
             button: true,
             label: session.completed
                 ? l10n.plannerMarkIncomplete
-                : l10n.plannerMarkComplete,
+                : session.skipped
+                    ? l10n.plannerReopenSession
+                    : l10n.plannerMarkComplete,
             child: GestureDetector(
-              onTap: () {
-                H.medium();
-                _toggleComplete(ref);
-              },
+              onTap: () => _onTapStatus(context, ref),
+              behavior: HitTestBehavior.opaque,
               child: Container(
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
                   color: session.completed
                       ? AppColors.forest600
-                      : Colors.transparent,
+                      : session.skipped
+                          ? AppColors.stone100
+                          : Colors.transparent,
                   borderRadius: AppRadius.sm,
                   border: Border.all(
                     color: session.completed
@@ -629,7 +650,10 @@ class _SessionRow extends ConsumerWidget {
                 child: session.completed
                     ? Icon(Icons.check_rounded,
                         size: 18, color: AppColors.onForest)
-                    : null,
+                    : session.skipped
+                        ? Icon(Icons.remove_rounded,
+                            size: 18, color: AppColors.stone400)
+                        : null,
               ),
             ),
           ),
@@ -639,36 +663,34 @@ class _SessionRow extends ConsumerWidget {
     );
   }
 
-  /// Toggle this week-row's completion. Completing a non-rest session mints a
-  /// linked manual PlannerActivity (mirroring the planned distance/minutes) so
-  /// it shows up in history and feeds the insights charts; un-completing deletes
-  /// the linked activity and clears the stamp. Mirrors the session sheet's
-  /// _toggleComplete so both completion paths behave identically.
-  Future<void> _toggleComplete(WidgetRef ref) async {
+  /// Handle a tap on the status control. The session is CLOSED OFF through the
+  /// completion popup (never auto-logged from the plan): pending non-rest → open
+  /// the close-off sheet (log actuals / skip); pending rest → mark done directly
+  /// (nothing to log); completed → reopen + drop the linked activity; skipped →
+  /// reopen.
+  Future<void> _onTapStatus(BuildContext context, WidgetRef ref) async {
     final sessions = ref.read(plannerSessionProvider.notifier);
-    final activities = ref.read(plannerActivityProvider.notifier);
     if (session.completed) {
-      // Drop the linked activity (if any), then reset to incomplete.
+      H.light();
       final linked = session.completedActivityId;
-      if (linked != null) await activities.delete(linked);
-      await sessions.setComplete(session.id, false);
+      if (linked != null) {
+        await ref.read(plannerActivityProvider.notifier).delete(linked);
+      }
+      await sessions.reopen(session.id);
       return;
     }
-    String? activityId;
-    if (session.type != SessionType.rest) {
-      final activity = PlannerActivity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        date: session.date,
-        type: session.type,
-        minutes: session.plannedMinutes ?? 0,
-        distanceKm: session.plannedDistanceKm,
-        source: ActivitySource.manual,
-        goalId: session.goalId.isEmpty ? null : session.goalId,
-      );
-      await activities.add(activity);
-      activityId = activity.id;
+    if (session.skipped) {
+      H.light();
+      await sessions.reopen(session.id);
+      return;
     }
-    await sessions.setComplete(session.id, true, activityId: activityId);
+    if (session.type == SessionType.rest) {
+      H.medium();
+      await sessions.markComplete(session.id, null);
+      return;
+    }
+    H.medium();
+    await showPlannerSessionCompleteSheet(context, ref, session);
   }
 }
 
@@ -875,6 +897,14 @@ class _GoalCard extends StatelessWidget {
       GoalType.exercise => l10n.plannerGoalTypeExercise,
       GoalType.weight => l10n.plannerGoalTypeWeight,
     };
+    // Countdown window (null when the goal has no goal/end date).
+    final timeline = goalTimelineFor(goal, DateTime.now());
+    // Whether a target/volume bar is meaningful (a race goal can be date-only).
+    final hasTarget = switch (goal.type) {
+      GoalType.exercise => goal.targetValue != null && goal.targetValue! > 0,
+      GoalType.weight =>
+        goal.startWeightKg != null && goal.goalWeightKg != null,
+    };
 
     return GestureDetector(
       onTap: () {
@@ -889,6 +919,7 @@ class _GoalCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Title + type chip ────────────────────────────────────────
             Row(
               children: [
                 Expanded(
@@ -909,26 +940,134 @@ class _GoalCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: AppRadius.pill,
-              child: LinearProgressIndicator(
-                value: progress.clamp(0.0, 1.0),
-                backgroundColor: AppColors.stone100,
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(AppColors.forest600),
-                minHeight: 8,
+
+            // ── Countdown (the lead for a dated goal) ────────────────────
+            if (timeline != null) ...[
+              const SizedBox(height: 14),
+              _GoalTimelineSection(timeline: timeline),
+            ],
+
+            // ── Target / volume progress — only when a target is set ─────
+            if (hasTarget) ...[
+              SizedBox(height: timeline != null ? 16 : 12),
+              if (timeline != null) ...[
+                Text(l10n.plannerTargetCaption, style: AppTextStyles.overline),
+                const SizedBox(height: 6),
+              ],
+              ClipRRect(
+                borderRadius: AppRadius.pill,
+                child: LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  backgroundColor: AppColors.stone100,
+                  // Lighter shade when it sits below the (forest600) time bar so
+                  // the two bars stay distinct; full forest when it's the only
+                  // bar (preserves the legacy single-bar look).
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      timeline != null ? AppColors.forest300 : AppColors.forest600),
+                  minHeight: 8,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.plannerGoalProgress(pct),
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.forest600,
-                  fontWeight: FontWeight.w600,
-                )),
+              const SizedBox(height: 8),
+              Text(l10n.plannerGoalProgress(pct),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.forest600,
+                    fontWeight: FontWeight.w600,
+                  )),
+            ],
+
+            // ── No window AND no target: a quiet in-progress hint ────────
+            if (timeline == null && !hasTarget) ...[
+              const SizedBox(height: 10),
+              Text(l10n.plannerInProgress,
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.stone500)),
+            ],
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Goal countdown — training-start → goal-date window with a time-left bar ──
+// The headline of a dated goal card: a "Training <start> → Goal <date>" line, a
+// bar that creeps as the goal date nears, and an "X days left" readout (with
+// 0/1-day and not-started edges). Pure presentation over a [GoalTimeline].
+
+class _GoalTimelineSection extends StatelessWidget {
+  const _GoalTimelineSection({required this.timeline});
+  final GoalTimeline timeline;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final fmt = DateFormat.MMMd(Intl.defaultLocale);
+    final goalStr = fmt.format(timeline.end);
+    final rangeText = timeline.start != null
+        ? l10n.plannerTimelineRange(fmt.format(timeline.start!), goalStr)
+        : l10n.plannerTimelineGoalOnly(goalStr);
+
+    final daysText = timeline.passed
+        ? l10n.plannerGoalDatePassed
+        : timeline.daysToGoal == 0
+            ? l10n.plannerGoalDayToday
+            : timeline.daysToGoal == 1
+                ? l10n.plannerOneDayLeft
+                : l10n.plannerDaysLeft(timeline.daysToGoal);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Window line.
+        Row(
+          children: [
+            Icon(Icons.flag_outlined, size: 15, color: AppColors.forest600),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(rangeText,
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.stone600)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // Time-left bar (fills as the goal date approaches).
+        ClipRRect(
+          borderRadius: AppRadius.pill,
+          child: LinearProgressIndicator(
+            value: timeline.fraction,
+            backgroundColor: AppColors.stone100,
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.forest600),
+            minHeight: 8,
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Days-left readout (+ a quiet "not started" hint when applicable).
+        Row(
+          children: [
+            Icon(Icons.schedule_rounded, size: 14, color: AppColors.forest600),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(daysText,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.forest600,
+                    fontWeight: FontWeight.w600,
+                  )),
+            ),
+            if (timeline.notStarted) ...[
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  '· ${l10n.plannerTrainingNotStarted}',
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.stone400),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
     );
   }
 }

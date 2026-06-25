@@ -8508,4 +8508,58 @@ class AppLocalizationsZu extends AppLocalizations {
   String plannerA11yProgressRing(int percent) {
     return '$percent percent of weekly goal complete';
   }
+
+  @override
+  String plannerPlannedPrefix(String value) {
+    return 'Planned: $value';
+  }
+
+  @override
+  String get plannerLogSessionTitle => 'How did it go?';
+
+  @override
+  String get plannerLogActualHeader => 'What you actually did';
+
+  @override
+  String get plannerLogSessionCta => 'Log session';
+
+  @override
+  String get plannerSkipSessionCta => 'Mark as skipped';
+
+  @override
+  String get plannerSkippedLabel => 'Skipped';
+
+  @override
+  String get plannerCloseOffCta => 'Close off session';
+
+  @override
+  String get plannerReopenSession => 'Reopen session';
+
+  @override
+  String plannerTimelineRange(String start, String goal) {
+    return 'Training $start → Goal $goal';
+  }
+
+  @override
+  String plannerTimelineGoalOnly(String goal) {
+    return 'Goal $goal';
+  }
+
+  @override
+  String get plannerGoalDatePassed => 'Goal date passed';
+
+  @override
+  String get plannerGoalDayToday => 'Goal day is today';
+
+  @override
+  String get plannerOneDayLeft => '1 day left';
+
+  @override
+  String get plannerTrainingNotStarted => 'Training hasn\'t started yet';
+
+  @override
+  String get plannerTargetCaption => 'Target';
+
+  @override
+  String get plannerA11yDaySkipped => 'Workout skipped';
 }

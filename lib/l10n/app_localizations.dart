@@ -14917,6 +14917,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{percent} percent of weekly goal complete'**
   String plannerA11yProgressRing(int percent);
+
+  /// Prefix showing what a session originally planned, e.g. 'Planned: 10 km · 60 min'.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned: {value}'**
+  String plannerPlannedPrefix(String value);
+
+  /// Title of the close-off sheet where the user logs what they actually did.
+  ///
+  /// In en, this message translates to:
+  /// **'How did it go?'**
+  String get plannerLogSessionTitle;
+
+  /// Section header above the actual distance/time inputs in the close-off sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'What you actually did'**
+  String get plannerLogActualHeader;
+
+  /// Primary button: log the session as done with the entered actuals.
+  ///
+  /// In en, this message translates to:
+  /// **'Log session'**
+  String get plannerLogSessionCta;
+
+  /// Secondary button: mark the session skipped without logging an activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as skipped'**
+  String get plannerSkipSessionCta;
+
+  /// Badge/label for a session the user skipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get plannerSkippedLabel;
+
+  /// Edit-sheet button that opens the close-off flow (log actuals or skip).
+  ///
+  /// In en, this message translates to:
+  /// **'Close off session'**
+  String get plannerCloseOffCta;
+
+  /// Action to reopen a completed or skipped session back to a pending to-do.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen session'**
+  String get plannerReopenSession;
+
+  /// Goal-card window line showing the training-start and goal dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Training {start} → Goal {goal}'**
+  String plannerTimelineRange(String start, String goal);
+
+  /// Goal-card window line when only a goal date is set (no training-start date).
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {goal}'**
+  String plannerTimelineGoalOnly(String goal);
+
+  /// Countdown readout when the goal date is in the past.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal date passed'**
+  String get plannerGoalDatePassed;
+
+  /// Countdown readout when the goal date is today.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal day is today'**
+  String get plannerGoalDayToday;
+
+  /// Countdown readout when exactly one day remains to the goal date.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day left'**
+  String get plannerOneDayLeft;
+
+  /// Hint shown when the goal's training-start date is still in the future.
+  ///
+  /// In en, this message translates to:
+  /// **'Training hasn\'t started yet'**
+  String get plannerTrainingNotStarted;
+
+  /// Caption above the goal's target/volume progress bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get plannerTargetCaption;
+
+  /// Screen-reader label for a skipped workout day.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout skipped'**
+  String get plannerA11yDaySkipped;
 }
 
 class _AppLocalizationsDelegate

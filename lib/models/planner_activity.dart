@@ -179,6 +179,14 @@ class PlannerActivity {
   /// other discipline.
   final List<StrengthSet> strengthSets;
 
+  // ── Plan snapshot ──────────────────────────────────────────────────────────
+  // Set ONLY when this activity was logged by closing off a planned
+  // PlannerSession — it captures what the session originally planned so history
+  // can show "planned X · did Y". Null on free-form manual logs and Strava
+  // imports. Both additive + optional, so older rows load unchanged.
+  final double? plannedDistanceKm; // canonical KM the session planned
+  final int? plannedMinutes; // minutes the session planned
+
   const PlannerActivity({
     required this.id,
     required this.date,
@@ -195,7 +203,14 @@ class PlannerActivity {
     this.elevationGainM,
     this.poolLengthM,
     this.strengthSets = const [],
+    this.plannedDistanceKm,
+    this.plannedMinutes,
   });
+
+  /// True when this activity carries the plan it was logged against (i.e. it was
+  /// created by completing a PlannerSession), so history can show planned-vs-did.
+  bool get hasPlanSnapshot =>
+      plannedDistanceKm != null || plannedMinutes != null;
 
   /// The discipline to display / aggregate by: the stored [discipline] when set,
   /// otherwise derived from the legacy [type] so old rows still bucket sensibly.
@@ -248,6 +263,8 @@ class PlannerActivity {
       elevationGainM: safeNullableDouble(j['elevationGainM']),
       poolLengthM: safeNullableDouble(j['poolLengthM']),
       strengthSets: sets,
+      plannedDistanceKm: safeNullableDouble(j['plannedDistanceKm']),
+      plannedMinutes: safeNullableInt(j['plannedMinutes']),
     );
   }
 
@@ -268,6 +285,8 @@ class PlannerActivity {
         if (poolLengthM != null) 'poolLengthM': poolLengthM,
         if (strengthSets.isNotEmpty)
           'strengthSets': strengthSets.map((e) => e.toJson()).toList(),
+        if (plannedDistanceKm != null) 'plannedDistanceKm': plannedDistanceKm,
+        if (plannedMinutes != null) 'plannedMinutes': plannedMinutes,
       };
 
   PlannerActivity copyWith({
@@ -286,6 +305,8 @@ class PlannerActivity {
     double? elevationGainM,
     double? poolLengthM,
     List<StrengthSet>? strengthSets,
+    double? plannedDistanceKm,
+    int? plannedMinutes,
   }) =>
       PlannerActivity(
         id: id ?? this.id,
@@ -303,5 +324,7 @@ class PlannerActivity {
         elevationGainM: elevationGainM ?? this.elevationGainM,
         poolLengthM: poolLengthM ?? this.poolLengthM,
         strengthSets: strengthSets ?? this.strengthSets,
+        plannedDistanceKm: plannedDistanceKm ?? this.plannedDistanceKm,
+        plannedMinutes: plannedMinutes ?? this.plannedMinutes,
       );
 }

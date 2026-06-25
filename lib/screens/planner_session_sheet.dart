@@ -145,6 +145,9 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
       plannedMinutes: _minutes(),
       notes: _notes(),
       completed: base?.completed ?? false,
+      // Preserve a SKIPPED flag across a plain plan edit — editing a skipped
+      // session's distance must not silently un-skip it.
+      skipped: base?.skipped ?? false,
       completedActivityId: base?.completedActivityId,
     );
   }
@@ -192,44 +195,46 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
     }
   }
 
-  /// Mark the edited session complete. For a distance/duration session we mint a
-  /// linked manual PlannerActivity that mirrors the plan, then stamp the session
-  /// with its id; a rest day (or empty plan) just flips the completed flag.
-  Future<void> _toggleComplete() async {
+  /// Close off the edited session: persist any plan edits first (so the close-off
+  /// sheet seeds from the latest plan and the activity's snapshot is right), then
+  /// open the close-off sheet to log actuals or skip. A rest day has nothing to
+  /// log, so it just completes in one step.
+  Future<void> _closeOff() async {
+    final session = _compose();
+    setState(() => _saving = true);
+    final notifier = ref.read(plannerSessionProvider.notifier);
+    try {
+      await notifier.updateSession(session);
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+      return;
+    }
+    if (!mounted) return;
+    if (session.type == SessionType.rest) {
+      H.medium();
+      await notifier.markComplete(session.id, null);
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
+    // Stack the close-off sheet on top, then dismiss this edit sheet once it's
+    // done (whether the user logged, skipped, or backed out).
+    await showPlannerSessionCompleteSheet(context, ref, session);
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  /// Re-open a completed/skipped session back to a pending to-do, dropping any
+  /// linked activity so it never dangles on a deleted log.
+  Future<void> _reopen() async {
     final session = widget.existing;
     if (session == null) return;
     setState(() => _saving = true);
-    final sessions = ref.read(plannerSessionProvider.notifier);
+    H.light();
     try {
-      if (session.completed) {
-        H.light();
-        // Un-complete: drop the linked activity (if we minted one) and clear
-        // the stamp so it never dangles on a possibly-deleted activity.
-        final linked = session.completedActivityId;
-        if (linked != null) {
-          await ref.read(plannerActivityProvider.notifier).delete(linked);
-        }
-        await sessions.setComplete(session.id, false);
-      } else {
-        H.medium();
-        String? activityId;
-        final minutes = _minutes();
-        if (_type != SessionType.rest && minutes != null && minutes > 0) {
-          final activity = PlannerActivity(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            date: _date,
-            type: _type,
-            minutes: minutes,
-            distanceKm: _needsDistance ? _distanceKm() : null,
-            source: ActivitySource.manual,
-            goalId: session.goalId.isEmpty ? null : session.goalId,
-            notes: _notes(),
-          );
-          await ref.read(plannerActivityProvider.notifier).add(activity);
-          activityId = activity.id;
-        }
-        await sessions.markComplete(session.id, activityId);
+      final linked = session.completedActivityId;
+      if (linked != null) {
+        await ref.read(plannerActivityProvider.notifier).delete(linked);
       }
+      await ref.read(plannerSessionProvider.notifier).reopen(session.id);
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
       if (mounted) setState(() => _saving = false);
@@ -321,17 +326,21 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
           ),
           const SizedBox(height: 18),
 
-          // ── Mark complete (edit only) ────────────────────────────────────
+          // ── Close off / reopen (edit only) ───────────────────────────────
           if (_isEdit) ...[
-            _OutlineButton(
-              icon: widget.existing!.completed
-                  ? Icons.undo_rounded
-                  : Icons.check_circle_outline_rounded,
-              label: widget.existing!.completed
-                  ? l10n.plannerMarkIncomplete
-                  : l10n.plannerMarkComplete,
-              onPressed: _saving ? null : _toggleComplete,
-            ),
+            Builder(builder: (_) {
+              final closed =
+                  widget.existing!.completed || widget.existing!.skipped;
+              return _OutlineButton(
+                icon: closed
+                    ? Icons.undo_rounded
+                    : Icons.check_circle_outline_rounded,
+                label: closed
+                    ? l10n.plannerReopenSession
+                    : l10n.plannerCloseOffCta,
+                onPressed: _saving ? null : (closed ? _reopen : _closeOff),
+              );
+            }),
             const SizedBox(height: 12),
           ],
 
@@ -352,6 +361,243 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
               style: TextButton.styleFrom(foregroundColor: AppColors.blush600),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Close-off / completion sheet ────────────────────────────────────────────
+//
+// Opened when the user CLOSES OFF a planned (non-rest) session — the calendar
+// week-row check and the edit sheet's button both route here. It pre-fills the
+// planned distance/time so the user only adjusts to what they ACTUALLY did, then
+// either logs it (minting a linked PlannerActivity that records the actuals AND
+// the original plan, so history can show planned-vs-did) or marks the session
+// skipped (no activity logged). Rest days never reach here — there's nothing to
+// log, so they complete in one tap.
+
+/// Open the close-off sheet for a pending [session]. Reuses the same sheet
+/// chrome as the edit sheet. Intended for non-rest, not-yet-closed sessions.
+Future<void> showPlannerSessionCompleteSheet(
+  BuildContext context,
+  WidgetRef ref,
+  PlannerSession session,
+) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => _PlannerSessionCompleteSheet(session: session),
+  );
+}
+
+class _PlannerSessionCompleteSheet extends ConsumerStatefulWidget {
+  const _PlannerSessionCompleteSheet({required this.session});
+  final PlannerSession session;
+
+  @override
+  ConsumerState<_PlannerSessionCompleteSheet> createState() =>
+      _PlannerSessionCompleteSheetState();
+}
+
+class _PlannerSessionCompleteSheetState
+    extends ConsumerState<_PlannerSessionCompleteSheet> {
+  final _distanceCtrl = TextEditingController();
+  final _minutesCtrl = TextEditingController();
+  final _notesCtrl = TextEditingController();
+  bool _saving = false;
+
+  SessionType get _type => widget.session.type;
+  bool get _needsDistance => distanceSessionTypes.contains(_type);
+  bool get _imperial =>
+      ref.read(profileProvider).valueOrNull?.useImperial ?? false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Seed the fields with the PLAN so the user only edits down to actuals.
+    final s = widget.session;
+    if (s.plannedMinutes != null) _minutesCtrl.text = '${s.plannedMinutes}';
+    if (s.plannedDistanceKm != null) {
+      final shown =
+          _imperial ? s.plannedDistanceKm! * 0.621371 : s.plannedDistanceKm!;
+      _distanceCtrl.text =
+          shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
+    }
+    _notesCtrl.text = s.notes ?? '';
+  }
+
+  @override
+  void dispose() {
+    _distanceCtrl.dispose();
+    _minutesCtrl.dispose();
+    _notesCtrl.dispose();
+    super.dispose();
+  }
+
+  double? _distanceKm() {
+    final raw = _distanceCtrl.text.trim().replaceAll(',', '.');
+    if (raw.isEmpty) return null;
+    final v = double.tryParse(raw);
+    if (v == null) return null;
+    return _imperial ? v / 0.621371 : v;
+  }
+
+  int? _minutes() {
+    final raw = _minutesCtrl.text.trim();
+    if (raw.isEmpty) return null;
+    return int.tryParse(raw);
+  }
+
+  String? _notes() {
+    final t = _notesCtrl.text.trim();
+    return t.isEmpty ? null : t;
+  }
+
+  /// "Planned: 10 km · 60 min" reference line from the session plan, or null
+  /// when the session carried no planned numbers.
+  String? _plannedSummary(AppLocalizations l10n, bool imperial) {
+    final parts = <String>[];
+    final d = widget.session.plannedDistanceKm;
+    if (_needsDistance && d != null && d > 0) {
+      parts.add(formatDistance(d, imperial: imperial, l10n: l10n));
+    }
+    final m = widget.session.plannedMinutes;
+    if (m != null && m > 0) parts.add(l10n.commonMin(m));
+    if (parts.isEmpty) return null;
+    return l10n.plannerPlannedPrefix(parts.join('  ·  '));
+  }
+
+  /// Log the session as DONE. When there's something to record we mint a linked
+  /// manual activity carrying the actuals + the plan snapshot; otherwise we just
+  /// flip the session to complete.
+  Future<void> _logSession() async {
+    setState(() => _saving = true);
+    H.medium();
+    final session = widget.session;
+    final sessions = ref.read(plannerSessionProvider.notifier);
+    try {
+      String? activityId;
+      final minutes = _minutes();
+      final distance = _needsDistance ? _distanceKm() : null;
+      final hasActuals =
+          (minutes != null && minutes > 0) || (distance != null && distance > 0);
+      if (_type != SessionType.rest && hasActuals) {
+        final activity = PlannerActivity(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          date: session.date,
+          type: _type,
+          minutes: minutes ?? 0,
+          distanceKm: distance,
+          source: ActivitySource.manual,
+          goalId: session.goalId.isEmpty ? null : session.goalId,
+          notes: _notes(),
+          discipline: disciplineFromSessionType(_type),
+          // Snapshot the plan so history can show "planned X · did Y".
+          plannedDistanceKm: session.plannedDistanceKm,
+          plannedMinutes: session.plannedMinutes,
+        );
+        await ref.read(plannerActivityProvider.notifier).add(activity);
+        activityId = activity.id;
+      }
+      await sessions.markComplete(session.id, activityId);
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  /// Mark the session SKIPPED — records the miss without logging an activity.
+  Future<void> _skip() async {
+    setState(() => _saving = true);
+    H.light();
+    try {
+      await ref
+          .read(plannerSessionProvider.notifier)
+          .markSkipped(widget.session.id);
+      if (mounted) Navigator.of(context).pop();
+    } catch (_) {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final imperial = _imperial;
+    final distanceUnit = imperial ? l10n.homeUnitMiles : l10n.homeUnitKm;
+    final planned = _plannedSummary(l10n, imperial);
+    final dateLabel = DateFormat('EEEE, d MMMM').format(widget.session.date);
+
+    return _PlannerSheetShell(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _PlannerSheetHeader(
+            icon: sessionTypeIcon(_type),
+            title: l10n.plannerLogSessionTitle,
+            subtitle: planned == null ? dateLabel : '$dateLabel  ·  $planned',
+          ),
+          const SizedBox(height: 22),
+
+          // ── What you actually did ────────────────────────────────────────
+          _PlannerSectionLabel(l10n.plannerLogActualHeader),
+          const SizedBox(height: 10),
+          if (_needsDistance) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _LabeledField(
+                    label: l10n.homeActivityDistanceLabel(distanceUnit),
+                    controller: _distanceCtrl,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    hintText: '0.0',
+                    suffix: distanceUnit,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _LabeledField(
+                    label: l10n.homeActivityDurationMin,
+                    controller: _minutesCtrl,
+                    keyboardType: TextInputType.number,
+                    suffix: l10n.homeUnitMin,
+                  ),
+                ),
+              ],
+            ),
+          ] else ...[
+            _LabeledField(
+              label: l10n.homeActivityDurationMin,
+              controller: _minutesCtrl,
+              keyboardType: TextInputType.number,
+              suffix: l10n.homeUnitMin,
+            ),
+          ],
+          const SizedBox(height: 18),
+
+          // ── Notes ────────────────────────────────────────────────────────
+          _PlannerNotesField(
+            controller: _notesCtrl,
+            hintText: l10n.homeActivityNotesHint,
+          ),
+          const SizedBox(height: 20),
+
+          // ── Log (primary) + skip (secondary) ─────────────────────────────
+          _PlannerSaveButton(
+            saving: _saving,
+            onPressed: _logSession,
+            label: l10n.plannerLogSessionCta,
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: _saving ? null : _skip,
+            icon: const Icon(Icons.do_not_disturb_on_outlined, size: 18),
+            label: Text(l10n.plannerSkipSessionCta),
+            style: TextButton.styleFrom(foregroundColor: AppColors.stone500),
+          ),
         ],
       ),
     );

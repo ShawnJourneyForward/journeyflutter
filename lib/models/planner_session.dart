@@ -52,6 +52,13 @@ class PlannerSession {
   final int? plannedMinutes;
   final String? notes;
   final bool completed;
+
+  /// True when the user explicitly SKIPPED this planned session (chose "didn't
+  /// do it" when closing it off). In practice mutually exclusive with
+  /// [completed] — the notifier clears one when it sets the other. Additive:
+  /// absent on rows written before skipping existed, where it defaults false.
+  final bool skipped;
+
   final String? completedActivityId;
 
   const PlannerSession({
@@ -64,8 +71,12 @@ class PlannerSession {
     this.plannedMinutes,
     this.notes,
     this.completed = false,
+    this.skipped = false,
     this.completedActivityId,
   });
+
+  /// Neither completed nor skipped — still an open to-do on the calendar.
+  bool get isPending => !completed && !skipped;
 
   factory PlannerSession.fromJson(Map<String, dynamic> j) => PlannerSession(
         id: safeId(j['id']),
@@ -77,6 +88,7 @@ class PlannerSession {
         plannedMinutes: safeNullableInt(j['plannedMinutes']),
         notes: j['notes'] as String?,
         completed: safeBool(j['completed']),
+        skipped: safeBool(j['skipped']),
         completedActivityId: j['completedActivityId'] as String?,
       );
 
@@ -90,6 +102,7 @@ class PlannerSession {
         if (plannedMinutes != null) 'plannedMinutes': plannedMinutes,
         if (notes != null) 'notes': notes,
         'completed': completed,
+        'skipped': skipped,
         if (completedActivityId != null)
           'completedActivityId': completedActivityId,
       };
@@ -109,6 +122,7 @@ class PlannerSession {
     int? plannedMinutes,
     String? notes,
     bool? completed,
+    bool? skipped,
     String? completedActivityId,
     bool clearActivity = false,
   }) =>
@@ -122,6 +136,7 @@ class PlannerSession {
         plannedMinutes: plannedMinutes ?? this.plannedMinutes,
         notes: notes ?? this.notes,
         completed: completed ?? this.completed,
+        skipped: skipped ?? this.skipped,
         completedActivityId: clearActivity
             ? null
             : (completedActivityId ?? this.completedActivityId),

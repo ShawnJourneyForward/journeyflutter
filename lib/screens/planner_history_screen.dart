@@ -18,12 +18,14 @@ import '../components/back_button.dart';
 import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../models/planner_activity.dart';
+import '../models/planner_session.dart';
 import '../providers/app_providers.dart';
 import '../services/strava_config.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/haptic_service.dart';
 import '../utils/locale_format.dart';
+import 'planner_screen.dart' show sessionTypeLabel;
 
 /// Strava brand orange — used ONLY for the Strava source chip and the
 /// attribution mark, per the Strava brand guidelines. Not a palette token
@@ -170,6 +172,21 @@ class PlannerHistoryScreen extends ConsumerWidget {
     }
     if (a.rpe != null) meta2.add(l10n.plannerEffortValue(a.rpe!));
 
+    // Planned-vs-actual: when this activity was logged by closing off a planned
+    // session it carries the plan it was measured against, shown as a quiet
+    // "Planned: …" line beneath the actuals.
+    final plannedParts = <String>[];
+    if (a.plannedDistanceKm != null && a.plannedDistanceKm! > 0) {
+      plannedParts.add(
+          formatDistance(a.plannedDistanceKm!, imperial: imperial, l10n: l10n));
+    }
+    if (a.plannedMinutes != null && a.plannedMinutes! > 0) {
+      plannedParts.add(l10n.commonMin(a.plannedMinutes!));
+    }
+    final plannedLine = plannedParts.isEmpty
+        ? null
+        : l10n.plannerPlannedPrefix(plannedParts.join('  ·  '));
+
     return SolidCard(
       padding: const EdgeInsets.all(0),
       borderRadius: AppRadius.xl,
@@ -241,6 +258,112 @@ class PlannerHistoryScreen extends ConsumerWidget {
                             .copyWith(color: AppColors.stone400),
                       ),
                     ],
+                    if (plannedLine != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        plannedLine,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.stone400),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Skipped-session card ───────────────────────────────────────────────────
+  // A read-only history record for a session the user closed off as skipped.
+  // Muted (stone) accent + a "Skipped" chip + the plan it was measured against.
+  // Not dismissible — skipped sessions are managed from the planner calendar.
+
+  Widget _skippedCard(AppLocalizations l10n, PlannerSession s, bool imperial) {
+    final label = sessionTypeLabel(l10n, s.type);
+    final plannedParts = <String>[];
+    if (s.plannedDistanceKm != null && s.plannedDistanceKm! > 0) {
+      plannedParts.add(
+          formatDistance(s.plannedDistanceKm!, imperial: imperial, l10n: l10n));
+    }
+    if (s.plannedMinutes != null && s.plannedMinutes! > 0) {
+      plannedParts.add(l10n.commonMin(s.plannedMinutes!));
+    }
+    final plannedLine = plannedParts.isEmpty
+        ? null
+        : l10n.plannerPlannedPrefix(plannedParts.join('  ·  '));
+
+    return SolidCard(
+      padding: const EdgeInsets.all(0),
+      borderRadius: AppRadius.xl,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Muted left accent (a skip is a non-event).
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: AppColors.stone300,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.stone100,
+                            borderRadius: AppRadius.md,
+                          ),
+                          child: Icon(sessionTypeIcon(s.type),
+                              size: 18, color: AppColors.stone400),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(label, style: AppTextStyles.titleSmall),
+                              const SizedBox(height: 2),
+                              Text(DateFormat.yMMMMd().format(s.date),
+                                  style: AppTextStyles.bodySmall),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.stone100,
+                            borderRadius: AppRadius.pill,
+                          ),
+                          child: Text(l10n.plannerSkippedLabel,
+                              style: AppTextStyles.labelSmall
+                                  .copyWith(color: AppColors.stone500)),
+                        ),
+                      ],
+                    ),
+                    if (plannedLine != null) ...[
+                      const SizedBox(height: 8),
+                      Text(plannedLine,
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone500)),
+                    ],
                   ],
                 ),
               ),
@@ -280,6 +403,8 @@ class PlannerHistoryScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final activities =
         ref.watch(plannerActivityProvider).valueOrNull ?? const [];
+    final sessions =
+        ref.watch(plannerSessionProvider).valueOrNull ?? const [];
     // Distance/pace display unit follows the profile; default to metric when
     // the profile hasn't loaded yet (distances are stored canonical in km).
     final imperial =
@@ -287,10 +412,16 @@ class PlannerHistoryScreen extends ConsumerWidget {
     final imperialWeight =
         ref.watch(profileProvider).valueOrNull?.useImperialWeight ?? false;
 
-    // Date-descending — most recent first.
-    final sorted = [...activities]..sort((a, b) => b.date.compareTo(a.date));
+    // Merge logged activities with skipped sessions into one date-descending
+    // history — the log reflects both what was done and what was deliberately
+    // skipped.
+    final rows = <_HistoryRow>[
+      for (final a in activities) _HistoryRow.activity(a),
+      for (final s in sessions)
+        if (s.skipped) _HistoryRow.skip(s),
+    ]..sort((x, y) => y.date.compareTo(x.date));
     final hasStrava =
-        sorted.any((a) => a.source == ActivitySource.strava);
+        activities.any((a) => a.source == ActivitySource.strava);
 
     return Scaffold(
       backgroundColor: AppColors.cream,
@@ -312,14 +443,21 @@ class PlannerHistoryScreen extends ConsumerWidget {
 
             // ── List / empty state ─────────────────────────────────────────
             Expanded(
-              child: sorted.isEmpty
+              child: rows.isEmpty
                   ? SingleChildScrollView(child: _emptyState(l10n))
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
-                      itemCount: sorted.length,
+                      itemCount: rows.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
-                        final a = sorted[index];
+                        final row = rows[index];
+                        // Skipped sessions are read-only records (managed from
+                        // the planner calendar), so they aren't dismissible.
+                        final skipped = row.skipped;
+                        if (skipped != null) {
+                          return _skippedCard(l10n, skipped, imperial);
+                        }
+                        final a = row.activity!;
                         return Dismissible(
                           key: Key('planner_activity_${a.id}'),
                           direction: DismissDirection.endToStart,
@@ -357,4 +495,22 @@ class PlannerHistoryScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// One row in the merged history list: EITHER a logged [PlannerActivity] OR a
+/// [PlannerSession] the user skipped. Exactly one of [activity] / [skipped] is
+/// non-null; [date] is the row's sort key.
+class _HistoryRow {
+  _HistoryRow.activity(PlannerActivity a)
+      : activity = a,
+        skipped = null,
+        date = a.date;
+  _HistoryRow.skip(PlannerSession s)
+      : activity = null,
+        skipped = s,
+        date = s.date;
+
+  final PlannerActivity? activity;
+  final PlannerSession? skipped;
+  final DateTime date;
 }

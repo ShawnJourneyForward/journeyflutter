@@ -755,17 +755,19 @@ class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
   /// Set a session's completion state both ways.
   ///
   /// When [completed] is true the session is stamped with [activityId] (the
-  /// logged activity that fulfilled it, or null for a bare completion). When
-  /// [completed] is false the session is reset to incomplete AND its activity
-  /// link is cleared, so it never keeps pointing at a possibly-deleted activity.
+  /// logged activity that fulfilled it, or null for a bare completion) and any
+  /// SKIPPED flag is cleared. When [completed] is false the session is reset to
+  /// a pending to-do — completed AND skipped both cleared — and its activity
+  /// link is dropped, so it never keeps pointing at a possibly-deleted activity.
   Future<void> setComplete(String id, bool completed, {String? activityId}) =>
       _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         final updated = current.map((e) {
           if (e.id != id) return e;
           return completed
-              ? e.copyWith(completed: true, completedActivityId: activityId)
-              : e.copyWith(completed: false, clearActivity: true);
+              ? e.copyWith(
+                  completed: true, skipped: false, completedActivityId: activityId)
+              : e.copyWith(completed: false, skipped: false, clearActivity: true);
         }).toList();
         await _persist(updated);
       }).catchError((Object e, StackTrace s) {
@@ -779,7 +781,28 @@ class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
   Future<void> markComplete(String id, String? activityId) =>
       setComplete(id, true, activityId: activityId);
 
-  /// Reset a session to incomplete and drop any linked-activity stamp.
+  /// Mark a session SKIPPED — the user closed it off as "didn't do it". Clears
+  /// completion + the linked-activity stamp (a skipped session logs no
+  /// activity), keeping completed / skipped mutually exclusive.
+  Future<void> markSkipped(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final updated = current
+            .map((e) => e.id == id
+                ? e.copyWith(
+                    completed: false, skipped: true, clearActivity: true)
+                : e)
+            .toList();
+        await _persist(updated);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  /// Reset a session back to a pending to-do (clears completed AND skipped and
+  /// drops any linked-activity stamp). Re-opens a closed-off session.
+  Future<void> reopen(String id) => setComplete(id, false);
+
+  /// Reset a session to incomplete and drop any linked-activity stamp. Retained
+  /// alias of [reopen] for existing callers.
   Future<void> markIncomplete(String id) => setComplete(id, false);
 
 }
@@ -1177,6 +1200,75 @@ GoalCampaignStats _exerciseCampaignStats(
     timeFraction: timeFraction,
     perWeekToFinish: perWeek,
     pace: pace,
+  );
+}
+
+/// Pure time-window snapshot for a goal that has a goal/end date. Drives the
+/// overview countdown bar and is independent of goal type or any logged
+/// activity — it's just calendar-day math over the goal's [PlannerGoal.startDate]
+/// → [PlannerGoal.endDate] window. When no explicit start is set, the window
+/// falls back to the goal's creation day so the bar can still creep.
+class GoalTimeline {
+  /// Explicit training-start day, or null when the goal has no start date set
+  /// (the bar still creeps from the goal's creation day, but the UI hides the
+  /// start label since the user never chose one).
+  final DateTime? start;
+  final DateTime end; // goal/target day (day-floored)
+  final int daysToGoal; // today → end, clamped ≥ 0 (0 = today or already passed)
+  final bool passed; // the goal date is in the past
+  final bool notStarted; // an explicit start date is still in the future
+  final int daysToStart; // today → start when [notStarted], else 0
+  final double fraction; // 0..1 elapsed through the window (the bar's fill)
+
+  const GoalTimeline({
+    required this.start,
+    required this.end,
+    required this.daysToGoal,
+    required this.passed,
+    required this.notStarted,
+    required this.daysToStart,
+    required this.fraction,
+  });
+}
+
+/// Build the [GoalTimeline] for [g] at [now], or null when the goal has no end
+/// date (nothing to count down to). Pure + side-effect free so it unit-tests
+/// without Riverpod. The fill fraction creeps from the start day (explicit, or
+/// the creation day as a fallback) toward the goal date.
+GoalTimeline? goalTimelineFor(PlannerGoal g, DateTime now) {
+  final end = g.endDate;
+  if (end == null) return null;
+  final today = _dayFloor(now);
+  final endDay = _dayFloor(end);
+  final hasStart = g.startDate != null;
+  final startDay = _dayFloor(g.startDate ?? g.createdAt);
+
+  final passed = endDay.isBefore(today);
+  final daysToGoal = passed ? 0 : endDay.difference(today).inDays;
+  final notStarted = hasStart && today.isBefore(startDay);
+  final daysToStart = notStarted ? startDay.difference(today).inDays : 0;
+
+  double fraction;
+  final total = endDay.difference(startDay).inDays;
+  if (notStarted) {
+    fraction = 0.0;
+  } else if (passed) {
+    fraction = 1.0;
+  } else if (total > 0) {
+    final elapsed = today.difference(startDay).inDays.clamp(0, total);
+    fraction = elapsed / total;
+  } else {
+    fraction = 0.0; // degenerate same-day window, not yet passed
+  }
+
+  return GoalTimeline(
+    start: hasStart ? startDay : null,
+    end: endDay,
+    daysToGoal: daysToGoal,
+    passed: passed,
+    notStarted: notStarted,
+    daysToStart: daysToStart,
+    fraction: fraction.clamp(0.0, 1.0).toDouble(),
   );
 }
 
