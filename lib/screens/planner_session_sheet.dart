@@ -320,9 +320,11 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
           const SizedBox(height: 18),
 
           // ── Notes ────────────────────────────────────────────────────────
+          // Planning ahead → a forward-looking workout-plan hint, NOT the
+          // home log's after-the-fact reflection example.
           _PlannerNotesField(
             controller: _notesCtrl,
-            hintText: l10n.homeActivityNotesHint,
+            hintText: l10n.plannerSessionNotesHint,
           ),
           const SizedBox(height: 18),
 

@@ -4983,5 +4983,7 @@
   "plannerWeekLabel": "Week {number}",
   "@plannerWeekLabel": {"description": "Week heading in a goal's plan view (relative to training start).", "placeholders": {"number": {"type": "int"}}},
   "plannerHealthDisclaimer": "Before starting any fitness or health activity, make sure you're fit to do so. If in doubt, check with your GP or a qualified health professional.",
-  "@plannerHealthDisclaimer": {"description": "Health/safety disclaimer shown at the bottom of the planner overview."}
+  "@plannerHealthDisclaimer": {"description": "Health/safety disclaimer shown at the bottom of the planner overview."},
+  "plannerSessionNotesHint": "Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries",
+  "@plannerSessionNotesHint": {"description": "Hint for the notes field when PLANNING a session (forward-looking workout detail, not an after-the-fact reflection)."}
 }

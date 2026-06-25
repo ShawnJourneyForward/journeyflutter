@@ -15055,6 +15055,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.'**
   String get plannerHealthDisclaimer;
+
+  /// Hint for the notes field when PLANNING a session (forward-looking workout detail, not an after-the-fact reflection).
+  ///
+  /// In en, this message translates to:
+  /// **'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries'**
+  String get plannerSessionNotesHint;
 }
 
 class _AppLocalizationsDelegate

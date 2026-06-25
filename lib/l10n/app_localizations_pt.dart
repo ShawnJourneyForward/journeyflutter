@@ -8588,4 +8588,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get plannerHealthDisclaimer =>
       'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.';
+
+  @override
+  String get plannerSessionNotesHint =>
+      'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries';
 }
