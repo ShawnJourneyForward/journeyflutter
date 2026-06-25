@@ -15013,6 +15013,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Workout skipped'**
   String get plannerA11yDaySkipped;
+
+  /// Screen-reader/tooltip label for the calendar's previous-month button.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get plannerPrevMonth;
+
+  /// Screen-reader/tooltip label for the calendar's next-month button.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get plannerNextMonth;
+
+  /// Count of sessions on a calendar day (e.g. for a day holding several).
+  ///
+  /// In en, this message translates to:
+  /// **'{count} sessions'**
+  String plannerSessionsCount(int count);
+
+  /// Section header in the goal editor for planning the goal's own sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Training sessions'**
+  String get plannerSessionsSectionLabel;
+
+  /// Empty-state shown when a goal (or day) has no planned sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions planned yet'**
+  String get plannerNoSessionsYet;
 }
 
 class _AppLocalizationsDelegate

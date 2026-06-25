@@ -7,10 +7,14 @@ import '../components/back_button.dart';
 import '../components/luxury_widgets.dart';
 import '../l10n/app_localizations.dart';
 import '../models/planner_goal.dart';
+import '../models/planner_session.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../theme/planner_palette.dart';
 import '../utils/haptic_service.dart';
 import '../utils/locale_format.dart';
+import 'planner_screen.dart' show sessionTypeLabel;
+import 'planner_session_sheet.dart';
 
 // ─── Planner goal — create / edit ────────────────────────────────────────────
 //
@@ -369,6 +373,22 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
                     },
                   ),
                   const SizedBox(height: 28),
+
+                  // ── Training sessions — plan THIS goal's own sessions ─────
+                  // Edit mode only (a brand-new goal has no id yet to tag them
+                  // to — save first, then reopen to plan).
+                  if (isEditing) ...[
+                    _GoalSessionsSection(
+                      goalId: _existing!.id,
+                      // Seed new sessions to the training-start date when it's
+                      // still ahead, so "plan ahead" lands in the window.
+                      seedDate: (_startDate != null &&
+                              _startDate!.isAfter(DateTime.now()))
+                          ? _startDate
+                          : null,
+                    ),
+                    const SizedBox(height: 28),
+                  ],
 
                   // ── Save ──────────────────────────────────────────────────
                   SizedBox(
@@ -822,4 +842,152 @@ class _NumberField extends StatelessWidget {
           fillColor: AppColors.stone50,
         ),
       );
+}
+
+// ─── Goal training sessions — plan THIS goal's own sessions ──────────────────
+// Lists the sessions tagged to this goal (runs, long runs, rest days, …) and
+// lets the user add more, pre-linked to the goal and seeded into its window.
+// They land on the shared planner calendar alongside any other goal's sessions,
+// so two goals (e.g. a run plan + a swim plan) can be worked in together.
+
+class _GoalSessionsSection extends ConsumerWidget {
+  const _GoalSessionsSection({required this.goalId, required this.seedDate});
+  final String goalId;
+  final DateTime? seedDate;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final all = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+    final sessions = all.where((s) => s.goalId == goalId).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+    final imperial =
+        ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: _SectionLabel(l10n.plannerSessionsSectionLabel)),
+            TextButton.icon(
+              onPressed: () {
+                H.light();
+                showPlannerSessionSheet(context, ref,
+                    goalId: goalId, date: seedDate);
+              },
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: Text(l10n.plannerAddSession),
+              style:
+                  TextButton.styleFrom(foregroundColor: AppColors.forest600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        if (sessions.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
+            decoration: BoxDecoration(
+              color: AppColors.stone50,
+              borderRadius: AppRadius.lg,
+              border: Border.all(color: AppColors.stone100),
+            ),
+            child: Text(l10n.plannerNoSessionsYet,
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.mistGrey)),
+          )
+        else
+          ...sessions.map((s) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _GoalSessionRow(
+                  session: s,
+                  imperial: imperial,
+                  onTap: () {
+                    H.light();
+                    showPlannerSessionSheet(context, ref, existing: s);
+                  },
+                ),
+              )),
+      ],
+    );
+  }
+}
+
+class _GoalSessionRow extends StatelessWidget {
+  const _GoalSessionRow({
+    required this.session,
+    required this.imperial,
+    required this.onTap,
+  });
+  final PlannerSession session;
+  final bool imperial;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final label = sessionTypeLabel(l10n, session.type);
+    final dist = session.plannedDistanceKm == null
+        ? ''
+        : formatDistance(session.plannedDistanceKm!,
+            imperial: imperial, l10n: l10n);
+    final line = dist.isEmpty ? label : l10n.plannerSessionLine(label, dist);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.stone50,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.stone100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: sessionTypeTint(session.type),
+                borderRadius: AppRadius.md,
+              ),
+              child: Icon(sessionTypeIcon(session.type),
+                  size: 16, color: sessionTypeColor(session.type)),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(line,
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: session.skipped
+                            ? AppColors.stone400
+                            : AppColors.stone800,
+                        decoration: session.skipped
+                            ? TextDecoration.lineThrough
+                            : null,
+                      )),
+                  const SizedBox(height: 2),
+                  Text(DateFormat('EEE, d MMM').format(session.date),
+                      style: AppTextStyles.bodySmall),
+                ],
+              ),
+            ),
+            // Status glyph: done / skipped / pending (tap to edit).
+            session.completed
+                ? Icon(Icons.check_circle_rounded,
+                    size: 20, color: AppColors.forest600)
+                : session.skipped
+                    ? Icon(Icons.remove_circle_outline_rounded,
+                        size: 20, color: AppColors.stone400)
+                    : Icon(Icons.chevron_right_rounded,
+                        size: 20, color: AppColors.stone400),
+          ],
+        ),
+      ),
+    );
+  }
 }

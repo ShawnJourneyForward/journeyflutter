@@ -8562,4 +8562,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get plannerA11yDaySkipped => 'Workout skipped';
+
+  @override
+  String get plannerPrevMonth => 'Previous month';
+
+  @override
+  String get plannerNextMonth => 'Next month';
+
+  @override
+  String plannerSessionsCount(int count) {
+    return '$count sessions';
+  }
+
+  @override
+  String get plannerSessionsSectionLabel => 'Training sessions';
+
+  @override
+  String get plannerNoSessionsYet => 'No sessions planned yet';
 }

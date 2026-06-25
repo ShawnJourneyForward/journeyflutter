@@ -264,11 +264,30 @@ class _OverviewTab extends ConsumerWidget {
 
 // ─── PLANNER TAB ─────────────────────────────────────────────────────────────
 
-class _PlannerTab extends ConsumerWidget {
+class _PlannerTab extends ConsumerStatefulWidget {
   const _PlannerTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PlannerTab> createState() => _PlannerTabState();
+}
+
+class _PlannerTabState extends ConsumerState<_PlannerTab> {
+  late DateTime _month; // first day of the browsed month
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _month = DateTime(now.year, now.month, 1);
+  }
+
+  void _shiftMonth(int delta) {
+    H.selection();
+    setState(() => _month = DateTime(_month.year, _month.month + delta, 1));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final allSessions =
         ref.watch(plannerSessionProvider).valueOrNull ?? const [];
@@ -276,31 +295,42 @@ class _PlannerTab extends ConsumerWidget {
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final month = DateTime(now.year, now.month, 1);
 
-    // Index this month's sessions by day-key for the calendar.
-    final byDay = <String, PlannerSession>{};
+    // Index the BROWSED month's sessions by day-key. A day can hold SEVERAL
+    // sessions (e.g. a running goal and a swimming goal both scheduling it), so
+    // each cell maps to a list — nothing gets silently hidden.
+    final byDay = <String, List<PlannerSession>>{};
     for (final s in allSessions) {
-      if (s.date.year == month.year && s.date.month == month.month) {
-        // Last write wins; one cell shows one session's tint/icon.
-        byDay[_dk(DateTime(s.date.year, s.date.month, s.date.day))] = s;
+      if (s.date.year == _month.year && s.date.month == _month.month) {
+        byDay
+            .putIfAbsent(
+                _dk(DateTime(s.date.year, s.date.month, s.date.day)),
+                () => <PlannerSession>[])
+            .add(s);
       }
     }
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 32),
       children: [
-        // ── Month calendar ────────────────────────────────────────────────
+        // ── Month calendar (now navigable) ────────────────────────────────
         _PlannerMonthCard(
-          month: month,
+          month: _month,
           today: today,
           sessionsByDay: byDay,
-          // Tapping a day opens its session for edit (or a fresh session seeded
-          // to that date), so the calendar isn't a dead read-only grid.
-          onTapDay: (date, session) {
+          onPrev: () => _shiftMonth(-1),
+          onNext: () => _shiftMonth(1),
+          // Tap a day: empty → new session seeded to that date; one → edit it;
+          // many → a day sheet listing them all (so two goals can co-exist).
+          onTapDay: (date, daySessions) {
             H.light();
-            showPlannerSessionSheet(context, ref,
-                existing: session, date: session == null ? date : null);
+            if (daySessions.isEmpty) {
+              showPlannerSessionSheet(context, ref, date: date);
+            } else if (daySessions.length == 1) {
+              showPlannerSessionSheet(context, ref, existing: daySessions.first);
+            } else {
+              _showDaySessions(context, ref, date);
+            }
           },
         ),
         const SizedBox(height: 18),
@@ -355,13 +385,17 @@ class _PlannerMonthCard extends StatelessWidget {
     required this.month,
     required this.today,
     required this.sessionsByDay,
+    required this.onPrev,
+    required this.onNext,
     required this.onTapDay,
   });
 
   final DateTime month; // first day of the month
   final DateTime today;
-  final Map<String, PlannerSession> sessionsByDay;
-  final void Function(DateTime date, PlannerSession? session) onTapDay;
+  final Map<String, List<PlannerSession>> sessionsByDay;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+  final void Function(DateTime date, List<PlannerSession> sessions) onTapDay;
 
   @override
   Widget build(BuildContext context) {
@@ -372,8 +406,9 @@ class _PlannerMonthCard extends StatelessWidget {
     final totalCells = leadingEmpty + daysInMonth;
     final rows = (totalCells / 7).ceil();
     final monthLabel = DateFormat('MMMM yyyy').format(month);
-    final monthSessions =
-        sessionsByDay.values.where((s) => s.type != SessionType.rest);
+    final monthSessions = sessionsByDay.values
+        .expand((l) => l)
+        .where((s) => s.type != SessionType.rest);
     final plannedCount = monthSessions.length;
     final doneCount = monthSessions.where((s) => s.completed).length;
 
@@ -382,21 +417,34 @@ class _PlannerMonthCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Month title + planned-session count
+          // Month title with prev/next navigation (plan any month ahead).
           Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
             children: [
-              Expanded(
-                child: Text(monthLabel,
-                    style: AppTextStyles.titleLarge.copyWith(
-                        color: AppColors.forestDark,
-                        fontWeight: FontWeight.w600)),
+              _GhostIconButton(
+                icon: Icons.chevron_left_rounded,
+                semanticLabel: l10n.plannerPrevMonth,
+                onTap: onPrev,
               ),
-              Text(l10n.plannerWorkoutsOfTarget(doneCount, plannedCount),
-                  style: AppTextStyles.bodyMedium
-                      .copyWith(color: AppColors.forest600)),
+              Expanded(
+                child: Center(
+                  child: Text(monthLabel,
+                      style: AppTextStyles.titleLarge.copyWith(
+                          color: AppColors.forestDark,
+                          fontWeight: FontWeight.w600)),
+                ),
+              ),
+              _GhostIconButton(
+                icon: Icons.chevron_right_rounded,
+                semanticLabel: l10n.plannerNextMonth,
+                onTap: onNext,
+              ),
             ],
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(l10n.plannerWorkoutsOfTarget(doneCount, plannedCount),
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.forest600)),
           ),
           const SizedBox(height: 12),
           // Day-of-week headers (Mon-first, mirrors heatmap)
@@ -436,14 +484,15 @@ class _PlannerMonthCard extends StatelessWidget {
                         final date =
                             DateTime(month.year, month.month, dayNum);
                         final isToday = _dk(date) == _dk(today);
-                        final session = sessionsByDay[_dk(date)];
+                        final daySessions = sessionsByDay[_dk(date)] ??
+                            const <PlannerSession>[];
 
                         tile = _PlannerDayTile(
                           date: date,
-                          session: session,
+                          sessions: daySessions,
                           isToday: isToday,
                           size: cellSize,
-                          onTap: () => onTapDay(date, session),
+                          onTap: () => onTapDay(date, daySessions),
                         );
                       }
 
@@ -482,14 +531,14 @@ class _DowLabel extends StatelessWidget {
 class _PlannerDayTile extends StatelessWidget {
   const _PlannerDayTile({
     required this.date,
-    required this.session,
+    required this.sessions,
     required this.isToday,
     required this.size,
     required this.onTap,
   });
 
   final DateTime date;
-  final PlannerSession? session;
+  final List<PlannerSession> sessions;
   final bool isToday;
   final double size;
   final VoidCallback onTap;
@@ -497,18 +546,29 @@ class _PlannerDayTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final hasSession = session != null;
+    final hasSession = sessions.isNotEmpty;
+    final multi = sessions.length > 1;
+    // The primary session drives the cell's colour/glyph — prefer the first
+    // non-rest one so a real workout wins over a rest day sharing the cell.
+    final primary = hasSession
+        ? sessions.firstWhere((s) => s.type != SessionType.rest,
+            orElse: () => sessions.first)
+        : null;
     final bg =
-        hasSession ? sessionTypeTint(session!.type) : AppColors.stone50;
-    final completed = session?.completed ?? false;
-    final skipped = session?.skipped ?? false;
+        primary != null ? sessionTypeTint(primary.type) : AppColors.stone50;
+    // Single-session days get a check/dash glyph; a multi-session day always
+    // shows the day number (a check there would wrongly imply ALL are done).
+    final completed = !multi && (primary?.completed ?? false);
+    final skipped = !multi && (primary?.skipped ?? false);
 
     final dateLabel = MaterialLocalizations.of(context).formatFullDate(date);
-    final statusText = completed
-        ? l10n.plannerA11yDayDone
-        : skipped
-            ? l10n.plannerA11yDaySkipped
-            : l10n.plannerA11yDayTodo;
+    final statusText = multi
+        ? l10n.plannerSessionsCount(sessions.length)
+        : completed
+            ? l10n.plannerA11yDayDone
+            : skipped
+                ? l10n.plannerA11yDaySkipped
+                : l10n.plannerA11yDayTodo;
     final semanticLabel = hasSession ? '$dateLabel, $statusText' : dateLabel;
 
     return Semantics(
@@ -518,38 +578,161 @@ class _PlannerDayTile extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(7),
-          // Forest today-ring (mirrors heatmap's today border).
-          border: isToday
-              ? Border.all(color: AppColors.forest500, width: 1.5)
-              : null,
-        ),
-        child: Center(
-          child: completed
-              ? Icon(Icons.check_rounded,
-                  size: size * 0.5, color: sessionTypeColor(session!.type))
-              : skipped
-                  ? Icon(Icons.remove_rounded,
-                      size: size * 0.5, color: AppColors.stone400)
-                  : Text(
-                      '${date.day}',
-                      style: TextStyle(
-                        fontSize: size < 34 ? 10 : 11,
-                        fontWeight:
-                            hasSession ? FontWeight.w600 : FontWeight.w400,
-                        color: hasSession
-                            ? sessionTypeColor(session!.type)
-                            : AppColors.stone400,
-                        height: 1,
-                      ),
+        child: SizedBox(
+          width: size,
+          height: size,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: bg,
+                    borderRadius: BorderRadius.circular(7),
+                    // Forest today-ring (mirrors heatmap's today border).
+                    border: isToday
+                        ? Border.all(color: AppColors.forest500, width: 1.5)
+                        : null,
+                  ),
+                  child: Center(
+                    child: completed
+                        ? Icon(Icons.check_rounded,
+                            size: size * 0.5,
+                            color: sessionTypeColor(primary!.type))
+                        : skipped
+                            ? Icon(Icons.remove_rounded,
+                                size: size * 0.5, color: AppColors.stone400)
+                            : Text(
+                                '${date.day}',
+                                style: TextStyle(
+                                  fontSize: size < 34 ? 10 : 11,
+                                  fontWeight: hasSession
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  color: primary != null
+                                      ? sessionTypeColor(primary.type)
+                                      : AppColors.stone400,
+                                  height: 1,
+                                ),
+                              ),
+                  ),
+                ),
+              ),
+              // Multi-session marker — a small dot meaning "more than one here,
+              // tap to see them all".
+              if (multi)
+                Positioned(
+                  top: 3,
+                  right: 3,
+                  child: Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: AppColors.forest600,
+                      shape: BoxShape.circle,
                     ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+// ─── PLANNER: day sheet for a date holding several sessions ──────────────────
+// When two goals (say a run plan and a swim plan) both schedule the same day,
+// one tiny cell can't show them all — tapping opens this sheet so every session
+// is reachable. Reactive: re-derives the day's sessions from the provider so
+// edits/deletes reflect live.
+
+void _showDaySessions(BuildContext context, WidgetRef ref, DateTime date) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => _DaySessionsSheet(date: date),
+  );
+}
+
+class _DaySessionsSheet extends ConsumerWidget {
+  const _DaySessionsSheet({required this.date});
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final all = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+    final key = _dk(date);
+    final daySessions = all.where((s) => _dk(s.date) == key).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * .8,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: AppRadius.xxl,
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.stone200,
+                    borderRadius: AppRadius.pill,
+                  ),
+                ),
+              ),
+              Text(DateFormat('EEEE, d MMMM').format(date),
+                  style: AppTextStyles.titleLarge
+                      .copyWith(color: AppColors.forestDark)),
+              const SizedBox(height: 14),
+              if (daySessions.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(l10n.plannerNoSessionsYet,
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.mistGrey)),
+                )
+              else
+                ...daySessions.map((s) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: _SessionRow(session: s),
+                    )),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    H.light();
+                    showPlannerSessionSheet(context, ref, date: date);
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: Text(l10n.plannerAddSession),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.forest600,
+                    side:
+                        BorderSide(color: AppColors.forest600.withOpacity(.35)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -4969,5 +4969,15 @@
   "plannerTargetCaption": "Target",
   "@plannerTargetCaption": {"description": "Caption above the goal's target/volume progress bar."},
   "plannerA11yDaySkipped": "Workout skipped",
-  "@plannerA11yDaySkipped": {"description": "Screen-reader label for a skipped workout day."}
+  "@plannerA11yDaySkipped": {"description": "Screen-reader label for a skipped workout day."},
+  "plannerPrevMonth": "Previous month",
+  "@plannerPrevMonth": {"description": "Screen-reader/tooltip label for the calendar's previous-month button."},
+  "plannerNextMonth": "Next month",
+  "@plannerNextMonth": {"description": "Screen-reader/tooltip label for the calendar's next-month button."},
+  "plannerSessionsCount": "{count} sessions",
+  "@plannerSessionsCount": {"description": "Count of sessions on a calendar day (e.g. for a day holding several).", "placeholders": {"count": {"type": "int"}}},
+  "plannerSessionsSectionLabel": "Training sessions",
+  "@plannerSessionsSectionLabel": {"description": "Section header in the goal editor for planning the goal's own sessions."},
+  "plannerNoSessionsYet": "No sessions planned yet",
+  "@plannerNoSessionsYet": {"description": "Empty-state shown when a goal (or day) has no planned sessions."}
 }
