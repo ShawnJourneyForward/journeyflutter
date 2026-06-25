@@ -15043,6 +15043,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No sessions planned yet'**
   String get plannerNoSessionsYet;
+
+  /// Week heading in a goal's plan view (relative to training start).
+  ///
+  /// In en, this message translates to:
+  /// **'Week {number}'**
+  String plannerWeekLabel(int number);
 }
 
 class _AppLocalizationsDelegate

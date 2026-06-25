@@ -8579,4 +8579,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get plannerNoSessionsYet => 'No sessions planned yet';
+
+  @override
+  String plannerWeekLabel(int number) {
+    return 'Week $number';
+  }
 }

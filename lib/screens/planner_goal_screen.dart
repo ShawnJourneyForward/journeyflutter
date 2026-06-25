@@ -850,66 +850,247 @@ class _NumberField extends StatelessWidget {
 // They land on the shared planner calendar alongside any other goal's sessions,
 // so two goals (e.g. a run plan + a swim plan) can be worked in together.
 
-class _GoalSessionsSection extends ConsumerWidget {
+class _GoalSessionsSection extends ConsumerStatefulWidget {
   const _GoalSessionsSection({required this.goalId, required this.seedDate});
   final String goalId;
   final DateTime? seedDate;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_GoalSessionsSection> createState() =>
+      _GoalSessionsSectionState();
+}
+
+class _GoalSessionsSectionState extends ConsumerState<_GoalSessionsSection> {
+  // Week indices the user has collapsed (empty = all expanded).
+  final Set<int> _collapsed = {};
+
+  // Monday of the calendar week containing [d] — weeks are Mon-first to match
+  // the planner calendar and the day-of-week reading of a training block.
+  static DateTime _mondayOf(DateTime d) {
+    final day = DateTime(d.year, d.month, d.day);
+    return day.subtract(Duration(days: day.weekday - 1));
+  }
+
+  void _openSheet({PlannerSession? existing, DateTime? date}) {
+    H.light();
+    showPlannerSessionSheet(
+      context,
+      ref,
+      existing: existing,
+      goalId: existing == null ? widget.goalId : null,
+      date: existing == null ? date : null,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
     final all = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
-    final sessions = all.where((s) => s.goalId == goalId).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
     final imperial =
         ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
+
+    final sessions = all.where((s) => s.goalId == widget.goalId).toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    PlannerGoal? goal;
+    for (final g in goals) {
+      if (g.id == widget.goalId) {
+        goal = g;
+        break;
+      }
+    }
+
+    final header = Row(
+      children: [
+        Expanded(child: _SectionLabel(l10n.plannerSessionsSectionLabel)),
+        TextButton.icon(
+          onPressed: () => _openSheet(date: widget.seedDate),
+          icon: const Icon(Icons.add_rounded, size: 18),
+          label: Text(l10n.plannerAddSession),
+          style: TextButton.styleFrom(foregroundColor: AppColors.forest600),
+        ),
+      ],
+    );
+
+    // Anchor the plan's "Week 1" on the training-start date (or the earliest
+    // session / creation day as a fallback). With neither, there's nothing to
+    // scaffold — show the plain empty hint.
+    final anchor = goal?.startDate ??
+        (sessions.isNotEmpty ? sessions.first.date : null) ??
+        goal?.createdAt;
+    if (sessions.isEmpty && anchor == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [header, const SizedBox(height: 6), _emptyHint(l10n)],
+      );
+    }
+
+    final firstWeek = _mondayOf(anchor!);
+    final lastContent =
+        sessions.isNotEmpty ? _mondayOf(sessions.last.date) : firstWeek;
+    final endWeek =
+        goal?.endDate != null ? _mondayOf(goal!.endDate!) : firstWeek;
+    var target = lastContent.isAfter(endWeek) ? lastContent : endWeek;
+    // One trailing empty week to plan the "next" into, when there's content.
+    if (sessions.isNotEmpty && !target.isAfter(lastContent)) {
+      target = lastContent.add(const Duration(days: 7));
+    }
+    final weekCount =
+        ((target.difference(firstWeek).inDays / 7).floor() + 1).clamp(1, 30);
+
+    // Bucket each session into its week (sessions are already date-ascending,
+    // so each week's list stays ordered).
+    final byWeek = <int, List<PlannerSession>>{};
+    for (final s in sessions) {
+      final wi = (_mondayOf(s.date).difference(firstWeek).inDays / 7).floor();
+      if (wi < 0) continue;
+      byWeek.putIfAbsent(wi, () => <PlannerSession>[]).add(s);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(child: _SectionLabel(l10n.plannerSessionsSectionLabel)),
-            TextButton.icon(
-              onPressed: () {
-                H.light();
-                showPlannerSessionSheet(context, ref,
-                    goalId: goalId, date: seedDate);
-              },
-              icon: const Icon(Icons.add_rounded, size: 18),
-              label: Text(l10n.plannerAddSession),
-              style:
-                  TextButton.styleFrom(foregroundColor: AppColors.forest600),
-            ),
-          ],
-        ),
-        const SizedBox(height: 6),
-        if (sessions.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
-            decoration: BoxDecoration(
-              color: AppColors.stone50,
-              borderRadius: AppRadius.lg,
-              border: Border.all(color: AppColors.stone100),
-            ),
-            child: Text(l10n.plannerNoSessionsYet,
-                style: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.mistGrey)),
-          )
-        else
-          ...sessions.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _GoalSessionRow(
-                  session: s,
-                  imperial: imperial,
-                  onTap: () {
-                    H.light();
-                    showPlannerSessionSheet(context, ref, existing: s);
-                  },
-                ),
-              )),
+        header,
+        const SizedBox(height: 8),
+        for (var i = 0; i < weekCount; i++)
+          _WeekGroup(
+            weekNumber: i + 1,
+            weekStart: firstWeek.add(Duration(days: i * 7)),
+            sessions: byWeek[i] ?? const <PlannerSession>[],
+            imperial: imperial,
+            collapsed: _collapsed.contains(i),
+            onToggle: () => setState(() {
+              if (!_collapsed.remove(i)) _collapsed.add(i);
+            }),
+            onAdd: (date) => _openSheet(date: date),
+            onEdit: (s) => _openSheet(existing: s),
+          ),
       ],
+    );
+  }
+
+  Widget _emptyHint(AppLocalizations l10n) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
+        decoration: BoxDecoration(
+          color: AppColors.stone50,
+          borderRadius: AppRadius.lg,
+          border: Border.all(color: AppColors.stone100),
+        ),
+        child: Text(l10n.plannerNoSessionsYet,
+            style:
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.mistGrey)),
+      );
+}
+
+// ─── One "Week N" group in a goal's plan ─────────────────────────────────────
+// A collapsible week header (number + Mon–Sun range + session count + add) over
+// that week's session cards. The mobile-native form of the classic week×day
+// training grid: weeks stack vertically, each card carries its weekday + the
+// full workout detail inline, so the plan reads without tapping.
+
+class _WeekGroup extends StatelessWidget {
+  const _WeekGroup({
+    required this.weekNumber,
+    required this.weekStart,
+    required this.sessions,
+    required this.imperial,
+    required this.collapsed,
+    required this.onToggle,
+    required this.onAdd,
+    required this.onEdit,
+  });
+
+  final int weekNumber;
+  final DateTime weekStart;
+  final List<PlannerSession> sessions;
+  final bool imperial;
+  final bool collapsed;
+  final VoidCallback onToggle;
+  final void Function(DateTime date) onAdd;
+  final void Function(PlannerSession session) onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final weekEnd = weekStart.add(const Duration(days: 6));
+    final fmt = DateFormat.MMMd(Intl.defaultLocale);
+    final range = '${fmt.format(weekStart)} – ${fmt.format(weekEnd)}';
+    final count = sessions.where((s) => s.type != SessionType.rest).length;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Week header — tap to collapse/expand.
+          GestureDetector(
+            onTap: () {
+              H.selection();
+              onToggle();
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  Icon(
+                    collapsed
+                        ? Icons.chevron_right_rounded
+                        : Icons.expand_more_rounded,
+                    size: 20,
+                    color: AppColors.forest600,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(l10n.plannerWeekLabel(weekNumber),
+                      style: AppTextStyles.titleSmall.copyWith(
+                          color: AppColors.forestDark,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(range,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.stone400)),
+                  ),
+                  if (count > 0)
+                    Text(l10n.plannerSessionsCount(count),
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.forest600)),
+                  IconButton(
+                    onPressed: () => onAdd(weekStart),
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    color: AppColors.forest600,
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints(),
+                    padding: const EdgeInsets.all(6),
+                    tooltip: l10n.plannerAddSession,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (!collapsed) ...[
+            const SizedBox(height: 4),
+            if (sessions.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 24, bottom: 4),
+                child: Text(l10n.plannerNoSessionsYet,
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.stone400)),
+              )
+            else
+              ...sessions.map((s) => Padding(
+                    padding: const EdgeInsets.only(left: 24, bottom: 8),
+                    child: _GoalSessionRow(
+                      session: s,
+                      imperial: imperial,
+                      onTap: () => onEdit(s),
+                    ),
+                  )),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -973,6 +1154,17 @@ class _GoalSessionRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(DateFormat('EEE, d MMM').format(session.date),
                       style: AppTextStyles.bodySmall),
+                  // Workout detail (the "8 x 400m, 200m jog recoveries…" line)
+                  // shown inline so the plan reads without opening each session.
+                  if (session.notes != null &&
+                      session.notes!.trim().isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(session.notes!.trim(),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.stone500)),
+                  ],
                 ],
               ),
             ),
