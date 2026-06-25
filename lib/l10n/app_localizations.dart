@@ -15061,6 +15061,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries'**
   String get plannerSessionNotesHint;
+
+  /// History action: remove legacy imported (Strava) activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear imported'**
+  String get plannerClearImported;
+
+  /// Confirm-dialog title for clearing imported activities.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove imported activities?'**
+  String get plannerClearImportedTitle;
+
+  /// Confirm-dialog body for clearing imported activities.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes {count} activities imported from Strava. Your manually-logged activities are kept.'**
+  String plannerClearImportedBody(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -922,6 +922,22 @@ class PlannerActivityNotifier extends AsyncNotifier<List<PlannerActivity>> {
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerActivityNotifier] write error: $e');
       });
+
+  /// Remove every IMPORTED activity in one shot, keeping manually-logged ones.
+  /// Used to clean out a legacy Strava import that's skewing history/insights.
+  /// An activity counts as imported when its source is Strava OR it carries a
+  /// stravaId.
+  Future<void> clearImported() => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        final kept = current
+            .where((a) =>
+                a.source != ActivitySource.strava &&
+                (a.stravaId == null || a.stravaId!.isEmpty))
+            .toList();
+        await _persist(kept);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerActivityNotifier] write error: $e');
+      });
 }
 
 final plannerActivityProvider =

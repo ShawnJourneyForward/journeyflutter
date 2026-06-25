@@ -529,32 +529,32 @@ GoRouter _buildRouter({
               builder: (_, __) => const HomeScreen(),
             ),
           ]),
-          // Tab 1 — Planner
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/planner',
-              builder: (_, __) => const PlannerScreen(),
-            ),
-          ]),
-          // Tab 2 — Progress
+          // Tab 1 — Progress
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/progress',
               builder: (_, __) => const ProgressScreen(),
             ),
           ]),
-          // Tab 3 — Emergency / Calm Toolkit
+          // Tab 2 — Emergency / Calm Toolkit
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/emergency',
               builder: (_, __) => const EmergencyScreen(),
             ),
           ]),
-          // Tab 4 — Journal
+          // Tab 3 — Journal
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/journal',
               builder: (_, __) => const JournalScreen(),
+            ),
+          ]),
+          // Tab 4 — Planner (sits next to Journal, before Profile)
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/planner',
+              builder: (_, __) => const PlannerScreen(),
             ),
           ]),
           // Tab 5 — Profile / Settings
@@ -683,8 +683,10 @@ GoRouter _buildRouter({
 
 // ─── App shell (bottom nav bar) ──────────────────────────────────────────────
 
-// Tab index that requires screenshot/recording protection.
-const _kSecureTabIndex = 4; // Journal
+// Tab index that requires screenshot/recording protection. MUST track the
+// Journal tab's position in the branch/tab order below — if you reorder tabs,
+// update this to Journal's new index.
+const _kSecureTabIndex = 3; // Journal
 
 class _AppShell extends StatelessWidget {
   const _AppShell({required this.navigationShell});
@@ -705,15 +707,12 @@ class _AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // Order MUST match the StatefulShellRoute branches above (index = tab).
     final tabs = [
       _NavTab(
           label: l10n.navHome,
           icon: Icons.home_outlined,
           activeIcon: Icons.home_rounded),
-      _NavTab(
-          label: l10n.navPlanner,
-          icon: Icons.directions_run_outlined,
-          activeIcon: Icons.directions_run_rounded),
       _NavTab(
           label: l10n.navProgress,
           icon: Icons.monitor_heart_outlined,
@@ -726,6 +725,10 @@ class _AppShell extends StatelessWidget {
           label: l10n.navJournal,
           icon: Icons.menu_book_outlined,
           activeIcon: Icons.menu_book_rounded),
+      _NavTab(
+          label: l10n.navPlanner,
+          icon: Icons.directions_run_outlined,
+          activeIcon: Icons.directions_run_rounded),
       _NavTab(
           label: l10n.navProfile,
           icon: Icons.person_outline,

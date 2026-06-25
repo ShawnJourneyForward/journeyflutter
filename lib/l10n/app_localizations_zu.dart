@@ -8592,4 +8592,15 @@ class AppLocalizationsZu extends AppLocalizations {
   @override
   String get plannerSessionNotesHint =>
       'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries';
+
+  @override
+  String get plannerClearImported => 'Clear imported';
+
+  @override
+  String get plannerClearImportedTitle => 'Remove imported activities?';
+
+  @override
+  String plannerClearImportedBody(int count) {
+    return 'This removes $count activities imported from Strava. Your manually-logged activities are kept.';
+  }
 }

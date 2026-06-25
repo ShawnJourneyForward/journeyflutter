@@ -69,6 +69,42 @@ class PlannerHistoryScreen extends ConsumerWidget {
     return confirmed ?? false;
   }
 
+  // ─── Clear-imported (legacy Strava) confirmation + action ───────────────────
+
+  Future<void> _confirmClearImported(
+      BuildContext context, WidgetRef ref, int count) async {
+    final l10n = AppLocalizations.of(context);
+    H.medium();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Text(l10n.plannerClearImportedTitle,
+            style: AppTextStyles.titleMedium),
+        content: Text(l10n.plannerClearImportedBody(count),
+            style: AppTextStyles.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.commonCancel,
+                style: AppTextStyles.labelLarge
+                    .copyWith(color: AppColors.stone600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.commonDelete,
+                style: AppTextStyles.labelLarge
+                    .copyWith(color: AppColors.blush500)),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await ref.read(plannerActivityProvider.notifier).clearImported();
+    }
+  }
+
   // ─── Source chip ────────────────────────────────────────────────────────────
 
   Widget _sourceChip(AppLocalizations l10n, ActivitySource source) {
@@ -422,6 +458,13 @@ class PlannerHistoryScreen extends ConsumerWidget {
     ]..sort((x, y) => y.date.compareTo(x.date));
     final hasStrava =
         activities.any((a) => a.source == ActivitySource.strava);
+    // Count legacy IMPORTED rows (Strava source or a stravaId) so we can offer a
+    // one-tap cleanup when an old import is skewing history/insights.
+    final importedCount = activities
+        .where((a) =>
+            a.source == ActivitySource.strava ||
+            (a.stravaId != null && a.stravaId!.isNotEmpty))
+        .length;
 
     return Scaffold(
       backgroundColor: AppColors.cream,
@@ -435,7 +478,19 @@ class PlannerHistoryScreen extends ConsumerWidget {
                 children: [
                   const LuxuryBackButton(),
                   const SizedBox(width: 4),
-                  Text(l10n.plannerHistory, style: AppTextStyles.titleLarge),
+                  Expanded(
+                    child: Text(l10n.plannerHistory,
+                        style: AppTextStyles.titleLarge),
+                  ),
+                  // Clean out a legacy Strava import (kept off-screen otherwise).
+                  if (importedCount > 0)
+                    IconButton(
+                      onPressed: () =>
+                          _confirmClearImported(context, ref, importedCount),
+                      icon: const Icon(Icons.delete_sweep_outlined),
+                      color: AppColors.stone500,
+                      tooltip: l10n.plannerClearImported,
+                    ),
                 ],
               ),
             ),
