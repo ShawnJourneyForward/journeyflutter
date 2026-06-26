@@ -1620,13 +1620,24 @@ class _CounterTile extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            label,
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.stone500,
-              letterSpacing: 1.2,
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
+          // Fixed-height, single-line label band: a long/localized label (e.g.
+          // German "SEKUNDEN") or a narrow screen must never wrap to 2 lines and
+          // bump the Expanded plant above. FittedBox shrinks it to fit instead.
+          SizedBox(
+            height: 12,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.stone500,
+                  letterSpacing: 1.2,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],
