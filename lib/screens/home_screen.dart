@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+// Hide intl's TextDirection (LTR/RTL) so the dart:ui one (ltr/rtl, used by
+// TextPainter in _maxDigitWidth) resolves without a name clash.
+import 'package:intl/intl.dart' hide TextDirection;
 import '../utils/locale_format.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1602,17 +1604,17 @@ class _CounterTile extends StatelessWidget {
             height: 32,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(
+              // Fixed-width digit cells (Fraunces has no tabular-figures
+              // feature, so a font-level fix is impossible) — the value's width
+              // depends only on its length, so a ticking number never shifts.
+              child: _TabularDigits(
                 value,
                 style: AppTextStyles.displaySmall.copyWith(
                   fontSize: 30,
                   fontWeight: FontWeight.w700,
                   color: AppColors.forest700,
-                  letterSpacing: -0.5,
+                  letterSpacing: 0,
                   height: 1,
-                  // Tabular (fixed-width) figures so a ticking value doesn't
-                  // wiggle horizontally as proportional digit widths change.
-                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ),
@@ -1631,6 +1633,55 @@ class _CounterTile extends StatelessWidget {
       ),
     );
   }
+}
+
+// Renders a numeric string with every glyph in an equal-width cell, so the
+// rendered width depends only on the NUMBER of characters — never on which
+// digits. A ticking value (e.g. seconds 05→06, or 9→10) therefore stays
+// perfectly centred instead of wiggling. This is a geometry-level fix because
+// the bundled Fraunces font carries no tabular-figures ('tnum') feature, so
+// FontFeature.tabularFigures() does nothing.
+class _TabularDigits extends StatelessWidget {
+  const _TabularDigits(this.value, {required this.style});
+  final String value;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final cell = _maxDigitWidth(style);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final ch in value.split(''))
+          SizedBox(
+            width: cell,
+            child: Text(ch, textAlign: TextAlign.center, style: style),
+          ),
+      ],
+    );
+  }
+}
+
+// Widest advance among the glyphs 0–9 for [style], measured once per distinct
+// style and cached. The seconds tile rebuilds every second, so re-measuring on
+// each tick would be wasteful — hence the cache.
+final Map<String, double> _digitWidthCache = {};
+double _maxDigitWidth(TextStyle style) {
+  final key = '${style.fontFamily}|${style.fontSize}'
+      '|${style.fontWeight}|${style.letterSpacing}';
+  final cached = _digitWidthCache[key];
+  if (cached != null) return cached;
+  var maxW = 0.0;
+  for (var d = 0; d <= 9; d++) {
+    final tp = TextPainter(
+      text: TextSpan(text: '$d', style: style),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    if (tp.width > maxW) maxW = tp.width;
+  }
+  maxW += 1.0; // a hair of breathing room so no glyph touches the cell edge
+  _digitWidthCache[key] = maxW;
+  return maxW;
 }
 
 // \u2500\u2500\u2500 Money Reclaimed card \u2014 full-width, real-time, with optional savings goal \u2500\u2500
