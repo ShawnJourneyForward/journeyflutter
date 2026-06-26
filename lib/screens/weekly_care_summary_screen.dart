@@ -539,7 +539,7 @@ class _WeeklyCareSummaryScreenState
     final leftPeakX = w * 0.36;
     final leftPeakY = py(h * 0.56);
     canvas
-      ..setFillColor(PdfColor.fromInt(0xFFFFFFFF))
+      ..setFillColor(const PdfColor.fromInt(0xFFFFFFFF))
       ..moveTo(w * 0.16, groundY)
       ..lineTo(leftPeakX, leftPeakY)
       ..lineTo(w * 0.58, groundY)

@@ -765,12 +765,12 @@ class _ChoiceChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.forest600.withOpacity(.12)
+                ? AppColors.forest600.withValues(alpha: .12)
                 : AppColors.stone50,
             borderRadius: AppRadius.pill,
             border: Border.all(
               color: selected
-                  ? AppColors.forest600.withOpacity(.35)
+                  ? AppColors.forest600.withValues(alpha: .35)
                   : AppColors.stone100,
             ),
           ),

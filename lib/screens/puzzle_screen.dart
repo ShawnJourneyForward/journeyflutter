@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../components/glass_card.dart';
 import '../components/back_button.dart';
@@ -211,7 +210,7 @@ class _HomeView extends StatelessWidget {
                       width: 46,
                       height: 46,
                       decoration: BoxDecoration(
-                        color: a.color.withOpacity(0.12),
+                        color: a.color.withValues(alpha: 0.12),
                         borderRadius: AppRadius.md,
                       ),
                       child: Icon(a.icon, color: a.color, size: 22),
@@ -894,7 +893,9 @@ class _ColorCalmViewState extends State<_ColorCalmView>
 
   @override
   void dispose() {
-    for (final r in _ripples) r.controller.dispose();
+    for (final r in _ripples) {
+      r.controller.dispose();
+    }
     super.dispose();
   }
 

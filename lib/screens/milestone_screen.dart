@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../utils/locale_format.dart';
 import 'package:share_plus/share_plus.dart';
@@ -495,9 +494,7 @@ class _HeroCard extends StatelessWidget {
                 if (currentIdx >= 0) ...[
                   const SizedBox(height: 4),
                   Text(
-                    milestones[currentIdx].emoji +
-                        '  ' +
-                        milestones[currentIdx].label,
+                    '${milestones[currentIdx].emoji}  ${milestones[currentIdx].label}',
                     style: AppTextStyles.labelMedium
                         .copyWith(color: AppColors.honey300),
                   ),
@@ -778,7 +775,7 @@ class _ShareCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       // ignore: deprecated_member_use
-                      color: AppColors.honey400.withOpacity(0.55),
+                      color: AppColors.honey400.withValues(alpha: 0.55),
                       width: 1.0,
                     ),
                   ),
@@ -798,7 +795,7 @@ class _ShareCard extends StatelessWidget {
                       Icon(Icons.eco_rounded,
                           size: 13,
                           // ignore: deprecated_member_use
-                          color: AppColors.honey300.withOpacity(0.85)),
+                          color: AppColors.honey300.withValues(alpha: 0.85)),
                       const SizedBox(width: 6),
                       Text(
                         l10n.milestoneShareCardBrand,
@@ -865,7 +862,7 @@ class _ShareCard extends StatelessWidget {
                     width: 140,
                     height: 0.8,
                     // ignore: deprecated_member_use
-                    color: AppColors.honey400.withOpacity(0.55),
+                    color: AppColors.honey400.withValues(alpha: 0.55),
                   ),
                   const SizedBox(height: 10),
 
@@ -879,7 +876,7 @@ class _ShareCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             // ignore: deprecated_member_use
-                            color: AppColors.honey400.withOpacity(0.55),
+                            color: AppColors.honey400.withValues(alpha: 0.55),
                             width: 0.9,
                           ),
                         ),
@@ -912,7 +909,7 @@ class _ShareCard extends StatelessWidget {
                       Icon(Icons.account_circle_outlined,
                           size: 14,
                           // ignore: deprecated_member_use
-                          color: AppColors.honey300.withOpacity(0.85)),
+                          color: AppColors.honey300.withValues(alpha: 0.85)),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
@@ -930,7 +927,7 @@ class _ShareCard extends StatelessWidget {
                         width: 1,
                         height: 14,
                         // ignore: deprecated_member_use
-                        color: AppColors.honey400.withOpacity(0.45),
+                        color: AppColors.honey400.withValues(alpha: 0.45),
                       ),
                       const SizedBox(width: 14),
                       Text(
@@ -948,7 +945,7 @@ class _ShareCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(
                             // ignore: deprecated_member_use
-                            color: AppColors.honey400.withOpacity(0.55),
+                            color: AppColors.honey400.withValues(alpha: 0.55),
                             width: 0.8,
                           ),
                         ),
@@ -968,7 +965,7 @@ class _ShareCard extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
-                    color: AppColors.forest900.withOpacity(0.62),
+                    color: AppColors.forest900.withValues(alpha: 0.62),
                     borderRadius: AppRadius.xxl,
                   ),
                   child: Column(

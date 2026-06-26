@@ -66,11 +66,21 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
       if (earliest == null || day.isBefore(earliest!)) earliest = day;
     }
 
-    for (final e in journals) check(e.date);
-    for (final e in cravings) check(e.date);
-    for (final e in activities) check(e.date);
-    for (final e in sleeps) check(e.date);
-    for (final e in thoughts) check(e.date);
+    for (final e in journals) {
+      check(e.date);
+    }
+    for (final e in cravings) {
+      check(e.date);
+    }
+    for (final e in activities) {
+      check(e.date);
+    }
+    for (final e in sleeps) {
+      check(e.date);
+    }
+    for (final e in thoughts) {
+      check(e.date);
+    }
     return earliest ?? today;
   }
 
@@ -89,19 +99,29 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
     }
 
     if (_filter == _Category.all || _filter == _Category.journal) {
-      for (final e in journals) add(e.date);
+      for (final e in journals) {
+        add(e.date);
+      }
     }
     if (_filter == _Category.all || _filter == _Category.cravings) {
-      for (final e in cravings) add(e.date);
+      for (final e in cravings) {
+        add(e.date);
+      }
     }
     if (_filter == _Category.all || _filter == _Category.movement) {
-      for (final e in activities) add(e.date);
+      for (final e in activities) {
+        add(e.date);
+      }
     }
     if (_filter == _Category.all || _filter == _Category.sleep) {
-      for (final e in sleeps) add(e.date);
+      for (final e in sleeps) {
+        add(e.date);
+      }
     }
     if (_filter == _Category.all || _filter == _Category.thoughts) {
-      for (final e in thoughts) add(e.date);
+      for (final e in thoughts) {
+        add(e.date);
+      }
     }
     return s;
   }
@@ -134,11 +154,21 @@ class _HeatmapScreenState extends ConsumerState<HeatmapScreen> {
       all[k] = (all[k] ?? 0) + 1;
     }
 
-    for (final e in journals) add(e.date);
-    for (final e in cravings) add(e.date);
-    for (final e in activities) add(e.date);
-    for (final e in sleeps) add(e.date);
-    for (final e in thoughts) add(e.date);
+    for (final e in journals) {
+      add(e.date);
+    }
+    for (final e in cravings) {
+      add(e.date);
+    }
+    for (final e in activities) {
+      add(e.date);
+    }
+    for (final e in sleeps) {
+      add(e.date);
+    }
+    for (final e in thoughts) {
+      add(e.date);
+    }
 
     final careDays = all.length; // every key in `all` already has value > 0
     final totalCheckIns = all.values.fold(0, (a, b) => a + b);
@@ -840,8 +870,8 @@ class _LegendBar extends StatelessWidget {
             bordered: true),
         _LegendSwatch(
             color: const Color(0xFFEDE8E1), label: l10n.heatmapLegendNoEntry),
-        _LegendSwatch(color: const Color(0xFFD1E8D5), label: '1'),
-        _LegendSwatch(color: const Color(0xFF8FC49A), label: '2–3'),
+        const _LegendSwatch(color: Color(0xFFD1E8D5), label: '1'),
+        const _LegendSwatch(color: Color(0xFF8FC49A), label: '2–3'),
         _LegendSwatch(color: AppColors.forest400, label: '4–6'),
         _LegendSwatch(color: AppColors.forest600, label: '7+'),
       ],
@@ -941,7 +971,7 @@ class _DaySheet extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

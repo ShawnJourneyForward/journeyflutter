@@ -15,7 +15,7 @@ import '../theme/app_theme.dart';
 /// )
 /// // With custom tint (e.g. honey for gratitude sections):
 /// GlassCard(
-///   tintColor: AppColors.honey50.withOpacity(0.6),
+///   tintColor: AppColors.honey50.withValues(alpha: 0.6),
 ///   child: Text('Gratitude'),
 /// )
 /// ```
@@ -64,7 +64,7 @@ class GlassCard extends StatelessWidget {
               color: fill,
               borderRadius: borderRadius,
               border: Border.all(
-                color: Colors.white.withOpacity(rimOpacity),
+                color: Colors.white.withValues(alpha: rimOpacity),
                 width: 1.0,
               ),
             ),

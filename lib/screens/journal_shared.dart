@@ -298,28 +298,28 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.psychology_outlined,
     color: AppColors.forest500,
     prompts: [
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r1', text: 'What pulled at me today — and what held me steady?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r2', text: 'If today had a colour, what would it be? Why?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r3',
           text: 'What did my body tell me today that I almost ignored?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r4',
           text: 'Where did I show up for myself today, even imperfectly?'),
-      JournalPrompt(id: 'r5', text: 'What truth am I avoiding right now?'),
-      JournalPrompt(
+      const JournalPrompt(id: 'r5', text: 'What truth am I avoiding right now?'),
+      const JournalPrompt(
           id: 'r6',
           text:
               'What story did I tell myself today — and was it kind, or just familiar?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r7',
           text: 'What would the wisest version of me say about today?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'r8', text: 'What is one thing I am ready to set down?'),
-      JournalPrompt(id: 'r9', text: 'What feeling have I been outrunning?'),
-      JournalPrompt(id: 'r10', text: 'When did I feel most like myself today?'),
+      const JournalPrompt(id: 'r9', text: 'What feeling have I been outrunning?'),
+      const JournalPrompt(id: 'r10', text: 'When did I feel most like myself today?'),
     ],
   ),
   JournalPromptCategory(
@@ -328,30 +328,30 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.spa_outlined,
     color: AppColors.honey500,
     prompts: [
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g1', text: 'Three small things I am grateful for right now.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g2',
           text: 'Someone who made my life easier this week — and why.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g3',
           text: 'A body part that did its job today without me noticing.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g4', text: 'A sound, smell, or taste that landed today.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g5',
           text: 'A thing I have now that past-me would have begged for.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g6', text: 'A small comfort that softened a hard moment.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g7',
           text: 'A piece of music, a view, a meal — what fed me today?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g8', text: 'Who in my life right now is steady? Name them.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g9',
           text: 'A skill I have today that I did not have a year ago.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'g10',
           text: 'One ordinary moment today that I want to remember.'),
     ],
@@ -362,33 +362,33 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.cloud_outlined,
     color: AppColors.blush600,
     prompts: [
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h1', text: 'What hurt today? Just name it — no fix, no spin.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h2',
           text: 'If this feeling could speak, what would it say it needs?'),
-      JournalPrompt(id: 'h3', text: 'What part of today felt unfair?'),
-      JournalPrompt(
+      const JournalPrompt(id: 'h3', text: 'What part of today felt unfair?'),
+      const JournalPrompt(
           id: 'h4',
           text:
               'Is there a feeling I am calling anger that is actually something else underneath?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h5',
           text: 'What would I say to a friend who was where I am right now?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h6',
           text:
               'What is the smallest next step I can take, even if I do not feel like it?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h7',
           text:
               'Who can I tell about this — even one person, even one sentence?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h8',
           text: 'What am I making this mean about me — and is that true?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h9', text: 'What did today take from me? What did it leave?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'h10',
           text:
               'If I could fast-forward 24 hours, what would I want to be true?'),
@@ -400,20 +400,20 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.emoji_events_outlined,
     color: AppColors.honey400,
     prompts: [
-      JournalPrompt(id: 'w1', text: 'A moment today I am quietly proud of.'),
-      JournalPrompt(
+      const JournalPrompt(id: 'w1', text: 'A moment today I am quietly proud of.'),
+      const JournalPrompt(
           id: 'w2',
           text: 'Something I did today that past-me could not have done.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'w3', text: 'A risk I took — however small — and how it landed.'),
-      JournalPrompt(id: 'w4', text: 'Where did I choose myself today?'),
-      JournalPrompt(
+      const JournalPrompt(id: 'w4', text: 'Where did I choose myself today?'),
+      const JournalPrompt(
           id: 'w5', text: 'A boundary I held, even if no one noticed.'),
-      JournalPrompt(id: 'w6', text: 'A craving I rode through.'),
-      JournalPrompt(id: 'w7', text: 'A conversation I am glad I had.'),
-      JournalPrompt(id: 'w8', text: 'Something I finished. Anything.'),
-      JournalPrompt(id: 'w9', text: 'A way my body felt strong today.'),
-      JournalPrompt(
+      const JournalPrompt(id: 'w6', text: 'A craving I rode through.'),
+      const JournalPrompt(id: 'w7', text: 'A conversation I am glad I had.'),
+      const JournalPrompt(id: 'w8', text: 'Something I finished. Anything.'),
+      const JournalPrompt(id: 'w9', text: 'A way my body felt strong today.'),
+      const JournalPrompt(
           id: 'w10',
           text: 'A way I treated myself the way I would treat someone I love.'),
     ],
@@ -424,34 +424,34 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.local_fire_department_outlined,
     color: AppColors.blush500,
     prompts: [
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c1',
           text:
               'When did the urge start today, and what was happening around me?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c2', text: 'What was my body doing when the craving hit?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c3', text: 'What was the lie the craving was telling me?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c4',
           text:
               'What did I actually need underneath the craving — rest, connection, food, quiet?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c5', text: 'How long did it last before it began to pass?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c6',
           text:
               'What did I do instead — and how do I feel about that choice now?'),
-      JournalPrompt(id: 'c7', text: 'Who or what helped me ride this one out?'),
-      JournalPrompt(
+      const JournalPrompt(id: 'c7', text: 'Who or what helped me ride this one out?'),
+      const JournalPrompt(
           id: 'c8',
           text:
               'If this craving returns tomorrow, what is one thing I can have ready?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c9',
           text:
               'What would the version of me a year sober say to this craving?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'c10',
           text: 'What is the craving costing me, even when I do not use?'),
     ],
@@ -462,38 +462,38 @@ final kPromptCategories = <JournalPromptCategory>[
     icon: Icons.people_outline_rounded,
     color: AppColors.forest400,
     prompts: [
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p1',
           text: 'Who do I owe an honest sentence to — even if I never say it?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p2',
           text: 'A relationship that feels lighter than it did a year ago.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p3',
           text:
               'Someone I keep replaying conversations with — what is unfinished there?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p4',
           text:
               'A person I keep meaning to reach out to — what is one sentence I could send?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p5',
           text:
               'Where do I feel most seen lately? Where do I feel most invisible?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p6',
           text: 'What is one boundary I am proud of — even a small one?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p7',
           text: 'Who in my life has earned more of me? Who has earned less?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p8',
           text: 'A thing someone said to me that I am still carrying.'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p9',
           text:
               'What would a healthier version of me say to the people in my life right now?'),
-      JournalPrompt(
+      const JournalPrompt(
           id: 'p10',
           text:
               'Who do I want to be remembered as — by the people closest to me?'),

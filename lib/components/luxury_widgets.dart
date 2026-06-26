@@ -158,7 +158,7 @@ class SoftInput extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           filled: true,
-          fillColor: (tint ?? AppColors.mintChip).withOpacity(0.55),
+          fillColor: (tint ?? AppColors.mintChip).withValues(alpha: 0.55),
         ),
       );
 }

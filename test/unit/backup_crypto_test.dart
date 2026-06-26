@@ -49,7 +49,7 @@ void main() {
     });
 
     test('looksEncrypted recognises envelope but not plaintext JSON', () {
-      final plain = '{"app":"Journey Forward","data":{}}';
+      const plain = '{"app":"Journey Forward","data":{}}';
       final enc = BackupCrypto.encrypt(plain, 'pass');
       expect(BackupCrypto.looksEncrypted(enc), isTrue);
       expect(BackupCrypto.looksEncrypted(plain), isFalse);

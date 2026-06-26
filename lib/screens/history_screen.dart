@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../components/back_button.dart';
@@ -548,7 +547,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: moodColor.withOpacity(0.12),
+                              color: moodColor.withValues(alpha: 0.12),
                               borderRadius: AppRadius.pill,
                             ),
                             child: Text(
@@ -963,7 +962,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               width: 4,
               decoration: BoxDecoration(
                 color: AppColors.forest400,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                 ),
@@ -1138,7 +1137,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               width: 4,
               decoration: BoxDecoration(
                 color: AppColors.honey400,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                 ),

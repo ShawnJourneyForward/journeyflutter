@@ -152,7 +152,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     controller: _tabs,
                     children: [
                       _StreakTab(stats: stats),
-                      _InsightsTab(),
+                      const _InsightsTab(),
                     ],
                   ),
                 ),
@@ -1554,7 +1554,7 @@ class _CapitalFilledContent extends StatelessWidget {
                 decoration: BoxDecoration(
                   // ignore: deprecated_member_use
                   color: d.$1
-                      ? AppColors.forest600.withOpacity(0.12)
+                      ? AppColors.forest600.withValues(alpha: 0.12)
                       : AppColors.stone50,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(

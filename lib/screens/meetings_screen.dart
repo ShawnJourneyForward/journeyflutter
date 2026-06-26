@@ -517,7 +517,7 @@ class _MeetingEditorSheetState extends ConsumerState<_MeetingEditorSheet> {
         padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
         decoration: BoxDecoration(
           color: AppColors.card,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: SingleChildScrollView(
           child: Column(

@@ -61,7 +61,7 @@ final kVisionIcons = <VisionIconOption>[
       icon: Icons.fitness_center_rounded,
       label: 'Strength',
       color: AppColors.forest500),
-  VisionIconOption(
+  const VisionIconOption(
       key: 'love',
       icon: Icons.spa_rounded,
       label: 'Love',

@@ -520,7 +520,7 @@ class _ShareCard extends StatelessWidget {
                 Icon(Icons.eco_rounded,
                     size: 13,
                     // ignore: deprecated_member_use
-                    color: AppColors.honey300.withOpacity(0.85)),
+                    color: AppColors.honey300.withValues(alpha: 0.85)),
                 const SizedBox(width: 6),
                 Text(
                   l10n.challengeShareCardBrand,
@@ -547,7 +547,7 @@ class _ShareCard extends StatelessWidget {
             Container(
               height: 0.8,
               // ignore: deprecated_member_use
-              color: AppColors.honey400.withOpacity(0.5),
+              color: AppColors.honey400.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 14),
 
@@ -570,11 +570,11 @@ class _ShareCard extends StatelessWidget {
                     color: done
                         ? AppColors.forest700
                         // ignore: deprecated_member_use
-                        : AppColors.forest800.withOpacity(0.55),
+                        : AppColors.forest800.withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       // ignore: deprecated_member_use
-                      color: AppColors.forest600.withOpacity(done ? 0.9 : 0.4),
+                      color: AppColors.forest600.withValues(alpha: done ? 0.9 : 0.4),
                       width: 0.6,
                     ),
                   ),
@@ -597,7 +597,7 @@ class _ShareCard extends StatelessWidget {
                 Icon(Icons.account_circle_outlined,
                     size: 14,
                     // ignore: deprecated_member_use
-                    color: AppColors.honey300.withOpacity(0.85)),
+                    color: AppColors.honey300.withValues(alpha: 0.85)),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
@@ -613,7 +613,7 @@ class _ShareCard extends StatelessWidget {
                   width: 1,
                   height: 14,
                   // ignore: deprecated_member_use
-                  color: AppColors.honey400.withOpacity(0.45),
+                  color: AppColors.honey400.withValues(alpha: 0.45),
                 ),
                 const SizedBox(width: 12),
                 Text(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../components/glass_card.dart';
@@ -331,7 +330,7 @@ class _GroupCardState extends State<_GroupCard> {
                     width: 46,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: g.accentColor.withOpacity(0.1),
+                      color: g.accentColor.withValues(alpha: 0.1),
                       borderRadius: AppRadius.md,
                     ),
                     child: Icon(g.icon, color: g.accentColor, size: 22),

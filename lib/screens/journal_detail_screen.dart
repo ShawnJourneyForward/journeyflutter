@@ -271,10 +271,10 @@ class _MoodHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: mood.color.withOpacity(0.10),
+        color: mood.color.withValues(alpha: 0.10),
         borderRadius: AppRadius.lg,
         // ignore: deprecated_member_use
-        border: Border.all(color: mood.color.withOpacity(0.30)),
+        border: Border.all(color: mood.color.withValues(alpha: 0.30)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

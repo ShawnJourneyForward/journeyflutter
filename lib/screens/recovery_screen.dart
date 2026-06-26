@@ -425,7 +425,7 @@ class _TimelineTileState extends State<_TimelineTile> {
                     boxShadow: isCurrent
                         ? [
                             BoxShadow(
-                              color: AppColors.honey400.withOpacity(0.28),
+                              color: AppColors.honey400.withValues(alpha: 0.28),
                               blurRadius: 14,
                               spreadRadius: 0,
                             )

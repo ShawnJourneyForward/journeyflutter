@@ -77,7 +77,7 @@ class _IntentionSheetState extends ConsumerState<IntentionSheet> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -288,10 +288,10 @@ class _ReviewPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             // ignore: deprecated_member_use
-            color: color.withOpacity(0.10),
+            color: color.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(12),
             // ignore: deprecated_member_use
-            border: Border.all(color: color.withOpacity(0.40)),
+            border: Border.all(color: color.withValues(alpha: 0.40)),
           ),
           child: Column(
             children: [
@@ -378,7 +378,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,

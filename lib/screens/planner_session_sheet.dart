@@ -915,12 +915,12 @@ class _SessionTypeWrap extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: sel
-                    ? AppColors.forest600.withOpacity(.12)
+                    ? AppColors.forest600.withValues(alpha: .12)
                     : AppColors.stone50,
                 borderRadius: AppRadius.pill,
                 border: Border.all(
                   color: sel
-                      ? AppColors.forest600.withOpacity(.35)
+                      ? AppColors.forest600.withValues(alpha: .35)
                       : AppColors.stone100,
                 ),
               ),
@@ -983,12 +983,12 @@ class _SwimUnitSelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: sel
-                  ? AppColors.forest600.withOpacity(.12)
+                  ? AppColors.forest600.withValues(alpha: .12)
                   : AppColors.stone50,
               borderRadius: AppRadius.pill,
               border: Border.all(
                 color: sel
-                    ? AppColors.forest600.withOpacity(.35)
+                    ? AppColors.forest600.withValues(alpha: .35)
                     : AppColors.stone100,
               ),
             ),
@@ -1030,7 +1030,7 @@ class _LabeledField extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.caption
-                  .copyWith(color: AppColors.stone400)),
+                  .copyWith(color: AppColors.stone500)),
           const SizedBox(height: 6),
           TextField(
             controller: controller,
@@ -1061,7 +1061,7 @@ class _LabeledField extends StatelessWidget {
                   .copyWith(color: AppColors.stone200),
               suffixText: suffix,
               suffixStyle:
-                  AppTextStyles.caption.copyWith(color: AppColors.stone400),
+                  AppTextStyles.caption.copyWith(color: AppColors.stone500),
             ),
           ),
         ],
@@ -1178,7 +1178,7 @@ class _OutlineButton extends StatelessWidget {
           label: Text(label),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.forest600,
-            side: BorderSide(color: AppColors.forest600.withOpacity(.35)),
+            side: BorderSide(color: AppColors.forest600.withValues(alpha: .35)),
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
         ),

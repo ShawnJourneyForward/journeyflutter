@@ -331,7 +331,7 @@ class NotificationService {
       final morningBody = morningList[dayIndex % morningList.length];
       final eveningBody = eveningList[dayIndex % eveningList.length];
 
-      final details = NotificationDetails(
+      const details = NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,
           _channelName,
@@ -341,9 +341,9 @@ class NotificationService {
           playSound: true,
           enableVibration: true,
           icon: 'ic_stat_notify',
-          color: const Color(0xFF2D6A4F),
+          color: Color(0xFF2D6A4F),
         ),
-        iOS: const DarwinNotificationDetails(
+        iOS: DarwinNotificationDetails(
           presentAlert: true,
           presentSound: true,
           presentBadge: false,
@@ -408,7 +408,7 @@ class NotificationService {
         10000 + days,
         l.notifMilestoneTitle,
         msg,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,
             _channelName,
@@ -418,9 +418,9 @@ class NotificationService {
             playSound: true,
             enableVibration: true,
             icon: 'ic_stat_notify',
-            color: const Color(0xFF2D6A4F),
+            color: Color(0xFF2D6A4F),
           ),
-          iOS: const DarwinNotificationDetails(
+          iOS: DarwinNotificationDetails(
               presentAlert: true, presentSound: true),
         ),
       );
@@ -442,7 +442,7 @@ class NotificationService {
         20000 + tierIndex,
         l.notifSavingsTitle,
         body,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,
             _channelName,
@@ -452,9 +452,9 @@ class NotificationService {
             playSound: true,
             enableVibration: true,
             icon: 'ic_stat_notify',
-            color: const Color(0xFF2D6A4F),
+            color: Color(0xFF2D6A4F),
           ),
-          iOS: const DarwinNotificationDetails(
+          iOS: DarwinNotificationDetails(
               presentAlert: true, presentSound: true),
         ),
       );
@@ -503,7 +503,7 @@ class NotificationService {
         l.notifMeetingTitle,
         body,
         tzWhen,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,
             _channelName,
@@ -513,9 +513,9 @@ class NotificationService {
             playSound: true,
             enableVibration: true,
             icon: 'ic_stat_notify',
-            color: const Color(0xFF2D6A4F),
+            color: Color(0xFF2D6A4F),
           ),
-          iOS: const DarwinNotificationDetails(
+          iOS: DarwinNotificationDetails(
               presentAlert: true, presentSound: true),
         ),
         androidScheduleMode: await _bestScheduleMode(),
@@ -657,7 +657,7 @@ class NotificationService {
         99, // dedicated test ID — won't collide with any scheduled range
         l.appTitle,
         l.notifTestBody,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             _channelId,
             _channelName,
@@ -667,9 +667,9 @@ class NotificationService {
             playSound: true,
             enableVibration: true,
             icon: 'ic_stat_notify',
-            color: const Color(0xFF2D6A4F),
+            color: Color(0xFF2D6A4F),
           ),
-          iOS: const DarwinNotificationDetails(
+          iOS: DarwinNotificationDetails(
               presentAlert: true, presentSound: true),
         ),
       );

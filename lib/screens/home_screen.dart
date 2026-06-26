@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -1186,9 +1185,9 @@ class _BlendedPlant extends StatelessWidget {
                   // Clear in the middle, fully card-coloured past 95% of the
                   // radius — mirrors the old mask's stops exactly.
                   colors: [
-                    card.withOpacity(0.0),
-                    card.withOpacity(0.0),
-                    card.withOpacity(0.6),
+                    card.withValues(alpha: 0.0),
+                    card.withValues(alpha: 0.0),
+                    card.withValues(alpha: 0.6),
                     card,
                   ],
                   stops: const [0.0, 0.55, 0.85, 1.0],
@@ -1570,7 +1569,9 @@ class _SecondsTile extends ConsumerWidget {
             : (ref.read(soberStatsProvider)?.seconds ?? 0));
     return RepaintBoundary(
       child: _CounterTile(
-        value: '$seconds',
+        // Zero-padded so the per-second tile keeps a constant 2-digit width and
+        // never recenters as it ticks 9→10 / 59→00.
+        value: seconds.toString().padLeft(2, '0'),
         label: l10n.homeCounterSeconds(seconds),
       ),
     );
@@ -1609,6 +1610,9 @@ class _CounterTile extends StatelessWidget {
                   color: AppColors.forest700,
                   letterSpacing: -0.5,
                   height: 1,
+                  // Tabular (fixed-width) figures so a ticking value doesn't
+                  // wiggle horizontally as proportional digit widths change.
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ),
@@ -1838,7 +1842,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
     final insets = MediaQuery.of(context).viewInsets.bottom;
 
     final border = OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(14)),
+      borderRadius: const BorderRadius.all(Radius.circular(14)),
       borderSide: BorderSide(color: AppColors.softBorder),
     );
     final focusBorder = OutlineInputBorder(
@@ -1849,7 +1853,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.fromLTRB(24, 12, 24, 24 + insets),
       child: Column(
@@ -3178,12 +3182,12 @@ class _ChoiceChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.forest600.withOpacity(.12)
+                ? AppColors.forest600.withValues(alpha: .12)
                 : AppColors.stone50,
             borderRadius: AppRadius.pill,
             border: Border.all(
               color: selected
-                  ? AppColors.forest600.withOpacity(.35)
+                  ? AppColors.forest600.withValues(alpha: .35)
                   : AppColors.stone100,
             ),
           ),
@@ -3457,7 +3461,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
                     color: selected
-                        ? AppColors.honey500.withOpacity(0.15)
+                        ? AppColors.honey500.withValues(alpha: 0.15)
                         : AppColors.stone50,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
@@ -3609,7 +3613,7 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
                     color: selected
-                        ? AppColors.forest600.withOpacity(0.12)
+                        ? AppColors.forest600.withValues(alpha: 0.12)
                         : AppColors.stone50,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
@@ -3740,7 +3744,7 @@ class _OutcomePill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             // ignore: deprecated_member_use
-            color: selected ? color.withOpacity(0.14) : AppColors.stone50,
+            color: selected ? color.withValues(alpha: 0.14) : AppColors.stone50,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selected ? color : AppColors.stone200,
@@ -3963,7 +3967,7 @@ class _ActivitySheet extends ConsumerStatefulWidget {
 
 class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
   String _activity = 'walk';
-  double _minutes = 30; // slider value — used for non-distance activities
+  final double _minutes = 30; // slider value — used for non-distance activities
   final _minutesCtrl = TextEditingController(text: '30'); // exact entry
   final _distanceCtrl = TextEditingController(); // km
   String _effort = 'Light';

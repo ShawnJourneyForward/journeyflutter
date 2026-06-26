@@ -409,10 +409,10 @@ class _ExerciseLinkChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             // ignore: deprecated_member_use
-            color: exercise.color.withOpacity(0.08),
+            color: exercise.color.withValues(alpha: 0.08),
             borderRadius: AppRadius.full,
             // ignore: deprecated_member_use
-            border: Border.all(color: exercise.color.withOpacity(0.3)),
+            border: Border.all(color: exercise.color.withValues(alpha: 0.3)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -518,7 +518,7 @@ class _ExerciseRow extends StatelessWidget {
               height: 38,
               decoration: BoxDecoration(
                 // ignore: deprecated_member_use
-                color: exercise.color.withOpacity(0.10),
+                color: exercise.color.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: Icon(exercise.icon, size: 19, color: exercise.color),
@@ -599,7 +599,7 @@ class _PlanRunnerSheetState extends State<_PlanRunnerSheet> {
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 28),
       decoration: BoxDecoration(
         color: AppColors.card,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

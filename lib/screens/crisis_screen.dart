@@ -480,7 +480,7 @@ class _CrisisScreenState extends State<CrisisScreen> {
             borderRadius: AppRadius.pill,
             boxShadow: [
               BoxShadow(
-                color: AppColors.blush600.withOpacity(0.3),
+                color: AppColors.blush600.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),

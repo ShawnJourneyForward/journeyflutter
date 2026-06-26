@@ -504,7 +504,7 @@ class _AddExerciseButton extends StatelessWidget {
           label: Text(label),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.forest600,
-            side: BorderSide(color: AppColors.forest600.withOpacity(.35)),
+            side: BorderSide(color: AppColors.forest600.withValues(alpha: .35)),
             padding: const EdgeInsets.symmetric(vertical: 12),
           ),
         ),
@@ -632,12 +632,12 @@ class _DisciplineWrap extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: sel
-                    ? AppColors.forest600.withOpacity(.12)
+                    ? AppColors.forest600.withValues(alpha: .12)
                     : AppColors.stone50,
                 borderRadius: AppRadius.pill,
                 border: Border.all(
                   color: sel
-                      ? AppColors.forest600.withOpacity(.35)
+                      ? AppColors.forest600.withValues(alpha: .35)
                       : AppColors.stone100,
                 ),
               ),

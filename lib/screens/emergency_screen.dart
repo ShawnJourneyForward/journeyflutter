@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:just_audio/just_audio.dart';
@@ -364,12 +363,12 @@ class _HomeTab extends ConsumerWidget {
                                 .copyWith(color: AppColors.onForest)),
                         Text(ec.phone,
                             style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.onForest.withOpacity(0.7))),
+                                color: AppColors.onForest.withValues(alpha: 0.7))),
                       ],
                     ),
                   ),
                   Icon(Icons.arrow_forward_ios_rounded,
-                      color: AppColors.onForest.withOpacity(0.7), size: 16),
+                      color: AppColors.onForest.withValues(alpha: 0.7), size: 16),
                 ],
               ),
             ),
@@ -413,7 +412,7 @@ class _HomeTab extends ConsumerWidget {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.12),
+                        color: color.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(icon, size: 22, color: color),
@@ -816,7 +815,7 @@ class _BreathingTabState extends State<_BreathingTab>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.forest400
-                                .withOpacity(0.04 + 0.04 * t),
+                                .withValues(alpha: 0.04 + 0.04 * t),
                           ),
                         ),
                         // Mid ring
@@ -826,7 +825,7 @@ class _BreathingTabState extends State<_BreathingTab>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.forest400
-                                .withOpacity(0.07 + 0.06 * t),
+                                .withValues(alpha: 0.07 + 0.06 * t),
                           ),
                         ),
                         // Inner ring with border
@@ -836,10 +835,10 @@ class _BreathingTabState extends State<_BreathingTab>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.forest200
-                                .withOpacity(0.18 + 0.14 * t),
+                                .withValues(alpha: 0.18 + 0.14 * t),
                             border: Border.all(
                               color: AppColors.forest300
-                                  .withOpacity(0.25 + 0.18 * t),
+                                  .withValues(alpha: 0.25 + 0.18 * t),
                               width: 1.5,
                             ),
                           ),
@@ -1526,14 +1525,14 @@ class _MeditationTabState extends State<_MeditationTab>
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.forest900, Color(0xFF1A3D2B)],
+                    colors: [AppColors.forest900, const Color(0xFF1A3D2B)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: AppRadius.xl,
                   border: Border.all(
                     // ignore: deprecated_member_use
-                    color: AppColors.honey400.withOpacity(0.35),
+                    color: AppColors.honey400.withValues(alpha: 0.35),
                   ),
                 ),
                 padding: const EdgeInsets.all(20),
@@ -1548,11 +1547,11 @@ class _MeditationTabState extends State<_MeditationTab>
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             // ignore: deprecated_member_use
-                            color: AppColors.honey400.withOpacity(0.18),
+                            color: AppColors.honey400.withValues(alpha: 0.18),
                             borderRadius: AppRadius.pill,
                             border: Border.all(
                               // ignore: deprecated_member_use
-                              color: AppColors.honey400.withOpacity(0.45),
+                              color: AppColors.honey400.withValues(alpha: 0.45),
                             ),
                           ),
                           child: Text(l10n.meditationGuidedAudioLabel,
@@ -1611,7 +1610,7 @@ class _MeditationTabState extends State<_MeditationTab>
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   // ignore: deprecated_member_use
-                                  color: AppColors.honey400.withOpacity(0.18),
+                                  color: AppColors.honey400.withValues(alpha: 0.18),
                                   width: 12,
                                 ),
                               ),
@@ -1709,7 +1708,7 @@ class _MeditationTabState extends State<_MeditationTab>
                                   minHeight: 4,
                                   backgroundColor:
                                       // ignore: deprecated_member_use
-                                      Colors.white.withOpacity(0.12),
+                                      Colors.white.withValues(alpha: 0.12),
                                   valueColor: AlwaysStoppedAnimation(
                                       AppColors.honey400),
                                 ),
@@ -1740,7 +1739,7 @@ class _MeditationTabState extends State<_MeditationTab>
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         // ignore: deprecated_member_use
-                        color: Colors.white.withOpacity(0.06),
+                        color: Colors.white.withValues(alpha: 0.06),
                         borderRadius: AppRadius.md,
                       ),
                       child: Text(

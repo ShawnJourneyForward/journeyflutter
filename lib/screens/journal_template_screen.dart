@@ -262,7 +262,7 @@ class _JournalTemplateScreenState extends ConsumerState<JournalTemplateScreen> {
                       decoration: BoxDecoration(
                         color: selected
                             // ignore: deprecated_member_use
-                            ? m.color.withOpacity(0.18)
+                            ? m.color.withValues(alpha: 0.18)
                             : AppColors.cream,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(

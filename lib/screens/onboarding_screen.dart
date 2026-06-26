@@ -175,8 +175,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     H.selection();
     setState(() {
       if (_pinConfirming) {
-        if (_pinConfirm.isNotEmpty)
+        if (_pinConfirm.isNotEmpty) {
           _pinConfirm = _pinConfirm.substring(0, _pinConfirm.length - 1);
+        }
       } else {
         if (_pin.isNotEmpty) _pin = _pin.substring(0, _pin.length - 1);
       }
@@ -230,7 +231,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     H.medium();
     final l10n = AppLocalizations.of(context);
 
-    final _fmt = (TimeOfDay t) =>
+    fmt(TimeOfDay t) =>
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
     try {
@@ -264,8 +265,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       await prefs.setBool('notif_motivation', _notifMotivation);
       await prefs.setBool('notif_reminders', _notifReminders);
       await prefs.setBool('notif_milestones', _notifMilestones);
-      await prefs.setString('notif_morning', _fmt(_morningTime));
-      await prefs.setString('notif_evening', _fmt(_eveningTime));
+      await prefs.setString('notif_morning', fmt(_morningTime));
+      await prefs.setString('notif_evening', fmt(_eveningTime));
 
       // CRITICAL: reload() blocks until the SharedPreferences XML on disk
       // is re-read into memory — this is the closest thing to a sync commit
@@ -309,7 +310,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       content: Text(msg),
       backgroundColor: AppColors.honey500,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.md),
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.md),
     ));
   }
 

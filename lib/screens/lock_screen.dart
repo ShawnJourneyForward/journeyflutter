@@ -564,13 +564,14 @@ class _PinView extends StatelessWidget {
                       if (d == 'bio') {
                         return onBiometric != null
                             ? _PadButton(
+                                onTap: onBiometric!,
                                 child: Icon(Icons.fingerprint_rounded,
                                     size: 26, color: AppColors.stone500),
-                                onTap: onBiometric!,
                               )
                             : const SizedBox(width: 80, height: 62);
                       }
                       return _PadButton(
+                        onTap: d == '⌫' ? onDelete : () => onDigit(d),
                         child: Text(
                           d,
                           style: d == '⌫'
@@ -579,7 +580,6 @@ class _PinView extends StatelessWidget {
                               : AppTextStyles.displaySmall.copyWith(
                                   fontSize: 26, color: AppColors.stone800),
                         ),
-                        onTap: d == '⌫' ? onDelete : () => onDigit(d),
                       );
                     }).toList(),
                   ),

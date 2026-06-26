@@ -163,7 +163,7 @@ class _SlipCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: AppColors.blush50,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             ),
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             child: Row(

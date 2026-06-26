@@ -270,7 +270,7 @@ class _OverviewTab extends ConsumerWidget {
               child: Text(
                 l10n.plannerHealthDisclaimer,
                 style:
-                    AppTextStyles.caption.copyWith(color: AppColors.stone400),
+                    AppTextStyles.caption.copyWith(color: AppColors.stone500),
               ),
             ),
           ],
@@ -528,7 +528,7 @@ class _PlannerMonthCard extends StatelessWidget {
           LayoutBuilder(builder: (context, constraints) {
             const gap = 3.0;
             final cellSize =
-                ((constraints.maxWidth - gap * 6) / 7).clamp(28.0, 46.0);
+                ((constraints.maxWidth - gap * 6) / 7).clamp(32.0, 48.0);
 
             return Column(
               children: List.generate(rows, (row) {
@@ -643,10 +643,17 @@ class _PlannerDayTile extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
+        // Visual cell stays `size`, but the tap area is at least 46dp tall so
+        // the day is comfortable to hit (a11y min target) without widening the
+        // 7-column grid.
         child: SizedBox(
           width: size,
-          height: size,
-          child: Stack(
+          height: size < 46 ? 46 : size,
+          child: Center(
+            child: SizedBox(
+              width: size,
+              height: size,
+              child: Stack(
             children: [
               Positioned.fill(
                 child: Container(
@@ -698,6 +705,8 @@ class _PlannerDayTile extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+            ),
           ),
         ),
       ),
@@ -790,7 +799,7 @@ class _DaySessionsSheet extends ConsumerWidget {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.forest600,
                     side:
-                        BorderSide(color: AppColors.forest600.withOpacity(.35)),
+                        BorderSide(color: AppColors.forest600.withValues(alpha: .35)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),

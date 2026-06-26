@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -890,7 +889,7 @@ class _OnThisDayCard extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 // ignore: deprecated_member_use
-                color: mood.color.withOpacity(0.15),
+                color: mood.color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.history_rounded,
@@ -1102,7 +1101,7 @@ class _DiaryFilterBarState extends State<_DiaryFilterBar> {
                       // ignore: deprecated_member_use
                       color: selected
                           // ignore: deprecated_member_use
-                          ? Colors.white.withOpacity(0.7)
+                          ? Colors.white.withValues(alpha: 0.7)
                           : AppColors.stone400)),
             ],
           ],
@@ -1779,13 +1778,13 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                           decoration: BoxDecoration(
                             color: selected
                                 // ignore: deprecated_member_use
-                                ? m.color.withOpacity(0.12)
+                                ? m.color.withValues(alpha: 0.12)
                                 : Colors.transparent,
                             borderRadius: AppRadius.md,
                             border: Border.all(
                               color: selected
                                   // ignore: deprecated_member_use
-                                  ? m.color.withOpacity(0.4)
+                                  ? m.color.withValues(alpha: 0.4)
                                   : AppColors.stone100,
                             ),
                           ),
@@ -2092,7 +2091,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                  shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(
                   _isEdit ? l10n.journalSaveChanges : l10n.journalSaveEntry,
@@ -2189,13 +2188,13 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                               // ignore: deprecated_member_use
                               color: isSuggested
                                   // ignore: deprecated_member_use
-                                  ? cat.color.withOpacity(0.06)
+                                  ? cat.color.withValues(alpha: 0.06)
                                   : AppColors.stone50,
                               borderRadius: AppRadius.sm,
                               border: Border.all(
                                 color: isSuggested
                                     // ignore: deprecated_member_use
-                                    ? cat.color.withOpacity(0.4)
+                                    ? cat.color.withValues(alpha: 0.4)
                                     : AppColors.stone100,
                                 width: isSuggested ? 1.4 : 1.0,
                               ),
@@ -2207,7 +2206,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                                   height: 28,
                                   decoration: BoxDecoration(
                                     // ignore: deprecated_member_use
-                                    color: cat.color.withOpacity(0.12),
+                                    color: cat.color.withValues(alpha: 0.12),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(cat.icon,
@@ -2627,7 +2626,7 @@ class _AffirmTabState extends ConsumerState<_AffirmTab> {
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.forest600,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                  shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                 ),
                 child: Text(l10n.journalAdd,
                     style:
@@ -2666,7 +2665,7 @@ class _AffirmCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.forest50, Color(0xFFF0F7F3)],
+            colors: [AppColors.forest50, const Color(0xFFF0F7F3)],
           ),
           borderRadius: AppRadius.xl,
           border: Border.all(color: AppColors.forest100),
@@ -3078,7 +3077,7 @@ class _FilterRow extends StatelessWidget {
                   // ignore: deprecated_member_use
                   color: selected
                       // ignore: deprecated_member_use
-                      ? Colors.white.withOpacity(0.20)
+                      ? Colors.white.withValues(alpha: 0.20)
                       : AppColors.stone100,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -3203,7 +3202,7 @@ class _VisionEmptyState extends StatelessWidget {
                         height: 36,
                         decoration: BoxDecoration(
                           // ignore: deprecated_member_use
-                          color: opt.color.withOpacity(0.12),
+                          color: opt.color.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(opt.icon, size: 18, color: opt.color),
@@ -3289,9 +3288,9 @@ class _VisionCard extends StatelessWidget {
               border: Border.all(
                 color: item.achieved
                     // ignore: deprecated_member_use
-                    ? AppColors.forest500.withOpacity(0.45)
+                    ? AppColors.forest500.withValues(alpha: 0.45)
                     // ignore: deprecated_member_use
-                    : accent.withOpacity(0.18),
+                    : accent.withValues(alpha: 0.18),
                 width: item.achieved ? 1.6 : 1.2,
               ),
               boxShadow: AppShadows.luxury,
@@ -3329,7 +3328,7 @@ class _VisionCard extends StatelessWidget {
                           height: hasPhoto ? 40 : 52,
                           decoration: BoxDecoration(
                             // ignore: deprecated_member_use
-                            color: accent.withOpacity(0.10),
+                            color: accent.withValues(alpha: 0.10),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(opt.icon,
@@ -3473,7 +3472,7 @@ class _MiniProgress extends StatelessWidget {
             value: progress,
             minHeight: 4,
             // ignore: deprecated_member_use
-            backgroundColor: accent.withOpacity(0.12),
+            backgroundColor: accent.withValues(alpha: 0.12),
             valueColor: AlwaysStoppedAnimation(accent),
           ),
         ),
@@ -3750,7 +3749,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.forest600,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                      shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                     ),
                     child: Text(
                       _isEdit ? l10n.journalSaveChanges : l10n.visionAddToBoard,
@@ -3771,7 +3770,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape:
-                            RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                            const RoundedRectangleBorder(borderRadius: AppRadius.lg),
                       ),
                       child: Text(l10n.visionRemoveThisDream,
                           style: AppTextStyles.labelMedium
@@ -3861,7 +3860,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                   // ignore: deprecated_member_use
                   color: selected
                       // ignore: deprecated_member_use
-                      ? info.color.withOpacity(0.14)
+                      ? info.color.withValues(alpha: 0.14)
                       : AppColors.stone50,
                   borderRadius: AppRadius.sm,
                   border: Border.all(
@@ -3913,13 +3912,13 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                       // ignore: deprecated_member_use
                       color: selected
                           // ignore: deprecated_member_use
-                          ? o.color.withOpacity(0.14)
+                          ? o.color.withValues(alpha: 0.14)
                           : AppColors.stone50,
                       borderRadius: AppRadius.md,
                       border: Border.all(
                         color: selected
                             // ignore: deprecated_member_use
-                            ? o.color.withOpacity(0.6)
+                            ? o.color.withValues(alpha: 0.6)
                             : AppColors.stone100,
                         width: selected ? 1.5 : 1.0,
                       ),
@@ -4133,7 +4132,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
                 backgroundColor: AppColors.forest600,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.lg),
+                shape: const RoundedRectangleBorder(borderRadius: AppRadius.lg),
               ),
               child:
                   const Icon(Icons.add_rounded, color: Colors.white, size: 18),

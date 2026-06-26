@@ -265,7 +265,7 @@ class _DetailAppBar extends StatelessWidget {
                     end: Alignment.bottomRight,
                     colors: [
                       // ignore: deprecated_member_use
-                      accent.withOpacity(0.18),
+                      accent.withValues(alpha: 0.18),
                       AppColors.mintChip,
                     ],
                   ),
@@ -294,8 +294,8 @@ class _DetailAppBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       // ignore: deprecated_member_use
                       color: hasPhoto
-                          ? Colors.white.withOpacity(0.92)
-                          : accent.withOpacity(0.14),
+                          ? Colors.white.withValues(alpha: 0.92)
+                          : accent.withValues(alpha: 0.14),
                       shape: BoxShape.circle,
                       boxShadow: hasPhoto ? AppShadows.luxury : null,
                     ),
@@ -343,7 +343,7 @@ class _AchievedBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: AppColors.forest500.withOpacity(0.10),
+        color: AppColors.forest500.withValues(alpha: 0.10),
         borderRadius: AppRadius.lg,
         border: Border.all(color: AppColors.forest200),
       ),
@@ -378,9 +378,7 @@ class _CategoryAndDate extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cat = categoryInfoFor(item.category);
-    final daysLeft = item.targetDate == null
-        ? null
-        : item.targetDate!.difference(DateTime.now()).inDays;
+    final daysLeft = item.targetDate?.difference(DateTime.now()).inDays;
 
     return Wrap(
       spacing: 8,
@@ -425,10 +423,10 @@ class _Chip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         // ignore: deprecated_member_use
-        color: color.withOpacity(0.10),
+        color: color.withValues(alpha: 0.10),
         borderRadius: AppRadius.sm,
         // ignore: deprecated_member_use
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -643,7 +641,7 @@ class _RingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
       // ignore: deprecated_member_use
-      ..color = accent.withOpacity(0.18);
+      ..color = accent.withValues(alpha: 0.18);
     canvas.drawCircle(center, radius, trackPaint);
 
     if (progress > 0) {

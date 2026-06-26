@@ -461,7 +461,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
     if (result == null) return;
 
-    final fmt = (TimeOfDay t) =>
+    fmt(TimeOfDay t) =>
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
     await prefs.setString('notif_morning', fmt(result['morning'] as TimeOfDay));
     await prefs.setString('notif_evening', fmt(result['evening'] as TimeOfDay));
@@ -528,7 +528,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         backgroundColor: AppColors.forest700,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.md),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.md),
       ),
     );
   }
@@ -1080,10 +1080,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: _SectionLabel(l10n.settingsAboutLabel),
               ),
             ),
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
-                child: const _AboutCard(),
+                padding: EdgeInsets.fromLTRB(20, 8, 20, 40),
+                child: _AboutCard(),
               ),
             ),
             SliverToBoxAdapter(
@@ -2623,10 +2623,11 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
     );
     if (picked == null) return;
     setState(() {
-      if (isMorning)
+      if (isMorning) {
         _morning = picked;
-      else
+      } else {
         _evening = picked;
+      }
     });
   }
 
@@ -2645,7 +2646,7 @@ class _NotificationsSheetState extends State<_NotificationsSheet> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.stone50,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -3127,7 +3128,7 @@ class _AboutCardState extends State<_AboutCard> {
                                   backgroundColor: AppColors.forest600,
                                   behavior: SnackBarBehavior.floating,
                                   duration: const Duration(seconds: 2),
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                       borderRadius: AppRadius.md),
                                 ));
                             },
