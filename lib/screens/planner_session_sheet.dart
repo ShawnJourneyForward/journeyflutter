@@ -78,23 +78,17 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
   bool get _imperial =>
       ref.read(profileProvider).valueOrNull?.useImperial ?? false;
 
-  /// display distance → pace segments: 100m units for swim (always metric),
-  /// else one per displayed km / mile.
-  double _segmentsForDistance(double d) {
-    if (_isSwim) {
-      final km = _imperial ? d / 0.621371 : d;
-      return km * 10; // 100m units
-    }
-    return d;
-  }
+  /// Swim distance entry unit: 0 = raw metres, 25 / 50 = lengths of a 25m / 50m
+  /// pool (each length counts as that many metres). Runs ignore this.
+  int _swimLapMetres = 0;
+  int get _swimMetresPerUnit => _swimLapMetres == 0 ? 1 : _swimLapMetres;
 
-  /// Inverse of [_segmentsForDistance] — pace segments → display distance.
-  double _distanceForSegments(double seg) {
-    if (_isSwim) {
-      final km = seg / 10;
-      return _imperial ? km * 0.621371 : km;
-    }
-    return seg;
+  /// The distance-field value (display unit) → pace segments. Swim pace is per
+  /// 100m: metres = value × metres-per-unit, segments = metres / 100. Runs use
+  /// one segment per displayed km / mile.
+  double _segmentsForDistance(double d) {
+    if (_isSwim) return d * _swimMetresPerUnit / 100;
+    return d;
   }
 
   @override
@@ -107,11 +101,16 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
       _minutesCtrl.text = e!.plannedMinutes.toString();
     }
     if (e?.plannedDistanceKm != null) {
-      // Prefill in the user's display unit; converted back to km on save.
-      final shown =
-          _imperial ? e!.plannedDistanceKm! * 0.621371 : e!.plannedDistanceKm!;
-      _distanceCtrl.text =
-          shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
+      // Prefill in the field's display unit; converted back to km on save. Swim
+      // defaults to whole metres (e.g. 0.4 km → "400"); runs to km / miles.
+      if (e!.type == SessionType.swim) {
+        _distanceCtrl.text = (e.plannedDistanceKm! * 1000).round().toString();
+      } else {
+        final shown =
+            _imperial ? e.plannedDistanceKm! * 0.621371 : e.plannedDistanceKm!;
+        _distanceCtrl.text =
+            shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
+      }
     }
     _notesCtrl.text = e?.notes ?? '';
     if (e?.type == SessionType.other) _titleCtrl.text = e?.title ?? '';
@@ -120,11 +119,25 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
       duration: _minutesCtrl,
       pace: _paceCtrl,
       segmentsForDistance: _segmentsForDistance,
-      distanceForSegments: _distanceForSegments,
     );
     // Seed pace from a prefilled plan so editing one field updates the right one.
     if (_distanceCtrl.text.isNotEmpty && _minutesCtrl.text.isNotEmpty) {
       _paceLink.resyncPace();
+    }
+  }
+
+  /// Switch the swim distance unit, converting the current value so the actual
+  /// distance is preserved (e.g. 400 m → 16 lengths of a 25m pool).
+  void _setSwimLapMetres(int metres) {
+    if (metres == _swimLapMetres) return;
+    H.selection();
+    final v = double.tryParse(_distanceCtrl.text.trim().replaceAll(',', '.'));
+    final oldPer = _swimMetresPerUnit;
+    setState(() => _swimLapMetres = metres);
+    if (v != null && v > 0) {
+      final nv = v * oldPer / _swimMetresPerUnit;
+      _distanceCtrl.text =
+          nv == nv.roundToDouble() ? nv.round().toString() : nv.toStringAsFixed(1);
     }
   }
 
@@ -164,14 +177,21 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
         SessionType.other => l10n.plannerSessionOther,
       };
 
-  /// Parse the distance field (display unit) back to canonical km, or null.
+  /// Parse the distance field back to canonical km, or null. Swim is entered in
+  /// metres (or pool lengths → metres); runs in the user's km / miles.
   double? _distanceKm() {
     final raw = _distanceCtrl.text.trim().replaceAll(',', '.');
     if (raw.isEmpty) return null;
     final value = double.tryParse(raw);
     if (value == null) return null;
+    if (_isSwim) return value * _swimMetresPerUnit / 1000;
     return _imperial ? value / 0.621371 : value;
   }
+
+  /// Unit shown on the swim distance field: "m" for metres, the localized
+  /// "laps" word for a pool mode.
+  String _swimDistanceUnit(AppLocalizations l10n) =>
+      _swimLapMetres == 0 ? 'm' : l10n.plannerSwimLapsUnit;
 
   int? _minutes() {
     return parseDurationMinutes(_minutesCtrl.text);
@@ -349,17 +369,30 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
 
           // ── Distance (only distance-type sessions) + minutes + pace ──────
           if (_needsDistance) ...[
+            // Swim: choose how distance is entered — raw metres or pool lengths.
+            if (_isSwim) ...[
+              _SwimUnitSelector(
+                selected: _swimLapMetres,
+                metresLabel: l10n.plannerSwimUnitMetres,
+                pool25Label: l10n.plannerSwimUnitPool25,
+                pool50Label: l10n.plannerSwimUnitPool50,
+                onTap: _setSwimLapMetres,
+              ),
+              const SizedBox(height: 12),
+            ],
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: _LabeledField(
-                    label: l10n.homeActivityDistanceLabel(distanceUnit),
+                    label: l10n.homeActivityDistanceLabel(
+                        _isSwim ? _swimDistanceUnit(l10n) : distanceUnit),
                     controller: _distanceCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
-                    hintText: '0.0',
-                    suffix: distanceUnit,
+                    keyboardType: _isSwim
+                        ? TextInputType.number
+                        : const TextInputType.numberWithOptions(decimal: true),
+                    hintText: _isSwim ? '0' : '0.0',
+                    suffix: _isSwim ? _swimDistanceUnit(l10n) : distanceUnit,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -502,24 +535,34 @@ class _PlannerSessionCompleteSheetState
   bool get _imperial =>
       ref.read(profileProvider).valueOrNull?.useImperial ?? false;
 
-  double _segmentsForDistance(double d) {
-    if (_isSwim) {
-      final km = _imperial ? d / 0.621371 : d;
-      return km * 10;
-    }
-    return d;
-  }
+  /// Swim distance entry unit (see the add-session sheet): 0 = metres, 25 / 50 =
+  /// pool lengths.
+  int _swimLapMetres = 0;
+  int get _swimMetresPerUnit => _swimLapMetres == 0 ? 1 : _swimLapMetres;
 
-  double _distanceForSegments(double seg) {
-    if (_isSwim) {
-      final km = seg / 10;
-      return _imperial ? km * 0.621371 : km;
-    }
-    return seg;
+  double _segmentsForDistance(double d) {
+    if (_isSwim) return d * _swimMetresPerUnit / 100;
+    return d;
   }
 
   String _paceUnit(AppLocalizations l10n, String distanceUnit) =>
       _isSwim ? '${l10n.homeUnitMin}/100m' : '${l10n.homeUnitMin}/$distanceUnit';
+
+  String _swimDistanceUnit(AppLocalizations l10n) =>
+      _swimLapMetres == 0 ? 'm' : l10n.plannerSwimLapsUnit;
+
+  void _setSwimLapMetres(int metres) {
+    if (metres == _swimLapMetres) return;
+    H.selection();
+    final v = double.tryParse(_distanceCtrl.text.trim().replaceAll(',', '.'));
+    final oldPer = _swimMetresPerUnit;
+    setState(() => _swimLapMetres = metres);
+    if (v != null && v > 0) {
+      final nv = v * oldPer / _swimMetresPerUnit;
+      _distanceCtrl.text =
+          nv == nv.roundToDouble() ? nv.round().toString() : nv.toStringAsFixed(1);
+    }
+  }
 
   @override
   void initState() {
@@ -528,10 +571,15 @@ class _PlannerSessionCompleteSheetState
     final s = widget.session;
     if (s.plannedMinutes != null) _minutesCtrl.text = '${s.plannedMinutes}';
     if (s.plannedDistanceKm != null) {
-      final shown =
-          _imperial ? s.plannedDistanceKm! * 0.621371 : s.plannedDistanceKm!;
-      _distanceCtrl.text =
-          shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
+      // Swim seeds whole metres; runs the km / mile display value.
+      if (_isSwim) {
+        _distanceCtrl.text = (s.plannedDistanceKm! * 1000).round().toString();
+      } else {
+        final shown =
+            _imperial ? s.plannedDistanceKm! * 0.621371 : s.plannedDistanceKm!;
+        _distanceCtrl.text =
+            shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
+      }
     }
     _notesCtrl.text = s.notes ?? '';
     _paceLink = _PaceLink(
@@ -539,7 +587,6 @@ class _PlannerSessionCompleteSheetState
       duration: _minutesCtrl,
       pace: _paceCtrl,
       segmentsForDistance: _segmentsForDistance,
-      distanceForSegments: _distanceForSegments,
     );
     if (_needsDistance &&
         _distanceCtrl.text.isNotEmpty &&
@@ -563,6 +610,7 @@ class _PlannerSessionCompleteSheetState
     if (raw.isEmpty) return null;
     final v = double.tryParse(raw);
     if (v == null) return null;
+    if (_isSwim) return v * _swimMetresPerUnit / 1000;
     return _imperial ? v / 0.621371 : v;
   }
 
@@ -665,17 +713,29 @@ class _PlannerSessionCompleteSheetState
           _PlannerSectionLabel(l10n.plannerLogActualHeader),
           const SizedBox(height: 10),
           if (_needsDistance) ...[
+            if (_isSwim) ...[
+              _SwimUnitSelector(
+                selected: _swimLapMetres,
+                metresLabel: l10n.plannerSwimUnitMetres,
+                pool25Label: l10n.plannerSwimUnitPool25,
+                pool50Label: l10n.plannerSwimUnitPool50,
+                onTap: _setSwimLapMetres,
+              ),
+              const SizedBox(height: 12),
+            ],
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: _LabeledField(
-                    label: l10n.homeActivityDistanceLabel(distanceUnit),
+                    label: l10n.homeActivityDistanceLabel(
+                        _isSwim ? _swimDistanceUnit(l10n) : distanceUnit),
                     controller: _distanceCtrl,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    hintText: '0.0',
-                    suffix: distanceUnit,
+                    keyboardType: _isSwim
+                        ? TextInputType.number
+                        : const TextInputType.numberWithOptions(decimal: true),
+                    hintText: _isSwim ? '0' : '0.0',
+                    suffix: _isSwim ? _swimDistanceUnit(l10n) : distanceUnit,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -885,6 +945,64 @@ class _SessionTypeWrap extends StatelessWidget {
           );
         }).toList(),
       );
+}
+
+/// Segmented selector for how a swim distance is entered: raw metres, or
+/// lengths of a 25m / 50m pool. Mirrors the choice-chip idiom used elsewhere.
+class _SwimUnitSelector extends StatelessWidget {
+  const _SwimUnitSelector({
+    required this.selected,
+    required this.metresLabel,
+    required this.pool25Label,
+    required this.pool50Label,
+    required this.onTap,
+  });
+
+  final int selected; // 0 = metres, 25, 50
+  final String metresLabel;
+  final String pool25Label;
+  final String pool50Label;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final options = <(int, String)>[
+      (0, metresLabel),
+      (25, pool25Label),
+      (50, pool50Label),
+    ];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: options.map((o) {
+        final sel = o.$1 == selected;
+        return GestureDetector(
+          onTap: () => onTap(o.$1),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: sel
+                  ? AppColors.forest600.withOpacity(.12)
+                  : AppColors.stone50,
+              borderRadius: AppRadius.pill,
+              border: Border.all(
+                color: sel
+                    ? AppColors.forest600.withOpacity(.35)
+                    : AppColors.stone100,
+              ),
+            ),
+            child: Text(
+              o.$2,
+              style: AppTextStyles.labelLarge.copyWith(
+                color: sel ? AppColors.forest600 : AppColors.stone600,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
 }
 
 /// A labelled stone-filled text field — same chrome as the home activity sheet
@@ -1144,7 +1262,6 @@ class _PaceLink {
     required this.duration,
     required this.pace,
     required this.segmentsForDistance,
-    required this.distanceForSegments,
   }) {
     distance.addListener(_onDistance);
     duration.addListener(_onDuration);
@@ -1155,11 +1272,9 @@ class _PaceLink {
   final TextEditingController duration;
   final TextEditingController pace;
 
-  /// display distance → number of pace segments (km/mi, or 100m units for swim).
+  /// distance-field value → number of pace segments (km/mi, or 100m units for
+  /// swim). Distance is never auto-filled, so no inverse is needed.
   final double Function(double) segmentsForDistance;
-
-  /// number of pace segments → display distance (inverse of the above).
-  final double Function(double) distanceForSegments;
 
   /// Which of duration / pace the user last typed — the one to hold when the
   /// distance changes. `true` = pace is the driver, `false` = duration.

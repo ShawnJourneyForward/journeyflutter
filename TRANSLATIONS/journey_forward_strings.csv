@@ -1,4 +1,8 @@
 ﻿Section,Key,English,Placeholders,Context,Afrikaans (af),isiZulu (zu),German (de),Spanish (es),Portuguese (pt)
+Planner,plannerSwimUnitMetres,Metres,,Swim distance entry option: enter raw metres.,Metres,Metres,Metres,Metres,Metres
+Planner,plannerSwimUnitPool25,25 m pool,,Swim distance entry option: count lengths of a 25-metre pool.,25 m pool,25 m pool,25 m pool,25 m pool,25 m pool
+Planner,plannerSwimUnitPool50,50 m pool,,Swim distance entry option: count lengths of a 50-metre pool.,50 m pool,50 m pool,50 m pool,50 m pool,50 m pool
+Planner,plannerSwimLapsUnit,laps,,Unit word shown on the swim distance field when entering pool lengths.,laps,laps,laps,laps,laps
 Planner,plannerPaceLabel,Pace ({unit}),{unit},"Field label above the pace input; {unit} is e.g. min/km, min/mi, or min/100m.",Pace ({unit}),Pace ({unit}),Pace ({unit}),Pace ({unit}),Pace ({unit})
 Planner,plannerSessionNotesHintSwim,"Session plan (optional) - e.g. 8 x 100m, 20s rest",,Notes hint when planning a SWIM session (forward-looking).,"Session plan (optional) - e.g. 8 x 100m, 20s rest","Session plan (optional) - e.g. 8 x 100m, 20s rest","Session plan (optional) - e.g. 8 x 100m, 20s rest","Session plan (optional) - e.g. 8 x 100m, 20s rest","Session plan (optional) - e.g. 8 x 100m, 20s rest"
 Planner,plannerSessionNotesHintCross,"Session plan (optional) - e.g. 30 min cycling, zone 2",,Notes hint when planning a CROSS-TRAIN session.,"Session plan (optional) - e.g. 30 min cycling, zone 2","Session plan (optional) - e.g. 30 min cycling, zone 2","Session plan (optional) - e.g. 30 min cycling, zone 2","Session plan (optional) - e.g. 30 min cycling, zone 2","Session plan (optional) - e.g. 30 min cycling, zone 2"

@@ -1,4 +1,12 @@
 {
+  "plannerSwimUnitMetres": "Metres",
+  "@plannerSwimUnitMetres": {"description": "Swim distance entry option: enter raw metres."},
+  "plannerSwimUnitPool25": "25 m pool",
+  "@plannerSwimUnitPool25": {"description": "Swim distance entry option: count lengths of a 25-metre pool."},
+  "plannerSwimUnitPool50": "50 m pool",
+  "@plannerSwimUnitPool50": {"description": "Swim distance entry option: count lengths of a 50-metre pool."},
+  "plannerSwimLapsUnit": "laps",
+  "@plannerSwimLapsUnit": {"description": "Unit word shown on the swim distance field when entering pool lengths."},
   "plannerPaceLabel": "Pace ({unit})",
   "@plannerPaceLabel": {"description": "Field label above the pace input; {unit} is e.g. min/km, min/mi, or min/100m.", "placeholders": {"unit": {"type": "String"}}},
   "plannerSessionNotesHintSwim": "Session plan (optional) - e.g. 8 x 100m, 20s rest",

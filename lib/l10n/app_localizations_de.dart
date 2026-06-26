@@ -9,6 +9,18 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get plannerSwimUnitMetres => 'Metres';
+
+  @override
+  String get plannerSwimUnitPool25 => '25 m pool';
+
+  @override
+  String get plannerSwimUnitPool50 => '50 m pool';
+
+  @override
+  String get plannerSwimLapsUnit => 'laps';
+
+  @override
   String plannerPaceLabel(String unit) {
     return 'Pace ($unit)';
   }

@@ -106,6 +106,30 @@ abstract class AppLocalizations {
     Locale('zu')
   ];
 
+  /// Swim distance entry option: enter raw metres.
+  ///
+  /// In en, this message translates to:
+  /// **'Metres'**
+  String get plannerSwimUnitMetres;
+
+  /// Swim distance entry option: count lengths of a 25-metre pool.
+  ///
+  /// In en, this message translates to:
+  /// **'25 m pool'**
+  String get plannerSwimUnitPool25;
+
+  /// Swim distance entry option: count lengths of a 50-metre pool.
+  ///
+  /// In en, this message translates to:
+  /// **'50 m pool'**
+  String get plannerSwimUnitPool50;
+
+  /// Unit word shown on the swim distance field when entering pool lengths.
+  ///
+  /// In en, this message translates to:
+  /// **'laps'**
+  String get plannerSwimLapsUnit;
+
   /// Field label above the pace input; {unit} is e.g. min/km, min/mi, or min/100m.
   ///
   /// In en, this message translates to:
