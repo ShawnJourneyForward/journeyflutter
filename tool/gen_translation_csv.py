@@ -11,7 +11,11 @@ Columns:
   English      - the source text to translate
   Placeholders - {tokens} that MUST be kept verbatim in the translation
   Context      - note for the translator (from the @key "description")
-  Afrikaans / Spanish / Portuguese / isiZulu - empty columns to fill in
+  Afrikaans / isiZulu / German / Spanish / Portuguese - each PRE-FILLED with
+                 the verbatim English text. The translator edits these cells
+                 in place (overwrite English with the translation). They are
+                 safe to change freely; the locked reference columns to the
+                 left (Key / English / Placeholders / Context) are untouched.
 
 Add more language columns by editing TARGET_LANGUAGES below (or just add a
 column in the spreadsheet).
@@ -30,9 +34,10 @@ OUT = os.path.join(OUT_DIR, 'journey_forward_strings.csv')
 # (column header, ISO code) — purely for the translator's convenience.
 TARGET_LANGUAGES = [
     ('Afrikaans (af)', 'af'),
+    ('isiZulu (zu)', 'zu'),
+    ('German (de)', 'de'),
     ('Spanish (es)', 'es'),
     ('Portuguese (pt)', 'pt'),
-    ('isiZulu (zu)', 'zu'),
 ]
 
 
@@ -66,9 +71,14 @@ def main():
                 continue
             meta = d.get('@' + k, {})
             desc = meta.get('description', '') if isinstance(meta, dict) else ''
+            # Each language column is PRE-FILLED with the verbatim English text
+            # so the translator overwrites it in place. They can change these
+            # cells freely without touching the locked reference columns
+            # (Key / English / Placeholders / Context), which the app and the
+            # import step read — editing a language cell affects nothing else.
             w.writerow([
                 section_for(k), k, v, placeholders_for(meta), desc
-            ] + ['' for _ in TARGET_LANGUAGES])
+            ] + [v for _ in TARGET_LANGUAGES])
             rows += 1
     print('wrote {} rows to {}'.format(rows, OUT))
 

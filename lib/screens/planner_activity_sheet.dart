@@ -22,6 +22,7 @@ import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/haptic_service.dart';
+import '../utils/locale_format.dart';
 
 const double _kgPerLb = 2.2046226;
 const double _ftPerM = 3.28084;
@@ -195,7 +196,7 @@ class _PlannerActivitySheetState extends ConsumerState<_PlannerActivitySheet> {
     setState(() => _saving = true);
     H.medium();
     try {
-      final minutes = int.tryParse(_minutesCtrl.text.trim()) ?? 0;
+      final minutes = parseDurationMinutes(_minutesCtrl.text) ?? 0;
       final hrRaw = _hrCtrl.text.trim();
       final notesRaw = _notesCtrl.text.trim();
       final activity = PlannerActivity(

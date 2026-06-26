@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_af.dart';
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_pt.dart';
@@ -98,6 +99,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('af'),
+    Locale('de'),
     Locale('en'),
     Locale('es'),
     Locale('pt'),
@@ -6350,7 +6352,7 @@ abstract class AppLocalizations {
   /// **'Short exercises to calm and refocus'**
   String get puzzleHomeSubtitle;
 
-  /// Intro text on the Slow Count activity explaining the technique. Keep the line break.
+  /// Intro text on the Slow Count activity explaining the technique.
   ///
   /// In en, this message translates to:
   /// **'Counting backwards by 3 interrupts anxiety\nand brings you into the present.'**
@@ -7346,7 +7348,7 @@ abstract class AppLocalizations {
   /// **'Before acting on a craving, check in:'**
   String get haltCheckInPrompt;
 
-  /// Hero heading on the Play the Tape tab. Keep the line break.
+  /// Hero heading on the Play the Tape tab.
   ///
   /// In en, this message translates to:
   /// **'Pause for a moment.\nLook at what happens next.'**
@@ -10154,16 +10156,16 @@ abstract class AppLocalizations {
   /// **'DAY ONE  ·  A WELCOME'**
   String get onbWelcomeEyebrow;
 
-  /// Large serif headline on the welcome onboarding screen. Keep the line break.
+  /// Large serif headline on the welcome onboarding screen.
   ///
   /// In en, this message translates to:
   /// **'A new chapter,\nquietly begun.'**
   String get onbWelcomeHeadline;
 
-  /// Subtitle of the '100% on-device' feature pill on the welcome screen. Keep the line break.
+  /// Subtitle of the '100% on-device' feature pill on the welcome screen.
   ///
   /// In en, this message translates to:
-  /// **'Works without\nthe internet'**
+  /// **'Works without the internet'**
   String get onbWelcomePillOnDeviceSub;
 
   /// Uppercase title of the no-account feature pill on the welcome screen.
@@ -10172,10 +10174,10 @@ abstract class AppLocalizations {
   /// **'NO ACCOUNT'**
   String get onbWelcomePillNoAccountTitle;
 
-  /// Subtitle of the no-account feature pill on the welcome screen. Keep the line break.
+  /// Subtitle of the no-account feature pill on the welcome screen.
   ///
   /// In en, this message translates to:
-  /// **'No login or\nprofile upload'**
+  /// **'No login or profile upload'**
   String get onbWelcomePillNoAccountSub;
 
   /// Uppercase title of the zero-tracking feature pill on the welcome screen.
@@ -10184,10 +10186,10 @@ abstract class AppLocalizations {
   /// **'ZERO TRACKING'**
   String get onbWelcomePillZeroTrackingTitle;
 
-  /// Subtitle of the zero-tracking feature pill on the welcome screen. Keep the line break.
+  /// Subtitle of the zero-tracking feature pill on the welcome screen.
   ///
   /// In en, this message translates to:
-  /// **'Your data stays\non device'**
+  /// **'Your data stays on device'**
   String get onbWelcomePillZeroTrackingSub;
 
   /// Primary call-to-action button on the welcome onboarding screen.
@@ -10232,13 +10234,13 @@ abstract class AppLocalizations {
   /// **'If you lose biometric access (factory reset, device change, etc.), your data cannot be recovered without a backup. Set one up in Profile → Backup.'**
   String get onbSecurityBiometricRecoveryWarning;
 
-  /// Finish-step headline when the user entered a name. Keep the line break.
+  /// Finish-step headline when the user entered a name.
   ///
   /// In en, this message translates to:
   /// **'You\'re ready,\n{name}.'**
   String onbFinishHeadlineWithName(String name);
 
-  /// Finish-step headline when no name was entered. Keep the line break.
+  /// Finish-step headline when no name was entered.
   ///
   /// In en, this message translates to:
   /// **'You\'re ready\nfor this.'**
@@ -13946,6 +13948,12 @@ abstract class AppLocalizations {
   /// **'100-day challenge'**
   String get challengeTitle;
 
+  /// Short label for the 100-day challenge tile in the toolkit grid; kept brief so it fits the small tile across languages.
+  ///
+  /// In en, this message translates to:
+  /// **'The 100'**
+  String get challengeTileLabel;
+
   /// No description provided for @challengeSubtitle.
   ///
   /// In en, this message translates to:
@@ -14582,6 +14590,36 @@ abstract class AppLocalizations {
   /// **'Add session'**
   String get plannerAddSession;
 
+  /// No description provided for @plannerResetPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset plan'**
+  String get plannerResetPlan;
+
+  /// No description provided for @plannerResetPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your plan?'**
+  String get plannerResetPlanTitle;
+
+  /// No description provided for @plannerResetPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This clears every planned session. Your logged workouts and history stay exactly as they are.'**
+  String get plannerResetPlanBody;
+
+  /// No description provided for @plannerResetPlanConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset plan'**
+  String get plannerResetPlanConfirm;
+
+  /// No description provided for @plannerResetPlanCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my plan'**
+  String get plannerResetPlanCancel;
+
   /// Button to edit a training session.
   ///
   /// In en, this message translates to:
@@ -15103,8 +15141,14 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['af', 'en', 'es', 'pt', 'zu'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+        'af',
+        'de',
+        'en',
+        'es',
+        'pt',
+        'zu'
+      ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -15115,6 +15159,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'af':
       return AppLocalizationsAf();
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
     case 'es':

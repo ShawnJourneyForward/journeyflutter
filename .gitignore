@@ -78,3 +78,6 @@ website/
 # i18n tooling scratch (regenerated on demand; not source of truth)
 tool/en_kv.txt
 tool/emergency_missing.txt
+
+# icon render scratch
+/build_icon_preview/

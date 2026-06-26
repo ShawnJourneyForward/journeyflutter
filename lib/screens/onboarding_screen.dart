@@ -497,8 +497,8 @@ class _WelcomeStep extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, c) {
         final tight = c.maxHeight < 720;
-        final plantSize = (c.maxHeight * (tight ? 0.34 : 0.38))
-            .clamp(220.0, 320.0);
+        final plantSize =
+            (c.maxHeight * (tight ? 0.34 : 0.38)).clamp(220.0, 320.0);
 
         // Wrap in a scroll view that only kicks in if the content does not
         // fit (very small viewports / accessibility text scaling). On a
@@ -565,33 +565,35 @@ class _WelcomeStep extends StatelessWidget {
                     const Spacer(flex: 2),
 
                     // ── Feature pills ──────────────────────────────────────
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _FeaturePill(
-                            icon: Icons.wifi_off_rounded,
-                            title: l10n.onbPrivacy100OnDevice.toUpperCase(),
-                            sub: l10n.onbWelcomePillOnDeviceSub,
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _FeaturePill(
+                              icon: Icons.wifi_off_rounded,
+                              title: l10n.onbPrivacy100OnDevice.toUpperCase(),
+                              sub: l10n.onbWelcomePillOnDeviceSub,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _FeaturePill(
-                            icon: Icons.lock_outline_rounded,
-                            title: l10n.onbWelcomePillNoAccountTitle,
-                            sub: l10n.onbWelcomePillNoAccountSub,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _FeaturePill(
+                              icon: Icons.lock_outline_rounded,
+                              title: l10n.onbWelcomePillNoAccountTitle,
+                              sub: l10n.onbWelcomePillNoAccountSub,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _FeaturePill(
-                            icon: Icons.shield_outlined,
-                            title: l10n.onbWelcomePillZeroTrackingTitle,
-                            sub: l10n.onbWelcomePillZeroTrackingSub,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _FeaturePill(
+                              icon: Icons.shield_outlined,
+                              title: l10n.onbWelcomePillZeroTrackingTitle,
+                              sub: l10n.onbWelcomePillZeroTrackingSub,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: tight ? 16 : 22),
@@ -669,8 +671,7 @@ class _LanguageStep extends StatelessWidget {
           ),
           ...kSupportedLanguages.map((lang) => _LanguageOption(
                 label: lang.nativeName,
-                selected:
-                    selected?.languageCode == lang.locale.languageCode,
+                selected: selected?.languageCode == lang.locale.languageCode,
                 onTap: () => onSelect(lang.locale),
               )),
         ],
@@ -722,8 +723,7 @@ class _LanguageOption extends StatelessWidget {
                           selected ? AppColors.forest700 : AppColors.stone800)),
             ),
             if (selected)
-              Icon(Icons.check_rounded,
-                  size: 18, color: AppColors.forest600),
+              Icon(Icons.check_rounded, size: 18, color: AppColors.forest600),
           ],
         ),
       ),
@@ -778,10 +778,10 @@ class _FeaturePill extends StatelessWidget {
             style: AppTextStyles.labelSmall.copyWith(
               color: AppColors.forest700,
               fontSize: 10,
-              letterSpacing: 0.9,
-              height: 1.2,
+              letterSpacing: 0.4,
+              height: 1.25,
             ),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 3),
@@ -793,6 +793,8 @@ class _FeaturePill extends StatelessWidget {
               height: 1.25,
               letterSpacing: 0,
             ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -949,7 +951,10 @@ class _DateStepState extends State<_DateStep> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(isFuture ? l10n.onbQuitDateLabel : l10n.onbSoberSince,
+                        Text(
+                            isFuture
+                                ? l10n.onbQuitDateLabel
+                                : l10n.onbSoberSince,
                             style: AppTextStyles.caption),
                         const SizedBox(height: 2),
                         Text(
@@ -997,7 +1002,8 @@ class _DateStepState extends State<_DateStep> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.onbTimeOfDayLabel, style: AppTextStyles.caption),
+                        Text(l10n.onbTimeOfDayLabel,
+                            style: AppTextStyles.caption),
                         const SizedBox(height: 2),
                         Text(
                           timeLabel,
@@ -1035,7 +1041,10 @@ class _DateStepState extends State<_DateStep> {
                       .copyWith(color: AppColors.forest700),
                 ),
                 const SizedBox(width: 8),
-                Text(isFuture ? l10n.onbDaysUntilDayOneLabel : l10n.onbDaysOfCourageLabel,
+                Text(
+                    isFuture
+                        ? l10n.onbDaysUntilDayOneLabel
+                        : l10n.onbDaysOfCourageLabel,
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.forest600)),
               ],
@@ -1733,8 +1742,7 @@ class _TimePicker extends StatelessWidget {
                 style: AppTextStyles.titleSmall
                     .copyWith(color: AppColors.forest600)),
             const SizedBox(width: 4),
-            Icon(Icons.edit_outlined,
-                size: 14, color: AppColors.stone400),
+            Icon(Icons.edit_outlined, size: 14, color: AppColors.stone400),
           ],
         ),
       ),
@@ -1765,7 +1773,8 @@ class _FinishStepState extends State<_FinishStep>
   late final AnimationController _ctrl = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 700));
   late final Animation<double> _scale = CurvedAnimation(
-      parent: _ctrl, curve: const Interval(0.0, 0.85, curve: Curves.easeOutBack));
+      parent: _ctrl,
+      curve: const Interval(0.0, 0.85, curve: Curves.easeOutBack));
   late final Animation<double> _fade =
       CurvedAnimation(parent: _ctrl, curve: const Interval(0.2, 1.0));
 
@@ -1797,8 +1806,8 @@ class _FinishStepState extends State<_FinishStep>
     return LayoutBuilder(
       builder: (context, c) {
         final tight = c.maxHeight < 720;
-        final plantSize = (c.maxHeight * (tight ? 0.34 : 0.38))
-            .clamp(220.0, 320.0);
+        final plantSize =
+            (c.maxHeight * (tight ? 0.34 : 0.38)).clamp(220.0, 320.0);
 
         // Same overflow-safe wrapping as _WelcomeStep — normal phones get
         // the no-scroll centred layout via the ConstrainedBox; very small
@@ -1821,8 +1830,8 @@ class _FinishStepState extends State<_FinishStep>
                     Center(
                       child: ScaleTransition(
                         scale: _scale,
-                        child: _OnboardingPlantCard(
-                            days: days, size: plantSize),
+                        child:
+                            _OnboardingPlantCard(days: days, size: plantSize),
                       ),
                     ),
 
@@ -2041,8 +2050,8 @@ class _OnboardingPlantCard extends StatelessWidget {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.elliptical(
-                      size * 0.32, size * 0.04)),
+                  borderRadius: BorderRadius.all(
+                      Radius.elliptical(size * 0.32, size * 0.04)),
                   gradient: const RadialGradient(
                     center: Alignment.center,
                     radius: 0.7,
@@ -2091,19 +2100,23 @@ class _OnboardingPlantCard extends StatelessWidget {
 
           // ── Corner brackets (minimal botanical reference) ─────────────
           const Positioned(
-            top: 14, left: 14,
+            top: 14,
+            left: 14,
             child: _CornerBracket(corner: _BracketCorner.tl),
           ),
           const Positioned(
-            top: 14, right: 14,
+            top: 14,
+            right: 14,
             child: _CornerBracket(corner: _BracketCorner.tr),
           ),
           const Positioned(
-            bottom: 14, left: 14,
+            bottom: 14,
+            left: 14,
             child: _CornerBracket(corner: _BracketCorner.bl),
           ),
           const Positioned(
-            bottom: 14, right: 14,
+            bottom: 14,
+            right: 14,
             child: _CornerBracket(corner: _BracketCorner.br),
           ),
         ],

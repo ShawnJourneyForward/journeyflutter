@@ -79,6 +79,31 @@ String formatWeight(double kg,
   return '${NumberFormat('#,##0.0', Intl.defaultLocale).format(value)} $unit';
 }
 
+/// Parse a user-entered workout duration into whole minutes, tolerant of the
+/// formats people actually type into a "minutes" field (a plain number keyboard
+/// exposes a decimal point, and runners read times off a watch as mm:ss):
+///   "26"     → 26
+///   "26.22"  → 26   (decimal minutes, rounded; accepts a comma decimal too)
+///   "26:22"  → 26   (mm:ss, rounded to the nearest minute)
+/// Returns null for empty / unparseable input so callers can treat it as
+/// "no time entered". This replaces a bare `int.tryParse`, which returned null
+/// for any decimal or mm:ss entry — surfacing downstream as a `--:--` pace.
+int? parseDurationMinutes(String raw) {
+  final s = raw.trim();
+  if (s.isEmpty) return null;
+  if (s.contains(':')) {
+    final parts = s.split(':');
+    if (parts.length != 2) return null;
+    final m = int.tryParse(parts[0].trim());
+    final sec = int.tryParse(parts[1].trim());
+    if (m == null || sec == null || m < 0 || sec < 0 || sec >= 60) return null;
+    return (m * 60 + sec + 30) ~/ 60; // round to the nearest minute
+  }
+  final d = double.tryParse(s.replaceAll(',', '.'));
+  if (d == null || d < 0) return null;
+  return d.round();
+}
+
 /// Format a PACE for display as `m:ss` per unit distance. [km] is the canonical
 /// distance covered and [minutes] the elapsed minutes; pace is minutes per mile
 /// when [imperial], else per km. The unit WORD comes from [l10n]. Differs from

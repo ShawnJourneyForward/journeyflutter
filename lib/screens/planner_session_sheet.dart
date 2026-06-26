@@ -122,9 +122,7 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
   }
 
   int? _minutes() {
-    final raw = _minutesCtrl.text.trim();
-    if (raw.isEmpty) return null;
-    return int.tryParse(raw);
+    return parseDurationMinutes(_minutesCtrl.text);
   }
 
   String? _notes() {
@@ -447,9 +445,7 @@ class _PlannerSessionCompleteSheetState
   }
 
   int? _minutes() {
-    final raw = _minutesCtrl.text.trim();
-    if (raw.isEmpty) return null;
-    return int.tryParse(raw);
+    return parseDurationMinutes(_minutesCtrl.text);
   }
 
   String? _notes() {

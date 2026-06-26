@@ -13,6 +13,18 @@ import 'package:flutter/widgets.dart';
 /// CBT, slip support) should `enable()` in their `initState` and `disable()`
 /// in their `dispose`. iOS has no equivalent screenshot-prevention API
 /// (Apple doesn't expose one), so this is a no-op on iOS.
+/// Master switch for screenshot/recording protection.
+///
+/// When `true`, [SecureWindow.enable] is a no-op and FLAG_SECURE is NEVER set,
+/// so screenshots and screen recording work on EVERY screen (journal, lock,
+/// slip log, history, …). This is deliberate: the app needs shareable
+/// screenshots for marketing and for users who want to share their progress.
+///
+/// All the per-screen / per-tab / background `enable()`/`disable()` call sites
+/// are left intact — flip this single flag back to `false` to fully restore
+/// the previous FLAG_SECURE behaviour everywhere, no other code changes needed.
+const bool kAllowScreenshots = true;
+
 class SecureWindow {
   SecureWindow._();
 
@@ -27,6 +39,7 @@ class SecureWindow {
   static int _refs = 0;
 
   static Future<void> enable() async {
+    if (kAllowScreenshots) return; // screenshots intentionally allowed app-wide
     _refs++;
     if (_refs != 1) return; // already secured
     await _invoke('enable');

@@ -311,7 +311,7 @@ class _HomeTab extends ConsumerWidget {
       ),
       (
         Icons.calendar_view_month_rounded,
-        l10n.challengeTitle,
+        l10n.challengeTileLabel,
         AppColors.honey500,
         null,
         '/challenge'
@@ -421,7 +421,9 @@ class _HomeTab extends ConsumerWidget {
                     const SizedBox(height: 6),
                     Text(label,
                         style: AppTextStyles.caption,
-                        textAlign: TextAlign.center),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),

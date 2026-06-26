@@ -5727,19 +5727,19 @@ class AppLocalizationsAf extends AppLocalizations {
   String get onbWelcomeHeadline => 'A new chapter,\nquietly begun.';
 
   @override
-  String get onbWelcomePillOnDeviceSub => 'Works without\nthe internet';
+  String get onbWelcomePillOnDeviceSub => 'Works without the internet';
 
   @override
   String get onbWelcomePillNoAccountTitle => 'NO ACCOUNT';
 
   @override
-  String get onbWelcomePillNoAccountSub => 'No login or\nprofile upload';
+  String get onbWelcomePillNoAccountSub => 'No login or profile upload';
 
   @override
   String get onbWelcomePillZeroTrackingTitle => 'ZERO TRACKING';
 
   @override
-  String get onbWelcomePillZeroTrackingSub => 'Your data stays\non device';
+  String get onbWelcomePillZeroTrackingSub => 'Your data stays on device';
 
   @override
   String get onbWelcomeBeginButton => 'Begin';
@@ -7979,6 +7979,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get challengeTitle => '100-day challenge';
 
   @override
+  String get challengeTileLabel => 'The 100';
+
+  @override
   String get challengeSubtitle => 'One hundred days, marked off one at a time.';
 
   @override
@@ -8327,6 +8330,22 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get plannerAddSession => 'Add session';
+
+  @override
+  String get plannerResetPlan => 'Reset plan';
+
+  @override
+  String get plannerResetPlanTitle => 'Reset your plan?';
+
+  @override
+  String get plannerResetPlanBody =>
+      'This clears every planned session. Your logged workouts and history stay exactly as they are.';
+
+  @override
+  String get plannerResetPlanConfirm => 'Reset plan';
+
+  @override
+  String get plannerResetPlanCancel => 'Keep my plan';
 
   @override
   String get plannerEditSession => 'Edit session';

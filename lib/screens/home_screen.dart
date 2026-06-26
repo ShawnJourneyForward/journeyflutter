@@ -665,7 +665,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           RepaintBoundary(
-            child: _TodaysReminderCard(quote: _cachedQuote ??= _dailyQuote(l10n)),
+            child:
+                _TodaysReminderCard(quote: _cachedQuote ??= _dailyQuote(l10n)),
           ),
           RepaintBoundary(
             child: _RecoveryBanner(
@@ -692,48 +693,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 return false;
               },
               child: CustomScrollView(
-              physics: const ClampingScrollPhysics(),
-              // Generous cache so the 470px hero + the cards just past it stay
-              // warm on short flicks/reversals — avoids re-rasterizing the
-              // hero and ~12 card shadows every time they re-enter view.
-              cacheExtent: 1400,
-              slivers: [
-                // Header pins in its own sliver so the avatar tap target is
-                // always cheap to hit-test and the header never participates
-                // in card list re-layout.
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
-                    child: _HomeHeader(
-                      username: profile.username,
-                      isFirstLaunch: _isFirstLaunch,
-                      onAvatarTap: () {
-                        H.light();
-                        context.go('/settings');
-                      },
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, i) => Padding(
-                        padding: EdgeInsets.only(
-                            bottom: i == cards.length - 1 ? 0 : 14),
-                        child: cards[i],
+                physics: const ClampingScrollPhysics(),
+                // Generous cache so the 470px hero + the cards just past it stay
+                // warm on short flicks/reversals — avoids re-rasterizing the
+                // hero and ~12 card shadows every time they re-enter view.
+                cacheExtent: 1400,
+                slivers: [
+                  // Header pins in its own sliver so the avatar tap target is
+                  // always cheap to hit-test and the header never participates
+                  // in card list re-layout.
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
+                      child: _HomeHeader(
+                        username: profile.username,
+                        isFirstLaunch: _isFirstLaunch,
+                        onAvatarTap: () {
+                          H.light();
+                          context.go('/settings');
+                        },
                       ),
-                      childCount: cards.length,
-                      // We already wrap every card in a RepaintBoundary above.
-                      addRepaintBoundaries: false,
-                      // Default semantic indexes are fine; turning them off
-                      // saves a tiny per-item cost during scroll.
-                      addSemanticIndexes: false,
                     ),
                   ),
-                ),
-              ],
-            ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, i) => Padding(
+                          padding: EdgeInsets.only(
+                              bottom: i == cards.length - 1 ? 0 : 14),
+                          child: cards[i],
+                        ),
+                        childCount: cards.length,
+                        // We already wrap every card in a RepaintBoundary above.
+                        addRepaintBoundaries: false,
+                        // Default semantic indexes are fine; turning them off
+                        // saves a tiny per-item cost during scroll.
+                        addSemanticIndexes: false,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -782,7 +783,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _checkMilestones(UserProfile profile) async {
     const milestoneDays = [
-      1, 2, 3, 5, 7, 10, 14, 21, 30, 60, 90, 180, 365, 730, 1095,
+      1,
+      2,
+      3,
+      5,
+      7,
+      10,
+      14,
+      21,
+      30,
+      60,
+      90,
+      180,
+      365,
+      730,
+      1095,
     ];
     final now = DateTime.now();
     final days = SoberStats.compute(profile, now).days;
@@ -882,8 +897,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
         title: Row(
           children: [
-            Icon(Icons.favorite_outline,
-                color: AppColors.forest600, size: 22),
+            Icon(Icons.favorite_outline, color: AppColors.forest600, size: 22),
             const SizedBox(width: 10),
             Expanded(
               child:
@@ -1456,19 +1470,25 @@ class _LiveCounter extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     // Tick only when this counter is on the active tab (TickerMode is false for
     // an off-stage IndexedStack branch) AND the Home list isn't mid-scroll.
-    // When paused, read the last value without subscribing — no rebuild fires
-    // until we're visible and still again.
     final live = TickerMode.of(context) && !ref.watch(_homeScrollingProvider);
-    final stats =
-        live ? ref.watch(soberStatsProvider) : ref.read(soberStatsProvider);
-    // Before the quit date arrives we count DOWN to day one; after, we count
-    // UP. The label flips with us — both are rendered here so the flip lands on
-    // the same per-second frame as the digits (and pauses together on scroll).
+    // Subscribe ONLY to a coarse day/hour/minute key here. It changes at most
+    // once a minute (or when the countdown boundary flips), so the label,
+    // Semantics, and the days/hours/minutes tiles never rebuild on the
+    // per-second tick. The seconds digit is isolated in _SecondsTile below, so
+    // each tick repaints one tiny Text — not this Row. When paused we don't
+    // subscribe at all, so nothing here rebuilds mid-scroll.
+    if (live) {
+      ref.watch(soberStatsProvider.select(_coarseKey));
+    }
+    final stats = ref.read(soberStatsProvider);
+    // Before the quit date arrives we count DOWN to day one; after, we count UP.
     final countdown = stats?.isCountdown ?? false;
     final days = countdown ? (stats?.untilDays ?? 0) : (stats?.days ?? 0);
     final hours = countdown ? (stats?.untilHours ?? 0) : (stats?.hours ?? 0);
     final minutes =
         countdown ? (stats?.untilMinutes ?? 0) : (stats?.minutes ?? 0);
+    // Seconds here feed only the spoken a11y summary (refreshed each minute);
+    // the visible digit lives in _SecondsTile.
     final seconds =
         countdown ? (stats?.untilSeconds ?? 0) : (stats?.seconds ?? 0);
 
@@ -1487,39 +1507,71 @@ class _LiveCounter extends ConsumerWidget {
                 : l10n.a11ySoberDuration(days, hours, minutes, seconds),
             child: ExcludeSemantics(
               child: Row(
-            children: [
-              Expanded(
-                child: _CounterTile(
-                  value: '$days',
-                  label: l10n.homeCounterDays(days),
-                ),
+                children: [
+                  Expanded(
+                    child: _CounterTile(
+                      value: '$days',
+                      label: l10n.homeCounterDays(days),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _CounterTile(
+                      value: '$hours',
+                      label: l10n.homeCounterHours(hours),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _CounterTile(
+                      value: '$minutes',
+                      label: l10n.homeCounterMinutes(minutes),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: _SecondsTile(countdown: countdown)),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CounterTile(
-                  value: '$hours',
-                  label: l10n.homeCounterHours(hours),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CounterTile(
-                  value: '$minutes',
-                  label: l10n.homeCounterMinutes(minutes),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CounterTile(
-                  value: '$seconds',
-                  label: l10n.homeCounterSeconds(seconds),
-                ),
-              ),
-            ],
-          ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Coarse subscription key: changes on the countdown boundary and once a
+  // minute. Returning a stable String keeps Riverpod's select equality cheap
+  // and makes the per-second seconds change invisible to this widget.
+  static String _coarseKey(SoberStats? s) {
+    if (s == null) return 'x';
+    return s.isCountdown
+        ? 'c${s.untilDays}:${s.untilHours}:${s.untilMinutes}'
+        : 'u${s.days}:${s.hours}:${s.minutes}';
+  }
+}
+
+// ─── Seconds digit — the ONLY widget that rebuilds on the per-second tick ─────
+// Watches just the seconds field (via select) and sits behind its own
+// RepaintBoundary, so a tick repaints this single tile, never the counter Row.
+// Pauses with the same TickerMode + scroll gating as _LiveCounter.
+class _SecondsTile extends ConsumerWidget {
+  const _SecondsTile({required this.countdown});
+  final bool countdown;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final live = TickerMode.of(context) && !ref.watch(_homeScrollingProvider);
+    final seconds = live
+        ? ref.watch(soberStatsProvider.select(
+            (s) => countdown ? (s?.untilSeconds ?? 0) : (s?.seconds ?? 0)))
+        : (countdown
+            ? (ref.read(soberStatsProvider)?.untilSeconds ?? 0)
+            : (ref.read(soberStatsProvider)?.seconds ?? 0));
+    return RepaintBoundary(
+      child: _CounterTile(
+        value: '$seconds',
+        label: l10n.homeCounterSeconds(seconds),
       ),
     );
   }
@@ -1579,25 +1631,17 @@ class _CounterTile extends StatelessWidget {
 
 // \u2500\u2500\u2500 Money Reclaimed card \u2014 full-width, real-time, with optional savings goal \u2500\u2500
 
-class _MoneyCard extends ConsumerWidget {
+class _MoneyCard extends StatelessWidget {
   const _MoneyCard({required this.profile});
 
   final UserProfile profile;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // 10-second provider — money ticks live without causing scroll jitter.
-    final stats = ref.watch(soberMoneyProvider);
-    final money = stats?.moneySaved ?? 0.0;
-    final currency = profile.currency;
-    final formatted = _formatMoney(currency, money);
-
-    final goal = profile.savingsGoal;
-    final double? progressFraction = (goal != null && goal > 0)
-        ? (money / goal).clamp(0.0, 1.0).toDouble()
-        : null;
-
+    // The card SHELL is static (no live watch) so the expensive LuxuryCard
+    // decoration never repaints on a money tick. Only the live amount + goal
+    // bar rebuilds, isolated in _MoneyLive behind a RepaintBoundary.
     return LuxuryCard(
       padding: EdgeInsets.zero,
       clip: true,
@@ -1622,67 +1666,7 @@ class _MoneyCard extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Real-time counter \u2014 ticks every second via soberStatsProvider
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    formatted,
-                    maxLines: 1,
-                    softWrap: false,
-                    style: AppTextStyles.moneyNumber.copyWith(fontSize: 46),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.homeMoneyAllTime,
-                  style: AppTextStyles.bodyMedium
-                      .copyWith(color: AppColors.mistGrey),
-                ),
-                const SizedBox(height: 14),
-                const SoftDivider(),
-                const SizedBox(height: 14),
-                Text(
-                  l10n.homeMoneyInvesting,
-                  style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
-                ),
-                // Savings goal progress bar (hidden when no goal is set)
-                if (progressFraction != null) ...[
-                  const SizedBox(height: 16),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: LinearProgressIndicator(
-                      value: progressFraction,
-                      backgroundColor: AppColors.mintChip,
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.forest),
-                      minHeight: 8,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.homeMoneyGoalSavedOf(
-                              formatted, _formatMoney(currency, goal!)),
-                          style: AppTextStyles.bodySmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.homeMoneyGoalPercent(
-                            (progressFraction * 100).round()),
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.forest,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                RepaintBoundary(child: _MoneyLive(profile: profile)),
               ],
             ),
           ),
@@ -1694,6 +1678,96 @@ class _MoneyCard extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─── Live money amount + savings-goal bar — rebuilds on the 30s money tick ────
+// Watches only soberMoneyProvider's moneySaved (via select) with the same
+// TickerMode + scroll gating as the counter, so its rebuild can never land on a
+// scroll frame. Everything around it (the LuxuryCard shell) stays static.
+class _MoneyLive extends ConsumerWidget {
+  const _MoneyLive({required this.profile});
+
+  final UserProfile profile;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final live = TickerMode.of(context) && !ref.watch(_homeScrollingProvider);
+    final money = live
+        ? ref.watch(soberMoneyProvider.select((s) => s?.moneySaved ?? 0.0))
+        : (ref.read(soberMoneyProvider)?.moneySaved ?? 0.0);
+    final currency = profile.currency;
+    final formatted = _formatMoney(currency, money);
+
+    final goal = profile.savingsGoal;
+    final double? progressFraction = (goal != null && goal > 0)
+        ? (money / goal).clamp(0.0, 1.0).toDouble()
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Live counter — refreshes every 30s via soberMoneyProvider.
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            formatted,
+            maxLines: 1,
+            softWrap: false,
+            style: AppTextStyles.moneyNumber.copyWith(fontSize: 46),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.homeMoneyAllTime,
+          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.mistGrey),
+        ),
+        const SizedBox(height: 14),
+        const SoftDivider(),
+        const SizedBox(height: 14),
+        Text(
+          l10n.homeMoneyInvesting,
+          style: AppTextStyles.bodyLarge.copyWith(height: 1.35),
+        ),
+        // Savings goal progress bar (hidden when no goal is set)
+        if (progressFraction != null) ...[
+          const SizedBox(height: 16),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: progressFraction,
+              backgroundColor: AppColors.mintChip,
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.forest),
+              minHeight: 8,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.homeMoneyGoalSavedOf(
+                      formatted, _formatMoney(currency, goal!)),
+                  style: AppTextStyles.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.homeMoneyGoalPercent((progressFraction * 100).round()),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.forest,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 
@@ -2723,8 +2797,12 @@ class _CheckInCard extends StatelessWidget {
         AppColors.forest400,
         onActivity
       ),
-      (Icons.bedtime_outlined, l10n.homeCheckInSleep, AppColors.stone500,
-          onSleep),
+      (
+        Icons.bedtime_outlined,
+        l10n.homeCheckInSleep,
+        AppColors.stone500,
+        onSleep
+      ),
     ];
 
     return LuxuryCard(
@@ -2856,8 +2934,7 @@ class _RecoveryBanner extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: rp.progress,
                 backgroundColor: AppColors.stone100,
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(AppColors.forest),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.forest),
                 minHeight: 6,
               ),
             ),
@@ -2932,16 +3009,15 @@ class _TodaySessionCard extends ConsumerWidget {
     if (isRest) {
       body = l10n.homeRestDay;
     } else {
-      final imperial = ref.watch(profileProvider).valueOrNull?.useImperial ??
-          false;
+      final imperial =
+          ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
       final label = sessionTypeLabel(l10n, session.type);
       final distance = session.plannedDistanceKm == null
           ? ''
           : formatDistance(session.plannedDistanceKm!,
               imperial: imperial, l10n: l10n);
-      body = distance.isEmpty
-          ? label
-          : l10n.plannerSessionLine(label, distance);
+      body =
+          distance.isEmpty ? label : l10n.plannerSessionLine(label, distance);
     }
 
     return GestureDetector(
@@ -2964,8 +3040,7 @@ class _TodaySessionCard extends ConsumerWidget {
                   size: 38,
                 ),
                 const SizedBox(width: 12),
-                Text(l10n.homeTodaySessionTitle,
-                    style: AppTextStyles.overline),
+                Text(l10n.homeTodaySessionTitle, style: AppTextStyles.overline),
                 const Spacer(),
                 Icon(Icons.chevron_right_rounded,
                     color: AppColors.mistGrey, size: 20),
@@ -3270,7 +3345,8 @@ String _outcomeLabel(AppLocalizations l10n, String value) => switch (value) {
       _ => value,
     };
 
-String _sleepFactorLabel(AppLocalizations l10n, String value) => switch (value) {
+String _sleepFactorLabel(AppLocalizations l10n, String value) =>
+    switch (value) {
       'Restless' => l10n.homeSleepFactorRestless,
       'Woke often' => l10n.homeSleepFactorWokeOften,
       'Dreams' => l10n.homeSleepFactorDreams,
@@ -3922,7 +3998,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
     int minutes;
     double? distance;
     if (_needsDistance) {
-      minutes = int.tryParse(_minutesCtrl.text.trim()) ?? 30;
+      minutes = parseDurationMinutes(_minutesCtrl.text) ?? 30;
       final raw = _distanceCtrl.text.trim().replaceAll(',', '.');
       distance = raw.isEmpty ? null : double.tryParse(raw);
     } else {
@@ -4026,8 +4102,7 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
     final l10n = AppLocalizations.of(context);
     final useImperial =
         ref.watch(profileProvider).valueOrNull?.useImperial ?? false;
-    final distanceUnit =
-        useImperial ? l10n.homeUnitMiles : l10n.homeUnitKm;
+    final distanceUnit = useImperial ? l10n.homeUnitMiles : l10n.homeUnitKm;
 
     return _sheetShell(
       context: context,
@@ -4073,13 +4148,11 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                               horizontal: 12, vertical: 12),
                           border: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide:
-                                BorderSide(color: AppColors.stone100),
+                            borderSide: BorderSide(color: AppColors.stone100),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide:
-                                BorderSide(color: AppColors.stone100),
+                            borderSide: BorderSide(color: AppColors.stone100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
@@ -4118,13 +4191,11 @@ class _ActivitySheetState extends ConsumerState<_ActivitySheet> {
                               horizontal: 12, vertical: 12),
                           border: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide:
-                                BorderSide(color: AppColors.stone100),
+                            borderSide: BorderSide(color: AppColors.stone100),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,
-                            borderSide:
-                                BorderSide(color: AppColors.stone100),
+                            borderSide: BorderSide(color: AppColors.stone100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: AppRadius.lg,

@@ -391,8 +391,54 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _SessionRow(session: s),
               )),
+
+        // ── Reset plan (clears all planned sessions; history is kept) ─────
+        if (allSessions.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Center(
+            child: TextButton.icon(
+              onPressed: () => _confirmResetPlan(context, ref, l10n),
+              icon: Icon(Icons.restart_alt_rounded,
+                  size: 18, color: AppColors.blush600),
+              label: Text(l10n.plannerResetPlan,
+                  style: AppTextStyles.labelLarge
+                      .copyWith(color: AppColors.blush600)),
+            ),
+          ),
+        ],
       ],
     );
+  }
+}
+
+/// Confirm-gated wipe of every planned session. Logged activities (history) and
+/// goals are left intact — only the plan is cleared. See
+/// [PlannerSessionNotifier.clearAll].
+Future<void> _confirmResetPlan(
+    BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+  H.light();
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: AppColors.card,
+      title: Text(l10n.plannerResetPlanTitle),
+      content: Text(l10n.plannerResetPlanBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l10n.plannerResetPlanCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l10n.plannerResetPlanConfirm,
+              style: TextStyle(color: AppColors.blush600)),
+        ),
+      ],
+    ),
+  );
+  if (confirmed == true) {
+    H.heavy();
+    await ref.read(plannerSessionProvider.notifier).clearAll();
   }
 }
 

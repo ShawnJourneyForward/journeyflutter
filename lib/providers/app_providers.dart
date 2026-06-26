@@ -212,17 +212,17 @@ final soberStatsProvider = Provider<SoberStats?>((ref) {
   );
 });
 
-// ─── 10-second tick — for money display (live but scroll-safe) ───────────────
+// ─── 30-second tick — for money display (live but scroll-safe) ───────────────
 
 /// Exposed (no underscore) so widget tests can override it to a single
 /// value — left private it kept `Timer.periodic` running after the widget
 /// tree was disposed, which trips the test-binding invariant check.
 final slowTimerProvider = StreamProvider<DateTime>((ref) =>
-    Stream.periodic(const Duration(seconds: 10), (_) => DateTime.now()));
+    Stream.periodic(const Duration(seconds: 30), (_) => DateTime.now()));
 
-/// Sober stats that refresh every 10 seconds.
-/// Use for money-saved displays: live enough to feel real, not fast enough
-/// to cause scroll jitter.
+/// Sober stats that refresh every 30 seconds.
+/// Use for money-saved displays: live enough to feel real, infrequent enough
+/// that its rebuild never competes with a scroll frame.
 final soberMoneyProvider = Provider<SoberStats?>((ref) {
   final profileAsync = ref.watch(profileProvider);
   final now = ref.watch(slowTimerProvider).value ?? DateTime.now();
@@ -601,7 +601,8 @@ class HundredDayChallengeNotifier extends AsyncNotifier<ChallengeState> {
         final current = state.valueOrNull ?? const ChallengeState();
         if (!current.days.containsKey(day)) return;
         final days = Map<int, String>.from(current.days)..remove(day);
-        await _persist(ChallengeState(days: days, startedAt: current.startedAt));
+        await _persist(
+            ChallengeState(days: days, startedAt: current.startedAt));
       }).catchError((Object e, StackTrace s) {
         debugPrint('[HundredDayChallenge] write error: $e');
       });
@@ -669,8 +670,7 @@ class PlannerGoalNotifier extends AsyncNotifier<List<PlannerGoal>> {
   Future<void> updateGoal(PlannerGoal goal) =>
       _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
-        final updated =
-            current.map((e) => e.id == goal.id ? goal : e).toList();
+        final updated = current.map((e) => e.id == goal.id ? goal : e).toList();
         await _persist(updated);
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerGoalNotifier] write error: $e');
@@ -679,6 +679,10 @@ class PlannerGoalNotifier extends AsyncNotifier<List<PlannerGoal>> {
   Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         await _persist(current.where((e) => e.id != id).toList());
+        // Cascade: a deleted goal's planned sessions are meaningless without it
+        // and would otherwise linger as orphans that still render in the
+        // calendar. Logged activities (history) are a separate store, untouched.
+        await ref.read(plannerSessionProvider.notifier).deleteForGoal(id);
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerGoalNotifier] write error: $e');
       });
@@ -766,8 +770,11 @@ class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
           if (e.id != id) return e;
           return completed
               ? e.copyWith(
-                  completed: true, skipped: false, completedActivityId: activityId)
-              : e.copyWith(completed: false, skipped: false, clearActivity: true);
+                  completed: true,
+                  skipped: false,
+                  completedActivityId: activityId)
+              : e.copyWith(
+                  completed: false, skipped: false, clearActivity: true);
         }).toList();
         await _persist(updated);
       }).catchError((Object e, StackTrace s) {
@@ -784,7 +791,8 @@ class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
   /// Mark a session SKIPPED — the user closed it off as "didn't do it". Clears
   /// completion + the linked-activity stamp (a skipped session logs no
   /// activity), keeping completed / skipped mutually exclusive.
-  Future<void> markSkipped(String id) => _writeLock = _writeLock.then((_) async {
+  Future<void> markSkipped(String id) =>
+      _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         final updated = current
             .map((e) => e.id == id
@@ -805,6 +813,25 @@ class PlannerSessionNotifier extends AsyncNotifier<List<PlannerSession>> {
   /// alias of [reopen] for existing callers.
   Future<void> markIncomplete(String id) => setComplete(id, false);
 
+  /// Delete every planned session tied to [goalId]. Used to cascade a goal
+  /// deletion so its plan doesn't linger as orphaned sessions that still render
+  /// in the calendar. Logged activities (history) live in a separate store and
+  /// are untouched.
+  Future<void> deleteForGoal(String goalId) =>
+      _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.goalId != goalId).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
+
+  /// Wipe ALL planned sessions (explicit user action, behind a confirm dialog).
+  /// Clears the plan only — logged activities and goals are left intact.
+  Future<void> clearAll() => _writeLock = _writeLock.then((_) async {
+        await _persist(const <PlannerSession>[]);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[PlannerSessionNotifier] write error: $e');
+      });
 }
 
 final plannerSessionProvider =
@@ -847,8 +874,7 @@ class PlannerWeightNotifier extends AsyncNotifier<List<PlannerWeightLog>> {
   Future<void> updateLog(PlannerWeightLog log) =>
       _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
-        final updated =
-            current.map((e) => e.id == log.id ? log : e).toList();
+        final updated = current.map((e) => e.id == log.id ? log : e).toList();
         await _persist(updated);
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerWeightNotifier] write error: $e');
@@ -1152,8 +1178,9 @@ GoalCampaignStats _exerciseCampaignStats(
     }
   }
 
-  final target =
-      (goal.targetValue != null && goal.targetValue! > 0) ? goal.targetValue : null;
+  final target = (goal.targetValue != null && goal.targetValue! > 0)
+      ? goal.targetValue
+      : null;
   final progress =
       target == null ? 0.0 : (logged / target).clamp(0.0, 1.0).toDouble();
 
@@ -1178,8 +1205,7 @@ GoalCampaignStats _exerciseCampaignStats(
 
   double? perWeek;
   if (target != null) {
-    final remaining =
-        (target - logged).clamp(0.0, double.infinity).toDouble();
+    final remaining = (target - logged).clamp(0.0, double.infinity).toDouble();
     if (daysLeft != null && daysLeft > 0) {
       perWeek = remaining / (daysLeft / 7.0);
     } else if (daysLeft == null) {
@@ -1230,7 +1256,8 @@ class GoalTimeline {
   /// start label since the user never chose one).
   final DateTime? start;
   final DateTime end; // goal/target day (day-floored)
-  final int daysToGoal; // today → end, clamped ≥ 0 (0 = today or already passed)
+  final int
+      daysToGoal; // today → end, clamped ≥ 0 (0 = today or already passed)
   final bool passed; // the goal date is in the past
   final bool notStarted; // an explicit start date is still in the future
   final int daysToStart; // today → start when [notStarted], else 0
@@ -1338,8 +1365,7 @@ final goalCampaignStatsProvider =
     }
   }
   if (goal == null || goal.type != GoalType.exercise) return null;
-  final activities =
-      ref.watch(plannerActivityProvider).valueOrNull ?? const [];
+  final activities = ref.watch(plannerActivityProvider).valueOrNull ?? const [];
   return _exerciseCampaignStats(goal, activities);
 });
 
@@ -1965,8 +1991,7 @@ class VisionBoardNotifier extends AsyncNotifier<List<VisionItem>> {
       _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         final priorMatches = current.where((e) => e.id == item.id).toList();
-        final updated =
-            current.map((e) => e.id == item.id ? item : e).toList();
+        final updated = current.map((e) => e.id == item.id ? item : e).toList();
         await _persist(updated);
         // Reclaim disk for photos dropped during an edit (remove/replace).
         // Only ever touches managed bare filenames; delete() guards legacy
@@ -3124,8 +3149,9 @@ class UrgeRideNotifier extends AsyncNotifier<List<UrgeRide>> {
   }
 }
 
-final urgeRideProvider = AsyncNotifierProvider<UrgeRideNotifier, List<UrgeRide>>(
-    UrgeRideNotifier.new);
+final urgeRideProvider =
+    AsyncNotifierProvider<UrgeRideNotifier, List<UrgeRide>>(
+        UrgeRideNotifier.new);
 
 // ─── Theme mode (Appearance) ─────────────────────────────────────────────────
 // 'theme_mode' lives in plain prefs so the first frame can apply it without
