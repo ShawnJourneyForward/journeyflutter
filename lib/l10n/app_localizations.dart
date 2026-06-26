@@ -106,6 +106,48 @@ abstract class AppLocalizations {
     Locale('zu')
   ];
 
+  /// Field label above the pace input; {unit} is e.g. min/km, min/mi, or min/100m.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace ({unit})'**
+  String plannerPaceLabel(String unit);
+
+  /// Notes hint when planning a SWIM session (forward-looking).
+  ///
+  /// In en, this message translates to:
+  /// **'Session plan (optional) - e.g. 8 x 100m, 20s rest'**
+  String get plannerSessionNotesHintSwim;
+
+  /// Notes hint when planning a CROSS-TRAIN session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session plan (optional) - e.g. 30 min cycling, zone 2'**
+  String get plannerSessionNotesHintCross;
+
+  /// Notes hint for a REST day.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest day (optional) - e.g. stretch, early night'**
+  String get plannerSessionNotesHintRest;
+
+  /// Notes hint for an OTHER / unspecified session.
+  ///
+  /// In en, this message translates to:
+  /// **'Session plan (optional)'**
+  String get plannerSessionNotesHintOther;
+
+  /// Label for the free-text name field shown when session type is Other.
+  ///
+  /// In en, this message translates to:
+  /// **'What is it?'**
+  String get plannerSessionOtherNameLabel;
+
+  /// Hint for the Other session name field.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Yoga, cycling, climbing'**
+  String get plannerSessionOtherNameHint;
+
   /// Application name
   ///
   /// In en, this message translates to:

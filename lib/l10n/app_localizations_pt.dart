@@ -9,6 +9,32 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String plannerPaceLabel(String unit) {
+    return 'Pace ($unit)';
+  }
+
+  @override
+  String get plannerSessionNotesHintSwim =>
+      'Session plan (optional) - e.g. 8 x 100m, 20s rest';
+
+  @override
+  String get plannerSessionNotesHintCross =>
+      'Session plan (optional) - e.g. 30 min cycling, zone 2';
+
+  @override
+  String get plannerSessionNotesHintRest =>
+      'Rest day (optional) - e.g. stretch, early night';
+
+  @override
+  String get plannerSessionNotesHintOther => 'Session plan (optional)';
+
+  @override
+  String get plannerSessionOtherNameLabel => 'What is it?';
+
+  @override
+  String get plannerSessionOtherNameHint => 'e.g. Yoga, cycling, climbing';
+
+  @override
   String get appTitle => 'Journey Forward';
 
   @override

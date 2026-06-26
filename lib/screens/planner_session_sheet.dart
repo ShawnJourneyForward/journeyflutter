@@ -65,14 +65,37 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
   late DateTime _date;
   final _distanceCtrl = TextEditingController();
   final _minutesCtrl = TextEditingController();
+  final _paceCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
+  final _titleCtrl = TextEditingController();
+  late final _PaceLink _paceLink;
   bool _saving = false;
 
   bool get _isEdit => widget.existing != null;
   bool get _needsDistance => distanceSessionTypes.contains(_type);
+  bool get _isSwim => _type == SessionType.swim;
 
   bool get _imperial =>
       ref.read(profileProvider).valueOrNull?.useImperial ?? false;
+
+  /// display distance → pace segments: 100m units for swim (always metric),
+  /// else one per displayed km / mile.
+  double _segmentsForDistance(double d) {
+    if (_isSwim) {
+      final km = _imperial ? d / 0.621371 : d;
+      return km * 10; // 100m units
+    }
+    return d;
+  }
+
+  /// Inverse of [_segmentsForDistance] — pace segments → display distance.
+  double _distanceForSegments(double seg) {
+    if (_isSwim) {
+      final km = seg / 10;
+      return _imperial ? km * 0.621371 : km;
+    }
+    return seg;
+  }
 
   @override
   void initState() {
@@ -91,15 +114,44 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
           shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
     }
     _notesCtrl.text = e?.notes ?? '';
+    if (e?.type == SessionType.other) _titleCtrl.text = e?.title ?? '';
+    _paceLink = _PaceLink(
+      distance: _distanceCtrl,
+      duration: _minutesCtrl,
+      pace: _paceCtrl,
+      segmentsForDistance: _segmentsForDistance,
+      distanceForSegments: _distanceForSegments,
+    );
+    // Seed pace from a prefilled plan so editing one field updates the right one.
+    if (_distanceCtrl.text.isNotEmpty && _minutesCtrl.text.isNotEmpty) {
+      _paceLink.resyncPace();
+    }
   }
 
   @override
   void dispose() {
+    _paceLink.dispose();
     _distanceCtrl.dispose();
     _minutesCtrl.dispose();
+    _paceCtrl.dispose();
     _notesCtrl.dispose();
+    _titleCtrl.dispose();
     super.dispose();
   }
+
+  /// Pace unit shown in the field label: min/100m for swim, else min per
+  /// displayed distance unit.
+  String _paceUnit(AppLocalizations l10n, String distanceUnit) =>
+      _isSwim ? '${l10n.homeUnitMin}/100m' : '${l10n.homeUnitMin}/$distanceUnit';
+
+  /// Forward-looking workout-plan hint, tuned to the chosen discipline.
+  String _notesHint(AppLocalizations l10n) => switch (_type) {
+        SessionType.swim => l10n.plannerSessionNotesHintSwim,
+        SessionType.crossTrain => l10n.plannerSessionNotesHintCross,
+        SessionType.rest => l10n.plannerSessionNotesHintRest,
+        SessionType.other => l10n.plannerSessionNotesHintOther,
+        _ => l10n.plannerSessionNotesHint,
+      };
 
   String _typeLabel(AppLocalizations l10n, SessionType t) => switch (t) {
         SessionType.easyRun => l10n.plannerSessionEasyRun,
@@ -130,6 +182,13 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
     return t.isEmpty ? null : t;
   }
 
+  /// The free-text name for an "Other" session, or null. Only meaningful when
+  /// the type is [SessionType.other]; other types keep their existing title.
+  String? _title() {
+    final t = _titleCtrl.text.trim();
+    return t.isEmpty ? null : t;
+  }
+
   PlannerSession _compose() {
     final base = widget.existing;
     final distance = _needsDistance ? _distanceKm() : null;
@@ -138,7 +197,7 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
       goalId: base?.goalId ?? widget.goalId ?? '',
       date: _date,
       type: _type,
-      title: base?.title,
+      title: _type == SessionType.other ? _title() : base?.title,
       plannedDistanceKm: distance,
       plannedMinutes: _minutes(),
       notes: _notes(),
@@ -271,7 +330,13 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
             labelFor: (t) => _typeLabel(l10n, t),
             onTap: (t) {
               H.selection();
+              final disciplineChanged = (t == SessionType.swim) != _isSwim;
               setState(() => _type = t);
+              // Pace unit differs by discipline (min/100m vs min/km) — re-derive
+              // so a left-over value isn't shown in the wrong unit.
+              if (disciplineChanged && distanceSessionTypes.contains(t)) {
+                _paceLink.resyncPace();
+              }
             },
           ),
           const SizedBox(height: 18),
@@ -282,9 +347,10 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
           _DateField(label: dateLabel, onTap: _pickDate),
           const SizedBox(height: 18),
 
-          // ── Distance (only distance-type sessions) + minutes ─────────────
+          // ── Distance (only distance-type sessions) + minutes + pace ──────
           if (_needsDistance) ...[
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: _LabeledField(
@@ -296,13 +362,22 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
                     suffix: distanceUnit,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: _LabeledField(
                     label: l10n.homeActivityDurationMin,
                     controller: _minutesCtrl,
                     keyboardType: TextInputType.number,
                     suffix: l10n.homeUnitMin,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _LabeledField(
+                    label: l10n.plannerPaceLabel(_paceUnit(l10n, distanceUnit)),
+                    controller: _paceCtrl,
+                    keyboardType: TextInputType.datetime,
+                    hintText: '0:00',
                   ),
                 ),
               ],
@@ -317,12 +392,23 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
           ],
           const SizedBox(height: 18),
 
+          // ── What is it? (Other only) ─────────────────────────────────────
+          if (_type == SessionType.other) ...[
+            _PlannerSectionLabel(l10n.plannerSessionOtherNameLabel),
+            const SizedBox(height: 10),
+            _PlannerTextField(
+              controller: _titleCtrl,
+              hintText: l10n.plannerSessionOtherNameHint,
+            ),
+            const SizedBox(height: 18),
+          ],
+
           // ── Notes ────────────────────────────────────────────────────────
           // Planning ahead → a forward-looking workout-plan hint, NOT the
-          // home log's after-the-fact reflection example.
+          // home log's after-the-fact reflection example. Tuned to discipline.
           _PlannerNotesField(
             controller: _notesCtrl,
-            hintText: l10n.plannerSessionNotesHint,
+            hintText: _notesHint(l10n),
           ),
           const SizedBox(height: 18),
 
@@ -405,13 +491,35 @@ class _PlannerSessionCompleteSheetState
     extends ConsumerState<_PlannerSessionCompleteSheet> {
   final _distanceCtrl = TextEditingController();
   final _minutesCtrl = TextEditingController();
+  final _paceCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
+  late final _PaceLink _paceLink;
   bool _saving = false;
 
   SessionType get _type => widget.session.type;
   bool get _needsDistance => distanceSessionTypes.contains(_type);
+  bool get _isSwim => _type == SessionType.swim;
   bool get _imperial =>
       ref.read(profileProvider).valueOrNull?.useImperial ?? false;
+
+  double _segmentsForDistance(double d) {
+    if (_isSwim) {
+      final km = _imperial ? d / 0.621371 : d;
+      return km * 10;
+    }
+    return d;
+  }
+
+  double _distanceForSegments(double seg) {
+    if (_isSwim) {
+      final km = seg / 10;
+      return _imperial ? km * 0.621371 : km;
+    }
+    return seg;
+  }
+
+  String _paceUnit(AppLocalizations l10n, String distanceUnit) =>
+      _isSwim ? '${l10n.homeUnitMin}/100m' : '${l10n.homeUnitMin}/$distanceUnit';
 
   @override
   void initState() {
@@ -426,12 +534,26 @@ class _PlannerSessionCompleteSheetState
           shown == shown.roundToDouble() ? shown.toStringAsFixed(0) : '$shown';
     }
     _notesCtrl.text = s.notes ?? '';
+    _paceLink = _PaceLink(
+      distance: _distanceCtrl,
+      duration: _minutesCtrl,
+      pace: _paceCtrl,
+      segmentsForDistance: _segmentsForDistance,
+      distanceForSegments: _distanceForSegments,
+    );
+    if (_needsDistance &&
+        _distanceCtrl.text.isNotEmpty &&
+        _minutesCtrl.text.isNotEmpty) {
+      _paceLink.resyncPace();
+    }
   }
 
   @override
   void dispose() {
+    _paceLink.dispose();
     _distanceCtrl.dispose();
     _minutesCtrl.dispose();
+    _paceCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
@@ -544,6 +666,7 @@ class _PlannerSessionCompleteSheetState
           const SizedBox(height: 10),
           if (_needsDistance) ...[
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   child: _LabeledField(
@@ -555,13 +678,22 @@ class _PlannerSessionCompleteSheetState
                     suffix: distanceUnit,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: _LabeledField(
                     label: l10n.homeActivityDurationMin,
                     controller: _minutesCtrl,
                     keyboardType: TextInputType.number,
                     suffix: l10n.homeUnitMin,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _LabeledField(
+                    label: l10n.plannerPaceLabel(_paceUnit(l10n, distanceUnit)),
+                    controller: _paceCtrl,
+                    keyboardType: TextInputType.datetime,
+                    hintText: '0:00',
                   ),
                 ),
               ],
@@ -777,6 +909,8 @@ class _LabeledField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: AppTextStyles.caption
                   .copyWith(color: AppColors.stone400)),
           const SizedBox(height: 6),
@@ -871,6 +1005,42 @@ class _PlannerNotesField extends StatelessWidget {
       );
 }
 
+/// A single-line, left-aligned stone-filled text field — used for the free-text
+/// "Other" session name (a label, not a number, so it isn't centred).
+class _PlannerTextField extends StatelessWidget {
+  const _PlannerTextField({required this.controller, required this.hintText});
+  final TextEditingController controller;
+  final String hintText;
+
+  @override
+  Widget build(BuildContext context) => TextField(
+        controller: controller,
+        textCapitalization: TextCapitalization.sentences,
+        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.forest700),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.stone400),
+          filled: true,
+          fillColor: AppColors.stone50,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: AppRadius.lg,
+            borderSide: BorderSide(color: AppColors.stone100),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: AppRadius.lg,
+            borderSide: BorderSide(color: AppColors.stone100),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: AppRadius.lg,
+            borderSide: BorderSide(color: AppColors.forest300, width: 1.5),
+          ),
+        ),
+      );
+}
+
 class _OutlineButton extends StatelessWidget {
   const _OutlineButton({
     required this.icon,
@@ -928,4 +1098,147 @@ class _PlannerSaveButton extends StatelessWidget {
               : Text(label),
         ),
       );
+}
+
+// ── Pace auto-calc ───────────────────────────────────────────────────────────
+//
+// Pace links Distance, Duration and Pace so any two fill the third. The unit is
+// per-display-distance for runs (min/km or min/mi) and per-100m for swim, so
+// [_PaceLink] is parameterised with how to turn a display distance into a count
+// of "pace segments" (km/mi or 100m units) and back. Pace is a UI convenience —
+// it is never persisted; only distance + minutes are stored.
+
+/// Parse a pace string — "m:ss", "mm:ss", or plain decimal minutes — to seconds.
+/// Returns null for blank or malformed input.
+double? _parsePaceSeconds(String raw) {
+  final t = raw.trim();
+  if (t.isEmpty) return null;
+  if (t.contains(':')) {
+    final parts = t.split(':');
+    if (parts.length != 2) return null;
+    final m = int.tryParse(parts[0].trim());
+    final s = int.tryParse(parts[1].trim());
+    if (m == null || s == null || s < 0 || s >= 60) return null;
+    return m * 60.0 + s;
+  }
+  final dec = double.tryParse(t.replaceAll(',', '.'));
+  if (dec == null || dec < 0) return null;
+  return dec * 60.0;
+}
+
+/// Format seconds-per-unit as "m:ss" (empty for non-positive / non-finite).
+String _formatPaceSeconds(double sec) {
+  if (!sec.isFinite || sec <= 0) return '';
+  final total = sec.round();
+  return '${total ~/ 60}:${(total % 60).toString().padLeft(2, '0')}';
+}
+
+/// Ties Distance, Duration and Pace together. Distance is always a user input
+/// (never auto-filled): you enter a distance, then whichever of Duration / Pace
+/// you type becomes the "driver" and the other is derived. Editing distance
+/// re-derives the non-driver. This gives exactly: distance + time → pace, and
+/// distance + pace → time. Programmatic writes are suppressed so they don't loop.
+class _PaceLink {
+  _PaceLink({
+    required this.distance,
+    required this.duration,
+    required this.pace,
+    required this.segmentsForDistance,
+    required this.distanceForSegments,
+  }) {
+    distance.addListener(_onDistance);
+    duration.addListener(_onDuration);
+    pace.addListener(_onPace);
+  }
+
+  final TextEditingController distance;
+  final TextEditingController duration;
+  final TextEditingController pace;
+
+  /// display distance → number of pace segments (km/mi, or 100m units for swim).
+  final double Function(double) segmentsForDistance;
+
+  /// number of pace segments → display distance (inverse of the above).
+  final double Function(double) distanceForSegments;
+
+  /// Which of duration / pace the user last typed — the one to hold when the
+  /// distance changes. `true` = pace is the driver, `false` = duration.
+  bool _paceDriven = false;
+  bool _suppress = false;
+
+  void dispose() {
+    distance.removeListener(_onDistance);
+    duration.removeListener(_onDuration);
+    pace.removeListener(_onPace);
+  }
+
+  double? _distanceVal() {
+    final v = double.tryParse(distance.text.trim().replaceAll(',', '.'));
+    return (v != null && v > 0) ? v : null;
+  }
+
+  double? _durationVal() {
+    final v = double.tryParse(duration.text.trim().replaceAll(',', '.'));
+    return (v != null && v > 0) ? v : null;
+  }
+
+  void _onDistance() {
+    if (_suppress) return;
+    // Distance changed — re-derive whichever of duration/pace is NOT the driver.
+    if (_paceDriven) {
+      _computeDuration();
+    } else {
+      _computePace();
+    }
+  }
+
+  void _onDuration() {
+    if (_suppress) return;
+    _paceDriven = false;
+    _computePace();
+  }
+
+  void _onPace() {
+    if (_suppress) return;
+    _paceDriven = true;
+    _computeDuration();
+  }
+
+  void _computePace() {
+    final d = _distanceVal();
+    final mins = _durationVal();
+    if (d == null || mins == null) return;
+    final seg = segmentsForDistance(d);
+    if (seg > 0) _write(pace, _formatPaceSeconds(mins * 60 / seg));
+  }
+
+  void _computeDuration() {
+    final d = _distanceVal();
+    final paceSec = _parsePaceSeconds(pace.text);
+    if (d == null || paceSec == null || paceSec <= 0) return;
+    _write(duration, (paceSec * segmentsForDistance(d) / 60).round().toString());
+  }
+
+  /// Re-derive pace from distance + duration — used after a discipline change
+  /// (distance & duration are unit-independent; only pace's unit shifts). Clears
+  /// pace if either input is missing.
+  void resyncPace() {
+    _paceDriven = false;
+    final d = _distanceVal();
+    final mins = _durationVal();
+    if (d != null && mins != null) {
+      final seg = segmentsForDistance(d);
+      _write(pace, seg > 0 ? _formatPaceSeconds(mins * 60 / seg) : '');
+    } else {
+      _write(pace, '');
+    }
+  }
+
+  void _write(TextEditingController c, String value) {
+    if (c.text == value) return;
+    _suppress = true;
+    c.text = value;
+    c.selection = TextSelection.collapsed(offset: value.length);
+    _suppress = false;
+  }
 }
