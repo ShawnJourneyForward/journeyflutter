@@ -82,10 +82,16 @@ class ResponseStat {
       CravingResponse(slug, label).localizedLabel(l);
 }
 
+/// Craving outcomes that mean the user got through it WITHOUT drinking. All
+/// three positive outcomes — stayed sober, reached out, practiced tools — count
+/// as a success for insights. ('slipped'/'unclear' are legacy values that may
+/// still appear in a restored backup; they never count as success.)
+const kSoberOutcomes = {'stayed_sober', 'reached_out', 'practiced_tools'};
+
 /// Compute "what worked" — for each response strategy the user has tried at
-/// least N times, what fraction led to a 'stayed_sober' outcome. We require
-/// a minimum sample (default 2) so a single lucky walk-out doesn't crown a
-/// strategy that hasn't really been tested.
+/// least N times, what fraction led to a positive (got-through-it) outcome. We
+/// require a minimum sample (default 2) so a single lucky walk-out doesn't crown
+/// a strategy that hasn't really been tested.
 List<ResponseStat> bestResponses(
   List<CravingEntry> all, {
   int minUses = 2,
@@ -100,7 +106,8 @@ List<ResponseStat> bestResponses(
   final out = <ResponseStat>[];
   for (final entry in byResponse.entries) {
     if (entry.value.length < minUses) continue;
-    final sober = entry.value.where((e) => e.outcome == 'stayed_sober').length;
+    final sober =
+        entry.value.where((e) => kSoberOutcomes.contains(e.outcome)).length;
     final label = kCravingResponses
         .firstWhere((r) => r.slug == entry.key,
             orElse: () => CravingResponse(entry.key, entry.key))
@@ -286,19 +293,15 @@ class OutcomeTally {
 OutcomeTally outcomeTally(List<CravingEntry> all) {
   var sober = 0, slipped = 0, unclear = 0;
   for (final e in all) {
-    switch (e.outcome) {
-      case 'stayed_sober':
-        sober++;
-        break;
-      case 'slipped':
-        slipped++;
-        break;
-      case 'unclear':
-        unclear++;
-        break;
-      default:
-        break; // no outcome recorded — excluded
+    final o = e.outcome;
+    if (kSoberOutcomes.contains(o)) {
+      sober++; // stayed sober / reached out / practiced tools — got through it
+    } else if (o == 'slipped') {
+      slipped++; // legacy value, restored backups only
+    } else if (o == 'unclear') {
+      unclear++; // legacy value
     }
+    // else: no outcome recorded — excluded
   }
   return OutcomeTally(stayedSober: sober, slipped: slipped, unclear: unclear);
 }

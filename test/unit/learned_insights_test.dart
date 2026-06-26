@@ -77,6 +77,18 @@ void main() {
       expect(t.unclear, 0);
       expect(t.totalWithOutcome, 0);
     });
+
+    test('all three positive outcomes count as got-through-it successes', () {
+      final t = outcomeTally([
+        _c(outcome: 'stayed_sober'),
+        _c(outcome: 'reached_out'),
+        _c(outcome: 'practiced_tools'),
+        _c(outcome: 'slipped'), // legacy, restored-backup only
+      ]);
+      expect(t.stayedSober, 3, reason: 'reached_out + practiced_tools are wins');
+      expect(t.slipped, 1);
+      expect(t.totalWithOutcome, 4);
+    });
   });
 
   group('bestResponses still honours min-sample + sober rate', () {
