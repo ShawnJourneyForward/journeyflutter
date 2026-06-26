@@ -31,6 +31,7 @@ const List<AppLanguage> kSupportedLanguages = [
   // Enable each line below once lib/l10n/app_<code>.arb holds a real,
   // complete translation (see the steps in this file's doc comment):
   // AppLanguage(Locale('af'), 'Afrikaans', 'Afrikaans'),
+  // AppLanguage(Locale('de'), 'German', 'Deutsch'),
   // AppLanguage(Locale('es'), 'Spanish', 'Español'),
   // AppLanguage(Locale('pt'), 'Portuguese', 'Português'),
   // AppLanguage(Locale('zu'), 'Zulu', 'isiZulu'),

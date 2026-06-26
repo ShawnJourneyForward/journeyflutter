@@ -30,6 +30,15 @@ import re
 import sys
 import collections
 
+# Windows consoles default to cp1252, which can't encode the arrows/emoji this
+# tool prints — force UTF-8 so a successful import never ends in a scary
+# UnicodeEncodeError traceback.
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except (AttributeError, ValueError):
+    pass
+
 EN = 'lib/l10n/app_en.arb'
 CSV = 'TRANSLATIONS/journey_forward_strings.csv'
 
@@ -140,7 +149,7 @@ def main():
     note = (' (%d filled with English via --allow-missing)' % len(missing)
             ) if missing else ''
     print('wrote %s — %d message keys%s' % (dest, n, note))
-    print('next: flutter gen-l10n  →  add to kSupportedLanguages  →  flutter test')
+    print('next: flutter gen-l10n  ->  add to kSupportedLanguages  ->  flutter test')
 
 
 if __name__ == '__main__':
