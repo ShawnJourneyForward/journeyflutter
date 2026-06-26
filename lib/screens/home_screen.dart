@@ -405,6 +405,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   static const _homeVisitedKey = 'home_visited';
   static const _safetyModalSeenKey = 'safety_modal_seen';
+  static const _welcomeModalSeenKey = 'welcome_shawn_seen';
 
   @override
   void initState() {
@@ -562,11 +563,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               .addPostFrameCallback((_) => _checkMilestones(profile));
         }
 
-        // One-time safety note + medical disclaimer (first Home visit ever).
+        // One-time first-run dialogs: a personal welcome from Shawn, then the
+        // required medical/safety disclaimer (both gated by their own pref so
+        // they each show exactly once).
         if (!_safetyModalChecked) {
           _safetyModalChecked = true;
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => _maybeShowSafetyModal());
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await _maybeShowWelcomeModal();
+            await _maybeShowSafetyModal();
+          });
         }
 
         // Pre-decode the hero plant at display size so the first scroll/paint
@@ -879,6 +884,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onPressed: () => context.push('/backup'),
       ),
     ));
+  }
+
+  // ── First-launch welcome from the founder ────────────────────────────────
+  // A warm, one-time personal note. Gated by its own pref so it shows exactly
+  // once, on the first Home visit.
+
+  Future<void> _maybeShowWelcomeModal() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_welcomeModalSeenKey) ?? false) return;
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        title: Row(
+          children: [
+            Icon(Icons.volunteer_activism_outlined,
+                color: AppColors.forest600, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(l10n.welcomeShawnTitle,
+                  style: AppTextStyles.titleMedium),
+            ),
+          ],
+        ),
+        content: Text(l10n.welcomeShawnBody,
+            style: AppTextStyles.bodyMedium.copyWith(height: 1.5)),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.welcomeShawnButton),
+          ),
+        ],
+      ),
+    );
+    await prefs.setBool(_welcomeModalSeenKey, true);
   }
 
   // ── First-launch safety note ─────────────────────────────────────────────
@@ -3716,28 +3759,28 @@ class _CravingSheetState extends ConsumerState<_CravingSheet> {
               ),
               const SizedBox(width: 8),
               _OutcomePill(
-                slug: 'unclear',
-                label: l10n.homeCravingOutcomeUnclear,
-                icon: Icons.help_outline_rounded,
-                color: AppColors.stone500,
-                selected: _outcome == 'unclear',
+                slug: 'reached_out',
+                label: l10n.homeCravingOutcomeReachedOut,
+                icon: Icons.people_outline_rounded,
+                color: AppColors.forest600,
+                selected: _outcome == 'reached_out',
                 onTap: () {
                   H.selection();
-                  setState(() =>
-                      _outcome = _outcome == 'unclear' ? null : 'unclear');
+                  setState(() => _outcome =
+                      _outcome == 'reached_out' ? null : 'reached_out');
                 },
               ),
               const SizedBox(width: 8),
               _OutcomePill(
-                slug: 'slipped',
-                label: l10n.homeCravingOutcomeSlipped,
-                icon: Icons.water_drop_outlined,
-                color: AppColors.blush500,
-                selected: _outcome == 'slipped',
+                slug: 'practiced_tools',
+                label: l10n.homeCravingOutcomePracticedTools,
+                icon: Icons.self_improvement_rounded,
+                color: AppColors.forest600,
+                selected: _outcome == 'practiced_tools',
                 onTap: () {
                   H.selection();
-                  setState(() =>
-                      _outcome = _outcome == 'slipped' ? null : 'slipped');
+                  setState(() => _outcome =
+                      _outcome == 'practiced_tools' ? null : 'practiced_tools');
                 },
               ),
             ],
@@ -3820,6 +3863,8 @@ class _OutcomePill extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
                 style: AppTextStyles.labelSmall.copyWith(
                   color: selected ? color : AppColors.stone500,
                 ),

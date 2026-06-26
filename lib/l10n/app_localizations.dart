@@ -106,6 +106,24 @@ abstract class AppLocalizations {
     Locale('zu')
   ];
 
+  /// Title of the one-time founder welcome dialog on first Home visit.
+  ///
+  /// In en, this message translates to:
+  /// **'A note from Shawn'**
+  String get welcomeShawnTitle;
+
+  /// Body of the founder welcome dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, I\'m Shawn. I built this app, and I\'m rooting for you. Take some time to look at your profile and set up your reasons — it\'s how you\'ll get the most from the app. I\'m with you. I\'m on the same journey.'**
+  String get welcomeShawnBody;
+
+  /// Dismiss button on the founder welcome dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m in'**
+  String get welcomeShawnButton;
+
   /// Swim distance entry option: enter raw metres.
   ///
   /// In en, this message translates to:
@@ -8548,17 +8566,17 @@ abstract class AppLocalizations {
   /// **'Stayed sober'**
   String get homeCravingOutcomeStayedSober;
 
-  /// Outcome pill in the log-a-craving sheet: outcome was unclear.
+  /// Outcome pill in the log-a-craving sheet: the user reached out to someone.
   ///
   /// In en, this message translates to:
-  /// **'Unclear'**
-  String get homeCravingOutcomeUnclear;
+  /// **'Reached out'**
+  String get homeCravingOutcomeReachedOut;
 
-  /// Outcome pill in the log-a-craving sheet: the user slipped.
+  /// Outcome pill in the log-a-craving sheet: the user practiced coping tools.
   ///
   /// In en, this message translates to:
-  /// **'Slipped'**
-  String get homeCravingOutcomeSlipped;
+  /// **'Practiced tools'**
+  String get homeCravingOutcomePracticedTools;
 
   /// Clause inserted into the 'last time' craving hint when the prior similar craving ended in staying sober.
   ///

@@ -48,7 +48,6 @@ import 'screens/heatmap_screen.dart';
 import 'screens/hundred_day_challenge_screen.dart';
 import 'screens/learned_screen.dart';
 import 'screens/pre_craving_plan_screen.dart';
-import 'screens/slip_log_screen.dart';
 import 'screens/slip_support_screen.dart';
 import 'screens/tipp_screen.dart';
 import 'screens/urge_timer_screen.dart';
@@ -603,10 +602,6 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/urge-timer',
         builder: (_, __) => const UrgeTimerScreen(),
-      ),
-      GoRoute(
-        path: '/slip-log',
-        builder: (_, __) => const SlipLogScreen(),
       ),
       GoRoute(
         path: '/crisis',

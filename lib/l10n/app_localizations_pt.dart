@@ -9,6 +9,16 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get welcomeShawnTitle => 'A note from Shawn';
+
+  @override
+  String get welcomeShawnBody =>
+      'Hi, I\'m Shawn. I built this app, and I\'m rooting for you. Take some time to look at your profile and set up your reasons — it\'s how you\'ll get the most from the app. I\'m with you. I\'m on the same journey.';
+
+  @override
+  String get welcomeShawnButton => 'I\'m in';
+
+  @override
   String get plannerSwimUnitMetres => 'Metres';
 
   @override
@@ -4775,10 +4785,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeCravingOutcomeStayedSober => 'Stayed sober';
 
   @override
-  String get homeCravingOutcomeUnclear => 'Unclear';
+  String get homeCravingOutcomeReachedOut => 'Reached out';
 
   @override
-  String get homeCravingOutcomeSlipped => 'Slipped';
+  String get homeCravingOutcomePracticedTools => 'Practiced tools';
 
   @override
   String get homeLastTimeOutcomeSober => 'and you stayed sober';

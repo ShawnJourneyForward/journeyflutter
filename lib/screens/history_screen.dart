@@ -231,20 +231,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       }
     }
 
-    if (_filter == 'all' || _filter == 'slips') {
-      for (final e in slips) {
-        if (_search.isNotEmpty &&
-            !(e.note ?? '').toLowerCase().contains(_search.toLowerCase())) {
-          continue;
-        }
-        entries.add(_HistoryEntry(
-          type: _EntryType.slip,
-          date: e.date,
-          id: e.id,
-          data: e,
-        ));
-      }
-    }
+    // Slips are intentionally never surfaced in History — the app has no
+    // slip-logging option, and any slip data left over in a restored backup
+    // must not reappear as a "slip" entry. (See also: the Slips filter chip is
+    // removed and the slip-log screen is gone.)
 
     entries.sort((a, b) => b.date.compareTo(a.date));
     return entries;
@@ -361,7 +351,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       ('thoughts', '${l10n.historyFilterThoughts} ($thoughtCount)'),
       ('exercise', '${l10n.historyFilterActivity} ($activityCount)'),
       ('sleep', '${l10n.historyFilterSleep} ($sleepCount)'),
-      if (slipCount > 0) ('slips', '${l10n.historyFilterSlips} ($slipCount)'),
     ];
 
     return SingleChildScrollView(
