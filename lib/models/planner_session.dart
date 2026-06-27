@@ -18,17 +18,30 @@ enum SessionType {
   rest,
   crossTrain,
   swim,
+  // General disciplines (parity with ActivityDiscipline) so a plan can hold
+  // non-running sessions too. Additive — older rows never carried these and
+  // unknown values still degrade to [other] via sessionTypeFromName.
+  ride,
+  walk,
+  hike,
+  gym, // strength / weights
+  yoga, // yoga / mobility / pilates
+  cardio, // rowing, elliptical, HIIT, generic cross-training
   other,
 }
 
 /// Session types that carry a meaningful distance (used to decide whether a
-/// distance field / pace makes sense for the session).
+/// distance field / pace makes sense for the session). Strength/yoga/cardio are
+/// time-first and excluded, mirroring [distanceDisciplines].
 const Set<SessionType> distanceSessionTypes = {
   SessionType.easyRun,
   SessionType.intervals,
   SessionType.tempo,
   SessionType.longRun,
   SessionType.swim,
+  SessionType.ride,
+  SessionType.walk,
+  SessionType.hike,
 };
 
 /// Parse a [SessionType] from its stored `.name`, degrading to

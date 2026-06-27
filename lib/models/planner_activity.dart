@@ -92,7 +92,18 @@ ActivityDiscipline disciplineFromSessionType(SessionType t) {
     case SessionType.swim:
       return ActivityDiscipline.swim;
     case SessionType.crossTrain:
+    case SessionType.cardio:
       return ActivityDiscipline.cardio;
+    case SessionType.ride:
+      return ActivityDiscipline.ride;
+    case SessionType.walk:
+      return ActivityDiscipline.walk;
+    case SessionType.hike:
+      return ActivityDiscipline.hike;
+    case SessionType.gym:
+      return ActivityDiscipline.gym;
+    case SessionType.yoga:
+      return ActivityDiscipline.yoga;
     case SessionType.rest:
     case SessionType.other:
       return ActivityDiscipline.other;

@@ -43,6 +43,19 @@ String sessionTypeLabel(AppLocalizations l10n, SessionType t) {
       return l10n.plannerSessionCrossTrain;
     case SessionType.swim:
       return l10n.plannerSessionSwim;
+    // General disciplines reuse the already-translated discipline labels.
+    case SessionType.ride:
+      return l10n.plannerDisciplineRide;
+    case SessionType.walk:
+      return l10n.plannerDisciplineWalk;
+    case SessionType.hike:
+      return l10n.plannerDisciplineHike;
+    case SessionType.gym:
+      return l10n.plannerDisciplineGym;
+    case SessionType.yoga:
+      return l10n.plannerDisciplineYoga;
+    case SessionType.cardio:
+      return l10n.plannerDisciplineCardio;
     case SessionType.other:
       return l10n.plannerSessionOther;
   }

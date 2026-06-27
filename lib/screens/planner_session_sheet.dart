@@ -174,6 +174,13 @@ class _PlannerSessionSheetState extends ConsumerState<_PlannerSessionSheet> {
         SessionType.rest => l10n.plannerSessionRest,
         SessionType.crossTrain => l10n.plannerSessionCrossTrain,
         SessionType.swim => l10n.plannerSessionSwim,
+        // General disciplines reuse the already-translated discipline labels.
+        SessionType.ride => l10n.plannerDisciplineRide,
+        SessionType.walk => l10n.plannerDisciplineWalk,
+        SessionType.hike => l10n.plannerDisciplineHike,
+        SessionType.gym => l10n.plannerDisciplineGym,
+        SessionType.yoga => l10n.plannerDisciplineYoga,
+        SessionType.cardio => l10n.plannerDisciplineCardio,
         SessionType.other => l10n.plannerSessionOther,
       };
 

@@ -48,6 +48,20 @@ Color sessionTypeColor(SessionType t) {
       // Water work — honey accent (no blue token exists in the palette; honey
       // keeps it warm and on-brand while distinct from the running greens).
       return AppColors.honey500;
+    // General disciplines — mirror disciplineColor so a planned session and the
+    // activity it mints read the same accent.
+    case SessionType.ride:
+      return AppColors.forest500;
+    case SessionType.walk:
+      return AppColors.leafGreen;
+    case SessionType.hike:
+      return AppColors.forest700;
+    case SessionType.gym:
+      return AppColors.honey600;
+    case SessionType.yoga:
+      return AppColors.stone500;
+    case SessionType.cardio:
+      return AppColors.honey500;
     case SessionType.other:
       // Catch-all — neutral secondary-text stone.
       return AppColors.stone600;
@@ -72,10 +86,20 @@ Color sessionTypeTint(SessionType t) {
       return AppColors.stone100;
     case SessionType.crossTrain:
     case SessionType.swim:
+    case SessionType.gym:
+    case SessionType.cardio:
       // Honey-family work — soft honey chip background.
       return AppColors.honeySoft;
+    case SessionType.ride:
+    case SessionType.walk:
+      // Mint sibling fill (matches disciplineTint for ride/walk).
+      return AppColors.mintChip;
+    case SessionType.hike:
+      // Forest-family — soft forest fill.
+      return AppColors.forest50;
+    case SessionType.yoga:
     case SessionType.other:
-      // Catch-all — plainest stone fill.
+      // Calm / catch-all — plainest stone fill.
       return AppColors.stone100;
   }
 }
@@ -98,6 +122,19 @@ IconData sessionTypeIcon(SessionType t) {
       return Icons.fitness_center_outlined;
     case SessionType.swim:
       return Icons.pool_outlined;
+    // General disciplines — same glyphs as disciplineIcon.
+    case SessionType.ride:
+      return Icons.directions_bike_outlined;
+    case SessionType.walk:
+      return Icons.directions_walk_outlined;
+    case SessionType.hike:
+      return Icons.terrain_outlined;
+    case SessionType.gym:
+      return Icons.fitness_center_outlined;
+    case SessionType.yoga:
+      return Icons.self_improvement_outlined;
+    case SessionType.cardio:
+      return Icons.bolt_outlined;
     case SessionType.other:
       return Icons.more_horiz_outlined;
   }
