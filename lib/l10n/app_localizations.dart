@@ -5317,7 +5317,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklySummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Weekly Care Summary'**
+  /// **'Weekly Summary'**
   String get weeklySummaryTitle;
 
   /// No description provided for @weeklySummarySubtitle.
@@ -5347,7 +5347,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklySummaryCareRecorded.
   ///
   /// In en, this message translates to:
-  /// **'Care recorded'**
+  /// **'Recorded this week'**
   String get weeklySummaryCareRecorded;
 
   /// No description provided for @weeklySummaryJournalEntries.
@@ -5457,6 +5457,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A quiet week of showing up still counts.'**
   String get weeklySummaryQuietWeek;
+
+  /// No description provided for @weeklySummaryMostUsedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Most used'**
+  String get weeklySummaryMostUsedLabel;
+
+  /// No description provided for @weeklySummaryDaysShowedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'days you showed up'**
+  String get weeklySummaryDaysShowedUp;
+
+  /// No description provided for @weeklySummaryAffirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Another week of showing up.'**
+  String get weeklySummaryAffirmation;
+
+  /// No description provided for @weeklySummaryFooterPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created on your device — shared only because you chose to. Nothing left your phone until now.'**
+  String get weeklySummaryFooterPrivacy;
 
   /// No description provided for @weeklySummaryAppName.
   ///

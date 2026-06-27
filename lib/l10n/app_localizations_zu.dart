@@ -2888,7 +2888,7 @@ class AppLocalizationsZu extends AppLocalizations {
       'If this privacy policy changes, the update will be included in a new app version. Since we collect no data, changes will only reflect improvements in transparency or new features added to the app.';
 
   @override
-  String get weeklySummaryTitle => 'Weekly Care Summary';
+  String get weeklySummaryTitle => 'Weekly Summary';
 
   @override
   String get weeklySummarySubtitle =>
@@ -2904,7 +2904,7 @@ class AppLocalizationsZu extends AppLocalizations {
   String get weeklySummaryCustomRange => 'Custom range';
 
   @override
-  String get weeklySummaryCareRecorded => 'Care recorded';
+  String get weeklySummaryCareRecorded => 'Recorded this week';
 
   @override
   String get weeklySummaryJournalEntries => 'Journal entries';
@@ -2974,6 +2974,19 @@ class AppLocalizationsZu extends AppLocalizations {
   @override
   String get weeklySummaryQuietWeek =>
       'A quiet week of showing up still counts.';
+
+  @override
+  String get weeklySummaryMostUsedLabel => 'Most used';
+
+  @override
+  String get weeklySummaryDaysShowedUp => 'days you showed up';
+
+  @override
+  String get weeklySummaryAffirmation => 'Another week of showing up.';
+
+  @override
+  String get weeklySummaryFooterPrivacy =>
+      'Created on your device — shared only because you chose to. Nothing left your phone until now.';
 
   @override
   String get weeklySummaryAppName => 'Journey Forward';
