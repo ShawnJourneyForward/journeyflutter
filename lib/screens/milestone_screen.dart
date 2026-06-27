@@ -12,6 +12,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/app_providers.dart';
 import '../components/back_button.dart';
 import '../theme/app_theme.dart';
+import '../theme/share_card_kit.dart';
 import '../utils/haptic_service.dart';
 
 // ─── Milestone definitions ────────────────────────────────────────────────────
@@ -191,7 +192,7 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
           _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
 
-      final image = await boundary.toImage(pixelRatio: 3.0);
+      final image = await boundary.toImage(pixelRatio: 1.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
 
@@ -306,13 +307,28 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
                     Text(l10n.milestoneShareCardLabel,
                         style: AppTextStyles.overline),
                     const SizedBox(height: 10),
-                    RepaintBoundary(
-                      key: _cardKey,
-                      child: _ShareCard(
-                        milestone: selected,
-                        username: profile?.username ?? l10n.appTitle,
-                        days: days,
-                        achieved: isAchieved,
+                    // Native 1080x600 card inside a FittedBox: the on-screen
+                    // preview and the captured PNG are the same pixels.
+                    LayoutBuilder(
+                      builder: (context, c) => SizedBox(
+                        width: c.maxWidth,
+                        height: c.maxWidth * 600 / 1080,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                            width: 1080,
+                            height: 600,
+                            child: RepaintBoundary(
+                              key: _cardKey,
+                              child: _ShareCard(
+                                milestone: selected,
+                                username: profile?.username ?? l10n.appTitle,
+                                days: days,
+                                achieved: isAchieved,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -743,241 +759,180 @@ class _ShareCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final units = _unitLines(l10n);
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Container(
-        decoration: BoxDecoration(
-          // Deep forest — almost black-green, matches the reference exactly.
-          color: AppColors.forest900,
-          borderRadius: AppRadius.xxl,
-        ),
-        clipBehavior: Clip.hardEdge,
+    return SizedBox(
+      width: 1080,
+      height: 600,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
         child: Stack(
           children: [
-            // ── Right-side branch illustration (subtle relief) ────────────
-            Positioned(
-              right: -18,
-              top: -8,
-              bottom: -8,
-              width: 220,
-              child: Opacity(
-                opacity: 0.18,
-                child: CustomPaint(painter: _BotanicalPainter()),
-              ),
-            ),
-
-            // ── Inset honey border ────────────────────────────────────────
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      // ignore: deprecated_member_use
-                      color: AppColors.honey400.withValues(alpha: 0.55),
-                      width: 1.0,
-                    ),
+            const Positioned.fill(child: ColoredBox(color: kScCream)),
+            // Botanical relief, off the right edge, vertically centred.
+            const Positioned(
+              right: -90,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Opacity(
+                  opacity: 0.12,
+                  child: SizedBox(
+                    width: 560,
+                    height: 620,
+                    child: CustomPaint(painter: BotanicalSprig(color: kScForest)),
                   ),
                 ),
               ),
             ),
-
-            // ── Content ───────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 18, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // Double border frame.
+            Positioned(
+              left: 20,
+              top: 20,
+              right: 20,
+              bottom: 20,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: kScForest, width: 2),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 28,
+              top: 28,
+              right: 28,
+              bottom: 28,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(color: kScForestFaint, width: 1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+            // Content.
+            Positioned(
+              left: 28,
+              top: 28,
+              right: 28,
+              bottom: 28,
+              child: Stack(
                 children: [
-                  // ── Brand row ───────────────────────────────────────────
-                  Row(
-                    children: [
-                      Icon(Icons.eco_rounded,
-                          size: 13,
-                          // ignore: deprecated_member_use
-                          color: AppColors.honey300.withValues(alpha: 0.85)),
-                      const SizedBox(width: 6),
-                      Text(
-                        l10n.milestoneShareCardBrand,
-                        style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.forest200,
-                          letterSpacing: 2.4,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const Spacer(),
-
-                  // ── Hero number + day/sober stack ───────────────────────
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _heroNumber,
-                        style: AppTextStyles.headlineSerif.copyWith(
-                          color: AppColors.cream,
-                          fontSize: 84,
-                          height: 0.95,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(54, 40, 54, 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              units.top,
-                              style: AppTextStyles.headlineSerif.copyWith(
-                                color: AppColors.cream,
-                                fontSize: 22,
-                                height: 1.1,
-                                fontWeight: FontWeight.w400,
+                            const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CustomPaint(
+                                  painter: LotusMark(
+                                      color: kScHoney,
+                                      includeCircle: false,
+                                      strokeWidth: 6)),
+                            ),
+                            const SizedBox(width: 14),
+                            Text('JOURNEY FORWARD',
+                                style: scInt(25, kScBrandGreen,
+                                    w: FontWeight.w600, ls: 0.26 * 25)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(_heroNumber,
+                                style: scFrau(180, kScTitleGreen,
+                                    w: FontWeight.w900,
+                                    height: 0.82,
+                                    ls: -0.02 * 180)),
+                            const SizedBox(width: 30),
+                            Text('${units.top}\n${units.bottom}',
+                                style: scFrau(72, kScForest,
+                                    w: FontWeight.w600, height: 0.98)),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        Container(width: 340, height: 2, color: kScForestFaint),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Container(
+                              width: 78,
+                              height: 78,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: kScForestFaint, width: 2),
+                              ),
+                              child: const SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: CustomPaint(
+                                    painter: LotusMark(
+                                        color: kScBarForest,
+                                        includeCircle: false,
+                                        strokeWidth: 5)),
                               ),
                             ),
-                            Text(
-                              units.bottom,
-                              style: AppTextStyles.headlineSerif.copyWith(
-                                color: AppColors.cream,
-                                fontSize: 22,
-                                height: 1.1,
-                                fontWeight: FontWeight.w400,
-                              ),
+                            const SizedBox(width: 24),
+                            Flexible(
+                              child: Text(milestone.label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: scFrau(82, kScHoney,
+                                      w: FontWeight.w700,
+                                      height: 1.0,
+                                      ls: -0.01 * 82)),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-
-                  const SizedBox(height: 6),
-
-                  // ── Honey rule under the hero block ─────────────────────
-                  Container(
-                    width: 140,
-                    height: 0.8,
-                    // ignore: deprecated_member_use
-                    color: AppColors.honey400.withValues(alpha: 0.55),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // ── Sprout chip + serif milestone label ─────────────────
-                  Row(
-                    children: [
-                      Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            // ignore: deprecated_member_use
-                            color: AppColors.honey400.withValues(alpha: 0.55),
-                            width: 0.9,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(Icons.eco_rounded,
-                            size: 16, color: AppColors.forest400),
-                      ),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          milestone.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.headlineSerif.copyWith(
-                            color: AppColors.honey300,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w500,
-                            height: 1.0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const Spacer(),
-
-                  // ── Footer: user · journeyforward.app ───────────────────
-                  Row(
-                    children: [
-                      Icon(Icons.account_circle_outlined,
-                          size: 14,
-                          // ignore: deprecated_member_use
-                          color: AppColors.honey300.withValues(alpha: 0.85)),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          _displayName(l10n),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.honey300,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Container(
-                        width: 1,
-                        height: 14,
-                        // ignore: deprecated_member_use
-                        color: AppColors.honey400.withValues(alpha: 0.45),
-                      ),
-                      const SizedBox(width: 14),
-                      Text(
-                        'journeyforward.app',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.honey300,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            // ignore: deprecated_member_use
-                            color: AppColors.honey400.withValues(alpha: 0.55),
-                            width: 0.8,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(Icons.energy_savings_leaf_outlined,
-                            size: 11, color: AppColors.honey300),
-                      ),
-                    ],
+                  // Footer: user | journeyforward.app
+                  Positioned(
+                    left: 54,
+                    bottom: 34,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline_rounded,
+                            size: 30, color: kScBrandGreen),
+                        const SizedBox(width: 13),
+                        Text(_displayName(l10n),
+                            style: scInt(30, kScRowLabel, w: FontWeight.w600)),
+                        const SizedBox(width: 20),
+                        Text('|', style: scInt(30, kScForestFaint)),
+                        const SizedBox(width: 20),
+                        Text('journeyforward.app',
+                            style: scInt(30, kScBrandGreen)),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-
-            // ── Lock overlay for unachieved milestones ────────────────────
+            // Lock overlay for unachieved milestones.
             if (!achieved)
               Positioned.fill(
-                child: Container(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
                     // ignore: deprecated_member_use
                     color: AppColors.forest900.withValues(alpha: 0.62),
-                    borderRadius: AppRadius.xxl,
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.lock_outline_rounded,
-                          color: AppColors.honey300, size: 28),
-                      const SizedBox(height: 8),
+                          color: AppColors.honey200, size: 64),
+                      const SizedBox(height: 18),
                       Text(
                         l10n.milestoneDaysToUnlock(milestone.days - days),
-                        style: AppTextStyles.labelMedium
-                            .copyWith(color: AppColors.honey200),
+                        style: scInt(34, AppColors.honey100,
+                            w: FontWeight.w600),
                       ),
                     ],
                   ),
