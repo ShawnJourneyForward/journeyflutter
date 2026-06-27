@@ -12,6 +12,7 @@ import '../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
+import '../theme/share_card_kit.dart';
 import '../utils/haptic_service.dart';
 
 // ─── Weekly Care Summary Screen ───────────────────────────────────────────────
@@ -575,7 +576,7 @@ class _WeeklySummaryCard extends StatelessWidget {
                 width: 520,
                 height: 520,
                 child:
-                    CustomPaint(painter: _BotanicalSprigPainter(color: _kForest)),
+                    CustomPaint(painter: BotanicalSprig(color: _kForest)),
               ),
             ),
           ),
@@ -623,7 +624,7 @@ class _WeeklySummaryCard extends StatelessWidget {
                             width: 74,
                             height: 74,
                             child: CustomPaint(
-                                painter: _LotusPainter(
+                                painter: LotusMark(
                                     color: _kForest, includeCircle: true)),
                           ),
                           const SizedBox(width: 22),
@@ -799,7 +800,7 @@ class _WeeklySummaryCard extends StatelessWidget {
                           width: 34,
                           height: 34,
                           child: CustomPaint(
-                              painter: _LotusPainter(
+                              painter: LotusMark(
                                   color: _kForest,
                                   includeCircle: false,
                                   strokeWidth: 4.6)),
@@ -818,116 +819,4 @@ class _WeeklySummaryCard extends StatelessWidget {
       ),
     );
   }
-}
-
-// ─── Lotus mark ──────────────────────────────────────────────────────────────
-// Stroked lotus from the design template (120x120 viewBox). The full mark adds
-// the enclosing circle + inner petal; the compact footer mark is petals only.
-
-class _LotusPainter extends CustomPainter {
-  const _LotusPainter({
-    required this.color,
-    this.includeCircle = true,
-    this.strokeWidth = 4,
-  });
-
-  final Color color;
-  final bool includeCircle;
-  final double strokeWidth;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.width / 120.0;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth * s
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    Path petal(List<double> c) => Path()
-      ..moveTo(c[0] * s, c[1] * s)
-      ..cubicTo(c[2] * s, c[3] * s, c[4] * s, c[5] * s, c[6] * s, c[7] * s)
-      ..cubicTo(c[8] * s, c[9] * s, c[10] * s, c[11] * s, c[12] * s, c[13] * s)
-      ..close();
-
-    if (includeCircle) {
-      canvas.drawCircle(Offset(60 * s, 60 * s), 52 * s, paint);
-    }
-    canvas.drawPath(
-        petal([60, 58, 47, 46, 49, 26, 60, 16, 71, 26, 73, 46, 60, 58]), paint);
-    if (includeCircle) {
-      canvas.drawPath(
-          petal([60, 50, 54, 44, 55, 31, 60, 25, 65, 31, 66, 44, 60, 50]),
-          paint);
-    }
-    canvas.drawPath(
-        petal([60, 78, 40, 76, 27, 65, 28, 55, 40, 57, 54, 66, 60, 73]), paint);
-    canvas.drawPath(
-        petal([60, 78, 80, 76, 93, 65, 92, 55, 80, 57, 66, 66, 60, 73]), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _LotusPainter old) =>
-      old.color != color ||
-      old.includeCircle != includeCircle ||
-      old.strokeWidth != strokeWidth;
-}
-
-
-// ─── Botanical sprig (right-edge decoration on the warning footer) ─────────
-// A small stylised twig with leaves fanning out, painted at low opacity so
-// the warning copy still reads cleanly. Strokes only — keeps it cheap.
-
-class _BotanicalSprigPainter extends CustomPainter {
-  const _BotanicalSprigPainter({required this.color});
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.1
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final w = size.width;
-    final h = size.height;
-
-    // Main stem: gentle S-curve from bottom-left up to top-right.
-    final stem = Path()
-      ..moveTo(w * 0.15, h * 0.95)
-      ..cubicTo(
-        w * 0.30, h * 0.70,
-        w * 0.55, h * 0.45,
-        w * 0.85, h * 0.10,
-      );
-    canvas.drawPath(stem, stroke);
-
-    // Leaves: 5 elongated almond shapes branching off the stem at varying
-    // angles. Each is drawn with two quadratic curves so the silhouette
-    // tapers to a point at both ends — the visual signature of a leaf.
-    void drawLeaf(double tx, double ty, double angle, double leafLen) {
-      canvas.save();
-      canvas.translate(tx, ty);
-      canvas.rotate(angle);
-      final lw = leafLen * 0.42; // leaf width = ~42% of length
-      final p = Path()
-        ..moveTo(0, 0)
-        ..quadraticBezierTo(leafLen * 0.5, -lw, leafLen, 0)
-        ..quadraticBezierTo(leafLen * 0.5, lw, 0, 0);
-      canvas.drawPath(p, stroke);
-      canvas.restore();
-    }
-
-    drawLeaf(w * 0.22, h * 0.82, -0.95, w * 0.32);
-    drawLeaf(w * 0.32, h * 0.66, 0.55, w * 0.30);
-    drawLeaf(w * 0.46, h * 0.52, -1.10, w * 0.34);
-    drawLeaf(w * 0.58, h * 0.38, 0.40, w * 0.30);
-    drawLeaf(w * 0.72, h * 0.22, -1.20, w * 0.28);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
