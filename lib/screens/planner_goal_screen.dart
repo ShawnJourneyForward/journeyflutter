@@ -61,6 +61,9 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  // "Training for an event" — makes the end date an event day the calendar flags.
+  bool _isEvent = false;
+
   bool _saving = false;
   bool _loadedExisting = false;
   PlannerGoal? _existing;
@@ -88,6 +91,7 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
     _titleCtrl.text = g.title;
     _startDate = g.startDate;
     _endDate = g.endDate;
+    _isEvent = g.isEvent;
 
     if (g.measure != null) _measure = g.measure!;
     if (g.targetValue != null) {
@@ -243,6 +247,8 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
       title: title,
       notes: base?.notes,
       archived: base?.archived ?? false,
+      // An event must have a day to flag; if none was picked it's just a goal.
+      isEvent: _isEvent && _endDate != null,
       startDate: _startDate,
       endDate: _endDate,
       measure: _type == GoalType.exercise ? _measure : null,
@@ -361,6 +367,23 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
 
                   const SizedBox(height: 12),
 
+                  // ── Goal vs event ─────────────────────────────────────────
+                  // Flags the end date as an event day (the planner calendar
+                  // marks it). Pacing/progress are identical either way.
+                  _SectionLabel(l10n.plannerGoalKindQuestion),
+                  const SizedBox(height: 10),
+                  _ChoiceWrap<bool>(
+                    options: const [false, true],
+                    isSelected: (e) => e == _isEvent,
+                    labelFor: (e) =>
+                        e ? l10n.plannerGoalKindEvent : l10n.plannerGoalKindGoal,
+                    onTap: (e) {
+                      H.selection();
+                      setState(() => _isEvent = e);
+                    },
+                  ),
+                  const SizedBox(height: 22),
+
                   // ── Date window (both types) ──────────────────────────────
                   _DateRow(
                     label: l10n.plannerStartDateLabel,
@@ -372,7 +395,9 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
                   ),
                   const SizedBox(height: 10),
                   _DateRow(
-                    label: l10n.plannerEndDateLabel,
+                    label: _isEvent
+                        ? l10n.plannerEventDayLabel
+                        : l10n.plannerEndDateLabel,
                     value: _endDate == null ? null : _formatDate(_endDate!),
                     onTap: () async {
                       final picked = await _pickDate(

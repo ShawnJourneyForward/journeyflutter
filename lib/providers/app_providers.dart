@@ -1066,6 +1066,14 @@ final activeGoalIdProvider = Provider<String?>((ref) {
 final todaySessionProvider = Provider<PlannerSession?>((ref) {
   final sessions = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
   if (sessions.isEmpty) return null;
+  // Re-run when the calendar date changes (NOT every tick) so "today's session"
+  // rolls over at local midnight even while the app stays open — otherwise a
+  // stale `now` keeps yesterday's session showing past midnight. Mirrors the
+  // date-granular pattern used by [soberDaysProvider].
+  ref.watch(timerProvider.select((s) {
+    final t = s.value ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }));
   final now = DateTime.now();
   bool isToday(DateTime d) =>
       d.year == now.year && d.month == now.month && d.day == now.day;
@@ -1087,6 +1095,13 @@ final todaySessionProvider = Provider<PlannerSession?>((ref) {
 /// and the weekly-progress ring.
 final currentWeekSessionsProvider = Provider<List<PlannerSession>>((ref) {
   final sessions = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+  // Roll the "this week" window over at local midnight even with the app open
+  // (so a session drops off the week list the day after, and Monday resets
+  // cleanly). Date-granular select → rebuilds once a day, not every tick.
+  ref.watch(timerProvider.select((s) {
+    final t = s.value ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }));
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final weekStart = today.subtract(Duration(days: today.weekday - 1));

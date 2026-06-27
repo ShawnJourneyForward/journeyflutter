@@ -15213,6 +15213,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can change this anytime in Settings.'**
   String get onbLanguageSub;
+
+  /// Badge on a feature/content that is not yet available.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get commonComingSoon;
+
+  /// Question above the goal-vs-event choice in the goal editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you working toward a goal, or training for an event?'**
+  String get plannerGoalKindQuestion;
+
+  /// Goal-kind choice: an open goal (no fixed event day).
+  ///
+  /// In en, this message translates to:
+  /// **'A goal'**
+  String get plannerGoalKindGoal;
+
+  /// Goal-kind choice: training for a dated event (race, competition).
+  ///
+  /// In en, this message translates to:
+  /// **'An event'**
+  String get plannerGoalKindEvent;
+
+  /// Label for the event date field, and the calendar flag marking the event day.
+  ///
+  /// In en, this message translates to:
+  /// **'Event day'**
+  String get plannerEventDayLabel;
 }
 
 class _AppLocalizationsDelegate

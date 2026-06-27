@@ -140,6 +140,20 @@ void main() {
       expect(json['type'], 'exercise');
       expect(json['archived'], false);
     });
+
+    test('isEvent round-trips; legacy rows default to a plain goal', () {
+      final event = PlannerGoal(
+        id: 'ev1',
+        createdAt: DateTime(2026, 3, 1),
+        type: GoalType.exercise,
+        title: 'Cape Town Marathon',
+        endDate: DateTime(2026, 9, 20),
+        isEvent: true,
+      );
+      expect(PlannerGoal.fromJson(roundTrip(event.toJson())).isEvent, isTrue);
+      // A record written before isEvent existed loads as a non-event goal.
+      expect(PlannerGoal.fromJson(const {}).isEvent, isFalse);
+    });
   });
 
   group('PlannerSession', () {

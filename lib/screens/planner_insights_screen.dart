@@ -427,6 +427,11 @@ class _SimpleLineChart extends StatelessWidget {
           LineChartBarData(
             spots: spots,
             isCurved: true,
+            // Stop the spline from dipping below the lowest point: with mostly-
+            // flat weeks then a spike, an unclamped curve undershoots below zero
+            // and reads as a phantom "dip" before the rise. This pins the curve
+            // so it never overshoots past the actual data values.
+            preventCurveOverShooting: true,
             color: color,
             barWidth: 2.5,
             dotData: const FlDotData(show: false),

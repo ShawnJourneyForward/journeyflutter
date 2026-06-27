@@ -62,8 +62,15 @@ class PlannerGoal {
   final String? notes;
   final bool archived;
 
+  /// True when this goal is "training for an event" rather than an open goal —
+  /// it makes [endDate] the event day, which the planner calendar flags. Purely
+  /// presentational (pacing/progress are unchanged). Defaults false; older
+  /// records (no `isEvent` key) load as open goals.
+  final bool isEvent;
+
   // Campaign window (both flavours). [endDate] is the "by" date that drives the
   // countdown and the on-track pacing; [startDate] anchors the window start.
+  // For an event goal it is the event day.
   final DateTime? startDate;
   final DateTime? endDate;
 
@@ -82,6 +89,7 @@ class PlannerGoal {
     required this.title,
     this.notes,
     this.archived = false,
+    this.isEvent = false,
     this.startDate,
     this.endDate,
     this.measure,
@@ -97,6 +105,7 @@ class PlannerGoal {
         title: safeString(j['title']),
         notes: j['notes'] as String?,
         archived: safeBool(j['archived']),
+        isEvent: safeBool(j['isEvent']),
         startDate: nullableParseDate(j['startDate']),
         // Recover a date from older field names so test-build goals keep theirs.
         endDate: nullableParseDate(j['endDate']) ??
@@ -116,6 +125,7 @@ class PlannerGoal {
         'title': title,
         if (notes != null) 'notes': notes,
         'archived': archived,
+        'isEvent': isEvent,
         if (startDate != null) 'startDate': startDate!.toIso8601String(),
         if (endDate != null) 'endDate': endDate!.toIso8601String(),
         if (measure != null) 'measure': measure!.name,
@@ -134,6 +144,7 @@ class PlannerGoal {
     String? title,
     String? notes,
     bool? archived,
+    bool? isEvent,
     DateTime? startDate,
     DateTime? endDate,
     ExerciseMeasure? measure,
@@ -148,6 +159,7 @@ class PlannerGoal {
         title: title ?? this.title,
         notes: notes ?? this.notes,
         archived: archived ?? this.archived,
+        isEvent: isEvent ?? this.isEvent,
         startDate: startDate ?? this.startDate,
         endDate: endDate ?? this.endDate,
         measure: measure ?? this.measure,

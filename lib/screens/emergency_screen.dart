@@ -1383,9 +1383,38 @@ class _PatternListTile extends StatelessWidget {
 // ─── Tab 2: Meditation ────────────────────────────────────────────────────
 
 class _MeditationGuide {
-  const _MeditationGuide(this.title, this.duration, this.steps);
+  const _MeditationGuide(this.title, this.duration, this.steps,
+      {this.ready = false});
   final String title, duration;
   final List<String> steps;
+
+  /// Whether this guide is live. Only Urge Surfing ships for launch; the rest
+  /// are written but show a "Coming soon" badge and aren't selectable yet.
+  final bool ready;
+}
+
+/// Small pill used to flag not-yet-live content (e.g. unreleased meditations).
+class _ComingSoonPill extends StatelessWidget {
+  const _ComingSoonPill({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppColors.stone100,
+          borderRadius: AppRadius.pill,
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.caption.copyWith(
+            color: AppColors.stone500,
+            fontWeight: FontWeight.w600,
+            fontSize: 10,
+            letterSpacing: 0.3,
+          ),
+        ),
+      );
 }
 
 List<_MeditationGuide> _buildMeditations(AppLocalizations l10n) => [
@@ -1398,7 +1427,7 @@ List<_MeditationGuide> _buildMeditations(AppLocalizations l10n) => [
         l10n.meditationUrgeSurfingStep4,
         l10n.meditationUrgeSurfingStep5,
         l10n.meditationUrgeSurfingStep6,
-      ]),
+      ], ready: true),
       _MeditationGuide(
           l10n.meditationBodyScanTitle, l10n.meditationDuration15min, [
         l10n.meditationBodyScanStep0,
@@ -1777,11 +1806,15 @@ class _MeditationTabState extends State<_MeditationTab>
               ...List.generate(meditations.length, (i) {
                 final g = meditations[i];
                 final selected = i == _selected;
+                // Only live guides are tappable; the rest read as "Coming soon"
+                // and are dimmed + non-interactive until their scripts ship.
                 return GestureDetector(
-                  onTap: () => setState(() {
-                    _selected = i;
-                    _step = 0;
-                  }),
+                  onTap: g.ready
+                      ? () => setState(() {
+                            _selected = i;
+                            _step = 0;
+                          })
+                      : null,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(bottom: 8),
@@ -1795,31 +1828,38 @@ class _MeditationTabState extends State<_MeditationTab>
                         width: selected ? 1.5 : 1,
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(g.title,
-                                  style: AppTextStyles.titleSmall.copyWith(
-                                      color: selected
-                                          ? AppColors.forest700
-                                          : AppColors.stone800)),
-                              Text(g.duration, style: AppTextStyles.bodySmall),
-                            ],
+                    child: Opacity(
+                      opacity: g.ready ? 1.0 : 0.55,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(g.title,
+                                    style: AppTextStyles.titleSmall.copyWith(
+                                        color: selected
+                                            ? AppColors.forest700
+                                            : AppColors.stone800)),
+                                Text(g.duration,
+                                    style: AppTextStyles.bodySmall),
+                              ],
+                            ),
                           ),
-                        ),
-                        Icon(
-                          selected
-                              ? Icons.radio_button_checked_rounded
-                              : Icons.radio_button_off_rounded,
-                          color: selected
-                              ? AppColors.forest600
-                              : AppColors.stone300,
-                          size: 20,
-                        ),
-                      ],
+                          if (!g.ready)
+                            _ComingSoonPill(label: l10n.commonComingSoon)
+                          else
+                            Icon(
+                              selected
+                                  ? Icons.radio_button_checked_rounded
+                                  : Icons.radio_button_off_rounded,
+                              color: selected
+                                  ? AppColors.forest600
+                                  : AppColors.stone300,
+                              size: 20,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 );

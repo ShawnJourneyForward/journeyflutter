@@ -8676,4 +8676,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onbLanguageSub => 'You can change this anytime in Settings.';
+
+  @override
+  String get commonComingSoon => 'Coming soon';
+
+  @override
+  String get plannerGoalKindQuestion =>
+      'Are you working toward a goal, or training for an event?';
+
+  @override
+  String get plannerGoalKindGoal => 'A goal';
+
+  @override
+  String get plannerGoalKindEvent => 'An event';
+
+  @override
+  String get plannerEventDayLabel => 'Event day';
 }

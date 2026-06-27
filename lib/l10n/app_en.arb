@@ -5035,5 +5035,15 @@
   "onbLanguageHeadline": "Choose your language",
   "@onbLanguageHeadline": {"description": "Onboarding language-picker step headline (shown only when more than one language is enabled)."},
   "onbLanguageSub": "You can change this anytime in Settings.",
-  "@onbLanguageSub": {"description": "Onboarding language-picker step subtitle."}
+  "@onbLanguageSub": {"description": "Onboarding language-picker step subtitle."},
+  "commonComingSoon": "Coming soon",
+  "@commonComingSoon": {"description": "Badge on a feature/content that is not yet available."},
+  "plannerGoalKindQuestion": "Are you working toward a goal, or training for an event?",
+  "@plannerGoalKindQuestion": {"description": "Question above the goal-vs-event choice in the goal editor."},
+  "plannerGoalKindGoal": "A goal",
+  "@plannerGoalKindGoal": {"description": "Goal-kind choice: an open goal (no fixed event day)."},
+  "plannerGoalKindEvent": "An event",
+  "@plannerGoalKindEvent": {"description": "Goal-kind choice: training for a dated event (race, competition)."},
+  "plannerEventDayLabel": "Event day",
+  "@plannerEventDayLabel": {"description": "Label for the event date field, and the calendar flag marking the event day."}
 }
