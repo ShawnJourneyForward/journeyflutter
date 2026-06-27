@@ -328,18 +328,22 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    // Event days in the browsed month: the end date of any live "event" goal,
-    // flagged on the calendar so a race / competition stands out.
+    // Goal/event days in the browsed month: the target (end) date of ANY live
+    // goal gets a calendar flag so "set a goal → see it on the calendar" holds.
+    // We keep two sets so the flag and a11y label can tell a dated *event*
+    // (race/competition) apart from a plain goal deadline.
     final eventDays = <String>{};
+    final goalDays = <String>{};
     for (final g in goals) {
       final d = g.endDate;
-      if (g.isEvent &&
-          !g.archived &&
-          d != null &&
-          d.year == _month.year &&
-          d.month == _month.month) {
-        eventDays.add(_dk(DateTime(d.year, d.month, d.day)));
+      if (g.archived ||
+          d == null ||
+          d.year != _month.year ||
+          d.month != _month.month) {
+        continue;
       }
+      final key = _dk(DateTime(d.year, d.month, d.day));
+      (g.isEvent ? eventDays : goalDays).add(key);
     }
 
     // Index the BROWSED month's sessions by day-key. A day can hold SEVERAL
@@ -365,6 +369,7 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
           today: today,
           sessionsByDay: byDay,
           eventDays: eventDays,
+          goalDays: goalDays,
           onPrev: () => _shiftMonth(-1),
           onNext: () => _shiftMonth(1),
           // Tap a day: empty → new session seeded to that date; one → edit it;
@@ -479,6 +484,7 @@ class _PlannerMonthCard extends StatelessWidget {
     required this.today,
     required this.sessionsByDay,
     required this.eventDays,
+    required this.goalDays,
     required this.onPrev,
     required this.onNext,
     required this.onTapDay,
@@ -487,7 +493,8 @@ class _PlannerMonthCard extends StatelessWidget {
   final DateTime month; // first day of the month
   final DateTime today;
   final Map<String, List<PlannerSession>> sessionsByDay;
-  final Set<String> eventDays; // day-keys flagged as an event
+  final Set<String> eventDays; // day-keys with a dated *event* goal
+  final Set<String> goalDays; // day-keys with a plain dated goal (non-event)
   final VoidCallback onPrev;
   final VoidCallback onNext;
   final void Function(DateTime date, List<PlannerSession> sessions) onTapDay;
@@ -587,6 +594,7 @@ class _PlannerMonthCard extends StatelessWidget {
                           sessions: daySessions,
                           isToday: isToday,
                           isEvent: eventDays.contains(_dk(date)),
+                          isGoalTarget: goalDays.contains(_dk(date)),
                           size: cellSize,
                           onTap: () => onTapDay(date, daySessions),
                         );
@@ -631,6 +639,7 @@ class _PlannerDayTile extends StatelessWidget {
     required this.sessions,
     required this.isToday,
     required this.isEvent,
+    required this.isGoalTarget,
     required this.size,
     required this.onTap,
   });
@@ -639,6 +648,7 @@ class _PlannerDayTile extends StatelessWidget {
   final List<PlannerSession> sessions;
   final bool isToday;
   final bool isEvent;
+  final bool isGoalTarget;
   final double size;
   final VoidCallback onTap;
 
@@ -675,8 +685,13 @@ class _PlannerDayTile extends StatelessWidget {
                 ? l10n.plannerA11yDaySkipped
                 : l10n.plannerA11yDayTodo;
     final baseLabel = hasSession ? '$dateLabel, $statusText' : dateLabel;
-    final semanticLabel =
-        isEvent ? '$baseLabel, ${l10n.plannerEventDayLabel}' : baseLabel;
+    // Both an event and a plain goal show a flag; the screen-reader suffix tells
+    // them apart ("Event day" vs the existing "A goal" label — no new string).
+    final semanticLabel = isEvent
+        ? '$baseLabel, ${l10n.plannerEventDayLabel}'
+        : isGoalTarget
+            ? '$baseLabel, ${l10n.plannerGoalKindGoal}'
+            : baseLabel;
 
     return Semantics(
       label: semanticLabel,
@@ -746,15 +761,17 @@ class _PlannerDayTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              // Event flag — the day of an "event" goal (race, competition…).
-              if (isEvent)
+              // Goal flag — the target day of any goal. Honey for a dated event
+              // (race/competition), forest for a plain goal deadline, so the
+              // two read apart at a glance.
+              if (isEvent || isGoalTarget)
                 Positioned(
                   top: 2,
                   left: 2,
                   child: Icon(
                     Icons.flag_rounded,
                     size: size < 34 ? 9 : 11,
-                    color: AppColors.honey600,
+                    color: isEvent ? AppColors.honey600 : AppColors.forest600,
                   ),
                 ),
             ],
