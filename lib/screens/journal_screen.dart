@@ -525,7 +525,6 @@ class _JournalTab extends ConsumerWidget {
                   accent: AppColors.honey600,
                   title: l10n.journalDailyReflectionTitle,
                   subtitle: l10n.journalDailyReflectionSubtitle,
-                  badge: l10n.journalBadgeNew,
                   onTap: () {
                     Navigator.of(ctx).pop();
                     Navigator.of(context).push(MaterialPageRoute(
@@ -4853,7 +4852,6 @@ class _EntryKindCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.badge,
   });
   final IconData icon;
   final Color tint;
@@ -4862,7 +4860,6 @@ class _EntryKindCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final String? badge;
 
   @override
   Widget build(BuildContext context) {
@@ -4897,30 +4894,9 @@ class _EntryKindCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(title,
-                          style: AppTextStyles.titleSmall
-                              .copyWith(color: AppColors.stone800)),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: accent,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(badge!,
-                              style: AppTextStyles.labelSmall.copyWith(
-                                color: Colors.white,
-                                fontSize: 10,
-                                letterSpacing: 0.4,
-                              )),
-                        ),
-                      ],
-                    ],
-                  ),
+                  Text(title,
+                      style: AppTextStyles.titleSmall
+                          .copyWith(color: AppColors.stone800)),
                   const SizedBox(height: 4),
                   Text(subtitle,
                       style: AppTextStyles.bodySmall

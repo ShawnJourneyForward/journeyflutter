@@ -2482,6 +2482,14 @@ final intentionProvider =
 /// morning prompt or evening review surfaces at the right time.
 final todaysIntentionProvider = Provider<DailyIntention?>((ref) {
   final list = ref.watch(intentionProvider).valueOrNull ?? const [];
+  // Roll over at local midnight even while the app stays open, so yesterday's
+  // intention clears and the morning prompt returns instead of re-opening the
+  // stale entry to edit. Date-granular select → rebuilds once a day, not every
+  // tick (same pattern as todaySessionProvider / currentWeekSessionsProvider).
+  ref.watch(timerProvider.select((s) {
+    final t = s.value ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }));
   final now = DateTime.now();
   for (final e in list) {
     if (e.date.year == now.year &&
