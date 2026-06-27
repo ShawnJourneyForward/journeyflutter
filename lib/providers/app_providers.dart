@@ -892,7 +892,7 @@ final plannerWeightProvider =
     AsyncNotifierProvider<PlannerWeightNotifier, List<PlannerWeightLog>>(
         PlannerWeightNotifier.new);
 
-// ─── Planner logged activities (manual + Strava) ─────────────────────────────
+// ─── Planner logged activities (manual) ─────────────────────────────────────
 
 class PlannerActivityNotifier extends AsyncNotifier<List<PlannerActivity>> {
   static const _key = 'planner_activities';
@@ -923,44 +923,9 @@ class PlannerActivityNotifier extends AsyncNotifier<List<PlannerActivity>> {
         debugPrint('[PlannerActivityNotifier] write error: $e');
       });
 
-  /// Add a Strava-imported activity, de-duplicated by [PlannerActivity.stravaId]
-  /// so re-syncing the same window never creates duplicates. An activity with a
-  /// null/empty stravaId is treated as not-yet-seen and added.
-  Future<void> addImported(PlannerActivity activity) =>
-      _writeLock = _writeLock.then((_) async {
-        final current = state.valueOrNull ?? [];
-        final sid = activity.stravaId;
-        if (sid != null &&
-            sid.isNotEmpty &&
-            current.any((e) => e.stravaId == sid)) {
-          return; // already imported — skip silently
-        }
-        final updated = [activity, ...current]
-          ..sort((a, b) => b.date.compareTo(a.date));
-        await _persist(updated);
-      }).catchError((Object e, StackTrace s) {
-        debugPrint('[PlannerActivityNotifier] write error: $e');
-      });
-
   Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
         final current = state.valueOrNull ?? [];
         await _persist(current.where((e) => e.id != id).toList());
-      }).catchError((Object e, StackTrace s) {
-        debugPrint('[PlannerActivityNotifier] write error: $e');
-      });
-
-  /// Remove every IMPORTED activity in one shot, keeping manually-logged ones.
-  /// Used to clean out a legacy Strava import that's skewing history/insights.
-  /// An activity counts as imported when its source is Strava OR it carries a
-  /// stravaId.
-  Future<void> clearImported() => _writeLock = _writeLock.then((_) async {
-        final current = state.valueOrNull ?? [];
-        final kept = current
-            .where((a) =>
-                a.source != ActivitySource.strava &&
-                (a.stravaId == null || a.stravaId!.isEmpty))
-            .toList();
-        await _persist(kept);
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerActivityNotifier] write error: $e');
       });
@@ -1000,39 +965,11 @@ class PlannerSettingsNotifier extends AsyncNotifier<PlannerSettings> {
   // lands before build() resolves can't blow away the persisted record.
   PlannerSettings get _current => state.valueOrNull ?? const PlannerSettings();
 
-  Future<void> setStravaConnected(bool connected) =>
-      _writeLock = _writeLock.then((_) async {
-        await _persist(_current.copyWith(stravaConnected: connected));
-      }).catchError((Object e, StackTrace s) {
-        debugPrint('[PlannerSettingsNotifier] write error: $e');
-      });
-
-  Future<void> setLastStravaSync(DateTime? when) =>
-      _writeLock = _writeLock.then((_) async {
-        await _persist(when == null
-            ? _current.copyWith(clearLastStravaSync: true)
-            : _current.copyWith(lastStravaSync: when));
-      }).catchError((Object e, StackTrace s) {
-        debugPrint('[PlannerSettingsNotifier] write error: $e');
-      });
-
   Future<void> setActiveGoalId(String? goalId) =>
       _writeLock = _writeLock.then((_) async {
         await _persist(goalId == null
             ? _current.copyWith(clearActiveGoalId: true)
             : _current.copyWith(activeGoalId: goalId));
-      }).catchError((Object e, StackTrace s) {
-        debugPrint('[PlannerSettingsNotifier] write error: $e');
-      });
-
-  /// Disconnect Strava: clear the connected flag and the last-sync stamp in one
-  /// write. (The OAuth tokens in flutter_secure_storage are cleared separately
-  /// by the Strava service — they never live in this record.)
-  Future<void> disconnectStrava() => _writeLock = _writeLock.then((_) async {
-        await _persist(_current.copyWith(
-          stravaConnected: false,
-          clearLastStravaSync: true,
-        ));
       }).catchError((Object e, StackTrace s) {
         debugPrint('[PlannerSettingsNotifier] write error: $e');
       });

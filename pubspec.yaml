@@ -56,10 +56,6 @@ dependencies:
   url_launcher: ^6.3.1            # crisis lines call buttons, recovery group links
   intl: ^0.20.2                   # date formatting, en-ZA locale for ZAR amounts
 
-  # ── Networking / OAuth (Strava planner integration) ──────────────────────────
-  http: ^1.2.0                    # Strava REST API calls (token exchange + activities)
-  flutter_web_auth_2: ^5.0.3      # Strava OAuth authorization-code flow (in-app browser tab)
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -94,7 +90,6 @@ flutter:
     - assets/icons/
     - assets/lottie/        # optional: celebration animations
     - assets/audio/         # bundled meditation audio (urge surfing)
-    - assets/strava/        # Strava branding assets (powered-by marks per brand guidelines)
 
   # ── Bundled fonts (offline, no network round-trip) ──────────────────────────
   # Both files are variable fonts (SIL Open Font License). Flutter handles all

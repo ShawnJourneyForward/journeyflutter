@@ -25,7 +25,6 @@ import '../components/glass_card.dart';
 import '../l10n/app_localizations.dart';
 import '../models/planner_activity.dart';
 import '../providers/app_providers.dart';
-import '../services/strava_config.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/locale_format.dart';
@@ -98,8 +97,6 @@ class PlannerInsightsScreen extends ConsumerWidget {
     final hasDistance = distanceByWeek.any((v) => v > 0);
     final hasVolume = volumeByWeek.any((v) => v > 0);
     final hasAnything = inWindow.isNotEmpty;
-    final fromStrava =
-        inWindow.any((a) => a.source == ActivitySource.strava);
 
     // Per-discipline aggregation over the window, busiest first.
     final byDiscipline = <ActivityDiscipline, _DisciplineAgg>{};
@@ -222,18 +219,6 @@ class PlannerInsightsScreen extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                        ],
-
-                        // ── Strava attribution (only when enabled) ───────
-                        if (stravaConfigured && fromStrava) ...[
-                          const SizedBox(height: 14),
-                          Center(
-                            child: Text(
-                              l10n.plannerPoweredByStrava,
-                              style: AppTextStyles.caption
-                                  .copyWith(color: AppColors.stone400),
-                            ),
-                          ),
                         ],
                       ],
                     )

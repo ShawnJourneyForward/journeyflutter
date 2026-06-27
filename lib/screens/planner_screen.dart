@@ -11,14 +11,12 @@ import '../l10n/app_localizations.dart';
 import '../models/planner_goal.dart';
 import '../models/planner_session.dart';
 import '../providers/app_providers.dart';
-import '../services/strava_config.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/haptic_service.dart';
 import '../utils/locale_format.dart';
 import 'planner_activity_sheet.dart';
 import 'planner_session_sheet.dart';
-import 'planner_strava_sheet.dart';
 
 // ─── Date key helper — YYYY-MM-DD (mirrors heatmap_screen) ───────────────────
 String _dk(DateTime d) =>
@@ -1107,19 +1105,6 @@ class _StreaksTab extends ConsumerWidget {
             context.push('/planner-share');
           },
         ),
-
-        // ── Strava connect (only when credentials are configured) ─────────
-        if (stravaConfigured) ...[
-          const SizedBox(height: 12),
-          _ActionTile(
-            icon: Icons.directions_bike_rounded,
-            label: l10n.plannerConnectStrava,
-            onTap: () {
-              H.light();
-              showStravaSheet(context, ref);
-            },
-          ),
-        ],
       ],
     );
   }

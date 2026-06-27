@@ -313,7 +313,7 @@ void main() {
   });
 
   group('PlannerActivity', () {
-    test('full round-trip preserves every field (strava source)', () {
+    test('full round-trip preserves every field', () {
       final activity = PlannerActivity(
         id: 'a1',
         date: DateTime(2026, 5, 24, 8),
@@ -321,8 +321,6 @@ void main() {
         minutes: 120,
         distanceKm: 21.1,
         avgHeartRate: 152,
-        source: ActivitySource.strava,
-        stravaId: '987654321',
         goalId: 'g1',
         notes: 'Half marathon time trial',
       );
@@ -335,55 +333,20 @@ void main() {
       expect(decoded.minutes, 120);
       expect(decoded.distanceKm, 21.1);
       expect(decoded.avgHeartRate, 152);
-      expect(decoded.source, ActivitySource.strava);
-      expect(decoded.stravaId, '987654321');
       expect(decoded.goalId, 'g1');
       expect(decoded.notes, 'Half marathon time trial');
     });
 
-    test('manual source with no stravaId round-trips and omits stravaId', () {
-      final activity = PlannerActivity(
-        id: 'a2',
-        date: DateTime(2026, 5, 25),
-        type: SessionType.easyRun,
-        minutes: 30,
-        distanceKm: 5,
-        source: ActivitySource.manual,
-      );
-
-      final json = activity.toJson();
-      expect(json.containsKey('stravaId'), isFalse);
-      expect(json['source'], 'manual');
-
-      final decoded = PlannerActivity.fromJson(roundTrip(json));
-      expect(decoded.source, ActivitySource.manual);
-      expect(decoded.stravaId, isNull);
-    });
-
-    test('minimal JSON loads defaults; source defaults to manual', () {
+    test('minimal JSON loads safe defaults', () {
       final decoded = PlannerActivity.fromJson(const {});
 
       expect(decoded.id, isNotEmpty);
       expect(decoded.type, SessionType.other);
       expect(decoded.minutes, 0); // safeInt fallback.
-      expect(decoded.source, ActivitySource.manual); // safe default.
       expect(decoded.distanceKm, isNull);
       expect(decoded.avgHeartRate, isNull);
-      expect(decoded.stravaId, isNull);
       expect(decoded.goalId, isNull);
       expect(decoded.notes, isNull);
-    });
-
-    test('unknown ActivitySource degrades to manual', () {
-      final decoded = PlannerActivity.fromJson({
-        'id': 'a3',
-        'date': DateTime(2026, 5, 26).toIso8601String(),
-        'type': 'easyRun',
-        'minutes': 40,
-        'source': 'garmin', // unknown.
-      });
-
-      expect(decoded.source, ActivitySource.manual);
     });
 
     test('paceMinPerKm derives minutes/km when distance is positive', () {
@@ -427,10 +390,8 @@ void main() {
 
       expect(json.containsKey('distanceKm'), isFalse);
       expect(json.containsKey('avgHeartRate'), isFalse);
-      expect(json.containsKey('stravaId'), isFalse);
       expect(json.containsKey('goalId'), isFalse);
       expect(json.containsKey('notes'), isFalse);
-      expect(json['source'], 'manual'); // always written.
       expect(json['minutes'], 25); // always written.
     });
 
@@ -573,51 +534,23 @@ void main() {
 
   group('PlannerSettings', () {
     test('full round-trip preserves every field', () {
-      final settings = PlannerSettings(
-        stravaConnected: true,
-        lastStravaSync: DateTime(2026, 5, 30, 12),
-        activeGoalId: 'g1',
-      );
+      const settings = PlannerSettings(activeGoalId: 'g1');
 
       final decoded = PlannerSettings.fromJson(roundTrip(settings.toJson()));
 
-      expect(decoded.stravaConnected, isTrue);
-      expect(decoded.lastStravaSync, settings.lastStravaSync);
       expect(decoded.activeGoalId, 'g1');
     });
 
     test('empty JSON loads defaults without throwing', () {
       final decoded = PlannerSettings.fromJson(const {});
 
-      expect(decoded.stravaConnected, isFalse);
-      expect(decoded.lastStravaSync, isNull);
       expect(decoded.activeGoalId, isNull);
     });
 
-    test('tolerates a wrong-typed stravaConnected flag', () {
-      // safeBool tolerates the common 1/0 and "true"/"false" encodings.
-      expect(
-        PlannerSettings.fromJson(const {'stravaConnected': 1}).stravaConnected,
-        isTrue,
-      );
-      expect(
-        PlannerSettings.fromJson(const {'stravaConnected': 'true'})
-            .stravaConnected,
-        isTrue,
-      );
-      expect(
-        PlannerSettings.fromJson(const {'stravaConnected': 'nonsense'})
-            .stravaConnected,
-        isFalse,
-      );
-    });
+    test('toJson omits null activeGoalId', () {
+      final json = const PlannerSettings().toJson();
 
-    test('toJson omits null lastStravaSync and activeGoalId', () {
-      final json = const PlannerSettings(stravaConnected: false).toJson();
-
-      expect(json.containsKey('lastStravaSync'), isFalse);
       expect(json.containsKey('activeGoalId'), isFalse);
-      expect(json['stravaConnected'], false); // always written.
     });
   });
 

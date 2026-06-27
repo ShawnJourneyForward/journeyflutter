@@ -1,14 +1,9 @@
-// Logged-activity history — a date-descending list of every PlannerActivity
-// (manual or Strava-imported), each a swipe-to-delete card. Mirrors the
-// Stillwater idiom of the recovery History screen's activity rows: a SolidCard
-// with a left accent bar in the session colour, a soft icon chip, and a meta
-// line. Distances and paces convert to imperial only at display time via the
-// locale_format helpers; all prose comes from the l10n getters.
-//
-// Strava brand compliance: any row sourced from Strava carries an orange
-// "Strava" source chip (#FC4C02), and whenever at least one Strava-sourced
-// activity is visible we render a "Powered by Strava" attribution mark at the
-// bottom of the screen — Strava requires attribution wherever its data shows.
+// Logged-activity history — a date-descending list of every PlannerActivity,
+// each a swipe-to-delete card. Mirrors the Stillwater idiom of the recovery
+// History screen's activity rows: a SolidCard with a left accent bar in the
+// session colour, a soft icon chip, and a meta line. Distances and paces
+// convert to imperial only at display time via the locale_format helpers; all
+// prose comes from the l10n getters.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,18 +15,11 @@ import '../l10n/app_localizations.dart';
 import '../models/planner_activity.dart';
 import '../models/planner_session.dart';
 import '../providers/app_providers.dart';
-import '../services/strava_config.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/haptic_service.dart';
 import '../utils/locale_format.dart';
 import 'planner_screen.dart' show sessionTypeLabel;
-
-/// Strava brand orange — used ONLY for the Strava source chip and the
-/// attribution mark, per the Strava brand guidelines. Not a palette token
-/// (the Stillwater palette has no orange / no blue), so it lives here as the
-/// single sanctioned exception, scoped to Strava attribution surfaces.
-const Color _kStravaOrange = Color(0xFFFC4C02);
 
 class PlannerHistoryScreen extends ConsumerWidget {
   const PlannerHistoryScreen({super.key});
@@ -67,79 +55,6 @@ class PlannerHistoryScreen extends ConsumerWidget {
       ),
     );
     return confirmed ?? false;
-  }
-
-  // ─── Clear-imported (legacy Strava) confirmation + action ───────────────────
-
-  Future<void> _confirmClearImported(
-      BuildContext context, WidgetRef ref, int count) async {
-    final l10n = AppLocalizations.of(context);
-    H.medium();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card,
-        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
-        title: Text(l10n.plannerClearImportedTitle,
-            style: AppTextStyles.titleMedium),
-        content: Text(l10n.plannerClearImportedBody(count),
-            style: AppTextStyles.bodyMedium),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.commonCancel,
-                style: AppTextStyles.labelLarge
-                    .copyWith(color: AppColors.stone600)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.commonDelete,
-                style: AppTextStyles.labelLarge
-                    .copyWith(color: AppColors.blush500)),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
-      await ref.read(plannerActivityProvider.notifier).clearImported();
-    }
-  }
-
-  // ─── Source chip ────────────────────────────────────────────────────────────
-
-  Widget _sourceChip(AppLocalizations l10n, ActivitySource source) {
-    final isStrava = source == ActivitySource.strava;
-    final label =
-        isStrava ? l10n.plannerSourceStrava : l10n.plannerSourceManual;
-    final fg = isStrava ? _kStravaOrange : AppColors.stone600;
-    final bg = isStrava
-        ? _kStravaOrange.withValues(alpha: 0.10)
-        : AppColors.stone100;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: AppRadius.pill,
-      ),
-      child: Text(
-        label,
-        style: AppTextStyles.labelSmall.copyWith(color: fg),
-      ),
-    );
-  }
-
-  // ─── Powered-by-Strava attribution mark ─────────────────────────────────────
-
-  Widget _poweredByStrava(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-      child: Center(
-        child: Text(
-          l10n.plannerPoweredByStrava,
-          style: AppTextStyles.labelSmall.copyWith(color: _kStravaOrange),
-        ),
-      ),
-    );
   }
 
   // ─── Activity card ──────────────────────────────────────────────────────────
@@ -274,10 +189,6 @@ class PlannerHistoryScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        if (stravaConfigured) ...[
-                          const SizedBox(width: 8),
-                          _sourceChip(l10n, a.source),
-                        ],
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -456,15 +367,6 @@ class PlannerHistoryScreen extends ConsumerWidget {
       for (final s in sessions)
         if (s.skipped) _HistoryRow.skip(s),
     ]..sort((x, y) => y.date.compareTo(x.date));
-    final hasStrava =
-        activities.any((a) => a.source == ActivitySource.strava);
-    // Count legacy IMPORTED rows (Strava source or a stravaId) so we can offer a
-    // one-tap cleanup when an old import is skewing history/insights.
-    final importedCount = activities
-        .where((a) =>
-            a.source == ActivitySource.strava ||
-            (a.stravaId != null && a.stravaId!.isNotEmpty))
-        .length;
 
     return Scaffold(
       backgroundColor: AppColors.cream,
@@ -482,15 +384,6 @@ class PlannerHistoryScreen extends ConsumerWidget {
                     child: Text(l10n.plannerHistory,
                         style: AppTextStyles.titleLarge),
                   ),
-                  // Clean out a legacy Strava import (kept off-screen otherwise).
-                  if (importedCount > 0)
-                    IconButton(
-                      onPressed: () =>
-                          _confirmClearImported(context, ref, importedCount),
-                      icon: const Icon(Icons.delete_sweep_outlined),
-                      color: AppColors.stone500,
-                      tooltip: l10n.plannerClearImported,
-                    ),
                 ],
               ),
             ),
@@ -542,9 +435,6 @@ class PlannerHistoryScreen extends ConsumerWidget {
                       },
                     ),
             ),
-
-            // ── Strava attribution (only when the integration is enabled) ──
-            if (stravaConfigured && hasStrava) _poweredByStrava(l10n),
           ],
         ),
       ),

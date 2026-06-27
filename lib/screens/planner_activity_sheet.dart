@@ -207,7 +207,6 @@ class _PlannerActivitySheetState extends ConsumerState<_PlannerActivitySheet> {
         minutes: minutes,
         distanceKm: _needsDistance ? _distanceKm() : null,
         avgHeartRate: hrRaw.isEmpty ? null : int.tryParse(hrRaw),
-        source: ActivitySource.manual,
         goalId: widget.goalId,
         notes: notesRaw.isEmpty ? null : notesRaw,
         rpe: _rpe(),

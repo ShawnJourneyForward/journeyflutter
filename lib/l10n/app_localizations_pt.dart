@@ -8496,48 +8496,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsImperialWeightSub => 'Show weight in lb instead of kg';
 
   @override
-  String get plannerConnectStrava => 'Connect Strava';
-
-  @override
-  String get plannerStravaNotConfigured =>
-      'Strava isn\'t set up in this build.';
-
-  @override
-  String get plannerPoweredByStrava => 'Powered by Strava';
-
-  @override
-  String get plannerStravaPrivacyTitle => 'About Strava sync';
-
-  @override
-  String get plannerStravaPrivacyBody =>
-      'Your activities are fetched directly from Strava to your phone. Journey Forward has no server and never sees your account.';
-
-  @override
-  String get plannerStravaReadOnly => 'Read-only access';
-
-  @override
-  String get plannerStravaDirect => 'Direct device connection';
-
-  @override
-  String get plannerStravaNoServer => 'No server involved';
-
-  @override
-  String get plannerStravaDisconnect => 'Disconnect Strava';
-
-  @override
-  String plannerStravaImported(int count) {
-    return 'Imported $count activities';
-  }
-
-  @override
-  String get plannerStravaRateLimited =>
-      'Strava is rate-limiting requests. Try again later.';
-
-  @override
   String get plannerSourceManual => 'Manual';
-
-  @override
-  String get plannerSourceStrava => 'Strava';
 
   @override
   String get plannerHistory => 'History';
@@ -8672,17 +8631,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get plannerSessionNotesHint =>
       'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries';
-
-  @override
-  String get plannerClearImported => 'Clear imported';
-
-  @override
-  String get plannerClearImportedTitle => 'Remove imported activities?';
-
-  @override
-  String plannerClearImportedBody(int count) {
-    return 'This removes $count activities imported from Strava. Your manually-logged activities are kept.';
-  }
 
   @override
   String get onbLanguageHeadline => 'Choose your language';

@@ -665,7 +665,6 @@ class _PlannerSessionCompleteSheetState
           type: _type,
           minutes: minutes ?? 0,
           distanceKm: distance,
-          source: ActivitySource.manual,
           goalId: session.goalId.isEmpty ? null : session.goalId,
           notes: _notes(),
           discipline: disciplineFromSessionType(_type),

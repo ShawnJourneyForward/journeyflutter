@@ -1,7 +1,7 @@
-// A logged (completed) workout — either entered manually or imported from
-// Strava. Distinct from PlannerSession (which is the PLAN). Activities feed
-// history, weekly volume, the per-discipline insights tiles, and any exercise
-// goal whose date window they fall inside.
+// A logged (completed) workout, entered manually. Distinct from PlannerSession
+// (which is the PLAN). Activities feed history, weekly volume, the
+// per-discipline insights tiles, and any exercise goal whose date window they
+// fall inside.
 //
 // Distance is stored canonical KM, weights canonical KG, elevation/pool length
 // canonical METRES — conversion to imperial happens ONLY at display time.
@@ -20,9 +20,6 @@
 
 import '../utils/safe_parse.dart';
 import 'planner_session.dart';
-
-/// Where a logged activity came from. Persisted as the enum `.name` string.
-enum ActivitySource { manual, strava }
 
 /// The kind of exercise a logged activity is. This is the user-facing axis for
 /// logging and the per-discipline insights tiles. Persisted as the enum `.name`.
@@ -55,17 +52,6 @@ const Set<ActivityDiscipline> elevationDisciplines = {
   ActivityDiscipline.walk,
   ActivityDiscipline.hike,
 };
-
-/// Parse an [ActivitySource] from its stored `.name`, degrading to
-/// [ActivitySource.manual] for null / non-String / unknown values.
-ActivitySource activitySourceFromName(Object? v) {
-  if (v is String) {
-    for (final s in ActivitySource.values) {
-      if (s.name == v) return s;
-    }
-  }
-  return ActivitySource.manual;
-}
 
 /// Parse an [ActivityDiscipline] from its stored `.name`, degrading to
 /// [ActivityDiscipline.other] for null / non-String / unknown values.
@@ -167,8 +153,6 @@ class PlannerActivity {
   final int minutes;
   final double? distanceKm;
   final int? avgHeartRate;
-  final ActivitySource source;
-  final String? stravaId;
   final String? goalId;
   final String? notes;
 
@@ -193,8 +177,8 @@ class PlannerActivity {
   // ── Plan snapshot ──────────────────────────────────────────────────────────
   // Set ONLY when this activity was logged by closing off a planned
   // PlannerSession — it captures what the session originally planned so history
-  // can show "planned X · did Y". Null on free-form manual logs and Strava
-  // imports. Both additive + optional, so older rows load unchanged.
+  // can show "planned X · did Y". Null on free-form manual logs. Both additive +
+  // optional, so older rows load unchanged.
   final double? plannedDistanceKm; // canonical KM the session planned
   final int? plannedMinutes; // minutes the session planned
 
@@ -205,8 +189,6 @@ class PlannerActivity {
     required this.minutes,
     this.distanceKm,
     this.avgHeartRate,
-    this.source = ActivitySource.manual,
-    this.stravaId,
     this.goalId,
     this.notes,
     this.discipline,
@@ -262,8 +244,6 @@ class PlannerActivity {
       minutes: safeInt(j['minutes']),
       distanceKm: safeNullableDouble(j['distanceKm']),
       avgHeartRate: safeNullableInt(j['avgHeartRate']),
-      source: activitySourceFromName(j['source']),
-      stravaId: j['stravaId'] as String?,
       goalId: j['goalId'] as String?,
       notes: j['notes'] as String?,
       // Null when the key is absent (older rows) — effectiveDiscipline derives.
@@ -286,8 +266,6 @@ class PlannerActivity {
         'minutes': minutes,
         if (distanceKm != null) 'distanceKm': distanceKm,
         if (avgHeartRate != null) 'avgHeartRate': avgHeartRate,
-        'source': source.name,
-        if (stravaId != null) 'stravaId': stravaId,
         if (goalId != null) 'goalId': goalId,
         if (notes != null) 'notes': notes,
         if (discipline != null) 'discipline': discipline!.name,
@@ -307,8 +285,6 @@ class PlannerActivity {
     int? minutes,
     double? distanceKm,
     int? avgHeartRate,
-    ActivitySource? source,
-    String? stravaId,
     String? goalId,
     String? notes,
     ActivityDiscipline? discipline,
@@ -326,8 +302,6 @@ class PlannerActivity {
         minutes: minutes ?? this.minutes,
         distanceKm: distanceKm ?? this.distanceKm,
         avgHeartRate: avgHeartRate ?? this.avgHeartRate,
-        source: source ?? this.source,
-        stravaId: stravaId ?? this.stravaId,
         goalId: goalId ?? this.goalId,
         notes: notes ?? this.notes,
         discipline: discipline ?? this.discipline,

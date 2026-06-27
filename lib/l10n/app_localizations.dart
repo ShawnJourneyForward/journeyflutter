@@ -14890,83 +14890,11 @@ abstract class AppLocalizations {
   /// **'Show weight in lb instead of kg'**
   String get settingsImperialWeightSub;
 
-  /// Button to link a Strava account.
-  ///
-  /// In en, this message translates to:
-  /// **'Connect Strava'**
-  String get plannerConnectStrava;
-
-  /// Message shown when Strava API credentials are absent.
-  ///
-  /// In en, this message translates to:
-  /// **'Strava isn\'t set up in this build.'**
-  String get plannerStravaNotConfigured;
-
-  /// Attribution required by Strava's brand guidelines.
-  ///
-  /// In en, this message translates to:
-  /// **'Powered by Strava'**
-  String get plannerPoweredByStrava;
-
-  /// Title of the Strava privacy explainer.
-  ///
-  /// In en, this message translates to:
-  /// **'About Strava sync'**
-  String get plannerStravaPrivacyTitle;
-
-  /// Body of the Strava privacy explainer.
-  ///
-  /// In en, this message translates to:
-  /// **'Your activities are fetched directly from Strava to your phone. Journey Forward has no server and never sees your account.'**
-  String get plannerStravaPrivacyBody;
-
-  /// Note that Strava access is read-only.
-  ///
-  /// In en, this message translates to:
-  /// **'Read-only access'**
-  String get plannerStravaReadOnly;
-
-  /// Note that the Strava connection is phone-to-Strava.
-  ///
-  /// In en, this message translates to:
-  /// **'Direct device connection'**
-  String get plannerStravaDirect;
-
-  /// Note that no Journey Forward server is involved in Strava sync.
-  ///
-  /// In en, this message translates to:
-  /// **'No server involved'**
-  String get plannerStravaNoServer;
-
-  /// Button to unlink the Strava account.
-  ///
-  /// In en, this message translates to:
-  /// **'Disconnect Strava'**
-  String get plannerStravaDisconnect;
-
-  /// Confirmation after importing Strava activities.
-  ///
-  /// In en, this message translates to:
-  /// **'Imported {count} activities'**
-  String plannerStravaImported(int count);
-
-  /// Message shown when Strava returns a rate-limit error.
-  ///
-  /// In en, this message translates to:
-  /// **'Strava is rate-limiting requests. Try again later.'**
-  String get plannerStravaRateLimited;
-
   /// Activity-source label: entered by hand.
   ///
   /// In en, this message translates to:
   /// **'Manual'**
   String get plannerSourceManual;
-
-  /// Activity-source label: imported from Strava.
-  ///
-  /// In en, this message translates to:
-  /// **'Strava'**
-  String get plannerSourceStrava;
 
   /// Heading for the activity history screen.
   ///
@@ -15207,24 +15135,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session plan (optional) - e.g. 8 x 400m, 200m jog recoveries'**
   String get plannerSessionNotesHint;
-
-  /// History action: remove legacy imported (Strava) activities.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear imported'**
-  String get plannerClearImported;
-
-  /// Confirm-dialog title for clearing imported activities.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove imported activities?'**
-  String get plannerClearImportedTitle;
-
-  /// Confirm-dialog body for clearing imported activities.
-  ///
-  /// In en, this message translates to:
-  /// **'This removes {count} activities imported from Strava. Your manually-logged activities are kept.'**
-  String plannerClearImportedBody(int count);
 
   /// Onboarding language-picker step headline (shown only when more than one language is enabled).
   ///

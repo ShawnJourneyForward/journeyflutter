@@ -3,15 +3,11 @@
 
     <!-- ── Network: NONE — this build is fully offline ──────────────────────
          No analytics, no crash reporting, no cloud sync, no ads; all fonts and
-         assets are bundled. The Strava integration is disabled for this release
-         (kStravaEnabled=false in lib/services/strava_config.dart), so the app
-         makes no network calls at all. We actively STRIP the INTERNET and
-         ACCESS_NETWORK_STATE permissions that transitive plugins (e.g.
-         flutter_web_auth_2) would otherwise merge in, so the SHIPPED manifest
+         assets are bundled, so the app makes no network calls at all. We
+         actively STRIP the INTERNET and ACCESS_NETWORK_STATE permissions that
+         any transitive plugin might otherwise merge in, so the SHIPPED manifest
          declares no network capability — and the Play "Data safety" form is an
-         honest "No data collected, no data shared".
-         To re-enable Strava later: remove these two tools:node="remove" lines,
-         restore the CallbackActivity (in git history), and refill the creds. -->
+         honest "No data collected, no data shared". -->
     <uses-permission android:name="android.permission.INTERNET"
         tools:node="remove"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"
@@ -68,10 +64,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <!-- Strava OAuth callback activity intentionally OMITTED — Strava is
-             disabled for this offline release. Restore it (see git history) if
-             flutter_web_auth_2 / Strava is re-enabled. -->
 
         <!-- flutter_local_notifications receivers ───────────────────────── -->
         <receiver

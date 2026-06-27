@@ -8,7 +8,6 @@
 //   • goalCampaignStats sums in-window activity (any discipline) toward an
 //     exercise goal's target and reports the on-track pace verdict;
 //   • markComplete flips completed and links completedActivityId;
-//   • addImported de-dups by stravaId (importing the same id twice -> one row);
 //   • PlannerSettings mutators persist on top of a RESTORED record, not a
 //     freshly-defaulted one (so an early write can't blow away a stored field).
 //
@@ -413,21 +412,15 @@ void main() {
     });
   });
 
-  // ─── Planner activities (manual + Strava import) ───────────────────────────
+  // ─── Planner activities ────────────────────────────────────────────────────
 
   group('PlannerActivityNotifier', () {
-    PlannerActivity activity(String id,
-            {String? stravaId,
-            ActivitySource source = ActivitySource.manual,
-            DateTime? date}) =>
-        PlannerActivity(
+    PlannerActivity activity(String id, {DateTime? date}) => PlannerActivity(
           id: id,
           date: date ?? DateTime(2026, 5, 10),
           type: SessionType.easyRun,
           minutes: 30,
           distanceKm: 5,
-          source: source,
-          stravaId: stravaId,
         );
 
     test('seeds empty and add() stores the activity', () async {
@@ -446,44 +439,6 @@ void main() {
       expect(acts.first.id, 'a1');
     });
 
-    test('addImported() de-dups by stravaId (same id twice -> one row)',
-        () async {
-      SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await container.read(plannerActivityProvider.future);
-
-      await container.read(plannerActivityProvider.notifier).addImported(
-            activity('import-a', stravaId: '12345',
-                source: ActivitySource.strava),
-          );
-      // Re-importing the same Strava id (different local row id) must NOT
-      // create a second row.
-      await container.read(plannerActivityProvider.notifier).addImported(
-            activity('import-b', stravaId: '12345',
-                source: ActivitySource.strava),
-          );
-
-      final acts = await container.read(plannerActivityProvider.future);
-      expect(acts.where((a) => a.stravaId == '12345'), hasLength(1));
-      expect(acts.first.id, 'import-a'); // the first import won
-    });
-
-    test('addImported() with a distinct stravaId adds a second row', () async {
-      SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await container.read(plannerActivityProvider.future);
-      await container.read(plannerActivityProvider.notifier).addImported(
-          activity('i1', stravaId: '1', source: ActivitySource.strava));
-      await container.read(plannerActivityProvider.notifier).addImported(
-          activity('i2', stravaId: '2', source: ActivitySource.strava));
-
-      expect(await container.read(plannerActivityProvider.future), hasLength(2));
-    });
-
     test('delete() removes the activity by id', () async {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
@@ -498,25 +453,18 @@ void main() {
       expect(await container.read(plannerActivityProvider.future), isEmpty);
     });
 
-    test('persists across a fresh container (incl. dedup state)', () async {
+    test('persists across a fresh container', () async {
       SharedPreferences.setMockInitialValues({});
       final c1 = ProviderContainer();
       addTearDown(c1.dispose);
 
       await c1.read(plannerActivityProvider.future);
-      await c1.read(plannerActivityProvider.notifier).addImported(
-          activity('i1', stravaId: '99', source: ActivitySource.strava));
+      await c1.read(plannerActivityProvider.notifier).add(activity('i1'));
 
-      // Fresh container: re-importing the same stravaId must still de-dup
-      // against the persisted row.
       final c2 = ProviderContainer();
       addTearDown(c2.dispose);
-      await c2.read(plannerActivityProvider.future);
-      await c2.read(plannerActivityProvider.notifier).addImported(
-          activity('i1-again', stravaId: '99', source: ActivitySource.strava));
-
       final acts = await c2.read(plannerActivityProvider.future);
-      expect(acts.where((a) => a.stravaId == '99'), hasLength(1));
+      expect(acts.where((a) => a.id == 'i1'), hasLength(1));
     });
 
     test('corrupt JSON returns empty list (data not wiped)', () async {
@@ -532,24 +480,19 @@ void main() {
   // ─── Planner settings (single record) ──────────────────────────────────────
 
   group('PlannerSettingsNotifier', () {
-    test('seeds default and mutators persist', () async {
+    test('seeds default and setActiveGoalId persists', () async {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       final initial = await container.read(plannerSettingsProvider.future);
-      expect(initial.stravaConnected, isFalse);
       expect(initial.activeGoalId, isNull);
 
-      await container
-          .read(plannerSettingsProvider.notifier)
-          .setStravaConnected(true);
       await container
           .read(plannerSettingsProvider.notifier)
           .setActiveGoalId('g1');
 
       final after = await container.read(plannerSettingsProvider.future);
-      expect(after.stravaConnected, isTrue);
       expect(after.activeGoalId, 'g1');
     });
 
@@ -570,56 +513,18 @@ void main() {
           isNull);
     });
 
-    test('disconnectStrava() clears connection and last-sync stamp', () async {
-      SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await container.read(plannerSettingsProvider.future);
-      await container
-          .read(plannerSettingsProvider.notifier)
-          .setStravaConnected(true);
-      await container
-          .read(plannerSettingsProvider.notifier)
-          .setLastStravaSync(DateTime(2026, 5, 1));
-      await container
-          .read(plannerSettingsProvider.notifier)
-          .disconnectStrava();
-
-      final s = await container.read(plannerSettingsProvider.future);
-      expect(s.stravaConnected, isFalse);
-      expect(s.lastStravaSync, isNull);
-    });
-
-    test('mutators persist on top of a RESTORED record, not a default',
-        () async {
-      // Seed a NON-default settings record already on disk. A mutator that
-      // reads a freshly-defaulted object instead of this restored one would
-      // silently wipe activeGoalId — this pins the never-clobber rule.
-      const restored = PlannerSettings(
-        stravaConnected: true,
-        activeGoalId: 'goal-keep',
-      );
+    test('mutator reads a RESTORED record, not a default', () async {
+      // Seed a NON-default settings record already on disk; a mutator that read
+      // a freshly-defaulted object instead would silently wipe activeGoalId.
+      const restored = PlannerSettings(activeGoalId: 'goal-keep');
       SharedPreferences.setMockInitialValues({});
       seedSecureStorage({'planner_settings': jsonEncode(restored.toJson())});
 
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      // Confirm the restored values loaded.
       final loaded = await container.read(plannerSettingsProvider.future);
-      expect(loaded.stravaConnected, isTrue);
       expect(loaded.activeGoalId, 'goal-keep');
-
-      // Mutate ONE field; the others must survive untouched.
-      await container
-          .read(plannerSettingsProvider.notifier)
-          .setLastStravaSync(DateTime(2026, 6, 1));
-
-      final after = await container.read(plannerSettingsProvider.future);
-      expect(after.activeGoalId, 'goal-keep'); // not wiped
-      expect(after.stravaConnected, isTrue); // not wiped
-      expect(after.lastStravaSync, DateTime(2026, 6, 1));
     });
 
     test('persists across a fresh container', () async {
@@ -645,9 +550,7 @@ void main() {
       addTearDown(container.dispose);
 
       final s = await container.read(plannerSettingsProvider.future);
-      expect(s.stravaConnected, isFalse);
       expect(s.activeGoalId, isNull);
-      expect(s.lastStravaSync, isNull);
     });
   });
 
@@ -662,7 +565,6 @@ void main() {
           type: type,
           minutes: minutes,
           distanceKm: km,
-          source: ActivitySource.manual,
         );
 
     PlannerGoal exerciseGoal({
