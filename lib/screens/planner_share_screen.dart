@@ -22,6 +22,7 @@ import '../models/planner_activity.dart';
 import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
+import '../theme/share_card_kit.dart';
 import '../utils/haptic_service.dart';
 import '../utils/locale_format.dart';
 
@@ -88,7 +89,7 @@ class _PlannerShareScreenState extends ConsumerState<PlannerShareScreen> {
       final boundary =
           _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
-      final image = await boundary.toImage(pixelRatio: 3.0);
+      final image = await boundary.toImage(pixelRatio: 1.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
       final bytes = byteData.buffer.asUint8List();
@@ -143,7 +144,9 @@ class _PlannerShareScreenState extends ConsumerState<PlannerShareScreen> {
     }
     final rows = byDiscipline.entries.toList()
       ..sort((x, y) => y.value.minutes.compareTo(x.value.minutes));
-    final topRows = rows.take(5).toList();
+    // Cap at 3 so the fixed 1080-tall card never overflows into the footer;
+    // any remaining disciplines still count toward the headline totals above.
+    final topRows = rows.take(3).toList();
 
     // ── Range subtitle ─────────────────────────────────────────────────────
     final df = DateFormat.MMMd(Intl.defaultLocale);
@@ -215,17 +218,32 @@ class _PlannerShareScreenState extends ConsumerState<PlannerShareScreen> {
                   const SizedBox(height: 20),
 
                   // ── The shareable card ─────────────────────────────────
-                  RepaintBoundary(
-                    key: _cardKey,
-                    child: _ShareCard(
-                      subtitle: subtitle,
-                      totalDistance:
-                          formatDistance(totalKm, imperial: imperial, l10n: l10n),
-                      totalTime: _fmtActiveTime(l10n, totalMin),
-                      sessions: inRange.length,
-                      rows: topRows,
-                      imperial: imperial,
-                      imperialWeight: imperialWeight,
+                  // Built at native 1080x1080 inside a FittedBox so the on-screen
+                  // preview and the captured PNG are the same pixels.
+                  LayoutBuilder(
+                    builder: (context, c) => SizedBox(
+                      width: c.maxWidth,
+                      height: c.maxWidth,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: SizedBox(
+                          width: 1080,
+                          height: 1080,
+                          child: RepaintBoundary(
+                            key: _cardKey,
+                            child: _ShareCard(
+                              subtitle: subtitle,
+                              totalDistance: formatDistance(totalKm,
+                                  imperial: imperial, l10n: l10n),
+                              totalTime: _fmtActiveTime(l10n, totalMin),
+                              sessions: inRange.length,
+                              rows: topRows,
+                              imperial: imperial,
+                              imperialWeight: imperialWeight,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -260,7 +278,7 @@ class _PlannerShareScreenState extends ConsumerState<PlannerShareScreen> {
   }
 }
 
-// ─── The captured card ────────────────────────────────────────────────────────
+// ─── The captured card — Training Summary template (1080x1080) ───────────────
 
 class _ShareCard extends StatelessWidget {
   const _ShareCard({
@@ -291,117 +309,266 @@ class _ShareCard extends StatelessWidget {
     return _fmtActiveTime(l10n, agg.minutes);
   }
 
+  // Split a "22.7 km" value into a big number + small unit; leaves values with
+  // no trailing alpha unit (e.g. "6", "2h 29m") whole.
+  List<InlineSpan> _valueSpans(String text) {
+    final i = text.lastIndexOf(' ');
+    if (i > 0) {
+      final unit = text.substring(i + 1);
+      if (unit.length <= 3 && RegExp(r'^[A-Za-z]+$').hasMatch(unit)) {
+        return [
+          TextSpan(text: text.substring(0, i)),
+          TextSpan(
+              text: ' $unit',
+              style: scFrau(30, kScDateGrey, w: FontWeight.w500)),
+        ];
+      }
+    }
+    return [TextSpan(text: text)];
+  }
+
+  Widget _statCell(String value, String label) => Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 34),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text.rich(
+                TextSpan(children: _valueSpans(value)),
+                style: scFrau(62, kScTitleGreen, height: 1.0),
+              ),
+              const SizedBox(height: 10),
+              Text(label, maxLines: 1, style: scInt(23, kScDateGrey)),
+            ],
+          ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final totalMin =
+        rows.fold<int>(0, (s, e) => s + e.value.minutes).clamp(1, 1 << 30);
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: AppRadius.xxl,
-        border: Border.all(color: AppColors.softBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      width: 1080,
+      height: 1080,
+      child: Stack(
         children: [
-          // ── Brand row ──────────────────────────────────────────────────
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.mintChip,
-                  borderRadius: AppRadius.pill,
-                  border: Border.all(color: AppColors.forest100),
-                ),
-                child: Icon(Icons.eco_outlined,
-                    size: 16, color: AppColors.forest600),
+          const Positioned.fill(child: ColoredBox(color: kScCream)),
+          const Positioned(
+            right: 18,
+            bottom: 18,
+            child: Opacity(
+              opacity: 0.06,
+              child: SizedBox(
+                width: 460,
+                height: 460,
+                child: CustomPaint(painter: BotanicalSprig(color: kScForest)),
               ),
-              const SizedBox(width: 10),
-              Text(AppLocalizations.of(context).appTitle,
-                  style: AppTextStyles.titleSmall
-                      .copyWith(color: AppColors.forest700)),
-            ],
+            ),
           ),
-          const SizedBox(height: 18),
-
-          // ── Heading + range ────────────────────────────────────────────
-          Text(l10n.plannerShareHeading,
-              style: AppTextStyles.greetingSerif
-                  .copyWith(fontSize: 26, color: AppColors.forestDark)),
-          const SizedBox(height: 2),
-          Text(subtitle,
-              style: AppTextStyles.bodySmall
-                  .copyWith(color: AppColors.stone500)),
-          const SizedBox(height: 18),
-
-          // ── Headline stats ─────────────────────────────────────────────
-          Row(
-            children: [
-              _Stat(label: l10n.plannerTotalDistance, value: totalDistance),
-              _Stat(label: l10n.plannerTotalActiveTime, value: totalTime),
-              _Stat(label: l10n.plannerMeasureSessions, value: '$sessions'),
-            ],
+          Positioned(
+            left: 34,
+            top: 34,
+            right: 34,
+            bottom: 34,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(color: kScForest, width: 2),
+                borderRadius: BorderRadius.circular(26),
+              ),
+            ),
           ),
-
-          if (rows.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Divider(color: AppColors.stone100, height: 1),
-            const SizedBox(height: 14),
-            Text(l10n.plannerByActivity,
-                style: AppTextStyles.overline),
-            const SizedBox(height: 10),
-            ...rows.map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
+          Positioned(
+            left: 44,
+            top: 44,
+            right: 44,
+            bottom: 44,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(color: kScForestFaint, width: 1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 44,
+            top: 44,
+            right: 44,
+            bottom: 44,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(64, 58, 64, 58),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 30,
-                        height: 30,
-                        alignment: Alignment.center,
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: CustomPaint(
+                                painter: LotusMark(color: kScForest)),
+                          ),
+                          const SizedBox(width: 22),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('JOURNEY FORWARD',
+                                    style: scInt(21, kScBrandGreen,
+                                        w: FontWeight.w600,
+                                        height: 1.0,
+                                        ls: 0.22 * 21)),
+                                const SizedBox(height: 5),
+                                Text(l10n.plannerShareHeading,
+                                    style: scFrau(60, kScTitleGreen,
+                                        height: 1.0, ls: -0.015 * 60)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(subtitle, style: scInt(26, kScDateGrey)),
+                      const SizedBox(height: 40),
+                      // Stat box: distance / active time / sessions.
+                      DecoratedBox(
                         decoration: BoxDecoration(
-                          color: disciplineTint(e.key),
-                          borderRadius: AppRadius.sm,
+                          color: kScStatBox,
+                          border: Border.all(color: kScForestHair),
+                          borderRadius: BorderRadius.circular(22),
                         ),
-                        child: Icon(disciplineIcon(e.key),
-                            size: 16, color: disciplineColor(e.key)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _statCell(
+                                    totalDistance, l10n.plannerTotalDistance),
+                                Container(width: 1, color: kScForestHair),
+                                _statCell(
+                                    totalTime, l10n.plannerTotalActiveTime),
+                                Container(width: 1, color: kScForestHair),
+                                _statCell(
+                                    '$sessions', l10n.plannerMeasureSessions),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(disciplineLabel(l10n, e.key),
-                            style: AppTextStyles.bodyMedium
-                                .copyWith(color: AppColors.stoneText)),
-                      ),
-                      Text(_rowValue(l10n, e.key, e.value),
-                          style: AppTextStyles.titleSmall
-                              .copyWith(color: AppColors.forest700)),
+                      const SizedBox(height: 42),
+                      Text(l10n.plannerByActivity.toUpperCase(),
+                          style: scInt(22, kScBrandGreen,
+                              w: FontWeight.w600, height: 1.0, ls: 0.16 * 22)),
+                      const SizedBox(height: 8),
+                      ...rows.map((e) {
+                        final d = e.key;
+                        final frac = (e.value.minutes / totalMin).clamp(0.04, 1.0);
+                        return Container(
+                          decoration: const BoxDecoration(
+                            border:
+                                Border(bottom: BorderSide(color: kScForestHair)),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 64,
+                                    height: 64,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: disciplineTint(d),
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    child: Icon(disciplineIcon(d),
+                                        size: 36, color: disciplineColor(d)),
+                                  ),
+                                  const SizedBox(width: 22),
+                                  Expanded(
+                                    child: Text(disciplineLabel(l10n, d),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: scInt(34, kScTitleGreen,
+                                            w: FontWeight.w500, height: 1.0)),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(_rowValue(l10n, d, e.value),
+                                      style: scFrau(38, kScTitleGreen,
+                                          height: 1.0)),
+                                ],
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 86, top: 18),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    height: 10,
+                                    // ignore: deprecated_member_use
+                                    color: kScForest.withOpacity(0.1),
+                                    child: FractionallySizedBox(
+                                      alignment: Alignment.centerLeft,
+                                      widthFactor: frac,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: disciplineColor(d),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
-                )),
-          ],
+                ),
+                // Footer pinned to the bottom of the content frame.
+                Positioned(
+                  left: 64,
+                  right: 64,
+                  bottom: 50,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(l10n.weeklySummaryFooterPrivacy,
+                            style: scInt(21, kScFooterGrey, height: 1.4)),
+                      ),
+                      const SizedBox(width: 16),
+                      const SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CustomPaint(
+                            painter: LotusMark(
+                                color: kScForest,
+                                includeCircle: false,
+                                strokeWidth: 4.6)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text('journeyforward.app',
+                          style:
+                              scInt(22, kScBrandGreen, w: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value});
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value,
-                style: AppTextStyles.titleLarge
-                    .copyWith(color: AppColors.forestDark)),
-            const SizedBox(height: 2),
-            Text(label, style: AppTextStyles.caption),
-          ],
-        ),
-      );
 }
