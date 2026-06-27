@@ -1,7 +1,7 @@
 name: journey_forward
 description: Journey Forward — sobriety support app · Stillwater Aesthetic System v6.1
 publish_to: 'none'
-version: 6.3.0+27
+version: 6.3.0+28
 
 environment:
   sdk: '>=3.5.0 <4.0.0'   # flutter_web_auth_2 5.x requires Dart >=3.5.0
