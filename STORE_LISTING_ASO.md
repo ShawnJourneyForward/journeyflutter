@@ -11,6 +11,20 @@ data never leaves your phone.** No account, no cloud, no analytics SDK, no ads.
 
 ---
 
+## 0. Identity (Play Console)
+
+- **Developer / publisher name (public, shown under the app):** `Still Water`
+- **App name:** `Journey Forward`
+- **Package / app ID:** `com.journeyforward.journey_forward`
+- **Contact email (public on listing):** pick ONE and use it everywhere —
+  site currently says `shawn@journeyforward.app`, the web bundle said `hello@…`.
+
+> "Still Water" is the house brand (no "Studios"); "Journey Forward" is the app.
+> The developer name is hard to change after registration — register it as
+> `Still Water` exactly.
+
+---
+
 ## 1. App title & subtitle
 
 - **Title (30 char max):** `Journey Forward: Sober Days`
