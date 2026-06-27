@@ -767,18 +767,21 @@ class _ShareCard extends StatelessWidget {
         child: Stack(
           children: [
             const Positioned.fill(child: ColoredBox(color: kScCream)),
-            // Botanical relief, off the right edge, vertically centred.
-            const Positioned(
-              right: -90,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: Opacity(
-                  opacity: 0.12,
-                  child: SizedBox(
-                    width: 560,
-                    height: 620,
-                    child: CustomPaint(painter: BotanicalSprig(color: kScForest)),
+            // Growth plant — its maturity reflects the milestone's day count, so
+            // a 1-day card shows a sprout and a 1-year card a full plant.
+            Positioned(
+              right: -70,
+              bottom: -40,
+              child: Opacity(
+                opacity: 0.15,
+                child: SizedBox(
+                  width: 600,
+                  height: 600,
+                  child: CustomPaint(
+                    painter: GrowingPlant(
+                      color: kScForest,
+                      stage: GrowingPlant.stageForDays(milestone.days),
+                    ),
                   ),
                 ),
               ),

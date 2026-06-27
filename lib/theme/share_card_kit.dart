@@ -3,6 +3,8 @@
 // are pinned brand artifacts that mirror fixed design mockups, not theme-driven
 // UI, and must look identical regardless of the active app palette.
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 // ── Palette ──────────────────────────────────────────────────────────────────
@@ -146,4 +148,87 @@ class BotanicalSprig extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant BotanicalSprig old) => old.color != color;
+}
+
+// ── Growing plant ────────────────────────────────────────────────────────────
+// A lush potted plant rendered as filled, gently-curved leaves fanning up from
+// the base. [stage] (0..1) drives growth: a tiny sprout near 0, a full leafy
+// plant near 1 — so a milestone card's plant reflects how far the streak has
+// come. Drawn as a soft silhouette (the caller wraps it in a low Opacity), with
+// back leaves dimmer than front ones for depth.
+class GrowingPlant extends CustomPainter {
+  const GrowingPlant({required this.color, required this.stage});
+  final Color color;
+  final double stage; // 0..1
+
+  /// Map a sober-day count to a growth stage on a gentle log curve, so early
+  /// milestones (1 / 3 / 7…) still read as visibly different sprouts.
+  static double stageForDays(int days) {
+    if (days <= 0) return 0.08;
+    final s = math.log(days + 1) / math.log(1100);
+    return s.clamp(0.08, 1.0);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final t = stage.clamp(0.0, 1.0);
+    final base = Offset(w * 0.5, h * 0.99);
+
+    final count = (3 + (t * 10).round()).clamp(3, 13);
+    final fan = 0.55 + 0.85 * t; // half-spread (radians) widens as it grows
+    final maxLen = h * (0.42 + 0.56 * t);
+
+    // Build leaves outer→inner so centre (front) leaves paint last/brightest.
+    final order = List<int>.generate(count, (i) => i);
+    order.sort((a, b) {
+      double centre(int i) => (count == 1) ? 0 : (i / (count - 1) - 0.5).abs();
+      return centre(b).compareTo(centre(a));
+    });
+
+    for (final i in order) {
+      final f = count == 1 ? 0.5 : i / (count - 1); // 0..1 across the fan
+      final ang = (f - 0.5) * 2 * fan; // -fan..+fan from vertical
+      final centreness = 1 - (f - 0.5).abs() * 2; // 1 centre → 0 edge
+      final len = maxLen * (0.62 + 0.38 * centreness);
+      final wid = len * 0.30;
+      final bend = ang * 0.18 * len; // sideways sweep for a natural arc
+      final depth = 0.55 + 0.45 * centreness; // dimmer at the edges
+
+      canvas.save();
+      canvas.translate(base.dx, base.dy);
+      canvas.rotate(ang);
+
+      final leaf = Path()
+        ..moveTo(0, 0)
+        ..cubicTo(-wid, -len * 0.34, bend - wid * 0.45, -len * 0.82, bend, -len)
+        ..cubicTo(bend + wid * 0.45, -len * 0.82, wid, -len * 0.34, 0, 0)
+        ..close();
+      canvas.drawPath(
+          leaf,
+          Paint()
+            ..style = PaintingStyle.fill
+            // ignore: deprecated_member_use
+            ..color = color.withOpacity(depth));
+
+      // Midrib vein — a slightly darker hairline up the centre of the leaf.
+      canvas.drawPath(
+        Path()
+          ..moveTo(0, 0)
+          ..quadraticBezierTo(bend * 0.5, -len * 0.5, bend, -len * 0.96),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = len * 0.018
+          ..strokeCap = StrokeCap.round
+          // ignore: deprecated_member_use
+          ..color = kScCream.withOpacity(0.18 * depth),
+      );
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GrowingPlant old) =>
+      old.color != color || old.stage != stage;
 }

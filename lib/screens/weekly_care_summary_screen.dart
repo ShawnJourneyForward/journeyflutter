@@ -575,8 +575,8 @@ class _WeeklySummaryCard extends StatelessWidget {
               child: SizedBox(
                 width: 520,
                 height: 520,
-                child:
-                    CustomPaint(painter: BotanicalSprig(color: _kForest)),
+                child: CustomPaint(
+                    painter: GrowingPlant(color: _kForest, stage: 0.62)),
               ),
             ),
           ),

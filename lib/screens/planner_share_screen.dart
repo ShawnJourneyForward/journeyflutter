@@ -334,9 +334,14 @@ class _ShareCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text.rich(
-                TextSpan(children: _valueSpans(value)),
-                style: scFrau(62, kScTitleGreen, height: 1.0),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text.rich(
+                  TextSpan(children: _valueSpans(value)),
+                  maxLines: 1,
+                  style: scFrau(62, kScTitleGreen, height: 1.0),
+                ),
               ),
               const SizedBox(height: 10),
               Text(label, maxLines: 1, style: scInt(23, kScDateGrey)),
@@ -365,7 +370,8 @@ class _ShareCard extends StatelessWidget {
               child: SizedBox(
                 width: 460,
                 height: 460,
-                child: CustomPaint(painter: BotanicalSprig(color: kScForest)),
+                child:
+                    CustomPaint(painter: GrowingPlant(color: kScForest, stage: 0.6)),
               ),
             ),
           ),
