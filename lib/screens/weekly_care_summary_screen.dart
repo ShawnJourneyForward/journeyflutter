@@ -131,6 +131,7 @@ class _WeeklyCareSummaryScreenState
     required List<CravingEntry> cravings,
     required List<ThoughtRecord> thoughts,
     required List<ActivityEntry> activities,
+    required List<DateTime> plannerActivityDates,
     required List<SleepEntry> sleeps,
     required List<GratitudeEntry> gratitudes,
   }) {
@@ -161,6 +162,7 @@ class _WeeklyCareSummaryScreenState
     addDates(cravings, (e) => e.date);
     addDates(thoughts, (e) => e.date);
     addDates(activities, (e) => e.date);
+    addDates(plannerActivityDates, (d) => d);
     addDates(sleeps, (e) => e.date);
     for (final g in gratitudes) {
       final d = DateTime.tryParse(g.date);
@@ -582,6 +584,8 @@ class _WeeklyCareSummaryScreenState
     final cravings = ref.watch(cravingProvider).valueOrNull ?? [];
     final thoughts = ref.watch(thoughtRecordProvider).valueOrNull ?? [];
     final activities = ref.watch(activityProvider).valueOrNull ?? [];
+    final plannerActivities =
+        ref.watch(plannerActivityProvider).valueOrNull ?? [];
     final sleeps = ref.watch(sleepProvider).valueOrNull ?? [];
     final gratitudes = ref.watch(allGratitudeProvider).valueOrNull ?? [];
     final profile = ref.watch(profileProvider).valueOrNull;
@@ -599,6 +603,16 @@ class _WeeklyCareSummaryScreenState
         thoughts.where((e) => _inRange(e.date, rangeStart, rangeEnd)).length;
     int activityCount =
         activities.where((e) => _inRange(e.date, rangeStart, rangeEnd)).length;
+    // Planner workouts live in a separate store from the standalone activity
+    // log; fold them into the same "Movement" tally (and care-day spread) so the
+    // shareable summary reflects training logged in the Planner too. The two
+    // stores are disjoint — closing off a planned session mints a
+    // PlannerActivity, never an ActivityEntry — so there's no double-count.
+    final plannerActivityDates = plannerActivities
+        .where((a) => _inRange(a.date, rangeStart, rangeEnd))
+        .map((a) => a.date)
+        .toList();
+    activityCount += plannerActivityDates.length;
     int sleepCount =
         sleeps.where((e) => _inRange(e.date, rangeStart, rangeEnd)).length;
     int gratitudeCount = gratitudes.where((e) {
@@ -623,6 +637,7 @@ class _WeeklyCareSummaryScreenState
       cravings: cravings,
       thoughts: thoughts,
       activities: activities,
+      plannerActivityDates: plannerActivityDates,
       sleeps: sleeps,
       gratitudes: gratitudes,
     );
