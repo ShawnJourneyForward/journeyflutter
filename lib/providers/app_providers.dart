@@ -1049,6 +1049,28 @@ final currentWeekSessionsProvider = Provider<List<PlannerSession>>((ref) {
     ..sort((a, b) => a.date.compareTo(b.date));
 });
 
+/// All sessions falling within NEXT Monday-first week (the 7 days immediately
+/// after the current week: next Mon 00:00 → the Mon after). Powers the "next
+/// week" preview under the planner calendar so the user can see what's coming
+/// without paging the month grid. Same midnight-rollover discipline as
+/// [currentWeekSessionsProvider].
+final nextWeekSessionsProvider = Provider<List<PlannerSession>>((ref) {
+  final sessions = ref.watch(plannerSessionProvider).valueOrNull ?? const [];
+  ref.watch(timerProvider.select((s) {
+    final t = s.value ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }));
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final weekStart = today.subtract(Duration(days: today.weekday - 1));
+  final nextStart = weekStart.add(const Duration(days: 7));
+  final nextEnd = weekStart.add(const Duration(days: 14));
+  return sessions
+      .where((s) => !s.date.isBefore(nextStart) && s.date.isBefore(nextEnd))
+      .toList()
+    ..sort((a, b) => a.date.compareTo(b.date));
+});
+
 /// True when the user has any usable plan: at least one non-archived goal OR an
 /// explicit active-goal id in settings. Gates the planner's empty state.
 final hasActivePlanProvider = Provider<bool>((ref) {

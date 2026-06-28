@@ -286,6 +286,56 @@ class _OverviewTab extends ConsumerWidget {
             ),
           ],
         ),
+
+        // ── Encouragement: why goals matter in recovery ───────────────────
+        // A deliberately large, warm note (below the small safety line) — goal
+        // pursuit is one of the most protective habits in recovery, so this is
+        // here to nudge even the hesitant user to set something.
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 24),
+          decoration: BoxDecoration(
+            color: AppColors.forest50,
+            borderRadius: AppRadius.luxury,
+            border: Border.all(color: AppColors.forest100),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.forest100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.flag_rounded,
+                        size: 22, color: AppColors.forest600),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.plannerGoalEncourageTitle,
+                      style: AppTextStyles.titleLarge
+                          .copyWith(color: AppColors.forest700),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                l10n.plannerGoalEncourageBody,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.forestDark,
+                  height: 1.55,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -321,6 +371,7 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
     final allSessions =
         ref.watch(plannerSessionProvider).valueOrNull ?? const [];
     final weekSessions = ref.watch(currentWeekSessionsProvider);
+    final nextWeekSessions = ref.watch(nextWeekSessionsProvider);
     final goals = ref.watch(plannerGoalProvider).valueOrNull ?? const [];
 
     final now = DateTime.now();
@@ -420,6 +471,22 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
           _EmptyState(message: l10n.plannerNoGoals)
         else
           ...weekSessions.map((s) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _SessionRow(session: s),
+              )),
+
+        // ── Next week (look-ahead preview) ────────────────────────────────
+        const SizedBox(height: 24),
+        Text(l10n.plannerNextWeek,
+            style:
+                AppTextStyles.titleLarge.copyWith(color: AppColors.forestDark)),
+        const SizedBox(height: 12),
+        if (nextWeekSessions.isEmpty)
+          Text(l10n.plannerNextWeekEmpty,
+              style:
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.stone500))
+        else
+          ...nextWeekSessions.map((s) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _SessionRow(session: s),
               )),

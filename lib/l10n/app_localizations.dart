@@ -14692,6 +14692,18 @@ abstract class AppLocalizations {
   /// **'This week'**
   String get plannerCurrentWeek;
 
+  /// Header for the next-week look-ahead list under the planner calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get plannerNextWeek;
+
+  /// Shown under the Next week header when no sessions are planned for next week.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned for next week yet.'**
+  String get plannerNextWeekEmpty;
+
   /// Action to mark a session as completed.
   ///
   /// In en, this message translates to:
@@ -15141,6 +15153,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.'**
   String get plannerHealthDisclaimer;
+
+  /// Heading of the large encouragement note at the bottom of the planner Overview tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Every goal counts'**
+  String get plannerGoalEncourageTitle;
+
+  /// Body of the encouragement note about why setting and pursuing goals matters in recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting a goal and working towards it is one of the most rewarding parts of recovery — it gives your days shape and your energy somewhere to go. It doesn’t have to be big: getting out to walk more, sleeping better, losing a little weight, running your first 5k, or one day a marathon. Whatever it is, any goal is worth working towards. Start small, stay steady, and let it grow with you.'**
+  String get plannerGoalEncourageBody;
 
   /// Hint for the notes field when PLANNING a session (forward-looking workout detail, not an after-the-fact reflection).
   ///

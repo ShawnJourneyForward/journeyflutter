@@ -8391,6 +8391,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get plannerCurrentWeek => 'This week';
 
   @override
+  String get plannerNextWeek => 'Next week';
+
+  @override
+  String get plannerNextWeekEmpty => 'Nothing planned for next week yet.';
+
+  @override
   String get plannerMarkComplete => 'Mark complete';
 
   @override
@@ -8634,6 +8640,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get plannerHealthDisclaimer =>
       'Before starting any fitness or health activity, make sure you\'re fit to do so. If in doubt, check with your GP or a qualified health professional.';
+
+  @override
+  String get plannerGoalEncourageTitle => 'Every goal counts';
+
+  @override
+  String get plannerGoalEncourageBody =>
+      'Setting a goal and working towards it is one of the most rewarding parts of recovery — it gives your days shape and your energy somewhere to go. It doesn’t have to be big: getting out to walk more, sleeping better, losing a little weight, running your first 5k, or one day a marathon. Whatever it is, any goal is worth working towards. Start small, stay steady, and let it grow with you.';
 
   @override
   String get plannerSessionNotesHint =>
