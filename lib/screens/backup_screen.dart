@@ -311,9 +311,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
     setState(() => _importing = true);
     try {
+      // Use FileType.any rather than FileType.custom + allowedExtensions.
+      // Android's Storage Access Framework greys out files whose MIME type
+      // doesn't match the filter, and the encrypted .jfwbk extension has no
+      // registered MIME type — so a custom filter makes encrypted backups
+      // UNSELECTABLE in the system picker (the user taps and nothing happens).
+      // We accept any file and validate by CONTENT below (the app marker and
+      // the encryption envelope), which is the robust check anyway: a wrong
+      // file fails the 'Journey Forward' / JSON-shape guard and is rejected.
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json', 'jfwbk'],
+        type: FileType.any,
       );
 
       if (result == null || result.files.single.path == null) {
