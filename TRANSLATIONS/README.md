@@ -2,6 +2,33 @@
 
 This folder holds everything needed to translate the app into a new language.
 
+## Quick start — volunteer hand-off packets (recommended)
+
+For handing one language to one volunteer, don't send the big multi-column
+master CSV. Instead generate ready-to-send packets:
+
+```
+python tool/gen_handoff_packets.py
+```
+
+This writes, under `TRANSLATIONS/handoff/`, three files **per language**:
+
+- `journey_<Lang>_<code>.csv` — a clean sheet with a single **empty** target
+  column and a **Batch** column (1 = short core UI, 2 = sentences,
+  3 = long-form). Rows are sorted so Batch 1 is at the top, so a volunteer who
+  only finishes the first batch still makes the app feel native.
+- `READ-ME-FIRST_<Lang>.md` — a short, warm one-page guide for the volunteer.
+- `ask-message_<Lang>.txt` — a paste-ready WhatsApp/email message to send them.
+
+When a filled-in file comes back, import its single column directly (partial is
+fine — blanks fall back to English):
+
+```
+python tool/import_translation_csv.py af TRANSLATIONS/handoff/journey_Afrikaans_af.csv --allow-missing
+```
+
+Then follow the "adding a finished language" steps below from `flutter gen-l10n`.
+
 ## For the translator
 
 Open **`journey_forward_strings.csv`** in Google Sheets or Excel. Each row is
