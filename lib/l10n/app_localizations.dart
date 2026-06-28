@@ -6481,7 +6481,7 @@ abstract class AppLocalizations {
   /// Header title on the Calm Activities home/grid screen.
   ///
   /// In en, this message translates to:
-  /// **'Mindful Activities'**
+  /// **'Calm Activities'**
   String get puzzleHomeTitle;
 
   /// Subtitle under the Mindful Activities header.
@@ -6489,6 +6489,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Short exercises to calm and refocus'**
   String get puzzleHomeSubtitle;
+
+  /// Header on the Puzzles games hub (the Toolkit 'Puzzles' tile).
+  ///
+  /// In en, this message translates to:
+  /// **'Puzzles'**
+  String get puzzlesHomeTitle;
+
+  /// Subheader on the Puzzles games hub.
+  ///
+  /// In en, this message translates to:
+  /// **'A few minutes of focused play'**
+  String get puzzlesHomeSubtitle;
+
+  /// Title of the classic sliding 15-puzzle game.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide Puzzle'**
+  String get puzzleSlideLabel;
+
+  /// One-line description of the slide puzzle on the games hub.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide the tiles into order, 1 through 15.'**
+  String get puzzleSlideDesc;
+
+  /// Rough play time shown on the slide puzzle card.
+  ///
+  /// In en, this message translates to:
+  /// **'5 min'**
+  String get puzzleSlideDuration;
+
+  /// In-game hint for the slide puzzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a tile next to the gap to slide it in.'**
+  String get puzzleSlideHint;
+
+  /// Title of the 2048 merge game.
+  ///
+  /// In en, this message translates to:
+  /// **'2048'**
+  String get puzzle2048Label;
+
+  /// One-line description of 2048 on the games hub.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to merge matching numbers. Can you reach 2048?'**
+  String get puzzle2048Desc;
+
+  /// Rough play time shown on the 2048 card.
+  ///
+  /// In en, this message translates to:
+  /// **'10 min'**
+  String get puzzle2048Duration;
+
+  /// Label before the running score in 2048.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get puzzle2048Score;
+
+  /// Win banner heading in 2048.
+  ///
+  /// In en, this message translates to:
+  /// **'You reached 2048!'**
+  String get puzzle2048Win;
+
+  /// Game-over message in 2048 when no moves remain.
+  ///
+  /// In en, this message translates to:
+  /// **'Board full — no moves left.'**
+  String get puzzle2048GameOver;
+
+  /// In-game hint for 2048.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up, down, left or right to move the tiles.'**
+  String get puzzle2048Hint;
+
+  /// Button to keep playing 2048 after reaching the 2048 tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get puzzle2048KeepGoing;
+
+  /// Toolkit tile label for the calm/mindfulness activities (Slow Count, Gratitude Shuffle, Strength Compass, Now Moment, Colour Calm).
+  ///
+  /// In en, this message translates to:
+  /// **'Calm Activities'**
+  String get emergencyCalmTitle;
 
   /// Intro text on the Slow Count activity explaining the technique.
   ///
@@ -12019,7 +12109,7 @@ abstract class AppLocalizations {
   /// Tile label for the distraction puzzle mini-game on the Emergency home tab.
   ///
   /// In en, this message translates to:
-  /// **'Puzzle'**
+  /// **'Puzzles'**
   String get emergencyPuzzleTitle;
 
   /// Description under the Weekly Care Summary row on the Emergency home tab.

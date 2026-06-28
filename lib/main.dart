@@ -40,6 +40,7 @@ import 'screens/planner_share_screen.dart';
 import 'screens/privacy_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/puzzle_screen.dart';
+import 'screens/calm_activities_screen.dart';
 import 'screens/recovery_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/cbt_screen.dart';
@@ -604,6 +605,10 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/puzzle',
         builder: (_, __) => const PuzzleScreen(),
+      ),
+      GoRoute(
+        path: '/calm',
+        builder: (_, __) => const CalmActivitiesScreen(),
       ),
       GoRoute(
         path: '/cbt',

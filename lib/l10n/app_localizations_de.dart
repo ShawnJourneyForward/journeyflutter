@@ -3607,10 +3607,57 @@ class AppLocalizationsDe extends AppLocalizations {
   String get puzzleActivity5Duration => '3 min';
 
   @override
-  String get puzzleHomeTitle => 'Mindful Activities';
+  String get puzzleHomeTitle => 'Calm Activities';
 
   @override
   String get puzzleHomeSubtitle => 'Short exercises to calm and refocus';
+
+  @override
+  String get puzzlesHomeTitle => 'Puzzles';
+
+  @override
+  String get puzzlesHomeSubtitle => 'A few minutes of focused play';
+
+  @override
+  String get puzzleSlideLabel => 'Slide Puzzle';
+
+  @override
+  String get puzzleSlideDesc => 'Slide the tiles into order, 1 through 15.';
+
+  @override
+  String get puzzleSlideDuration => '5 min';
+
+  @override
+  String get puzzleSlideHint => 'Tap a tile next to the gap to slide it in.';
+
+  @override
+  String get puzzle2048Label => '2048';
+
+  @override
+  String get puzzle2048Desc =>
+      'Swipe to merge matching numbers. Can you reach 2048?';
+
+  @override
+  String get puzzle2048Duration => '10 min';
+
+  @override
+  String get puzzle2048Score => 'Score';
+
+  @override
+  String get puzzle2048Win => 'You reached 2048!';
+
+  @override
+  String get puzzle2048GameOver => 'Board full — no moves left.';
+
+  @override
+  String get puzzle2048Hint =>
+      'Swipe up, down, left or right to move the tiles.';
+
+  @override
+  String get puzzle2048KeepGoing => 'Keep going';
+
+  @override
+  String get emergencyCalmTitle => 'Calm Activities';
 
   @override
   String get puzzleCountdownIntro =>
@@ -6812,7 +6859,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emergencyHaltShortLabel => 'H.A.L.T.';
 
   @override
-  String get emergencyPuzzleTitle => 'Puzzle';
+  String get emergencyPuzzleTitle => 'Puzzles';
 
   @override
   String get emergencyWeeklyCareSummaryDesc =>

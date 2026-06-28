@@ -309,6 +309,13 @@ class _HomeTab extends ConsumerWidget {
         '/puzzle'
       ),
       (
+        Icons.self_improvement_outlined,
+        l10n.emergencyCalmTitle,
+        AppColors.honey400,
+        null,
+        '/calm'
+      ),
+      (
         Icons.calendar_view_month_rounded,
         l10n.challengeTileLabel,
         AppColors.honey500,
