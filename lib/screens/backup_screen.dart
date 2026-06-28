@@ -629,7 +629,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                     (Icons.person_outline_rounded, l10n.backupItemProfile),
                     (Icons.menu_book_outlined, l10n.backupItemJournal),
                     (Icons.spa_outlined, l10n.backupItemGratitude),
-                    (Icons.timeline_rounded, l10n.backupItemSlipLog),
+                    (Icons.directions_run_rounded, l10n.backupItemPlanner),
                     (Icons.lock_outline_rounded, l10n.backupItemSecurity),
                     (Icons.star_outline_rounded, l10n.backupItemVisionBoard),
                     (Icons.format_quote_rounded, l10n.backupItemAffirmations),

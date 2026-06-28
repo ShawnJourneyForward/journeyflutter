@@ -5077,7 +5077,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupExportDesc.
   ///
   /// In en, this message translates to:
-  /// **'Save all your journal entries, gratitude logs, slip records, and profile data. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.'**
+  /// **'Save your profile, journal, gratitude, vision board, planner, and everything else you\'ve logged. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.'**
   String get backupExportDesc;
 
   /// No description provided for @backupExportButton.
@@ -5133,6 +5133,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Slip log'**
   String get backupItemSlipLog;
+
+  /// Included-list row on the backup screen: the planner (goals, training sessions, weight logs).
+  ///
+  /// In en, this message translates to:
+  /// **'Planner & training'**
+  String get backupItemPlanner;
 
   /// No description provided for @backupItemSecurity.
   ///

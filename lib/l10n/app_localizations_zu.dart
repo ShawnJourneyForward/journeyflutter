@@ -2754,7 +2754,7 @@ class AppLocalizationsZu extends AppLocalizations {
 
   @override
   String get backupExportDesc =>
-      'Save all your journal entries, gratitude logs, slip records, and profile data. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.';
+      'Save your profile, journal, gratitude, vision board, planner, and everything else you\'ve logged. Choose an encrypted backup (.jfwbk) protected by a passphrase, or a plain JSON file.';
 
   @override
   String get backupExportButton => 'Export now';
@@ -2783,6 +2783,9 @@ class AppLocalizationsZu extends AppLocalizations {
 
   @override
   String get backupItemSlipLog => 'Slip log';
+
+  @override
+  String get backupItemPlanner => 'Planner & training';
 
   @override
   String get backupItemSecurity => 'Security setting';
