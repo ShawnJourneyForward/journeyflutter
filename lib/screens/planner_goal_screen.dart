@@ -354,7 +354,9 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
                     style: AppTextStyles.bodyLarge,
                     textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
-                      hintText: l10n.plannerGoalNameHint,
+                      hintText: _type == GoalType.weight
+                          ? l10n.plannerGoalNameHintWeight
+                          : l10n.plannerGoalNameHint,
                       filled: true,
                       fillColor: AppColors.stone50,
                     ),

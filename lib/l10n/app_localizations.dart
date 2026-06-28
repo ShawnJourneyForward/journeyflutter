@@ -5215,7 +5215,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyAllDataOnDeviceBody.
   ///
   /// In en, this message translates to:
-  /// **'Every piece of information you enter — your sober date, journal entries, gratitude notes, slip records, and profile — is stored locally on your device using the operating system\'s standard app storage. Nothing is transmitted to any external server, cloud service, or third party at any time.'**
+  /// **'Every piece of information you enter — your sober date, journal entries, gratitude notes, and profile — is stored locally on your device using the operating system\'s standard app storage. Nothing is transmitted to any external server, cloud service, or third party at any time.'**
   String get privacyAllDataOnDeviceBody;
 
   /// No description provided for @privacyNoInternet.
@@ -14248,11 +14248,17 @@ abstract class AppLocalizations {
   /// **'Goal name'**
   String get plannerGoalNameLabel;
 
-  /// Placeholder example for the goal-name field.
+  /// Placeholder example for the goal-name field on an exercise goal.
   ///
   /// In en, this message translates to:
   /// **'e.g. Two Oceans Half'**
   String get plannerGoalNameHint;
+
+  /// Placeholder example for the goal-name field on a weight goal.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Summer reset'**
+  String get plannerGoalNameHintWeight;
 
   /// Label above the exercise-goal measure picker (distance / time / sessions).
   ///

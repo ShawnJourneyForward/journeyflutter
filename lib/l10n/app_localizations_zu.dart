@@ -2829,7 +2829,7 @@ class AppLocalizationsZu extends AppLocalizations {
 
   @override
   String get privacyAllDataOnDeviceBody =>
-      'Every piece of information you enter — your sober date, journal entries, gratitude notes, slip records, and profile — is stored locally on your device using the operating system\'s standard app storage. Nothing is transmitted to any external server, cloud service, or third party at any time.';
+      'Every piece of information you enter — your sober date, journal entries, gratitude notes, and profile — is stored locally on your device using the operating system\'s standard app storage. Nothing is transmitted to any external server, cloud service, or third party at any time.';
 
   @override
   String get privacyNoInternet => 'No internet connection required';
@@ -8151,6 +8151,9 @@ class AppLocalizationsZu extends AppLocalizations {
 
   @override
   String get plannerGoalNameHint => 'e.g. Two Oceans Half';
+
+  @override
+  String get plannerGoalNameHintWeight => 'e.g. Summer reset';
 
   @override
   String get plannerMeasureLabel => 'Track progress by';

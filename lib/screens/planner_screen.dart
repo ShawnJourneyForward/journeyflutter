@@ -759,6 +759,28 @@ class _PlannerDayTile extends StatelessWidget {
                     ),
                   ),
                 ),
+              // Upcoming-session marker — a single planned session that isn't yet
+              // done/skipped only carries a soft tint, which reads as "empty"
+              // next to a checkmark day. A bottom-centre dot in the session's
+              // own accent gives it the same at-a-glance "something's here" cue
+              // as the multi marker. (Done/skipped days already show a glyph;
+              // multi days own the top-right dot — so this is mutually exclusive.)
+              if (hasSession && !multi && !completed && !skipped)
+                Positioned(
+                  bottom: 3,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: sessionTypeColor(primary!.type),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
               // Goal flag — the target day of any goal. Honey for a dated event
               // (race/competition), forest for a plain goal deadline, so the
               // two read apart at a glance.
@@ -768,7 +790,7 @@ class _PlannerDayTile extends StatelessWidget {
                   left: 2,
                   child: Icon(
                     Icons.flag_rounded,
-                    size: size < 34 ? 9 : 11,
+                    size: size < 34 ? 13 : 16,
                     color: isEvent ? AppColors.honey600 : AppColors.forest600,
                   ),
                 ),
