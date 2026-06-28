@@ -9,6 +9,10 @@ class AppLocalizationsAf extends AppLocalizations {
   AppLocalizationsAf([String locale = 'af']) : super(locale);
 
   @override
+  String get errorBoundaryMessage =>
+      'Something went wrong loading this screen.\nPlease restart the app.';
+
+  @override
   String get welcomeShawnTitle => 'A note from Shawn';
 
   @override

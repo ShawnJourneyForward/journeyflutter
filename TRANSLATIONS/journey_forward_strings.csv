@@ -1,4 +1,11 @@
 ﻿Section,Key,English,Placeholders,Context,Afrikaans (af),isiZulu (zu),German (de),Spanish (es),Portuguese (pt)
+Error,errorBoundaryMessage,"Something went wrong loading this screen.
+Please restart the app.",,Full-screen fallback shown if a screen fails to build (the app error boundary). Keep it short and calm.,"Something went wrong loading this screen.
+Please restart the app.","Something went wrong loading this screen.
+Please restart the app.","Something went wrong loading this screen.
+Please restart the app.","Something went wrong loading this screen.
+Please restart the app.","Something went wrong loading this screen.
+Please restart the app."
 Welcome,welcomeShawnTitle,A note from Shawn,,Title of the one-time founder welcome dialog on first Home visit.,A note from Shawn,A note from Shawn,A note from Shawn,A note from Shawn,A note from Shawn
 Welcome,welcomeShawnBody,"Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.",,Body of the founder welcome dialog.,"Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.","Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.","Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.","Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.","Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey."
 Welcome,welcomeShawnButton,I'm in,,Dismiss button on the founder welcome dialog.,I'm in,I'm in,I'm in,I'm in,I'm in

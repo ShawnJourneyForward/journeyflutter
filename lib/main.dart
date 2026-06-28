@@ -68,18 +68,36 @@ void main() async {
   // fallback so any build-time exception shows something the user can see.
   ErrorWidget.builder = (FlutterErrorDetails details) {
     debugPrint('[ErrorWidget] ${details.exception}\n${details.stack}');
+    const fallback =
+        'Something went wrong loading this screen.\nPlease restart the app.';
     return Container(
       color: const Color(0xFFF5EFE7),
       alignment: Alignment.center,
       padding: const EdgeInsets.all(24),
-      child: const Text(
-        'Something went wrong loading this screen.\nPlease restart the app.',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Color(0xFF2D6A4F),
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Builder(
+        builder: (context) {
+          // The failure may sit above the Localizations/MaterialApp ancestor
+          // (or l10n itself may have failed to load), so resolve defensively
+          // and fall back to English rather than risk a second exception
+          // inside the error boundary.
+          String message = fallback;
+          try {
+            final l10n =
+                Localizations.of<AppLocalizations>(context, AppLocalizations);
+            if (l10n != null) message = l10n.errorBoundaryMessage;
+          } catch (_) {
+            message = fallback;
+          }
+          return Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF2D6A4F),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          );
+        },
       ),
     );
   };

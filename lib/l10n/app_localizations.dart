@@ -106,6 +106,12 @@ abstract class AppLocalizations {
     Locale('zu')
   ];
 
+  /// Full-screen fallback shown if a screen fails to build (the app error boundary). Keep it short and calm.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong loading this screen.\nPlease restart the app.'**
+  String get errorBoundaryMessage;
+
   /// Title of the one-time founder welcome dialog on first Home visit.
   ///
   /// In en, this message translates to:

@@ -1827,6 +1827,8 @@ for this.",,Finish-step headline when no name was entered.,
 1,Planner,plannerGoalKindGoal,A goal,,Goal-kind choice: an open goal (no fixed event day).,
 1,Planner,plannerGoalKindEvent,An event,,"Goal-kind choice: training for a dated event (race, competition).",
 1,Planner,plannerEventDayLabel,Event day,,"Label for the event date field, and the calendar flag marking the event day.",
+2,Error,errorBoundaryMessage,"Something went wrong loading this screen.
+Please restart the app.",,Full-screen fallback shown if a screen fails to build (the app error boundary). Keep it short and calm.,
 2,Planner,plannerSessionNotesHintSwim,"Session plan (optional) - e.g. 8 x 100m, 20s rest",,Notes hint when planning a SWIM session (forward-looking).,
 2,Planner,plannerSessionNotesHintCross,"Session plan (optional) - e.g. 30 min cycling, zone 2",,Notes hint when planning a CROSS-TRAIN session.,
 2,Planner,plannerSessionNotesHintRest,"Rest day (optional) - e.g. stretch, early night",,Notes hint for a REST day.,

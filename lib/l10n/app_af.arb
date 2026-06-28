@@ -1,4 +1,6 @@
 {
+  "errorBoundaryMessage": "Something went wrong loading this screen.\nPlease restart the app.",
+  "@errorBoundaryMessage": {"description": "Full-screen fallback shown if a screen fails to build (the app error boundary). Keep it short and calm."},
   "welcomeShawnTitle": "A note from Shawn",
   "@welcomeShawnTitle": {"description": "Title of the one-time founder welcome dialog on first Home visit."},
   "welcomeShawnBody": "Hi, I'm Shawn. I built this app, and I'm rooting for you. Take some time to look at your profile and set up your reasons — it's how you'll get the most from the app. I'm with you. I'm on the same journey.",
