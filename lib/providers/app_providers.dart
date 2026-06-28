@@ -1071,6 +1071,35 @@ final nextWeekSessionsProvider = Provider<List<PlannerSession>>((ref) {
     ..sort((a, b) => a.date.compareTo(b.date));
 });
 
+/// How many days without an export before Home surfaces the backup reminder.
+const kBackupReminderAfterDays = 14;
+
+/// Whether to surface the gentle "protect your progress" backup reminder on
+/// Home. Smarter than the milestone-only snackbar: it fires on elapsed time
+/// since the last export (independent of milestones), stays quiet for brand-new
+/// users (< 3 sober days — little to lose yet), and honours a 7-day snooze
+/// written when the user taps "Later". Date-granular timer watch → re-evaluates
+/// at most once a day, not on every tick.
+final backupOverdueProvider = FutureProvider<bool>((ref) async {
+  ref.watch(timerProvider.select((s) {
+    final t = s.value ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }));
+  final profile = ref.watch(profileProvider).valueOrNull;
+  if (profile == null) return false;
+  if (SoberStats.compute(profile, DateTime.now()).days < 3) return false;
+  final prefs = await ref.watch(prefsProvider.future);
+  final snoozeRaw = prefs.getString('backup_nudge_snooze_until');
+  if (snoozeRaw != null) {
+    final until = DateTime.tryParse(snoozeRaw);
+    if (until != null && DateTime.now().isBefore(until)) return false;
+  }
+  final raw = prefs.getString('last_backup_date');
+  final last = raw == null ? null : DateTime.tryParse(raw);
+  if (last == null) return true; // has data but has never backed up
+  return DateTime.now().difference(last).inDays >= kBackupReminderAfterDays;
+});
+
 /// True when the user has any usable plan: at least one non-archived goal OR an
 /// explicit active-goal id in settings. Gates the planner's empty state.
 final hasActivePlanProvider = Provider<bool>((ref) {

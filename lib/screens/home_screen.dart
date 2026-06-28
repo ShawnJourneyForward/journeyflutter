@@ -519,6 +519,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final goalToggles = ref.watch(weeklyGoalTogglesProvider);
     final missionToggles = ref.watch(missionTogglesProvider);
     final missions = _cachedMissions ??= _dailyMissions(l10n);
+    final backupOverdue = ref.watch(backupOverdueProvider).valueOrNull ?? false;
 
     return profileAsync.when(
       loading: () => Scaffold(
@@ -600,6 +601,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // entirely instead of all rendering eagerly in a single sliver.
         final cards = <Widget>[
           RepaintBoundary(child: _SerenityCard(profile: profile)),
+          // Smarter, time-based backup reminder — appears when an export is
+          // overdue (not just at milestones). Dismiss snoozes it for a week.
+          if (backupOverdue)
+            RepaintBoundary(
+              child: _BackupReminderCard(
+                onBackup: () => context.push('/backup'),
+                onDismiss: () async {
+                  final prefs = await ref.read(prefsProvider.future);
+                  await prefs.setString(
+                      'backup_nudge_snooze_until',
+                      DateTime.now()
+                          .add(const Duration(days: 7))
+                          .toIso8601String());
+                  ref.invalidate(backupOverdueProvider);
+                },
+              ),
+            ),
           if (profile.dailySpend > 0)
             RepaintBoundary(child: _MoneyCard(profile: profile)),
           RepaintBoundary(
@@ -1042,6 +1060,89 @@ class _HomeHeader extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── Backup reminder card (smarter, time-based) ──────────────────────────────
+// Surfaced by _homeScreen when [backupOverdueProvider] is true. Gentle honey
+// banner with a "Back up" CTA and a dismiss (snooze) control.
+class _BackupReminderCard extends StatelessWidget {
+  const _BackupReminderCard({required this.onBackup, required this.onDismiss});
+  final VoidCallback onBackup;
+  final Future<void> Function() onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 14, 10, 16),
+      decoration: BoxDecoration(
+        color: AppColors.honey50,
+        borderRadius: AppRadius.luxury,
+        border: Border.all(color: AppColors.honey300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.shield_outlined, size: 20, color: AppColors.honey600),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Text(l10n.backupReminderTitle,
+                      style: AppTextStyles.titleSmall
+                          .copyWith(color: AppColors.forest700)),
+                ),
+              ),
+              Semantics(
+                button: true,
+                label: l10n.backupReminderDismiss,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    H.selection();
+                    onDismiss();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(Icons.close_rounded,
+                        size: 18, color: AppColors.stone400),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Text(l10n.backupReminderBody,
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.stone600, height: 1.5)),
+          ),
+          const SizedBox(height: 14),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton(
+              onPressed: () {
+                H.light();
+                onBackup();
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.honey600,
+                shape:
+                    const RoundedRectangleBorder(borderRadius: AppRadius.lg),
+              ),
+              child: Text(l10n.homeBackupNudgeAction,
+                  style:
+                      AppTextStyles.labelLarge.copyWith(color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

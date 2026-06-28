@@ -147,6 +147,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         final prefs = await ref.read(prefsProvider.future);
         await prefs.setString(
             'last_backup_date', DateTime.now().toIso8601String());
+        // Clear the Home backup reminder right away now that a fresh export
+        // exists (it re-reads last_backup_date and falls quiet).
+        ref.invalidate(backupOverdueProvider);
       }
     } catch (e) {
       if (mounted) {

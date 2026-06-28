@@ -237,6 +237,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeBackupNudgeAction => 'Back up';
 
   @override
+  String get backupReminderTitle => 'Protect your progress';
+
+  @override
+  String get backupReminderBody =>
+      'It\'s been a while since your last backup. Save a copy so a new or lost phone never costs you your streak.';
+
+  @override
+  String get backupReminderDismiss => 'Dismiss';
+
+  @override
   String get onbNameError => 'Please enter your name.';
 
   @override

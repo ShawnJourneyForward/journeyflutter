@@ -502,6 +502,24 @@ abstract class AppLocalizations {
   /// **'Back up'**
   String get homeBackupNudgeAction;
 
+  /// Title of the gentle backup reminder card on Home (shown when an export is overdue).
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your progress'**
+  String get backupReminderTitle;
+
+  /// Body of the Home backup reminder card.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s been a while since your last backup. Save a copy so a new or lost phone never costs you your streak.'**
+  String get backupReminderBody;
+
+  /// Accessibility label for the close (snooze) button on the Home backup reminder card.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get backupReminderDismiss;
+
   /// No description provided for @onbNameError.
   ///
   /// In en, this message translates to:
