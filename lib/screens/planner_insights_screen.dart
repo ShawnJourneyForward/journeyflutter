@@ -19,6 +19,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../components/back_button.dart';
 import '../components/glass_card.dart';
@@ -28,16 +29,16 @@ import '../providers/app_providers.dart';
 import '../theme/app_theme.dart';
 import '../theme/planner_palette.dart';
 import '../utils/locale_format.dart';
+import '../utils/week_dates.dart';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/// Monday 00:00 of the ISO week containing [d].
-DateTime _weekStart(DateTime d) {
-  final day = DateTime(d.year, d.month, d.day);
-  return day.subtract(Duration(days: day.weekday - 1));
-}
+/// Sunday 00:00 of the week containing [d] — the app-wide week boundary
+/// (see lib/utils/week_dates.dart), shared with the weekly-goals reset so the
+/// selectable "this week" here means the same thing everywhere.
+DateTime _weekStart(DateTime d) => startOfWeekSunday(d);
 
-/// The last 8 ISO week-start Mondays, oldest first (… , last week, this week).
+/// The last 8 week-start Sundays, oldest first (… , last week, this week).
 List<DateTime> _last8Weeks() {
   final thisWeek = _weekStart(DateTime.now());
   return List.generate(8, (i) => thisWeek.subtract(Duration(days: 7 * (7 - i))));
@@ -53,11 +54,22 @@ List<String> _weekLabels(List<DateTime> weeks) =>
 
 // ─── Planner Insights Screen ────────────────────────────────────────────────
 
-class PlannerInsightsScreen extends ConsumerWidget {
+class PlannerInsightsScreen extends ConsumerStatefulWidget {
   const PlannerInsightsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PlannerInsightsScreen> createState() =>
+      _PlannerInsightsScreenState();
+}
+
+class _PlannerInsightsScreenState extends ConsumerState<PlannerInsightsScreen> {
+  /// Sunday 00:00 of the week the metric cards + by-activity tiles reflect.
+  /// Defaults to the current week; the header chevrons page it back / forward.
+  /// The trend charts below stay on the rolling 8-week window regardless.
+  DateTime _selectedWeekStart = startOfWeekSunday(DateTime.now());
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     final profile = ref.watch(profileProvider).valueOrNull;
@@ -68,21 +80,28 @@ class PlannerInsightsScreen extends ConsumerWidget {
 
     final weeks = _last8Weeks();
     final labels = _weekLabels(weeks);
+    final currentWeekStart = _weekStart(DateTime.now());
 
-    // Only activities that fall inside the 8-week window feed the charts/metrics.
+    // Clamp a stale selection back into range if the week rolled over while the
+    // screen was open (can't out-run "this week").
+    if (_selectedWeekStart.isAfter(currentWeekStart)) {
+      _selectedWeekStart = currentWeekStart;
+    }
+
+    // Only activities that fall inside the 8-week window feed the CHARTS.
     final windowStart = weeks.first;
     final inWindow = activities
         .where((a) => !a.date.isBefore(windowStart))
         .toList(growable: false);
 
-    // ── Distance (km) per week ───────────────────────────────────────────────
+    // ── Distance (km) per week — charts only ─────────────────────────────────
     final distanceByWeek = weeks.map((w) {
       return inWindow
           .where((a) => _sameWeek(a.date, w))
           .fold<double>(0, (sum, a) => sum + (a.distanceKm ?? 0));
     }).toList();
 
-    // ── Active minutes per week (volume) ─────────────────────────────────────
+    // ── Active minutes per week (volume) — charts only ───────────────────────
     final volumeByWeek = weeks.map((w) {
       return inWindow
           .where((a) => _sameWeek(a.date, w))
@@ -90,26 +109,50 @@ class PlannerInsightsScreen extends ConsumerWidget {
           .toDouble();
     }).toList();
 
-    // ── Aggregate metrics over the window ────────────────────────────────────
-    final totalKm = distanceByWeek.fold<double>(0, (a, b) => a + b);
-    final totalMinutes = inWindow.fold<int>(0, (sum, a) => sum + a.minutes);
-
     final hasDistance = distanceByWeek.any((v) => v > 0);
     final hasVolume = volumeByWeek.any((v) => v > 0);
-    final hasAnything = inWindow.isNotEmpty;
+    final hasAnything = activities.isNotEmpty;
 
-    // Per-discipline aggregation over the window, busiest first.
-    final byDiscipline = <ActivityDiscipline, _DisciplineAgg>{};
-    for (final a in inWindow) {
-      final agg =
-          byDiscipline.putIfAbsent(a.effectiveDiscipline, _DisciplineAgg.new);
+    // ── SELECTED-week scope: distance card, time card, by-activity tiles ──────
+    final selWeekEnd = _selectedWeekStart.add(const Duration(days: 7));
+    final selActivities = activities
+        .where((a) =>
+            !a.date.isBefore(_selectedWeekStart) && a.date.isBefore(selWeekEnd))
+        .toList(growable: false);
+
+    final selKm =
+        selActivities.fold<double>(0, (sum, a) => sum + (a.distanceKm ?? 0));
+    final selMinutes = selActivities.fold<int>(0, (sum, a) => sum + a.minutes);
+
+    final selByDiscipline = <ActivityDiscipline, _DisciplineAgg>{};
+    for (final a in selActivities) {
+      final agg = selByDiscipline.putIfAbsent(
+          a.effectiveDiscipline, _DisciplineAgg.new);
       agg.count += 1;
       agg.minutes += a.minutes;
       agg.distanceKm += a.distanceKm ?? 0;
       agg.volumeKg += a.strengthVolumeKg ?? 0;
     }
-    final disciplineRows = byDiscipline.entries.toList()
+    final disciplineRows = selByDiscipline.entries.toList()
       ..sort((x, y) => y.value.minutes.compareTo(x.value.minutes));
+
+    // Paging bounds: don't page forward past this week, nor back past the
+    // oldest logged activity's week (avoids paging into endless empty weeks).
+    DateTime? oldestWeek;
+    for (final a in activities) {
+      final w = _weekStart(a.date);
+      if (oldestWeek == null || w.isBefore(oldestWeek)) oldestWeek = w;
+    }
+    final canPrev =
+        oldestWeek != null && _selectedWeekStart.isAfter(oldestWeek);
+    final canNext = _selectedWeekStart.isBefore(currentWeekStart);
+
+    void stepWeek(int deltaWeeks) {
+      setState(() {
+        _selectedWeekStart =
+            _selectedWeekStart.add(Duration(days: 7 * deltaWeeks));
+      });
+    }
 
     return Scaffold(
       backgroundColor: AppColors.stone50,
@@ -137,43 +180,20 @@ class PlannerInsightsScreen extends ConsumerWidget {
                   ? ListView(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                       children: [
-                        // ── Metric cards ─────────────────────────────────
-                        Row(
-                          children: [
-                            _StatChip(
-                              label: l10n.plannerTotalDistance,
-                              value: formatDistance(totalKm,
-                                  imperial: imperial, l10n: l10n),
-                              color: AppColors.forest600,
-                            ),
-                            const SizedBox(width: 10),
-                            _StatChip(
-                              label: l10n.plannerTotalActiveTime,
-                              value: _fmtActiveTime(l10n, totalMinutes),
-                              color: AppColors.honey600,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // ── Distance trend (line) ────────────────────────
-                        _ChartCard(
-                          title: l10n.plannerDistanceTrend,
-                          child: hasDistance
-                              ? _SimpleLineChart(
-                                  data: distanceByWeek,
-                                  labels: labels,
-                                  color: AppColors.forest500,
-                                  // Axis ticks are unit-aware: convert km→mi via
-                                  // the same formatter the rest of the app uses.
-                                  formatAxis: (km) => formatDistance(km,
-                                      imperial: imperial, l10n: l10n),
-                                )
-                              : _EmptyChart(label: l10n.plannerNoActivities),
+                        // ── Week selector ────────────────────────────────
+                        _WeekSelector(
+                          weekStart: _selectedWeekStart,
+                          currentWeekStart: currentWeekStart,
+                          canPrev: canPrev,
+                          canNext: canNext,
+                          onPrev: canPrev ? () => stepWeek(-1) : null,
+                          onNext: canNext ? () => stepWeek(1) : null,
                         ),
                         const SizedBox(height: 12),
 
-                        // ── Weekly volume (bar) ──────────────────────────
+                        // ── Week-by-week bar graph (multi-week) ──────────
+                        // Sits directly under the selector, above this week's
+                        // totals, so the run of weekly bars reads first.
                         _ChartCard(
                           title: l10n.plannerWeeklyVolume,
                           child: hasVolume
@@ -184,16 +204,50 @@ class PlannerInsightsScreen extends ConsumerWidget {
                                 )
                               : _EmptyChart(label: l10n.plannerNoActivities),
                         ),
+                        const SizedBox(height: 16),
 
-                        // ── Per-discipline tiles ─────────────────────────
-                        if (disciplineRows.isNotEmpty) ...[
-                          const SizedBox(height: 18),
-                          Semantics(
-                            header: true,
-                            child: Text(l10n.plannerByActivity,
-                                style: AppTextStyles.titleSmall),
-                          ),
-                          const SizedBox(height: 12),
+                        // ── Metric cards (selected week) ─────────────────
+                        Row(
+                          children: [
+                            _StatChip(
+                              label: l10n.plannerTotalDistance,
+                              value: formatDistance(selKm,
+                                  imperial: imperial, l10n: l10n),
+                              color: AppColors.forest600,
+                            ),
+                            const SizedBox(width: 10),
+                            _StatChip(
+                              label: l10n.plannerTotalActiveTime,
+                              value: _fmtActiveTime(l10n, selMinutes),
+                              color: AppColors.honey600,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // ── Per-discipline tiles (selected week) ─────────
+                        Semantics(
+                          header: true,
+                          child: Text(l10n.plannerByActivity,
+                              style: AppTextStyles.titleSmall),
+                        ),
+                        const SizedBox(height: 12),
+                        if (disciplineRows.isEmpty)
+                          SolidCard(
+                            padding: const EdgeInsets.all(18),
+                            child: Row(
+                              children: [
+                                Icon(Icons.event_busy_rounded,
+                                    size: 18, color: AppColors.stone300),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(l10n.plannerNoActivitiesThisWeek,
+                                      style: AppTextStyles.bodySmall),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
                           for (var i = 0; i < disciplineRows.length; i += 2)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 12),
@@ -219,13 +273,109 @@ class PlannerInsightsScreen extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                        ],
+
+                        const SizedBox(height: 16),
+                        // ── Multi-week distance trend (line) ─────────────
+                        Semantics(
+                          header: true,
+                          child: Text(l10n.plannerTrendLast8Weeks,
+                              style: AppTextStyles.titleSmall),
+                        ),
+                        const SizedBox(height: 12),
+                        _ChartCard(
+                          title: l10n.plannerDistanceTrend,
+                          child: hasDistance
+                              ? _SimpleLineChart(
+                                  data: distanceByWeek,
+                                  labels: labels,
+                                  color: AppColors.forest500,
+                                  // Axis ticks are unit-aware: convert km→mi via
+                                  // the same formatter the rest of the app uses.
+                                  formatAxis: (km) => formatDistance(km,
+                                      imperial: imperial, l10n: l10n),
+                                )
+                              : _EmptyChart(label: l10n.plannerNoActivities),
+                        ),
                       ],
                     )
                   : _EmptyState(label: l10n.plannerNoActivities),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Week selector ────────────────────────────────────────────────────────────
+//
+// Pages the SELECTED week for the distance / time / by-activity cards. Shows the
+// Sun–Sat range and a relative label ("This week" / "Last week"). Forward is
+// disabled on the current week; back is disabled before the first logged week.
+
+class _WeekSelector extends StatelessWidget {
+  const _WeekSelector({
+    required this.weekStart,
+    required this.currentWeekStart,
+    required this.canPrev,
+    required this.canNext,
+    required this.onPrev,
+    required this.onNext,
+  });
+
+  final DateTime weekStart;
+  final DateTime currentWeekStart;
+  final bool canPrev;
+  final bool canNext;
+  final VoidCallback? onPrev;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final weekEnd = weekStart.add(const Duration(days: 6));
+    final range =
+        '${DateFormat('MMM d').format(weekStart)} – ${DateFormat('MMM d').format(weekEnd)}';
+    final weeksAgo =
+        currentWeekStart.difference(weekStart).inDays ~/ 7;
+    final relative = weeksAgo == 0
+        ? l10n.plannerWeekThis
+        : weeksAgo == 1
+            ? l10n.plannerWeekLast
+            : null;
+
+    return SolidCard(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: onPrev,
+            icon: const Icon(Icons.chevron_left_rounded),
+            color: AppColors.forest600,
+            disabledColor: AppColors.stone200,
+            tooltip: l10n.plannerWeekPrev,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Text(range,
+                    style: AppTextStyles.titleSmall
+                        .copyWith(color: AppColors.stone700)),
+                if (relative != null)
+                  Text(relative,
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.stone400)),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onNext,
+            icon: const Icon(Icons.chevron_right_rounded),
+            color: AppColors.forest600,
+            disabledColor: AppColors.stone200,
+            tooltip: l10n.plannerWeekNext,
+          ),
+        ],
       ),
     );
   }
