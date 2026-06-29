@@ -1118,6 +1118,7 @@ class _PlannerNotesField extends StatelessWidget {
   Widget build(BuildContext context) => TextField(
         controller: controller,
         maxLines: 3,
+        textCapitalization: TextCapitalization.sentences,
         style: AppTextStyles.bodyMedium,
         decoration: InputDecoration(
           hintText: hintText,

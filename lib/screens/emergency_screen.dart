@@ -2103,6 +2103,7 @@ class _GuideWalkthrough extends StatelessWidget {
         TextField(
           controller: ctrl,
           maxLines: 4,
+          textCapitalization: TextCapitalization.sentences,
           decoration: InputDecoration(
             hintText: l10n.cbtGuideThoughtsHint,
             hintStyle:

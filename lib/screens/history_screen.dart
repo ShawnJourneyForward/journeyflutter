@@ -120,7 +120,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             !e.text.toLowerCase().contains(_search.toLowerCase()) &&
             !_moodLabel(l10n, e.mood)
                 .toLowerCase()
-                .contains(_search.toLowerCase())) {
+                .contains(_search.toLowerCase()) &&
+            !e.tags.any(
+                (t) => t.toLowerCase().contains(_search.toLowerCase()))) {
           continue;
         }
         entries.add(_HistoryEntry(
@@ -565,6 +567,32 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           style: AppTextStyles.bodyMedium,
                         ),
                       ),
+                      // Tag chips — visible in History to match the journal tab
+                      // and detail view (the user expects their tags everywhere
+                      // an entry is shown).
+                      if (entry.tags.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: entry.tags
+                              .map((t) => Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.forest50,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border:
+                                          Border.all(color: AppColors.forest100),
+                                    ),
+                                    child: Text('#$t',
+                                        style: AppTextStyles.labelSmall.copyWith(
+                                            color: AppColors.forest600,
+                                            letterSpacing: 0.2)),
+                                  ))
+                              .toList(),
+                        ),
+                      ],
                       if (isExpanded) ...[
                         const SizedBox(height: 10),
                         Row(

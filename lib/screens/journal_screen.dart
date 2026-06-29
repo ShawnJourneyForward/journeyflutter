@@ -1658,6 +1658,14 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
   void _save() {
     final text = _ctrl.text.trim();
     if (text.isEmpty) return;
+    // Commit any tag still sitting in the add-tag field. Users routinely type a
+    // tag then tap Save WITHOUT first pressing "Add"/done — without this flush
+    // that tag is silently dropped, which read as "journal not saving tags".
+    final pendingTag =
+        _newTagCtrl.text.trim().toLowerCase().replaceAll('#', '');
+    if (pendingTag.isNotEmpty && !_tags.contains(pendingTag)) {
+      _tags.add(pendingTag);
+    }
     // Drop sub-mood if it no longer applies to the chosen primary mood
     // (user could have toggled great → okay after picking a sub-mood).
     final allowedSub = subMoodsFor(_mood);
@@ -1916,6 +1924,7 @@ class _JournalEntrySheetState extends ConsumerState<_JournalEntrySheet> {
                     maxLines: 8,
                     minLines: 5,
                     autofocus: !_isEdit,
+                    textCapitalization: TextCapitalization.sentences,
                     style: AppTextStyles.bodyMedium
                         .copyWith(color: AppColors.stone800, height: 1.5),
                     decoration: InputDecoration(
@@ -3810,6 +3819,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         TextField(
           controller: _titleCtrl,
           focusNode: _titleFocus,
+          textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.next,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
           decoration: _fieldDecor(
@@ -3821,6 +3831,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         TextField(
           controller: _descCtrl,
           textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
           maxLines: 3,
           minLines: 2,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
@@ -3832,6 +3843,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
         TextField(
           controller: _whyCtrl,
           textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
           maxLines: 3,
           minLines: 2,
           style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
@@ -4117,6 +4129,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
               child: TextField(
                 controller: _milestoneCtrl,
                 textInputAction: TextInputAction.done,
+                textCapitalization: TextCapitalization.sentences,
                 onSubmitted: (_) => _addMilestone(),
                 style: AppTextStyles.bodyMedium
                     .copyWith(color: AppColors.stone800),
@@ -4159,6 +4172,7 @@ class _VisionEditSheetState extends State<_VisionEditSheet> {
           controller: _affirmCtrl,
           maxLines: 4,
           minLines: 3,
+          textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.newline,
           style: AppTextStyles.bodyMedium
               .copyWith(color: AppColors.stone800, fontStyle: FontStyle.italic),

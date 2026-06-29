@@ -757,7 +757,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required TextEditingController controller,
     required String hint,
     TextInputType keyboardType = TextInputType.text,
-    TextCapitalization capitalization = TextCapitalization.none,
+    // Default to sentence-casing so any free-text dialog (e.g. "add weekly
+    // goal") starts capitalised; name/contact callers override to .words.
+    TextCapitalization capitalization = TextCapitalization.sentences,
   }) {
     final l10n = AppLocalizations.of(context);
     return showDialog<String>(

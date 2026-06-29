@@ -508,6 +508,7 @@ class _NumberedField extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: controller,
+            textCapitalization: TextCapitalization.sentences,
             style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stone800),
             decoration: InputDecoration(
               isDense: true,
@@ -552,6 +553,7 @@ class _TallField extends StatelessWidget {
       controller: controller,
       minLines: 3,
       maxLines: 6,
+      textCapitalization: TextCapitalization.sentences,
       style: AppTextStyles.bodyMedium
           .copyWith(color: AppColors.stone800, height: 1.5),
       decoration: InputDecoration(

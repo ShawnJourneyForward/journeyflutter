@@ -147,38 +147,79 @@ class JournalDetailScreen extends ConsumerWidget {
             // ── Body text ───────────────────────────────────────────────
             const SizedBox(height: 22),
             if (entry.text.trim().isEmpty)
-              // Quick-mood entry without words. Invite the user to add some.
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.stone50,
-                  borderRadius: AppRadius.lg,
-                  border: Border.all(color: AppColors.stone100),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.edit_note_rounded,
-                        size: 18, color: AppColors.stone400),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        l10n.journalDetailQuickMoodInvite,
-                        style: AppTextStyles.bodySmall
-                            .copyWith(color: AppColors.stone500),
+              // Quick-mood entry without words. Invite the user to add some —
+              // tapping the card opens the editor.
+              GestureDetector(
+                onTap: () {
+                  H.selection();
+                  onEdit(entry);
+                },
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.stone50,
+                    borderRadius: AppRadius.lg,
+                    border: Border.all(color: AppColors.stone100),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_note_rounded,
+                          size: 18, color: AppColors.stone400),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.journalDetailQuickMoodInvite,
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.stone500),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               )
             else
-              SelectableText(
-                entry.text,
-                style: AppTextStyles.bodySerif.copyWith(
-                  color: AppColors.stone800,
-                  height: 1.6,
-                  fontSize: 17,
+              // Tap the text to edit it (cursor placement lives in the editor);
+              // SelectableText is kept so a long-press can still copy a passage.
+              GestureDetector(
+                onTap: () {
+                  H.selection();
+                  onEdit(entry);
+                },
+                child: SelectableText(
+                  entry.text,
+                  style: AppTextStyles.bodySerif.copyWith(
+                    color: AppColors.stone800,
+                    height: 1.6,
+                    fontSize: 17,
+                  ),
                 ),
               ),
+
+            // ── Edit button ─────────────────────────────────────────────
+            // The app-bar pencil was too easy to miss, so editing reads as
+            // "impossible". A full-width labelled button makes it obvious.
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  H.selection();
+                  onEdit(entry);
+                },
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.forest700,
+                  side: BorderSide(color: AppColors.forest200),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.lg),
+                ),
+                label: Text(l10n.journalDetailEditEntry,
+                    style: AppTextStyles.labelLarge
+                        .copyWith(color: AppColors.forest700)),
+              ),
+            ),
 
             // ── On-this-day echoes ──────────────────────────────────────
             if (onThisDay.isNotEmpty) ...[

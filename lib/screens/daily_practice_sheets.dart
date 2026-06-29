@@ -148,6 +148,7 @@ class _WritePane extends StatelessWidget {
         TextField(
           controller: controller,
           autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
           maxLength: 120,
           maxLines: 3,
           minLines: 2,
@@ -448,6 +449,7 @@ class _RecoveryCapitalSheetState extends ConsumerState<RecoveryCapitalSheet> {
             TextField(
               controller: _noteCtrl,
               maxLines: 2,
+              textCapitalization: TextCapitalization.sentences,
               style: AppTextStyles.bodyMedium
                   .copyWith(color: AppColors.stone800, height: 1.4),
               decoration: InputDecoration(

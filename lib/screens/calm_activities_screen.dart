@@ -410,6 +410,7 @@ class _GratitudeShuffleViewState extends State<_GratitudeShuffleView> {
             TextField(
               controller: _controller,
               maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
               style: AppTextStyles.bodyMedium,
               decoration: InputDecoration(
                 hintText: l10n.puzzleReflectionHint,

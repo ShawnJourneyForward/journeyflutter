@@ -154,6 +154,7 @@ class SoftInput extends StatelessWidget {
   Widget build(BuildContext context) => TextField(
         controller: controller,
         maxLines: 3,
+        textCapitalization: TextCapitalization.sentences,
         style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stoneText),
         decoration: InputDecoration(
           hintText: hintText,
