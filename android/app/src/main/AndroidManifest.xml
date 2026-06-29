@@ -30,6 +30,29 @@
     <!-- ── Voice journal (speech-to-text) ────────────────────────────────── -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
+    <!-- ── GPS activity recorder (walk / run) ─────────────────────────────
+         Fine + coarse location let the recorder measure distance, time and
+         pace from the device's GPS. This is the OFFLINE replacement for the
+         removed Strava sync: coordinates are used only on-device to total the
+         distance and are NEVER transmitted (INTERNET stays stripped above) and
+         never stored — only the resulting distance/duration is saved. No
+         background-location / foreground-service permission: recording runs
+         screen-on only. Play "Data safety" must DISCLOSE location access
+         ("Location · App activity") while still being "not collected / not
+         shared". -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Foreground service (type=location) so a walk/run keeps recording with the
+         screen off or the app backgrounded — the service is started ONLY while
+         the app is visible (user taps Start), so it runs under the normal
+         "while using the app" grant. We deliberately DO NOT request
+         ACCESS_BACKGROUND_LOCATION: that permission (and Google's background-
+         location review) is for accessing location with NO foreground service.
+         The geolocator plugin declares the GeolocatorLocationService with
+         foregroundServiceType="location". -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+
     <!-- ── Vision board (gallery only — no camera capture) ──────────────── -->
     <!-- CAMERA permission deliberately omitted: image_picker is called with  -->
     <!-- ImageSource.gallery only. No camera capture feature is present.      -->

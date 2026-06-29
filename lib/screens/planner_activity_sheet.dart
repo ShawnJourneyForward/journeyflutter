@@ -65,23 +65,43 @@ class _StrengthCtrls {
 }
 
 /// Open the manual activity log sheet. [goalId] links the logged activity to a
-/// goal when provided.
+/// goal when provided. The `initial*` params pre-fill the sheet — used by the
+/// GPS recorder to drop the user straight into a review of the walk/run it just
+/// measured (discipline + minutes + distance pre-filled, everything else still
+/// editable). [initialDistanceKm] is canonical KM; it is converted to the
+/// user's display unit for the field.
 Future<void> showPlannerActivitySheet(
   BuildContext context,
   WidgetRef ref, {
   String? goalId,
+  ActivityDiscipline? initialDiscipline,
+  int? initialMinutes,
+  double? initialDistanceKm,
 }) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => _PlannerActivitySheet(goalId: goalId),
+    builder: (_) => _PlannerActivitySheet(
+      goalId: goalId,
+      initialDiscipline: initialDiscipline,
+      initialMinutes: initialMinutes,
+      initialDistanceKm: initialDistanceKm,
+    ),
   );
 }
 
 class _PlannerActivitySheet extends ConsumerStatefulWidget {
-  const _PlannerActivitySheet({this.goalId});
+  const _PlannerActivitySheet({
+    this.goalId,
+    this.initialDiscipline,
+    this.initialMinutes,
+    this.initialDistanceKm,
+  });
   final String? goalId;
+  final ActivityDiscipline? initialDiscipline;
+  final int? initialMinutes;
+  final double? initialDistanceKm;
 
   @override
   ConsumerState<_PlannerActivitySheet> createState() =>
@@ -100,6 +120,25 @@ class _PlannerActivitySheetState extends ConsumerState<_PlannerActivitySheet> {
   final _notesCtrl = TextEditingController();
   final List<_StrengthCtrls> _strength = [];
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill when opened as a recorder review (discipline/minutes/distance
+    // already measured). Distance is canonical km → display unit for the field.
+    if (widget.initialDiscipline != null) {
+      _discipline = widget.initialDiscipline!;
+    }
+    if (widget.initialMinutes != null) {
+      _minutesCtrl.text = widget.initialMinutes!.toString();
+    }
+    if (widget.initialDistanceKm != null) {
+      final v = _imperial
+          ? widget.initialDistanceKm! * _miPerKm
+          : widget.initialDistanceKm!;
+      _distanceCtrl.text = v.toStringAsFixed(2);
+    }
+  }
 
   bool get _needsDistance => distanceDisciplines.contains(_discipline);
   bool get _needsElevation => elevationDisciplines.contains(_discipline);
@@ -770,6 +809,7 @@ class _PlannerNotesField extends StatelessWidget {
   Widget build(BuildContext context) => TextField(
         controller: controller,
         maxLines: 3,
+        textCapitalization: TextCapitalization.sentences,
         style: AppTextStyles.bodyMedium,
         decoration: InputDecoration(
           hintText: hintText,

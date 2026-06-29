@@ -52,6 +52,9 @@ dependencies:
   # ── PIN hashing ───────────────────────────────────────────────────────────────
   crypto: ^3.0.5                  # PBKDF2-HMAC-SHA256 PIN hash — never stored in plaintext
 
+  # ── GPS activity recorder (walk / run) ───────────────────────────────────────
+  geolocator: ^13.0.1             # offline GPS distance/pace; coordinates never leave the device
+
   # ── Utilities ─────────────────────────────────────────────────────────────────
   url_launcher: ^6.3.1            # crisis lines call buttons, recovery group links
   intl: ^0.20.2                   # date formatting, en-ZA locale for ZAR amounts
