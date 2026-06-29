@@ -976,6 +976,24 @@ abstract class AppLocalizations {
   /// **'Weekly Goals'**
   String get homeWeeklyGoals;
 
+  /// Progress chip on the weekly-goals card, e.g. 2 of 4.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String homeWeeklyGoalsProgress(int done, int total);
+
+  /// Caption under the weekly-goals title explaining the Sunday reset and history.
+  ///
+  /// In en, this message translates to:
+  /// **'Each Sunday, completed goals move to your history and clear — unfinished ones carry over.'**
+  String get homeWeeklyGoalsResetHint;
+
+  /// Title of the sheet listing achieved weekly goals from past weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly goals history'**
+  String get homeWeeklyGoalsHistoryTitle;
+
   /// No description provided for @homeDailyMissions.
   ///
   /// In en, this message translates to:
@@ -9004,6 +9022,12 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get journalDetailEdit;
 
+  /// Label of the full-width edit button on the journal entry detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit entry'**
+  String get journalDetailEditEntry;
+
   /// Italic stamp showing when a journal entry was last edited, e.g. 'Edited 5m ago'. {time} is an already-formatted relative time string.
   ///
   /// In en, this message translates to:
@@ -14818,6 +14842,42 @@ abstract class AppLocalizations {
   /// **'Nothing planned for next week yet.'**
   String get plannerNextWeekEmpty;
 
+  /// Shown in the planner insights by-activity section when the selected week has no logged activities.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity logged this week.'**
+  String get plannerNoActivitiesThisWeek;
+
+  /// Section header above the multi-week trend charts on the planner insights screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 8 weeks'**
+  String get plannerTrendLast8Weeks;
+
+  /// Relative label under the planner insights week selector when the current week is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get plannerWeekThis;
+
+  /// Relative label under the planner insights week selector when the previous week is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Last week'**
+  String get plannerWeekLast;
+
+  /// Accessibility tooltip for the previous-week chevron on the planner insights week selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous week'**
+  String get plannerWeekPrev;
+
+  /// Accessibility tooltip for the next-week chevron on the planner insights week selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Next week'**
+  String get plannerWeekNext;
+
   /// Action to mark a session as completed.
   ///
   /// In en, this message translates to:
@@ -14943,6 +15003,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Body journey'**
   String get plannerBodyJourney;
+
+  /// Title of the recovery-safe weight/body module.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Care'**
+  String get bodyCareTitle;
+
+  /// Opt-in gate heading: how the user wants to engage with the body module.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to care for your body here?'**
+  String get bodyCareGateTitle;
+
+  /// Reassuring subtitle under the body-care opt-in gate.
+  ///
+  /// In en, this message translates to:
+  /// **'There\'s no right answer, and you can change this anytime.'**
+  String get bodyCareGateBody;
+
+  /// Gate option: engage with the module without ever seeing a weight number.
+  ///
+  /// In en, this message translates to:
+  /// **'Track how I feel'**
+  String get bodyCareModeFeelings;
+
+  /// Description of the number-free body-care mode.
+  ///
+  /// In en, this message translates to:
+  /// **'No numbers — just wins and how your body feels.'**
+  String get bodyCareModeFeelingsDesc;
+
+  /// Gate option: include occasional, gentle weighing.
+  ///
+  /// In en, this message translates to:
+  /// **'Weigh now and then'**
+  String get bodyCareModeSometimes;
+
+  /// Description of the occasional-weighing body-care mode.
+  ///
+  /// In en, this message translates to:
+  /// **'A gentle, occasional check-in. You can hide the number anytime.'**
+  String get bodyCareModeSometimesDesc;
+
+  /// Body-care plant hero headline before any care has been logged.
+  ///
+  /// In en, this message translates to:
+  /// **'Your garden is ready. Tend it with one small act of care.'**
+  String get bodyCareHeroNew;
+
+  /// Sub-line on the plant hero when the user has done some care this week.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve tended your journey this week.'**
+  String get bodyCareTendedThisWeek;
+
+  /// Sub-line on the plant hero nudging a first act of care this week.
+  ///
+  /// In en, this message translates to:
+  /// **'Tend your journey this week — log a win or a moment of care.'**
+  String get bodyCareTendThisWeek;
+
+  /// Section label above the non-scale-victory deck.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s wins'**
+  String get bodyCareWinsTitle;
+
+  /// Snackbar confirmation after logging a non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Win logged.'**
+  String get bodyCareWinLogged;
+
+  /// Title of the free-text 'log your own win' dialog / deck chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own win'**
+  String get bodyCareCustomWinTitle;
+
+  /// Hint text in the custom-win text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Something kind your body did today…'**
+  String get bodyCareCustomWinHint;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'More energy today'**
+  String get bodyCareWinEnergy;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothes felt better'**
+  String get bodyCareWinClothes;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved without getting winded'**
+  String get bodyCareWinMoved;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Rode out a craving'**
+  String get bodyCareWinCraving;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Slept well'**
+  String get bodyCareWinSleep;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Ate to nourish, not punish'**
+  String get bodyCareWinNourished;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'Felt strong'**
+  String get bodyCareWinStrong;
+
+  /// Preset non-scale victory.
+  ///
+  /// In en, this message translates to:
+  /// **'I just showed up today'**
+  String get bodyCareWinShowedUp;
+
+  /// Fallback label for a custom non-scale victory with no text.
+  ///
+  /// In en, this message translates to:
+  /// **'A win of my own'**
+  String get bodyCareWinCustom;
+
+  /// Heading of the recent wins + reflections list.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent care'**
+  String get bodyCareRecentTitle;
+
+  /// Empty state for the recent-care list.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wins will gather here.'**
+  String get bodyCareNoWinsYet;
+
+  /// Button/tooltip to reveal hidden weight numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the number'**
+  String get bodyCareShowNumbers;
+
+  /// Tooltip to frost all weight numbers (the take-a-break escape hatch).
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the number'**
+  String get bodyCareHideNumbers;
+
+  /// Shown in place of weight values while numbers are hidden.
+  ///
+  /// In en, this message translates to:
+  /// **'The number is resting. Your care continues.'**
+  String get bodyCareNumbersHidden;
+
+  /// Body-care weight card caption before any weigh-in exists.
+  ///
+  /// In en, this message translates to:
+  /// **'No weigh-in yet — only when you\'re ready.'**
+  String get bodyCareNoWeighIn;
+
+  /// Button + sheet title to record an occasional weigh-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Log a weigh-in'**
+  String get bodyCareLogWeighIn;
+
+  /// Title of the body-care weight trend chart card.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle trend'**
+  String get bodyCareTrendTitle;
+
+  /// Reassurance under the weight trend that fluctuation is normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Day-to-day weight naturally drifts up and down — a small bump is just your body, not a setback.'**
+  String get bodyCareTrendBandHint;
+
+  /// Caption under the body-care goal progress bar (no number).
+  ///
+  /// In en, this message translates to:
+  /// **'Toward your gentle goal'**
+  String get bodyCareTowardGentleGoal;
+
+  /// Validation message in the weigh-in sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a weight to log it.'**
+  String get bodyCareEnterWeight;
+
+  /// Gentle block when a weight goal is dangerously low.
+  ///
+  /// In en, this message translates to:
+  /// **'That goal looks very low. Let\'s choose a gentler target — your wellbeing matters far more than a number.'**
+  String get bodyCareGoalTooLow;
+
+  /// Gentle block when an intended weight loss is very large.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s a big change to aim for at once. A smaller, kinder goal tends to be more sustainable — and you can always set a new one later.'**
+  String get bodyCareGoalTooMuch;
+
+  /// Dismiss button on the unsafe-goal guidance dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a gentler goal'**
+  String get bodyCareUseGentlerGoal;
+
+  /// Plant hero headline: how many distinct weeks the user has tended their body-care journey.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week tended} other{{count} weeks tended}}'**
+  String bodyCareWeeksTended(int count);
+
+  /// Quiet latest-weight caption on the body-care weight card.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest {weight}'**
+  String bodyCareWeightCaption(String weight);
 
   /// Label for the latest recorded weight.
   ///
@@ -15327,6 +15621,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Event day'**
   String get plannerEventDayLabel;
+
+  /// App bar title for the GPS walk/run recorder screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get recordTitle;
+
+  /// Label/tooltip for the button on the Planner tab that opens the GPS recorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a walk or run'**
+  String get recordEntryLabel;
+
+  /// Title of the first-run sheet shown before asking for location permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your walk or run'**
+  String get recordPrimingTitle;
+
+  /// Body of the first-run location priming sheet, reassuring the user it is fully offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Journey Forward uses your phone\'s GPS to measure distance, time and pace. Your location stays on this device — no map, no internet, nothing shared.'**
+  String get recordPrimingBody;
+
+  /// Primary button on the priming sheet that triggers the system location permission request.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable location'**
+  String get recordPrimingCta;
+
+  /// Dismiss button on the location priming sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get recordPrimingNotNow;
+
+  /// Title shown when location permission was denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is off'**
+  String get recordPermDeniedTitle;
+
+  /// Body shown when location permission was denied, pointing the user to system settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is needed to measure your distance. You can turn it on in Settings.'**
+  String get recordPermDeniedBody;
+
+  /// Button that opens the OS app settings so the user can grant location permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get recordOpenSettings;
+
+  /// Shown when the device's location services (GPS) are switched off entirely.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on your device\'s location services to record a walk or run.'**
+  String get recordServicesOffBody;
+
+  /// Status while the recorder waits for the first usable GPS fix.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding GPS signal…'**
+  String get recordAcquiring;
+
+  /// Status when GPS accuracy is poor.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak GPS — move to open sky'**
+  String get recordGpsWeak;
+
+  /// Status when GPS accuracy is good enough to record.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS ready'**
+  String get recordGpsReady;
+
+  /// Label above the live distance readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get recordStatDistance;
+
+  /// Label above the live elapsed-time readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get recordStatTime;
+
+  /// Label above the live pace readout.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
+  String get recordStatPace;
+
+  /// Pace unit suffix (minutes per kilometre).
+  ///
+  /// In en, this message translates to:
+  /// **'/km'**
+  String get recordPaceUnitKm;
+
+  /// Pace unit suffix (minutes per mile).
+  ///
+  /// In en, this message translates to:
+  /// **'/mi'**
+  String get recordPaceUnitMi;
+
+  /// Button to begin recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get recordStart;
+
+  /// Button to pause recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get recordPause;
+
+  /// Button to resume a paused recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get recordResume;
+
+  /// Button to stop recording and open the save/review sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get recordFinish;
+
+  /// Title of the confirm dialog when leaving an in-progress recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard recording?'**
+  String get recordDiscardTitle;
+
+  /// Body of the discard-recording confirm dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recorded walk or run won\'t be saved.'**
+  String get recordDiscardBody;
+
+  /// Confirm button that throws away the current recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get recordDiscard;
+
+  /// Cancel button that keeps the current recording going.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep recording'**
+  String get recordKeepRecording;
+
+  /// Shown when the user tries to finish before any meaningful distance/time is recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short to save yet — keep moving.'**
+  String get recordTooShort;
+
+  /// Title of the persistent notification shown by the foreground service while a walk/run is being recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording your activity'**
+  String get recordNotifTitle;
+
+  /// Body of the persistent recording notification; tapping it reopens the recorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking distance, time and pace — tap to return.'**
+  String get recordNotifText;
+
+  /// Reassurance shown on the recorder once recording has started, telling the user it continues in their pocket.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps recording with the screen off.'**
+  String get recordKeepsRecordingHint;
 }
 
 class _AppLocalizationsDelegate

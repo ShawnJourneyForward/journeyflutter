@@ -514,6 +514,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeWeeklyGoals => 'Weekly Goals';
 
   @override
+  String homeWeeklyGoalsProgress(int done, int total) {
+    return '$done of $total';
+  }
+
+  @override
+  String get homeWeeklyGoalsResetHint =>
+      'Each Sunday, completed goals move to your history and clear — unfinished ones carry over.';
+
+  @override
+  String get homeWeeklyGoalsHistoryTitle => 'Weekly goals history';
+
+  @override
   String get homeDailyMissions => 'TODAY\'S STEPS';
 
   @override
@@ -5019,6 +5031,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get journalDetailEdit => 'Edit';
 
   @override
+  String get journalDetailEditEntry => 'Edit entry';
+
+  @override
   String journalDetailEdited(String time) {
     return 'Edited $time';
   }
@@ -8457,6 +8472,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get plannerNextWeekEmpty => 'Nothing planned for next week yet.';
 
   @override
+  String get plannerNoActivitiesThisWeek => 'No activity logged this week.';
+
+  @override
+  String get plannerTrendLast8Weeks => 'Last 8 weeks';
+
+  @override
+  String get plannerWeekThis => 'This week';
+
+  @override
+  String get plannerWeekLast => 'Last week';
+
+  @override
+  String get plannerWeekPrev => 'Previous week';
+
+  @override
+  String get plannerWeekNext => 'Next week';
+
+  @override
   String get plannerMarkComplete => 'Mark complete';
 
   @override
@@ -8523,6 +8556,142 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get plannerBodyJourney => 'Body journey';
+
+  @override
+  String get bodyCareTitle => 'Body Care';
+
+  @override
+  String get bodyCareGateTitle => 'How do you want to care for your body here?';
+
+  @override
+  String get bodyCareGateBody =>
+      'There\'s no right answer, and you can change this anytime.';
+
+  @override
+  String get bodyCareModeFeelings => 'Track how I feel';
+
+  @override
+  String get bodyCareModeFeelingsDesc =>
+      'No numbers — just wins and how your body feels.';
+
+  @override
+  String get bodyCareModeSometimes => 'Weigh now and then';
+
+  @override
+  String get bodyCareModeSometimesDesc =>
+      'A gentle, occasional check-in. You can hide the number anytime.';
+
+  @override
+  String get bodyCareHeroNew =>
+      'Your garden is ready. Tend it with one small act of care.';
+
+  @override
+  String get bodyCareTendedThisWeek => 'You\'ve tended your journey this week.';
+
+  @override
+  String get bodyCareTendThisWeek =>
+      'Tend your journey this week — log a win or a moment of care.';
+
+  @override
+  String get bodyCareWinsTitle => 'Today\'s wins';
+
+  @override
+  String get bodyCareWinLogged => 'Win logged.';
+
+  @override
+  String get bodyCareCustomWinTitle => 'Your own win';
+
+  @override
+  String get bodyCareCustomWinHint => 'Something kind your body did today…';
+
+  @override
+  String get bodyCareWinEnergy => 'More energy today';
+
+  @override
+  String get bodyCareWinClothes => 'Clothes felt better';
+
+  @override
+  String get bodyCareWinMoved => 'Moved without getting winded';
+
+  @override
+  String get bodyCareWinCraving => 'Rode out a craving';
+
+  @override
+  String get bodyCareWinSleep => 'Slept well';
+
+  @override
+  String get bodyCareWinNourished => 'Ate to nourish, not punish';
+
+  @override
+  String get bodyCareWinStrong => 'Felt strong';
+
+  @override
+  String get bodyCareWinShowedUp => 'I just showed up today';
+
+  @override
+  String get bodyCareWinCustom => 'A win of my own';
+
+  @override
+  String get bodyCareRecentTitle => 'Recent care';
+
+  @override
+  String get bodyCareNoWinsYet => 'Your wins will gather here.';
+
+  @override
+  String get bodyCareShowNumbers => 'Show the number';
+
+  @override
+  String get bodyCareHideNumbers => 'Hide the number';
+
+  @override
+  String get bodyCareNumbersHidden =>
+      'The number is resting. Your care continues.';
+
+  @override
+  String get bodyCareNoWeighIn => 'No weigh-in yet — only when you\'re ready.';
+
+  @override
+  String get bodyCareLogWeighIn => 'Log a weigh-in';
+
+  @override
+  String get bodyCareTrendTitle => 'Gentle trend';
+
+  @override
+  String get bodyCareTrendBandHint =>
+      'Day-to-day weight naturally drifts up and down — a small bump is just your body, not a setback.';
+
+  @override
+  String get bodyCareTowardGentleGoal => 'Toward your gentle goal';
+
+  @override
+  String get bodyCareEnterWeight => 'Enter a weight to log it.';
+
+  @override
+  String get bodyCareGoalTooLow =>
+      'That goal looks very low. Let\'s choose a gentler target — your wellbeing matters far more than a number.';
+
+  @override
+  String get bodyCareGoalTooMuch =>
+      'That\'s a big change to aim for at once. A smaller, kinder goal tends to be more sustainable — and you can always set a new one later.';
+
+  @override
+  String get bodyCareUseGentlerGoal => 'Choose a gentler goal';
+
+  @override
+  String bodyCareWeeksTended(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks tended',
+      one: '1 week tended',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String bodyCareWeightCaption(String weight) {
+    return 'Latest $weight';
+  }
 
   @override
   String get plannerCurrentWeight => 'Current weight';
@@ -8733,4 +8902,98 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get plannerEventDayLabel => 'Event day';
+
+  @override
+  String get recordTitle => 'Record';
+
+  @override
+  String get recordEntryLabel => 'Record a walk or run';
+
+  @override
+  String get recordPrimingTitle => 'Track your walk or run';
+
+  @override
+  String get recordPrimingBody =>
+      'Journey Forward uses your phone\'s GPS to measure distance, time and pace. Your location stays on this device — no map, no internet, nothing shared.';
+
+  @override
+  String get recordPrimingCta => 'Enable location';
+
+  @override
+  String get recordPrimingNotNow => 'Not now';
+
+  @override
+  String get recordPermDeniedTitle => 'Location is off';
+
+  @override
+  String get recordPermDeniedBody =>
+      'Location permission is needed to measure your distance. You can turn it on in Settings.';
+
+  @override
+  String get recordOpenSettings => 'Open settings';
+
+  @override
+  String get recordServicesOffBody =>
+      'Turn on your device\'s location services to record a walk or run.';
+
+  @override
+  String get recordAcquiring => 'Finding GPS signal…';
+
+  @override
+  String get recordGpsWeak => 'Weak GPS — move to open sky';
+
+  @override
+  String get recordGpsReady => 'GPS ready';
+
+  @override
+  String get recordStatDistance => 'Distance';
+
+  @override
+  String get recordStatTime => 'Time';
+
+  @override
+  String get recordStatPace => 'Pace';
+
+  @override
+  String get recordPaceUnitKm => '/km';
+
+  @override
+  String get recordPaceUnitMi => '/mi';
+
+  @override
+  String get recordStart => 'Start';
+
+  @override
+  String get recordPause => 'Pause';
+
+  @override
+  String get recordResume => 'Resume';
+
+  @override
+  String get recordFinish => 'Finish';
+
+  @override
+  String get recordDiscardTitle => 'Discard recording?';
+
+  @override
+  String get recordDiscardBody => 'Your recorded walk or run won\'t be saved.';
+
+  @override
+  String get recordDiscard => 'Discard';
+
+  @override
+  String get recordKeepRecording => 'Keep recording';
+
+  @override
+  String get recordTooShort => 'Too short to save yet — keep moving.';
+
+  @override
+  String get recordNotifTitle => 'Recording your activity';
+
+  @override
+  String get recordNotifText =>
+      'Tracking distance, time and pace — tap to return.';
+
+  @override
+  String get recordKeepsRecordingHint => 'Keeps recording with the screen off.';
 }
