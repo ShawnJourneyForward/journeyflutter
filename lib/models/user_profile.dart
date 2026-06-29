@@ -40,6 +40,21 @@ class UserProfile {
   // When true weight is displayed in pounds instead of kilograms.
   final bool useImperialWeight;
 
+  // ── Body Care module ──────────────────────────────────────────────────────
+  // How the user chose to engage with the weight / body module. '' = not yet
+  // chosen, which shows the gentle opt-in gate. 'feelings' = care without ever
+  // seeing a number; 'sometimes' = weigh occasionally (weekly default); 'never'
+  // = no body tracking at all. Additive + degrades to '' so older profiles open
+  // the gate rather than landing in a half-configured state.
+  final String weightTrackingMode;
+  // The "hide the number / take a break" escape hatch. When true EVERY weight
+  // value in the module is withheld (frosted, never shown) — presentation only,
+  // no data is deleted and it is fully reversible.
+  final bool hideWeightNumbers;
+  // Optional height in canonical CM. Used ONLY for a hidden underweight-goal
+  // floor check — the BMI number / category is never displayed anywhere.
+  final double? heightCm;
+
   const UserProfile({
     required this.username,
     required this.soberDate,
@@ -65,6 +80,9 @@ class UserProfile {
     this.highContrast = false,
     this.useImperial = false,
     this.useImperialWeight = false,
+    this.weightTrackingMode = '',
+    this.hideWeightNumbers = false,
+    this.heightCm,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> j) => UserProfile(
@@ -119,6 +137,9 @@ class UserProfile {
         highContrast: (j['highContrast'] as bool?) ?? false,
         useImperial: (j['useImperial'] as bool?) ?? false,
         useImperialWeight: (j['useImperialWeight'] as bool?) ?? false,
+        weightTrackingMode: j['weightTrackingMode'] as String? ?? '',
+        hideWeightNumbers: (j['hideWeightNumbers'] as bool?) ?? false,
+        heightCm: (j['heightCm'] as num?)?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -147,6 +168,9 @@ class UserProfile {
         'highContrast': highContrast,
         'useImperial': useImperial,
         'useImperialWeight': useImperialWeight,
+        'weightTrackingMode': weightTrackingMode,
+        'hideWeightNumbers': hideWeightNumbers,
+        if (heightCm != null) 'heightCm': heightCm,
       };
 
   String toJsonString() => jsonEncode(toJson());
@@ -176,6 +200,9 @@ class UserProfile {
     bool? highContrast,
     bool? useImperial,
     bool? useImperialWeight,
+    String? weightTrackingMode,
+    bool? hideWeightNumbers,
+    Object? heightCm = _absent,
   }) =>
       UserProfile(
         username: username ?? this.username,
@@ -209,6 +236,9 @@ class UserProfile {
         highContrast: highContrast ?? this.highContrast,
         useImperial: useImperial ?? this.useImperial,
         useImperialWeight: useImperialWeight ?? this.useImperialWeight,
+        weightTrackingMode: weightTrackingMode ?? this.weightTrackingMode,
+        hideWeightNumbers: hideWeightNumbers ?? this.hideWeightNumbers,
+        heightCm: heightCm == _absent ? this.heightCm : heightCm as double?,
       );
 }
 

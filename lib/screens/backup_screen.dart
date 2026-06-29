@@ -49,6 +49,8 @@ const _exportKeys = [
   'planner_weight_logs',
   'planner_activities',
   'planner_settings',
+  // Body Care module — non-scale victories (weight logs already covered above).
+  'body_care_wins',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.

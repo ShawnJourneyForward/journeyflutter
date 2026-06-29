@@ -449,6 +449,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // left open overnight rolls over to the new day's content / re-checks
       // milestones instead of showing yesterday's.
       ref.invalidate(missionTogglesProvider);
+      // Weekly goals reset on the SUNDAY boundary (handled inside the notifier's
+      // load), but an app left open across midnight needs a nudge to re-check —
+      // invalidating here reloads the toggles, which archives + clears them when
+      // the new day turns out to start a new week.
+      ref.invalidate(weeklyGoalTogglesProvider);
       setState(() {
         _editingPledge = false;
         _editingGratitude = false;
@@ -664,8 +669,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: _WeeklyGoalsCard(
                 goals: profile.weeklyGoals,
                 toggles: goalToggles,
+                history: ref.watch(weeklyGoalHistoryProvider),
                 onToggle: (i) {
-                  ref.read(weeklyGoalTogglesProvider.notifier).toggle(i);
+                  ref
+                      .read(weeklyGoalTogglesProvider.notifier)
+                      .toggle(i, profile.weeklyGoals);
                   H.selection();
                 },
               ),
@@ -2086,6 +2094,7 @@ class _GoalSheetState extends ConsumerState<_GoalSheet> {
           // Goal name (optional)
           TextField(
             controller: _nameCtrl,
+            textCapitalization: TextCapitalization.sentences,
             style: AppTextStyles.bodyLarge,
             decoration: InputDecoration(
               hintText: l10n.settingsGoalNameHint,
@@ -2811,20 +2820,57 @@ class _WeeklyGoalsCard extends StatelessWidget {
   const _WeeklyGoalsCard({
     required this.goals,
     required this.toggles,
+    required this.history,
     required this.onToggle,
   });
   final List<String> goals;
   final Set<int> toggles;
+  final List<WeeklyGoalWeek> history;
   final ValueChanged<int> onToggle;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final doneCount = toggles.where((i) => i >= 0 && i < goals.length).length;
     return SolidCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.homeWeeklyGoals, style: AppTextStyles.titleMedium),
+          Row(
+            children: [
+              Expanded(
+                child: Text(l10n.homeWeeklyGoals,
+                    style: AppTextStyles.titleMedium),
+              ),
+              Text(
+                l10n.homeWeeklyGoalsProgress(doneCount, goals.length),
+                style: AppTextStyles.caption.copyWith(color: AppColors.stone400),
+              ),
+              if (history.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    H.light();
+                    showModalBottomSheet<void>(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (_) => _WeeklyGoalsHistorySheet(history: history),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(Icons.history_rounded,
+                        size: 20, color: AppColors.stone400),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(l10n.homeWeeklyGoalsResetHint,
+              style: AppTextStyles.caption.copyWith(color: AppColors.stone400)),
           const SizedBox(height: 12),
           ...goals.asMap().entries.map((e) {
             final done = toggles.contains(e.key);
@@ -2872,6 +2918,124 @@ class _WeeklyGoalsCard extends StatelessWidget {
               ),
             );
           }),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Weekly Goals History Sheet ───────────────────────────────────────────────
+//
+// Past weeks, newest first: the goals the user ticked off each week before it
+// reset. Surfaced from the history icon on the weekly-goals card so an achieved
+// week isn't silently lost when the new week clears the checklist.
+
+class _WeeklyGoalsHistorySheet extends StatelessWidget {
+  const _WeeklyGoalsHistorySheet({required this.history});
+  final List<WeeklyGoalWeek> history;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: AppRadius.xl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 12, 8),
+            child: Row(
+              children: [
+                Icon(Icons.history_rounded,
+                    size: 20, color: AppColors.forest600),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(l10n.homeWeeklyGoalsHistoryTitle,
+                      style: AppTextStyles.titleLarge
+                          .copyWith(color: AppColors.forest700)),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close_rounded, color: AppColors.stone400),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            child: ListView.separated(
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
+              itemCount: history.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, i) {
+                final w = history[i];
+                final end = w.weekStart.add(const Duration(days: 6));
+                final range =
+                    '${DateFormat('MMM d').format(w.weekStart)} – ${DateFormat('MMM d').format(end)}';
+                return Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.stone50,
+                    borderRadius: AppRadius.lg,
+                    border: Border.all(color: AppColors.softBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(range,
+                                style: AppTextStyles.titleSmall
+                                    .copyWith(color: AppColors.stone700)),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.forest50,
+                              borderRadius: AppRadius.pill,
+                              border: Border.all(color: AppColors.forest100),
+                            ),
+                            child: Text(
+                              l10n.homeWeeklyGoalsProgress(
+                                  w.achieved.length, w.total),
+                              style: AppTextStyles.labelSmall
+                                  .copyWith(color: AppColors.forest600),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ...w.achieved.map((g) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.check_circle_rounded,
+                                    size: 16, color: AppColors.forest500),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(g,
+                                      style: AppTextStyles.bodySmall
+                                          .copyWith(color: AppColors.stone600)),
+                                ),
+                              ],
+                            ),
+                          )),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -3450,6 +3614,7 @@ class _NotesField extends StatelessWidget {
   Widget build(BuildContext context) => TextField(
         controller: controller,
         maxLines: 3,
+        textCapitalization: TextCapitalization.sentences,
         style: AppTextStyles.bodyMedium,
         decoration: InputDecoration(
           hintText: hintText,
@@ -4069,6 +4234,7 @@ class _ThoughtSheetState extends ConsumerState<_ThoughtSheet> {
           TextField(
             controller: _thoughtCtrl,
             maxLines: 3,
+            textCapitalization: TextCapitalization.sentences,
             style: AppTextStyles.bodyMedium,
             decoration: InputDecoration(
               hintText: l10n.homeThoughtWriteHintOptional,

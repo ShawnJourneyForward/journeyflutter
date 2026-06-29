@@ -263,6 +263,21 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
           : null,
     );
 
+    // Recovery-safe goal bounds — refuse a dangerous weight target with gentle
+    // guidance rather than saving it. Body-image / eating-disorder comorbidity
+    // is common in recovery, so the app must never endorse an unsafe goal.
+    if (_type == GoalType.weight) {
+      final issue = _unsafeWeightGoalMessage(
+          l10n, goal.startWeightKg, goal.goalWeightKg);
+      if (issue != null) {
+        if (mounted) {
+          setState(() => _saving = false);
+          _showGentleDialog(l10n, issue);
+        }
+        return;
+      }
+    }
+
     if (base == null) {
       await ref.read(plannerGoalProvider.notifier).add(goal);
     } else {
@@ -270,6 +285,48 @@ class _PlannerGoalScreenState extends ConsumerState<PlannerGoalScreen> {
     }
     await ref.read(plannerSettingsProvider.notifier).setActiveGoalId(goal.id);
     if (mounted) context.pop();
+  }
+
+  /// Returns a gentle, localised message when a weight goal is unsafe, or null
+  /// when it's fine. Guards: an absolute floor no healthy adult goal sits below,
+  /// a HIDDEN BMI-floor check when height is known (the BMI number is NEVER
+  /// shown), and a cap on how large an intended loss can be at once.
+  String? _unsafeWeightGoalMessage(
+      AppLocalizations l10n, double? startKg, double? goalKg) {
+    if (goalKg == null) return null;
+    if (goalKg < 35) return l10n.bodyCareGoalTooLow;
+    final heightCm = ref.read(profileProvider).valueOrNull?.heightCm;
+    if (heightCm != null && heightCm > 50) {
+      final m = heightCm / 100.0;
+      final bmi = goalKg / (m * m);
+      if (bmi < 18.5) return l10n.bodyCareGoalTooLow; // hidden — never displayed
+    }
+    if (startKg != null && startKg > 0 && goalKg < startKg) {
+      final lossFraction = (startKg - goalKg) / startKg;
+      if (lossFraction > 0.35) return l10n.bodyCareGoalTooMuch;
+    }
+    return null;
+  }
+
+  void _showGentleDialog(AppLocalizations l10n, String message) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.xxl),
+        content: Text(message,
+            style: AppTextStyles.bodyMedium
+                .copyWith(color: AppColors.stone700, height: 1.5)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.bodyCareUseGentlerGoal,
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.forest700)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _delete() async {

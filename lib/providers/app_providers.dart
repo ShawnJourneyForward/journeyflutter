@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' show ThemeMode, Locale;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/body_care_win.dart';
 import '../models/future_letter.dart';
 import '../models/hard_day.dart';
 import '../models/planner_activity.dart';
@@ -17,6 +18,7 @@ import '../models/urge_ride.dart';
 import '../models/user_profile.dart';
 import '../utils/encrypted_store.dart';
 import '../utils/vision_image_store.dart';
+import '../utils/week_dates.dart';
 
 // ─── Secure storage helper ───────────────────────────────────────────────────
 //
@@ -396,10 +398,28 @@ final allGratitudeProvider = FutureProvider<List<GratitudeEntry>>((ref) async {
   return _safeParseList(raw, GratitudeEntry.fromJson).reversed.toList();
 });
 
-// ─── Weekly goal completion toggles (persisted) ───────────────────────────────
+// ─── Weekly goal completion toggles (persisted, resets each Sunday) ───────────
+//
+// Weekly goals behave like a rolling to-do. The user ticks goals off on the home
+// screen; the ticked set is stamped with the Sunday-led week it belongs to (see
+// lib/utils/week_dates.dart). When a new week begins, on the first load the
+// COMPLETED (ticked) goals are archived to the weekly-goal history AND removed
+// from the active list (they're done), while the UN-ticked goals carry over to
+// the new week. Then the ticks clear. A goal-text snapshot is stored alongside
+// the ticked indices so the archive + removal still target the right goals even
+// if the user edited their list mid-week.
+//
+// On-disk shape (prefs key `weekly_goal_toggles`, additive — older plain-list
+// values still load, treated as belonging to the current week):
+//   { "week": "2026-06-28", "done": [0,2], "goals": ["Exercise 3x", …] }
 
 class WeeklyGoalTogglesNotifier extends Notifier<Set<int>> {
   static const _key = 'weekly_goal_toggles';
+
+  // The goal-text snapshot + week stamp last written, so toggle() can re-persist
+  // the full record without re-deriving it.
+  String _week = weekKeySunday(DateTime.now());
+  List<String> _goals = const [];
 
   @override
   Set<int> build() {
@@ -408,17 +428,48 @@ class WeeklyGoalTogglesNotifier extends Notifier<Set<int>> {
   }
 
   Future<void> _load() async {
-    final prefs = await ref.read(prefsProvider.future);
-    final raw = prefs.getString(_key);
-    if (raw == null) {
-      _loadedCompleter.complete();
-      return;
-    }
     try {
-      final list = (jsonDecode(raw) as List<dynamic>).whereType<int>().toSet();
-      state = list;
+      final prefs = await ref.read(prefsProvider.future);
+      final raw = prefs.getString(_key);
+      if (raw == null) return;
+      final decoded = jsonDecode(raw);
+
+      // Legacy shape: a bare list of indices with NO week stamp (written by a
+      // build before this feature). We can't date it, and the user has since
+      // crossed at least one Sunday, so it's a STALE week — clear it and start
+      // fresh rather than carry old ticks forever (un-stamped data has no
+      // boundary to reset on, and it carries no goal snapshot to archive). This
+      // is what "my ticks should have reset" expects on upgrade.
+      if (decoded is List) {
+        await prefs.remove(_key);
+        return; // state stays the initial empty set
+      }
+      if (decoded is! Map) return;
+
+      final storedWeek = decoded['week'] as String?;
+      final done =
+          (decoded['done'] as List<dynamic>?)?.whereType<int>().toSet() ??
+              const <int>{};
+      final goals = (decoded['goals'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList() ??
+          const <String>[];
+      final currentWeek = weekKeySunday(DateTime.now());
+
+      if (storedWeek == currentWeek) {
+        _week = storedWeek!;
+        _goals = goals;
+        state = done;
+        return;
+      }
+
+      // A new week has begun since this was written → archive the COMPLETED
+      // goals and remove them from the active list (unfinished ones carry over),
+      // then clear the ticks for the fresh week.
+      await _rolloverArchiveAndPrune(storedWeek, done, goals);
+      await prefs.remove(_key);
     } catch (e) {
-      debugPrint('[WeeklyGoalToggles] decode failed: $e');
+      debugPrint('[WeeklyGoalToggles] load failed: $e');
     } finally {
       if (!_loadedCompleter.isCompleted) _loadedCompleter.complete();
     }
@@ -429,19 +480,212 @@ class WeeklyGoalTogglesNotifier extends Notifier<Set<int>> {
   /// a late-arriving disk read.
   final _loadedCompleter = Completer<void>();
 
-  Future<void> toggle(int index) async {
+  /// Toggle goal [index]. [goals] is the user's current weekly-goal list, so we
+  /// can snapshot the goal texts for the eventual end-of-week archive.
+  Future<void> toggle(int index, List<String> goals) async {
     await _loadedCompleter.future;
+    _week = weekKeySunday(DateTime.now());
+    _goals = List<String>.from(goals);
     final n = Set<int>.from(state);
     n.contains(index) ? n.remove(index) : n.add(index);
     state = n;
     final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(_key, jsonEncode(n.toList()));
+    await prefs.setString(
+      _key,
+      jsonEncode({'week': _week, 'done': n.toList(), 'goals': _goals}),
+    );
+  }
+
+  /// Re-evaluate the week boundary WITHOUT a full reload. Call this on app
+  /// RESUME: the in-foreground midnight timer can't fire while the app is
+  /// backgrounded, so a warm resume across Sunday midnight would otherwise keep
+  /// last week's ticks. Unlike invalidate() this doesn't flash the checklist
+  /// empty on a same-week resume — it only changes state when the week actually
+  /// rolled over (archive achieved goals, then clear).
+  Future<void> recheckWeek() async {
+    await _loadedCompleter.future;
+    try {
+      final prefs = await ref.read(prefsProvider.future);
+      final raw = prefs.getString(_key);
+      final currentWeek = weekKeySunday(DateTime.now());
+      if (raw == null) {
+        if (state.isNotEmpty) state = const {};
+        return;
+      }
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        // Legacy un-stamped value still on disk — treat as a stale week + clear.
+        await prefs.remove(_key);
+        if (state.isNotEmpty) state = const {};
+        return;
+      }
+      if (decoded is! Map) return;
+      final storedWeek = decoded['week'] as String?;
+      if (storedWeek == currentWeek) return; // same week — nothing to do
+      final done =
+          (decoded['done'] as List<dynamic>?)?.whereType<int>().toSet() ??
+              const <int>{};
+      final goals = (decoded['goals'] as List<dynamic>?)
+              ?.whereType<String>()
+              .toList() ??
+          const <String>[];
+      await _rolloverArchiveAndPrune(storedWeek, done, goals);
+      await prefs.remove(_key);
+      state = const {};
+    } catch (e) {
+      debugPrint('[WeeklyGoalToggles] recheckWeek failed: $e');
+    }
+  }
+
+  /// On a week rollover: archive the TICKED goals to history AND remove them
+  /// from the user's active weekly-goal list (they're complete) — the un-ticked
+  /// goals stay and carry over into the new week. The caller then clears the
+  /// toggle state. [storedWeek]/[done]/[goals] come from the rolled-over record;
+  /// the snapshot [goals] is matched by TEXT against the current list so an edit
+  /// made mid-week can't remove the wrong row.
+  Future<void> _rolloverArchiveAndPrune(
+      String? storedWeek, Set<int> done, List<String> goals) async {
+    if (storedWeek == null || done.isEmpty || goals.isEmpty) return;
+    final achieved = done
+        .where((i) => i >= 0 && i < goals.length)
+        .map((i) => goals[i])
+        .toList();
+    if (achieved.isEmpty) return;
+    await ref.read(weeklyGoalHistoryProvider.notifier).archive(
+          weekKey: storedWeek,
+          achieved: achieved,
+          total: goals.length,
+        );
+    // Prune the completed goals from the active list — best-effort: a profile
+    // read/write hiccup must never undo the archive or block the tick-clear.
+    try {
+      final profile = await ref.read(profileProvider.future);
+      if (profile == null) return;
+      final achievedSet = achieved.toSet();
+      final remaining =
+          profile.weeklyGoals.where((g) => !achievedSet.contains(g)).toList();
+      if (remaining.length != profile.weeklyGoals.length) {
+        await ref
+            .read(profileProvider.notifier)
+            .patch((p) => p.copyWith(weeklyGoals: remaining));
+      }
+    } catch (e) {
+      debugPrint('[WeeklyGoalToggles] goal prune skipped: $e');
+    }
   }
 }
 
 final weeklyGoalTogglesProvider =
     NotifierProvider<WeeklyGoalTogglesNotifier, Set<int>>(
         WeeklyGoalTogglesNotifier.new);
+
+// ─── Weekly goal history (achieved goals, archived each week) ─────────────────
+//
+// When a week rolls over, the goals the user ticked off are appended here so the
+// achievement is kept rather than silently cleared. Stored in plain prefs
+// alongside the toggles (key `weekly_goal_history`) — it's a lightweight log of
+// completion counts + goal text, mirroring where the toggle state already lives.
+
+class WeeklyGoalWeek {
+  /// `yyyy-MM-dd` Sunday that started the archived week.
+  final String weekKey;
+
+  /// Goal texts the user ticked off that week.
+  final List<String> achieved;
+
+  /// How many goals existed that week (achieved.length ≤ total).
+  final int total;
+
+  const WeeklyGoalWeek({
+    required this.weekKey,
+    required this.achieved,
+    required this.total,
+  });
+
+  /// Sunday that started the week, parsed from [weekKey]; epoch on a bad key.
+  DateTime get weekStart =>
+      DateTime.tryParse(weekKey) ?? DateTime.fromMillisecondsSinceEpoch(0);
+
+  factory WeeklyGoalWeek.fromJson(Map<String, dynamic> j) => WeeklyGoalWeek(
+        weekKey: (j['week'] as String?) ?? '',
+        achieved: (j['achieved'] as List<dynamic>?)
+                ?.whereType<String>()
+                .toList() ??
+            const [],
+        total: (j['total'] as num?)?.toInt() ?? 0,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'week': weekKey,
+        'achieved': achieved,
+        'total': total,
+      };
+}
+
+class WeeklyGoalHistoryNotifier extends Notifier<List<WeeklyGoalWeek>> {
+  static const _key = 'weekly_goal_history';
+  // Bound the log so it can't grow without limit across years of use.
+  static const _maxWeeks = 104;
+
+  // Resolved once the existing history has been read from disk. archive() awaits
+  // it so a week-boundary archive (fired from the toggle notifier's load) merges
+  // into the loaded history instead of racing it and clobbering older weeks.
+  final _loaded = Completer<void>();
+
+  @override
+  List<WeeklyGoalWeek> build() {
+    _load();
+    return const [];
+  }
+
+  Future<void> _load() async {
+    try {
+      final prefs = await ref.read(prefsProvider.future);
+      final raw = prefs.getString(_key);
+      if (raw == null) return;
+      final list = (jsonDecode(raw) as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .map(WeeklyGoalWeek.fromJson)
+          .where((w) => w.weekKey.isNotEmpty)
+          .toList()
+        ..sort((a, b) => b.weekKey.compareTo(a.weekKey)); // newest first
+      state = list;
+    } catch (e) {
+      debugPrint('[WeeklyGoalHistory] load failed: $e');
+    } finally {
+      if (!_loaded.isCompleted) _loaded.complete();
+    }
+  }
+
+  /// Append (or replace) the archived record for [weekKey]. Idempotent: if a
+  /// record for that week already exists it's overwritten, so a double load
+  /// across the boundary can't create duplicates.
+  Future<void> archive({
+    required String weekKey,
+    required List<String> achieved,
+    required int total,
+  }) async {
+    await _loaded.future; // never merge into a not-yet-loaded (empty) history
+    final record = WeeklyGoalWeek(
+      weekKey: weekKey,
+      achieved: achieved,
+      total: total,
+    );
+    final next = [
+      record,
+      ...state.where((w) => w.weekKey != weekKey),
+    ]..sort((a, b) => b.weekKey.compareTo(a.weekKey));
+    if (next.length > _maxWeeks) next.removeRange(_maxWeeks, next.length);
+    state = next;
+    final prefs = await ref.read(prefsProvider.future);
+    await prefs.setString(
+        _key, jsonEncode(next.map((w) => w.toJson()).toList()));
+  }
+}
+
+final weeklyGoalHistoryProvider =
+    NotifierProvider<WeeklyGoalHistoryNotifier, List<WeeklyGoalWeek>>(
+        WeeklyGoalHistoryNotifier.new);
 
 // ─── Daily mission completion toggles (persisted, resets each day) ────────────
 
@@ -891,6 +1135,52 @@ class PlannerWeightNotifier extends AsyncNotifier<List<PlannerWeightLog>> {
 final plannerWeightProvider =
     AsyncNotifierProvider<PlannerWeightNotifier, List<PlannerWeightLog>>(
         PlannerWeightNotifier.new);
+
+// ─── Body Care wins (non-scale victories) ───────────────────────────────────
+//
+// The NSV log behind the Body Care module — small body-care wins that are NOT a
+// number on the scale (more energy, clothes felt better, rode out a craving,
+// "I just showed up"). Stored newest-first in EncryptedStore (personal). The
+// key `body_care_wins` is registered in backup_screen.dart _exportKeys so wins
+// survive a backup/restore (additive to the storage contract).
+
+class BodyCareWinNotifier extends AsyncNotifier<List<BodyCareWin>> {
+  static const _key = 'body_care_wins';
+
+  @override
+  Future<List<BodyCareWin>> build() async {
+    final raw = await EncryptedStore.read(_key);
+    return _safeParseList(raw, BodyCareWin.fromJson)
+      ..sort((a, b) => b.date.compareTo(a.date)); // newest first
+  }
+
+  Future<void> _writeLock = Future.value();
+
+  Future<void> _persist(List<BodyCareWin> updated) async {
+    updated.sort((a, b) => b.date.compareTo(a.date));
+    await EncryptedStore.write(
+        _key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+    state = AsyncData(updated);
+  }
+
+  Future<void> add(BodyCareWin win) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist([win, ...current]);
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[BodyCareWinNotifier] write error: $e');
+      });
+
+  Future<void> delete(String id) => _writeLock = _writeLock.then((_) async {
+        final current = state.valueOrNull ?? [];
+        await _persist(current.where((e) => e.id != id).toList());
+      }).catchError((Object e, StackTrace s) {
+        debugPrint('[BodyCareWinNotifier] write error: $e');
+      });
+}
+
+final bodyCareWinProvider =
+    AsyncNotifierProvider<BodyCareWinNotifier, List<BodyCareWin>>(
+        BodyCareWinNotifier.new);
 
 // ─── Planner logged activities (manual) ─────────────────────────────────────
 

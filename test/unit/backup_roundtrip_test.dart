@@ -191,6 +191,8 @@ void main() {
       'planner_weight_logs',
       'planner_activities',
       'planner_settings',
+      // Body Care module — non-scale victories.
+      'body_care_wins',
     };
 
     final exported = kBackupExportKeys.toSet();

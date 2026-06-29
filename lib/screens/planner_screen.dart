@@ -436,6 +436,15 @@ class _PlannerTabState extends ConsumerState<_PlannerTab> {
         ),
         const SizedBox(height: 18),
 
+        // ── Record a walk or run live with GPS (offline distance/pace) ────
+        _RecordWalkRunCard(
+          onTap: () {
+            H.light();
+            context.push('/record-activity');
+          },
+        ),
+        const SizedBox(height: 18),
+
         // ── This-week list header + add ───────────────────────────────────
         Row(
           children: [
@@ -1159,6 +1168,17 @@ class _StreaksTab extends ConsumerWidget {
         ),
         const SizedBox(height: 18),
 
+        // ── Body Care — the gentle weight / body module ───────────────────
+        _ActionTile(
+          icon: Icons.spa_rounded,
+          label: l10n.bodyCareTitle,
+          onTap: () {
+            H.light();
+            context.push('/planner-body-journey');
+          },
+        ),
+        const SizedBox(height: 12),
+
         // ── Trailing actions → history / insights ─────────────────────────
         Row(
           children: [
@@ -1528,6 +1548,49 @@ class _GhostIconButton extends StatelessWidget {
             border: Border.all(color: AppColors.forest100),
           ),
           child: Icon(icon, size: 18, color: AppColors.forest600),
+        ),
+      ),
+    );
+  }
+}
+
+/// Prominent, clearly-labelled entry point for the GPS walk/run recorder — a
+/// full-width tappable card so the feature is discoverable (it used to hide
+/// behind a small crosshair icon).
+class _RecordWalkRunCard extends StatelessWidget {
+  const _RecordWalkRunCard({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      button: true,
+      label: l10n.recordEntryLabel,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.forest50,
+            borderRadius: AppRadius.lg,
+            border: Border.all(color: AppColors.forest100),
+          ),
+          child: Row(
+            children: [
+              const IconChip(icon: Icons.my_location_rounded, size: 42),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.recordEntryLabel,
+                  style: AppTextStyles.titleSmall
+                      .copyWith(color: AppColors.forest700),
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded,
+                  size: 22, color: AppColors.forest600),
+            ],
+          ),
         ),
       ),
     );

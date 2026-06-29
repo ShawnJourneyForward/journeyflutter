@@ -41,6 +41,7 @@ import 'screens/privacy_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/puzzle_screen.dart';
 import 'screens/calm_activities_screen.dart';
+import 'screens/record_activity_screen.dart';
 import 'screens/recovery_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/cbt_screen.dart';
@@ -342,6 +343,13 @@ class _JourneyForwardAppState extends ConsumerState<JourneyForwardApp>
         // zone hasn't changed.
         // Fire-and-forget — we don't want to block the resume path on it.
         NotificationService.refreshTimezoneAndReschedule();
+
+        // Weekly goals reset on the Sunday boundary. The home screen's
+        // in-foreground midnight timer can't fire while we're backgrounded, so
+        // a warm resume across Sunday midnight would keep last week's ticks —
+        // this nudge re-checks the week (archives + clears when it rolled over).
+        // Fire-and-forget; a no-op flicker-free check when the week is unchanged.
+        ref.read(weeklyGoalTogglesProvider.notifier).recheckWeek();
 
         // Re-lock if (a) the user has a lock configured, (b) we were
         // actually backgrounded (not just inactive for a system dialog),
@@ -694,6 +702,10 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/planner-share',
         builder: (_, __) => const PlannerShareScreen(),
+      ),
+      GoRoute(
+        path: '/record-activity',
+        builder: (_, __) => const RecordActivityScreen(),
       ),
     ],
   );
