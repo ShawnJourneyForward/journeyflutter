@@ -51,6 +51,10 @@ const _exportKeys = [
   'planner_settings',
   // Body Care module — non-scale victories (weight logs already covered above).
   'body_care_wins',
+  // Weekly-goal achievement history (durable; up to 104 weeks). The weekly
+  // toggle state is NOT here — it's ephemeral plain-prefs that resets each
+  // Sunday, so it deliberately stays out of the backup.
+  'weekly_goal_history',
   // lockMethod is intentionally excluded: the PIN hash lives in secure storage
   // and cannot travel with the backup. Importing lockMethod without a hash
   // would silently break the lock screen.
@@ -92,8 +96,11 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final data = <String, String>{};
 
-      // All sensitive data now lives in EncryptedStore (migrated at startup).
-      // Plain SharedPreferences no longer holds any personal content.
+      // Every backed-up collection lives in EncryptedStore (migrated at startup
+      // / written there from the start). Plain SharedPreferences holds only
+      // non-personal or ephemeral state that deliberately stays OUT of the
+      // backup — notification prefs, the presence sentinel, and the weekly-goal
+      // TOGGLES (which reset every Sunday). Durable personal data is encrypted.
       // readStrict THROWS on a transient Keystore failure (vs. returning null
       // for a genuinely-absent key), so a collection we can't read aborts the
       // whole export instead of being silently dropped from the file — caught
@@ -556,6 +563,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     ref.invalidate(plannerWeightProvider);
     ref.invalidate(plannerActivityProvider);
     ref.invalidate(plannerSettingsProvider);
+    ref.invalidate(bodyCareWinProvider);
+    ref.invalidate(weeklyGoalHistoryProvider);
   }
 
   void _showSnack(String msg, {bool error = false}) {

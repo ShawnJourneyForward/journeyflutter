@@ -92,8 +92,12 @@ Future<LocationGate> requestLocationGate() async {
 enum RecorderStatus { idle, acquiring, recording, paused, finished }
 
 /// Owns one recording session: the position subscription, the accumulated
-/// distance and the moving-time clock. Screen-on only — there is no background
-/// / foreground-service mode (and so no background-location permission).
+/// distance and the moving-time clock. While recording, the position stream
+/// runs as an Android FOREGROUND SERVICE (started in [start] with a wake lock +
+/// ongoing notification) so a walk/run keeps recording with the screen off or
+/// the app backgrounded. The service is started only while the app is visible,
+/// so it runs under the "while using the app" grant — there is deliberately NO
+/// background-location permission.
 class GpsRecorder extends ChangeNotifier {
   StreamSubscription<Position>? _sub;
   Timer? _ticker;

@@ -200,6 +200,7 @@ class _MilestoneScreenState extends ConsumerState<MilestoneScreen>
       final file = File('${Directory.systemTemp.path}/journey_milestone.png');
       await file.writeAsBytes(bytes);
 
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final profile = ref.read(profileProvider).valueOrNull;
       final name = profile?.username ?? l10n.appTitle;

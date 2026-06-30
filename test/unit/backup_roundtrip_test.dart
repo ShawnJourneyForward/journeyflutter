@@ -193,6 +193,9 @@ void main() {
       'planner_settings',
       // Body Care module — non-scale victories.
       'body_care_wins',
+      // Weekly-goal achievement history (durable). The ephemeral weekly toggle
+      // state is intentionally NOT backed up, so it's not in this roster.
+      'weekly_goal_history',
     };
 
     final exported = kBackupExportKeys.toSet();

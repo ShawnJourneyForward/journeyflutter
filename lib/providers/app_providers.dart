@@ -582,9 +582,12 @@ final weeklyGoalTogglesProvider =
 // ─── Weekly goal history (achieved goals, archived each week) ─────────────────
 //
 // When a week rolls over, the goals the user ticked off are appended here so the
-// achievement is kept rather than silently cleared. Stored in plain prefs
-// alongside the toggles (key `weekly_goal_history`) — it's a lightweight log of
-// completion counts + goal text, mirroring where the toggle state already lives.
+// achievement is kept rather than silently cleared. This is DURABLE recovery
+// progress (up to 104 weeks), so it lives in EncryptedStore (key
+// `weekly_goal_history`) and is registered in backup_screen.dart _exportKeys —
+// it must survive a backup/restore. (The week's *toggles* stay in plain prefs:
+// they're ephemeral and reset every Sunday, so they are intentionally NOT
+// backed up.)
 
 class WeeklyGoalWeek {
   /// `yyyy-MM-dd` Sunday that started the archived week.
@@ -640,8 +643,7 @@ class WeeklyGoalHistoryNotifier extends Notifier<List<WeeklyGoalWeek>> {
 
   Future<void> _load() async {
     try {
-      final prefs = await ref.read(prefsProvider.future);
-      final raw = prefs.getString(_key);
+      final raw = await EncryptedStore.read(_key);
       if (raw == null) return;
       final list = (jsonDecode(raw) as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -677,8 +679,7 @@ class WeeklyGoalHistoryNotifier extends Notifier<List<WeeklyGoalWeek>> {
     ]..sort((a, b) => b.weekKey.compareTo(a.weekKey));
     if (next.length > _maxWeeks) next.removeRange(_maxWeeks, next.length);
     state = next;
-    final prefs = await ref.read(prefsProvider.future);
-    await prefs.setString(
+    await EncryptedStore.write(
         _key, jsonEncode(next.map((w) => w.toJson()).toList()));
   }
 }

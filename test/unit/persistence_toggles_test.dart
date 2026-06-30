@@ -161,11 +161,12 @@ void main() {
       final lastWeek =
           weekKeySunday(DateTime.now().subtract(const Duration(days: 7)));
       SharedPreferences.setMockInitialValues({
-        'weekly_goal_history':
-            '[{"week":"$twoWeeksAgo","achieved":["Old goal"],"total":2}]',
         'weekly_goal_toggles':
             '{"week":"$lastWeek","done":[1],"goals":${_json(goals)}}',
       });
+      // History is durable + encrypted now (so it survives backup), not prefs.
+      await EncryptedStore.write('weekly_goal_history',
+          '[{"week":"$twoWeeksAgo","achieved":["Old goal"],"total":2}]');
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
