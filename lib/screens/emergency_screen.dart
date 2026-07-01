@@ -332,47 +332,6 @@ class _HomeTab extends ConsumerWidget {
         Text(l10n.emergencyToolkitSubheading, style: AppTextStyles.bodyLarge),
         const SizedBox(height: 16),
 
-        // Crisis lines — ALWAYS present (unlike the personal-contact button
-        // below, which is null until configured). On the primary panic surface,
-        // direct human help must be reachable in one tap.
-        GestureDetector(
-          onTap: () {
-            H.light();
-            context.push('/crisis');
-          },
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.forest,
-              borderRadius: AppRadius.luxury,
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.support_agent_rounded,
-                    color: AppColors.onForest, size: 24),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.emergencyCrisisLinesTitle,
-                          style: AppTextStyles.titleMedium
-                              .copyWith(color: AppColors.onForest)),
-                      Text(l10n.emergencyCrisisLinesSubtitle,
-                          style: AppTextStyles.bodySmall.copyWith(
-                              color:
-                                  AppColors.onForest.withValues(alpha: 0.7))),
-                    ],
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios_rounded,
-                    color: AppColors.onForest.withValues(alpha: 0.7), size: 16),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-
         // Emergency call button
         if (ec != null) ...[
           GestureDetector(

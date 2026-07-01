@@ -9208,18 +9208,6 @@ abstract class AppLocalizations {
   /// **'Reach a trained crisis counsellor — free, confidential, any time.'**
   String get journalCrisisLinesDetail;
 
-  /// Title of the always-present crisis-lines card at the top of the Emergency toolkit.
-  ///
-  /// In en, this message translates to:
-  /// **'Talk to someone now'**
-  String get emergencyCrisisLinesTitle;
-
-  /// Subtitle of the Emergency crisis-lines card.
-  ///
-  /// In en, this message translates to:
-  /// **'Free, confidential crisis lines — any time'**
-  String get emergencyCrisisLinesSubtitle;
-
   /// Body of the support sheet for a hard-mood entry.
   ///
   /// In en, this message translates to:

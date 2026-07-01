@@ -5150,13 +5150,6 @@ class AppLocalizationsZu extends AppLocalizations {
       'Reach a trained crisis counsellor — free, confidential, any time.';
 
   @override
-  String get emergencyCrisisLinesTitle => 'Talk to someone now';
-
-  @override
-  String get emergencyCrisisLinesSubtitle =>
-      'Free, confidential crisis lines — any time';
-
-  @override
   String get journalCrisisBodyHard =>
       'You wrote it down — that already counts. A 60-second thought record can help if you want it.';
 
