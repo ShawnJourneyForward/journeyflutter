@@ -125,7 +125,22 @@ yours."*
 
 ## 6. Data safety form (Play Console answers)
 
-- **Data collected / shared:** None.
+- **Data collected / shared:** **None collected, none shared.** All processing
+  is on-device. (The GPS walk/run recorder *accesses* Location but only to
+  compute a walk/run's distance/time on-device — no coordinates are stored or
+  transmitted — so it is "accessed, not collected".)
+- **Location — declare it (Play "Data types" → Location, Approximate + Precise):**
+  Accessed for **app functionality** (Fitness & activity). Processed **on device
+  only**, **not collected, not shared, not for tracking**. Granted by the user on
+  first use of the recorder (while-in-use); the app declares **no
+  background-location** permission. The in-app priming sheet gives prominent
+  disclosure before the OS prompt.
+- **Foreground Service declaration (Play Console → App content → Foreground
+  service) — REQUIRED (Aug-2024 policy):** the app ships
+  `FOREGROUND_SERVICE_LOCATION`. Declare it as a **user-initiated** walk/run
+  recorder, started **only while the app is visible**, so recording continues
+  with the screen off; **no background-location access**. A Data-safety form that
+  contradicts the manifest is a rejection risk — keep them in sync.
 - **Data processed:** All on-device; not transmitted off the device.
 - **Encrypted in transit:** N/A (no transmission).
 - **Deletion:** User can clear all data in-app / by uninstalling.

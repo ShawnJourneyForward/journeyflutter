@@ -5132,7 +5132,29 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get journalCrisisBodyCrisis =>
-      'Saving your entry helped. A short calm exercise can take it from here.';
+      'You said this is a crisis — you don\'t have to hold it alone. Reaching a person can help right now.';
+
+  @override
+  String get tippTempCaution =>
+      'Skip the cold-water or breath-hold step if you have a heart condition, low blood pressure, an eating disorder, or are pregnant — try Paced breathing instead.';
+
+  @override
+  String get tippIntenseCaution =>
+      'Ease off if you have a heart condition, are pregnant, or feel faint — even a brisk walk works. Stop if you feel unwell.';
+
+  @override
+  String get journalCrisisLinesLabel => 'Talk to someone now';
+
+  @override
+  String get journalCrisisLinesDetail =>
+      'Reach a trained crisis counsellor — free, confidential, any time.';
+
+  @override
+  String get emergencyCrisisLinesTitle => 'Talk to someone now';
+
+  @override
+  String get emergencyCrisisLinesSubtitle =>
+      'Free, confidential crisis lines — any time';
 
   @override
   String get journalCrisisBodyHard =>

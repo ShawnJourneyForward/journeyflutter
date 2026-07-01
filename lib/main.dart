@@ -25,7 +25,6 @@ import 'screens/emergency_screen.dart';
 import 'screens/groups_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/insights_screen.dart';
 import 'screens/journal_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/meetings_screen.dart';
@@ -601,10 +600,6 @@ GoRouter _buildRouter({
       GoRoute(
         path: '/recovery',
         builder: (_, __) => const RecoveryScreen(),
-      ),
-      GoRoute(
-        path: '/insights',
-        builder: (_, __) => const InsightsScreen(),
       ),
       GoRoute(
         path: '/heatmap',

@@ -1,83 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// Frosted-glass surface card — Stillwater Aesthetic System.
-///
-/// Uses [BackdropFilter] + [ImageFilter.blur] at sigma 24 for the blur,
-/// a translucent white background, a 1 px solid white rim, and soft
-/// diffuse shadows. No heavy Material elevation is applied.
-///
-/// Usage:
-/// ```dart
-/// GlassCard(
-///   child: Text('Hello'),
-/// )
-/// // With custom tint (e.g. honey for gratitude sections):
-/// GlassCard(
-///   tintColor: AppColors.honey50.withValues(alpha: 0.6),
-///   child: Text('Gratitude'),
-/// )
-/// ```
-class GlassCard extends StatelessWidget {
-  const GlassCard({
-    super.key,
-    required this.child,
-    this.tintColor,
-    this.borderRadius = AppRadius.xxl,
-    this.padding = const EdgeInsets.all(20),
-    this.blurSigma = 24.0,
-    this.rimOpacity = 0.65,
-    this.shadows = AppShadows.glass,
-  });
-
-  final Widget child;
-
-  /// Fill tint layered over the blur. Defaults to 45 % white — adjust
-  /// per-surface for coloured variants (honey, forest, blush).
-  final Color? tintColor;
-
-  final BorderRadiusGeometry borderRadius;
-  final EdgeInsetsGeometry padding;
-  final double blurSigma;
-
-  /// Opacity of the 1 px white rim border (0 – 1).
-  final double rimOpacity;
-
-  final List<BoxShadow> shadows;
-
-  @override
-  Widget build(BuildContext context) {
-    final fill = tintColor ?? const Color(0x73FFFFFF); // ~45 % white
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: shadows,
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: borderRadius,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: rimOpacity),
-                width: 1.0,
-              ),
-            ),
-            child: Padding(
-              padding: padding,
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// Note: the frosted `GlassCard` was removed as dead code (the Stillwater system
+// settled on the solid cards below). This file's public surface is now
+// [SolidCard] / [ForestCard] / [HoneyCard] / [BlushCard].
 
 /// Solid white card — for surfaces where blur is unnecessary or
 /// the background is already plain cream (stone-50).

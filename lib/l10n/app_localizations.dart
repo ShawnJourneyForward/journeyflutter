@@ -9181,8 +9181,44 @@ abstract class AppLocalizations {
   /// Body of the support sheet for a crisis-mood entry.
   ///
   /// In en, this message translates to:
-  /// **'Saving your entry helped. A short calm exercise can take it from here.'**
+  /// **'You said this is a crisis — you don\'t have to hold it alone. Reaching a person can help right now.'**
   String get journalCrisisBodyCrisis;
+
+  /// Medical safety caveat shown on the TIPP Temperature (cold-water) card.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the cold-water or breath-hold step if you have a heart condition, low blood pressure, an eating disorder, or are pregnant — try Paced breathing instead.'**
+  String get tippTempCaution;
+
+  /// Medical safety caveat shown on the TIPP Intense-movement card.
+  ///
+  /// In en, this message translates to:
+  /// **'Ease off if you have a heart condition, are pregnant, or feel faint — even a brisk walk works. Stop if you feel unwell.'**
+  String get tippIntenseCaution;
+
+  /// Primary crisis action on the journal crisis-mood sheet — routes to the crisis-line list.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk to someone now'**
+  String get journalCrisisLinesLabel;
+
+  /// Detail under the journal "Talk to someone now" crisis action.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach a trained crisis counsellor — free, confidential, any time.'**
+  String get journalCrisisLinesDetail;
+
+  /// Title of the always-present crisis-lines card at the top of the Emergency toolkit.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk to someone now'**
+  String get emergencyCrisisLinesTitle;
+
+  /// Subtitle of the Emergency crisis-lines card.
+  ///
+  /// In en, this message translates to:
+  /// **'Free, confidential crisis lines — any time'**
+  String get emergencyCrisisLinesSubtitle;
 
   /// Body of the support sheet for a hard-mood entry.
   ///

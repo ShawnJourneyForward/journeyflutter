@@ -163,6 +163,7 @@ class _TippScreenState extends State<TippScreen>
                       l10n.tippTempStep2,
                       l10n.tippTempStep3,
                     ],
+                    caution: l10n.tippTempCaution,
                     countdownChild: _countdownButton(_Skill.temperature, l10n),
                   ),
                   const SizedBox(height: 10),
@@ -180,6 +181,7 @@ class _TippScreenState extends State<TippScreen>
                       l10n.tippIntenseStep2,
                       l10n.tippIntenseStep3,
                     ],
+                    caution: l10n.tippIntenseCaution,
                     countdownChild: _countdownButton(_Skill.intense, l10n),
                   ),
                   const SizedBox(height: 10),
@@ -286,6 +288,7 @@ class _SkillCard extends StatelessWidget {
     this.steps,
     this.countdownChild,
     this.customBody,
+    this.caution,
   });
 
   final _Skill skill;
@@ -298,6 +301,12 @@ class _SkillCard extends StatelessWidget {
   final List<String>? steps;
   final Widget? countdownChild;
   final Widget? customBody;
+
+  /// Optional medical safety caveat shown at the top of the expanded body —
+  /// the cold-water diving reflex and all-out exertion are contraindicated in
+  /// cardiac conditions, pregnancy and eating disorders, all common in this
+  /// audience. Non-alarming, but always visible before the steps.
+  final String? caution;
 
   @override
   Widget build(BuildContext context) {
@@ -358,6 +367,31 @@ class _SkillCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Divider(color: AppColors.stone100, height: 18),
+                        if (caution != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.honey50,
+                              borderRadius: AppRadius.md,
+                              border: Border.all(color: AppColors.honey200),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.info_outline_rounded,
+                                    size: 18, color: AppColors.honey600),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(caution!,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.stone700,
+                                          height: 1.4)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                        ],
                         if (customBody != null) customBody!,
                         if (steps != null)
                           for (var i = 0; i < steps!.length; i++)

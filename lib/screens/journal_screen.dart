@@ -582,7 +582,19 @@ class _JournalTab extends ConsumerWidget {
                     .copyWith(color: AppColors.stone600),
               ),
               const SizedBox(height: 18),
-              if (mood == 'crisis')
+              if (mood == 'crisis') ...[
+                // Highest-severity self-report → route to a HUMAN first, not a
+                // breathing exercise. Crisis lines primary, calm room secondary.
+                _CrisisAction(
+                  icon: Icons.support_agent_rounded,
+                  label: l10n.journalCrisisLinesLabel,
+                  detail: l10n.journalCrisisLinesDetail,
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    context.go('/crisis');
+                  },
+                ),
+                const SizedBox(height: 10),
                 _CrisisAction(
                   icon: Icons.self_improvement_rounded,
                   label: l10n.journalCrisisCalmRoomLabel,
@@ -591,8 +603,8 @@ class _JournalTab extends ConsumerWidget {
                     Navigator.pop(ctx);
                     context.go('/emergency');
                   },
-                )
-              else
+                ),
+              ] else
                 _CrisisAction(
                   icon: Icons.psychology_outlined,
                   label: l10n.journalCrisisThoughtRecordLabel,
